@@ -115,6 +115,12 @@ The `author` field and the list primitive are forward-compatible with
 user/curator/group-authored lists, but **no list-creation, auth, or subscription
 UI is built in the MVP.**
 
+Implementation note: the venue↔list membership (`list_venue`) uses a surrogate
+primary key with two partial unique indexes (one for the NULL-whitelist "all
+categories" case, one for specific-category rows), because a composite PK
+including the nullable `whitelist_category_id` is invalid in Postgres (PK columns
+are implicitly NOT NULL).
+
 ### City
 A scoping layer present from day one. Venues belong to a city. Barcelona is the
 only city at launch; the model does not hardcode it.
