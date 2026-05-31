@@ -20,7 +20,7 @@ CREATE TABLE venue (
     id          SERIAL PRIMARY KEY,
     slug        TEXT NOT NULL UNIQUE,
     name        TEXT NOT NULL,
-    city_id     INTEGER NOT NULL REFERENCES city(id),
+    city_id     INTEGER NOT NULL REFERENCES city(id) ON DELETE RESTRICT,
     address     TEXT,
     site_url    TEXT,
     created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),

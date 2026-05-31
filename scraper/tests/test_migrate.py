@@ -7,7 +7,8 @@ def test_migrations_create_expected_tables(engine):
     tables = set(inspect(engine).get_table_names())
     expected = {
         "category", "city", "venue", "venue_category", "event",
-        "event_category", "list", "list_venue", "schema_migrations",
+        "event_category", "event_translation", "list", "list_venue",
+        "schema_migrations",
     }
     assert expected.issubset(tables)
 

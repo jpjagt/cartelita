@@ -1,11 +1,11 @@
 from pathlib import Path
 from sqlalchemy import text
-from sqlalchemy.engine import Engine
+from sqlalchemy.engine import Connection, Engine
 
 MIGRATIONS_DIR = Path(__file__).resolve().parent.parent.parent / "migrations"
 
 
-def _ensure_table(conn):
+def _ensure_table(conn: Connection) -> None:
     conn.execute(text(
         "CREATE TABLE IF NOT EXISTS schema_migrations ("
         "filename TEXT PRIMARY KEY, applied_at TIMESTAMPTZ NOT NULL DEFAULT now())"
