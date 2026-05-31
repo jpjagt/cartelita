@@ -1,7 +1,8 @@
 import os
 import pytest
 from sqlalchemy import text
-from cartelera.db import make_engine, make_session_factory
+from sqlalchemy.orm import sessionmaker
+from cartelera.db import make_engine
 
 TEST_URL = os.environ.get("TEST_DATABASE_URL", "postgresql://localhost:5432/cartelera_test")
 
@@ -14,13 +15,16 @@ def engine():
 @pytest.fixture()
 def session(engine):
     """A session with a clean schema applied per test."""
+    # Deferred import: cartelera.migrate is created in a later task; importing it
+    # at module top would break collection until then.
     from cartelera.migrate import apply_migrations
+
     # Drop and recreate public schema for full isolation.
     with engine.begin() as conn:
         conn.execute(text("DROP SCHEMA public CASCADE"))
         conn.execute(text("CREATE SCHEMA public"))
     apply_migrations(engine)
-    factory = make_session_factory(TEST_URL)
+    factory = sessionmaker(bind=engine, expire_on_commit=False)
     s = factory()
     try:
         yield s
