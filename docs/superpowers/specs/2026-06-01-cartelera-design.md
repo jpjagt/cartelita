@@ -43,10 +43,50 @@ not transactions). A venue has:
 A venue belongs to many lists, or one.
 
 ### Event
-Something happening at a venue at a specific time. An event has:
-- `venue`, date/time, title, optional price, source URL
-- `categories: Category[]` — **one or more** categories
-- recurrence support (see §4)
+Something happening at a venue at a specific time. Attributes:
+- `id`, `venue_id` (fk)
+- `title`, `description?`, `image_url?`
+- `start_date`, `start_time?`, `end_date?`, `end_time?`
+- `price?` — **free text** (e.g. `"free"`, `"s.o."`, `"15€"`, `""`), never a
+  number; venues express price as messy strings and parsing loses information
+- `source_url` — the event's page; **deliberately non-unique** (a series page is
+  shared across occurrences), so it carries no unique constraint by itself
+- `external_id?` — stable per-event id from the source, used for dedup
+- `recurrence_hint?` — **free text** display hint only (e.g. `"every Tuesday"`,
+  `"monthly"`); no recurrence *logic*, no date expansion. The scraper emits one
+  row per actual occurrence; this field just labels recurring ones in the UI
+- `scraped_at`, `created_at`, `updated_at`
+- `categories: Category[]` — **one or more** (m2m)
+
+`title`, `description`, and `source_url` on the event are the **canonical
+(default) content** — always present, in whatever language the scraper found.
+Additional-language content lives in `EventTranslation` (see §4b). There is no
+`lang` field on the event: nothing reads it (the canonical fields are simply the
+fallback), so it is not stored.
+
+### EventTranslation
+Additional-language content for an event, scraped from that language's page:
+- `event_id` (fk), `lang` (`'ca'` / `'es'` / `'en'`), `title`,
+  `description?`, `source_url?`
+- unique `(event_id, lang)`
+
+A single-language venue emits **zero** translations (the event's canonical fields
+suffice). A trilingual venue emits up to three, each scraped from its own
+language page — **never machine-translated**. Locale resolution returns
+title/description/source_url as a unit: `translation[locale] ?? event canonical`,
+so a translated event also links to its own-language page.
+
+**Dedup / upsert across nightly scrapes** — events have persistent identity; a
+scrape upserts rather than wipe-and-reloads. Upsert key, in priority order:
+1. `(venue_id, external_id)` — when the source exposes a stable id. Date-stable:
+   a rescheduled event keeps its `external_id`, so its `start_date` is updated in
+   place (no orphan, no duplicate).
+2. `(venue_id, source_url)` — when there is no stable id.
+3. `(venue_id, title, start_date)` — last resort. (Carries a small reschedule
+   risk — a moved event may duplicate — accepted only on this degraded path.)
+
+**Graceful degradation:** a venue's upsert runs in a transaction gated on scrape
+success; on failure, that venue's existing rows are left untouched (never wiped).
 
 **Categorization rule:**
 - If a venue has exactly one category, all of its events inherit that category
@@ -81,14 +121,40 @@ only city at launch; the model does not hardcode it.
 
 ## 4. Recurrence
 
-Events support recurrence in the schema: a recurrence kind (e.g. `weekly`,
-`monthly`, one-off) and optional start/end dates. Recurring "regulars' nights"
-are culturally important (Manifesto Principles 5 and 6), so recurrence is
-first-class, not an afterthought.
+Recurrence is handled by **expansion at scrape time, not by a rule in the schema**.
+The scraper emits **one event row per actual occurrence** (a weekly jam for the
+next 8 weeks is 8 rows). The only recurrence artifact stored is the nullable
+`recurrence_hint` free-text field on the event, used purely for a UI label/marker
+(e.g. "every Tuesday"). There is no recurrence *logic*, enum, or date-expansion in
+the application — the display is purely date-driven, matching the jazzin-style
+"list each occurrence on its day" behavior.
 
 Scraping consequence: a recurring event may live on a single series page or on
-many per-edition pages. Each venue's scraper normalizes both shapes into the same
-event model.
+many per-edition pages. Either way the scraper normalizes both shapes into the
+same flat per-occurrence event rows. (Occurrence *grouping* — a `series_key` /
+`series` table linking occurrences — is deferred; see `docs/future-features.md`.)
+
+## 4b. Languages (i18n)
+
+Barcelona is trilingual, so the frontend supports **Catalan, Spanish, and
+English**. The design rests on separating two kinds of text:
+
+- **Chrome / UI text** (date headers, nav, empty states, **category names**) is
+  finite and app-authored → **fully translated** via a per-locale string
+  dictionary in the frontend. Locale-prefixed static routes (`/ca/...`,
+  `/es/...`, `/en/...`) are pre-built — more pages at build time, which fits the
+  static model at zero runtime cost. Date headers use the active locale.
+- **Event content** (titles, descriptions, source_url) is source-authored →
+  **kept in its original language, never machine-translated.** Where a venue
+  *itself* publishes an event in multiple languages (common for institutional
+  venues like CCCB/Filmoteca, each language on its own page), the scraper may
+  capture those as `EventTranslation` rows (see §4 model). A single-language
+  venue emits none, and the canonical event content is the fallback. Resolution:
+  `translation[locale] ?? event canonical`.
+
+Machine translation is never used. Capturing multi-language content is a
+per-scraper choice, exercised only when a venue publishes it; the MVP's jazz
+venue is single-language.
 
 ## 5. Architecture
 

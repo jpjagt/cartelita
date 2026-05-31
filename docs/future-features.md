@@ -49,6 +49,18 @@ we resist building it early but don't accidentally design it out.
   the stakes of going out alone (Principle 5).
   - *Deferred because:* needs identity and a social surface.
 
+## Occurrence grouping (series)
+
+- **`series_key` / `series` table** — link the occurrence rows of a recurring
+  night or a multi-edition cycle so they can be grouped, and so a cycle can carry
+  its own identity (title, description, image).
+  - *Deferred because:* the MVP display is purely per-occurrence and date-driven;
+    a nullable `recurrence_hint` text label covers the only UI need (marking that
+    an event recurs). Grouping earns its place only when cycles need shared
+    identity or "see all dates of this series" views.
+  - *Foundation:* events are already flat per-occurrence rows; a `series_key`
+    column (then a `series` fk) can be added without reshaping existing data.
+
 ## Hardware / ambient triggers
 
 - **The beacon** — alternative hardware you subscribe to venues through; it
