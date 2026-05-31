@@ -97,13 +97,19 @@ CREATE TABLE list (
 -- Membership of a venue in a list, with optional category whitelist.
 -- whitelist_category_id NULL = include all of the venue's events in this list.
 CREATE TABLE list_venue (
+    id                    SERIAL PRIMARY KEY,
     list_id               INTEGER NOT NULL REFERENCES list(id) ON DELETE CASCADE,
     venue_id              INTEGER NOT NULL REFERENCES venue(id) ON DELETE CASCADE,
-    whitelist_category_id INTEGER REFERENCES category(id) ON DELETE CASCADE,
-    PRIMARY KEY (list_id, venue_id, whitelist_category_id)
+    whitelist_category_id INTEGER REFERENCES category(id) ON DELETE CASCADE
 );
--- Note: PK includes whitelist_category_id so a venue may appear in a list once
--- with NULL (all) or multiple times with specific whitelisted categories.
+-- A venue may appear in a list either once with NULL whitelist (all categories)
+-- or multiple times with specific whitelisted categories. Postgres PK columns
+-- are implicitly NOT NULL, so uniqueness is enforced with partial unique indexes
+-- rather than a composite PK that includes the nullable whitelist column.
+CREATE UNIQUE INDEX list_venue_all_uidx
+    ON list_venue (list_id, venue_id) WHERE whitelist_category_id IS NULL;
+CREATE UNIQUE INDEX list_venue_cat_uidx
+    ON list_venue (list_id, venue_id, whitelist_category_id) WHERE whitelist_category_id IS NOT NULL;
 
 -- Migration bookkeeping.
 CREATE TABLE IF NOT EXISTS schema_migrations (

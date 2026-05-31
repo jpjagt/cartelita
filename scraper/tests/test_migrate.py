@@ -23,3 +23,16 @@ def test_source_url_is_not_unique(engine):
     indexes = inspect(engine).get_indexes("event")
     for idx in indexes:
         assert idx["column_names"] != ["source_url"], "source_url must not be unique"
+
+
+def test_list_venue_allows_null_whitelist(session):
+    from sqlalchemy import text
+    session.execute(text("INSERT INTO city (slug,name) VALUES ('bcn','BCN')"))
+    session.execute(text("INSERT INTO venue (slug,name,city_id) VALUES ('v','V',1)"))
+    session.execute(text("INSERT INTO list (slug,name,city_id) VALUES ('jazz','Jazz',1)"))
+    # NULL whitelist must be allowed (means "all categories")
+    session.execute(text(
+        "INSERT INTO list_venue (list_id,venue_id,whitelist_category_id) VALUES (1,1,NULL)"))
+    session.commit()
+    n = session.execute(text("SELECT count(*) FROM list_venue")).scalar()
+    assert n == 1
