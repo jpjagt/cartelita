@@ -1,0 +1,13 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+# env
+.env
+# node / astro
+node_modules/
+web/dist/
+web/.astro/
+# os
+.DS_Store
