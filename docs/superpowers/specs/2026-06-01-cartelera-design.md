@@ -93,8 +93,16 @@ event model.
 ## 5. Architecture
 
 Four concerns: scraper service, database, frontend, and a nightly orchestration
-flow. Data plane runs on a Coolify server; presentation plane runs on a CDN/ISR
+flow. Data plane runs on a Coolify server; presentation plane runs on a CDN/static
 host.
+
+**Languages:** the scraper/data service is **Python** (mature scraping ecosystem —
+BeautifulSoup, httpx, Playwright; the language coding agents are most fluent in,
+which serves the scraper-repair flow). The frontend is **Astro** (TypeScript). The
+**Postgres schema is the single source of truth and cross-language contract**
+between them: schema and migrations are owned by the Python side (where writes
+happen); the Astro side gets typed read access (generated TS types from the DB, or
+a typed query layer).
 
 ### Scraper service (Coolify, deployed from git)
 - One scraper module per venue, behind a **uniform interface** (in the spirit of
@@ -129,26 +137,39 @@ host.
 - A standalone API is the documented extension point for when accounts, curator
   submissions, or other dynamic features arrive.
 
-### Frontend (Next.js or Astro, on Vercel/Netlify)
-- **Server-side data fetching** against Postgres at build and revalidation time.
-  DB credentials are **server-only** (never `NEXT_PUBLIC_`/`PUBLIC_`, never
-  bundled into client JS). The browser receives only rendered output.
-- Requires the framework's server/build runtime (Next.js ISR or Astro
-  SSG/hybrid) — not a pure client-only SPA — so data fetching stays server-side.
-- Static generation + **ISR/on-demand revalidation**, CDN-cached for fast loads.
+### Frontend (Astro, no Vercel)
+- **Astro, `output: 'static'`**, deployed to any static/CDN host that is not tied
+  to Vercel (e.g. Cloudflare Pages, Netlify, or the Coolify box itself). Ships
+  near-zero JavaScript by default — the best fit for "fast server-rendered
+  content, minimal JS" and the low-cost / zippy-load priority.
+- **Server-side data fetching** against Postgres at build time (in Astro
+  frontmatter / `getStaticPaths`). DB credentials are **server-only** (never
+  `PUBLIC_`-prefixed, never bundled into client JS). The browser receives only
+  rendered HTML.
+- **Build-time slug enumeration is fine and aligned with the data lifecycle:** all
+  slugs (category lists, later venue pages) are `cartelera`-authored and exist in
+  the DB before the build; there is no runtime-created content needing instant
+  URLs. New data appears via the nightly scrape, which *triggers* the rebuild — so
+  build-time enumeration always sees current data.
+- **Rebuild-on-scrape**, CDN-cached for fast loads.
 - Default view: chronological "what's on now/today", day-by-day (jazzin-style),
   per Manifesto Principle 2 (tonight over someday).
 - **No client-side persistence** in the MVP (no localStorage, no favorites, no
   accounts).
+- *Future exit hatch (not MVP):* if user-created slugs ever arrive, Astro's
+  on-demand rendering (`output: 'hybrid'` + Node/Cloudflare adapter) lets specific
+  routes render per-request without build-time enumeration — a per-route change,
+  not a framework migration, and it coincides with the deferred accounts/API work.
 
 ### Network & orchestration
-- The frontend host must reach Postgres on the Coolify box: Postgres exposed over
+- The frontend build must reach Postgres on the Coolify box: Postgres exposed over
   a TLS-protected port, locked down with strong credentials, `sslmode=require`,
-  and ideally IP allowlisting.
+  and ideally IP allowlisting. (If the frontend is built on the Coolify box, this
+  is internal-network only.)
 - **Nightly flow:** Coolify cron triggers the scrape → scrapers write to Postgres
-  → scrape completion calls the frontend host's **revalidation webhook**
-  (Next.js on-demand revalidation or a Netlify build hook) → pages regenerate
-  from the DB once and are served cached until the next scrape.
+  → scrape completion calls the frontend host's **build hook** (e.g. Cloudflare
+  Pages / Netlify deploy hook, or a Coolify redeploy trigger) → Astro rebuilds
+  statically from the DB once and is served CDN-cached until the next scrape.
 
 ## 6. MVP scope
 
