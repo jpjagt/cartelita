@@ -13,19 +13,19 @@ const DICT: Record<Locale, Strings> = {
     siteTitle: "Cartelera Barcelona",
     noEvents: "No hi ha esdeveniments propers.",
     back: "Inici",
-    categories: { film: "Cinema", jazz: "Jazz", classical: "Clàssica", theater: "Teatre" },
+    categories: { film: "Cinema", jazz: "Jazz", classical: "Clàssica", theater: "Teatre", club: "Club" },
   },
   es: {
     siteTitle: "Cartelera Barcelona",
     noEvents: "No hay eventos próximos.",
     back: "Inicio",
-    categories: { film: "Cine", jazz: "Jazz", classical: "Clásica", theater: "Teatro" },
+    categories: { film: "Cine", jazz: "Jazz", classical: "Clásica", theater: "Teatro", club: "Club" },
   },
   en: {
     siteTitle: "Cartelera Barcelona",
     noEvents: "No upcoming events.",
     back: "Home",
-    categories: { film: "Film", jazz: "Jazz", classical: "Classical", theater: "Theater" },
+    categories: { film: "Film", jazz: "Jazz", classical: "Classical", theater: "Theater", club: "Club" },
   },
 };
 
