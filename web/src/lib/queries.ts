@@ -44,7 +44,7 @@ export async function getEventsForList(listSlug: string, locale: Locale): Promis
           WHERE ec.event_id = e.id AND ec.category_id = lv.whitelist_category_id
         )
       )
-    ORDER BY e.start_date, e.start_time NULLS FIRST`;
+    ORDER BY e.start_date, e.start_time NULLS FIRST, e.id`;
 
   return rows.map((r) => ({
     id: r.id,

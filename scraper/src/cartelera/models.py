@@ -1,7 +1,7 @@
 from __future__ import annotations
 import datetime as dt
 from sqlalchemy import (
-    Text, Integer, Date, Time, DateTime, ForeignKey, Table, Column, func,
+    Text, Date, Time, DateTime, ForeignKey, Table, Column, func,
 )
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
