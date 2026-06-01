@@ -6,6 +6,7 @@ interface Strings {
   back: string;
   // category names keyed by category slug
   categories: Record<string, string>;
+  prices: Record<string, string>;
 }
 
 const DICT: Record<Locale, Strings> = {
@@ -14,18 +15,21 @@ const DICT: Record<Locale, Strings> = {
     noEvents: "No hi ha esdeveniments propers.",
     back: "Inici",
     categories: { film: "Cinema", jazz: "Jazz", classical: "Clàssica", theater: "Teatre", club: "Club" },
+    prices: { free: "Gratuït", "sold-out": "Exhaurit" },
   },
   es: {
     siteTitle: "Cartelera Barcelona",
     noEvents: "No hay eventos próximos.",
     back: "Inicio",
     categories: { film: "Cine", jazz: "Jazz", classical: "Clásica", theater: "Teatro", club: "Club" },
+    prices: { free: "Gratis", "sold-out": "Agotado" },
   },
   en: {
     siteTitle: "Cartelera Barcelona",
     noEvents: "No upcoming events.",
     back: "Home",
     categories: { film: "Film", jazz: "Jazz", classical: "Classical", theater: "Theater", club: "Club" },
+    prices: { free: "Free", "sold-out": "Sold out" },
   },
 };
 

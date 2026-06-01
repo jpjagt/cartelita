@@ -1,7 +1,12 @@
 ---
-import type { AgendaEvent } from "@/lib/types";
-interface Props { event: AgendaEvent }
-const { event } = Astro.props;
+import type { AgendaEvent, Locale } from "@/lib/types";
+import { t } from "@/i18n";
+interface Props { event: AgendaEvent; locale: Locale }
+const { event, locale } = Astro.props;
+const strings = t(locale);
+const displayPrice = event.price
+  ? (strings.prices[event.price] ?? event.price)
+  : "";
 ---
 <tr>
   <td class="time">{event.startTime ?? ""}</td>
@@ -10,7 +15,7 @@ const { event } = Astro.props;
     {event.recurrenceHint && <span class="recurs" title={event.recurrenceHint}>↻</span>}
   </td>
   <td class="venue">{event.venueName}</td>
-  <td class="price">{event.price ?? ""}</td>
+  <td class="price">{displayPrice}</td>
 </tr>
 <style>
   td { padding: 0.4rem 0.75rem; border-bottom: 1px solid #eee; vertical-align: top; }

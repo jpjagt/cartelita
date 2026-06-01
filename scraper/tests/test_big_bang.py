@@ -47,11 +47,13 @@ def test_jazz_events_have_start_times():
         assert ev.start_time is not None, f"{ev.title} on {ev.start_date} missing start_time"
 
 
-def test_dj_sessions_have_no_start_time():
+def test_dj_sessions_have_midnight_start_time():
     dj_events = [e for e in _events() if e.title == "Dj Session"]
     assert dj_events, "expected Dj Session events"
     for ev in dj_events:
-        assert ev.start_time is None, "midnight DJ sessions must use start_time=None"
+        assert ev.start_time == dt.time(0, 0), (
+            f"DJ session on {ev.start_date} must have start_time=00:00, got {ev.start_time}"
+        )
 
 
 def test_open_mic_days():

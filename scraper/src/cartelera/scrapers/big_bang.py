@@ -11,24 +11,24 @@ from cartelera.types import ScrapedEvent
 # and expand it into concrete dated occurrences for the next LOOKAHEAD_DAYS days.
 #
 # Friday/Saturday midnight DJ sessions are tagged `club`; everything else is `jazz`.
-# Per schema convention, 00:00 means "time unknown" (the all-day sentinel), so the
-# DJ sessions get start_time=None.
+# DJ sessions start at midnight (00:00); the frontend groups 00:00–04:59 events
+# under the previous calendar day so they appear as late-night of that evening.
 
 SITE_URL = "https://bigbangbar.wixsite.com/bigbang"
 VENUE_SLUG = "big-bang-bar"
 LOOKAHEAD_DAYS = 14
 
 # (weekday_int 0=Mon, title, hour, minute_or_None, category_slugs, annotations)
-# hour=None → start_time=None (time unknown / midnight sentinel)
+# hour=None → start_time=None (time unknown)
 _WEEKLY: list[tuple[int, str, int | None, int | None, list[str], list[str]]] = [
     (0, "Big Bang Open Mic",    21,   0, ["jazz"],         ["Rock", "Blues", "Pop"]),
     (1, "Raval Music",          21,   0, ["jazz"],         []),
     (2, "Big Bang Open Mic",    20,  30, ["jazz"],         ["Rock", "Blues", "Pop"]),
     (3, "Big Bang Open Mic",    20,  30, ["jazz"],         ["Rock", "Blues", "Pop"]),
     (4, "Jam Session de Jazz",  21,   0, ["jazz"],         []),
-    (4, "Dj Session",           None, None, ["club"],      []),
+    (4, "Dj Session",           0,    0,  ["club"],      []),
     (5, "New Orleans Jazz Jam", 21,   0, ["jazz"],         ["Concierto", "Jam Session"]),
-    (5, "Dj Session",           None, None, ["club"],      []),
+    (5, "Dj Session",           0,    0,  ["club"],      []),
     (6, "Big Bang Open Mic",    20,   0, ["jazz"],         ["Rock", "Blues", "Pop"]),
 ]
 

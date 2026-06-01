@@ -14,7 +14,7 @@ const heading = new Date(day.date + "T00:00:00").toLocaleDateString(localeTag(lo
     <thead class="sr-only">
       <tr><th scope="col">Time</th><th scope="col">Event</th><th scope="col">Venue</th><th scope="col">Price</th></tr>
     </thead>
-    <tbody>{day.events.map((e) => <EventRow event={e} />)}</tbody>
+    <tbody>{day.events.map((e) => <EventRow event={e} locale={locale} />)}</tbody>
   </table>
 </section>
 <style>
