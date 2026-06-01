@@ -57,12 +57,15 @@ def test_per_venue_whitelist_filters_to_one_category(session):
 
 
 def test_null_whitelist_includes_all_venue_events(session):
-    """The jazz list's jamboree membership has NULL whitelist -> all events show."""
+    """The jazz list's jamboree membership has NULL whitelist -> all events show,
+    including an event on exactly the on_or_after boundary date (inclusive)."""
     seed(session)
     upsert_venue_events(session, "jamboree", [
+        _se("boundary", dt.date(2026, 6, 1)),
         _se("x", dt.date(2026, 6, 5)),
         _se("y", dt.date(2026, 6, 6)),
     ])
     session.commit()
     evs = events_for_list(session, "jazz", on_or_after=dt.date(2026, 6, 1))
-    assert len(evs) == 2
+    assert len(evs) == 3
+    assert evs[0].title == "Eboundary"  # boundary event sorts first

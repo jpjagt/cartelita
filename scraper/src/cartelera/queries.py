@@ -20,4 +20,7 @@ def events_for_list(session: Session, list_slug: str, on_or_after: dt.date) -> l
         for ev in session.scalars(q).all():
             results[ev.id] = ev  # dedupe across overlapping memberships
 
-    return sorted(results.values(), key=lambda e: (e.start_date, e.start_time or dt.time.min))
+    return sorted(
+        results.values(),
+        key=lambda e: (e.start_date, e.start_time or dt.time.min, e.id),
+    )
