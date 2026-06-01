@@ -50,13 +50,14 @@ _PRICE_NUM = re.compile(r"(\d+)\s*€")
 def _parse_price(raw: str | None) -> str | None:
     if not raw:
         return None
-    if _FREE_MARKERS.search(raw):
-        return "free"
     if _BUNDLED_MARKERS.search(raw):
         return "free"
     nums = [int(m.group(1)) for m in _PRICE_NUM.finditer(raw)]
     if nums:
         return f"{max(nums)}€"
+    # Only treat as free if no numeric price was found (avoids "3€ | members gratuït" → "free")
+    if _FREE_MARKERS.search(raw):
+        return "free"
     return None
 
 

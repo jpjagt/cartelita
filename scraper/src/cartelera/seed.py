@@ -66,6 +66,10 @@ def _upsert_venue(session: Session, defn: VenueDefinition, city_id: int, cats: d
         venue = Venue(slug=defn.slug, name=defn.name, city_id=city_id, address=defn.address, site_url=defn.site_url)
         session.add(venue)
         session.flush()
+    else:
+        venue.name = defn.name
+        venue.address = defn.address
+        venue.site_url = defn.site_url
     venue.categories = [cats[s] for s in defn.category_slugs if s in cats]
     for membership in defn.list_memberships:
         lst = _get_or_create_list(session, membership.list_slug, city_id)

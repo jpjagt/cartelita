@@ -3,9 +3,8 @@ import type { AgendaEvent, AgendaDay } from "@/lib/types";
 /** Events 00:00–04:59 belong to the previous calendar day (late night of that evening). */
 function logicalDate(startDate: string, startTime: string | null): string {
   if (startTime && startTime < "05:00") {
-    const d = new Date(startDate + "T00:00:00");
-    d.setDate(d.getDate() - 1);
-    return d.toISOString().slice(0, 10);
+    const [y, m, d] = startDate.split("-").map(Number);
+    return new Date(Date.UTC(y, m - 1, d - 1)).toISOString().slice(0, 10);
   }
   return startDate;
 }

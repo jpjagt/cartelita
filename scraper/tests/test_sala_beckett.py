@@ -73,6 +73,7 @@ def test_price_max_extracted_correctly():
     assert _parse_price("10 € | Personatges de la Beckett 8 €") == "10€"
     assert _parse_price("Activitat gratuïta") == "free"
     assert _parse_price("Preu: 10€ | Personatges de la Beckett 8€") == "10€"
+    assert _parse_price("3 € | Personatges de la Beckett gratuït") == "3€"
     assert _parse_price(None) is None
     assert _parse_price("") is None
 
