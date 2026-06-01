@@ -3,6 +3,7 @@ import datetime as dt
 from sqlalchemy import (
     Text, Date, Time, DateTime, ForeignKey, Table, Column, func,
 )
+from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 
@@ -65,6 +66,7 @@ class Event(Base):
     source_url: Mapped[str] = mapped_column(Text)
     external_id: Mapped[str | None] = mapped_column(Text)
     recurrence_hint: Mapped[str | None] = mapped_column(Text)
+    annotations: Mapped[list[str]] = mapped_column(ARRAY(Text), server_default="{}")
     scraped_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     venue: Mapped[Venue] = relationship(back_populates="events")
     categories: Mapped[list[Category]] = relationship(secondary=event_category)

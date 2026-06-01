@@ -63,6 +63,7 @@ def upsert_venue_events(session: Session, venue_slug: str, scraped: list[Scraped
         ev.source_url = se.source_url
         ev.external_id = se.external_id
         ev.recurrence_hint = se.recurrence_hint
+        ev.annotations = list(se.annotations)
         ev.scraped_at = dt.datetime.now(dt.timezone.utc)
         ev.categories = cats
         # Replace translations wholesale (canonical content lives on the event).

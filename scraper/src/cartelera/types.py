@@ -29,6 +29,7 @@ class ScrapedEvent:
     image_url: str | None = None
     external_id: str | None = None
     recurrence_hint: str | None = None
+    annotations: list[str] = field(default_factory=list)  # free-form tags/labels
     translations: list[ScrapedTranslation] = field(default_factory=list)
 
 

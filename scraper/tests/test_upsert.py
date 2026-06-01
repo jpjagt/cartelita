@@ -95,3 +95,22 @@ def test_tier3_update_by_title_and_date_when_only_those_match(session):
     assert len(rows) == 1
     assert rows[0].price == "10€"
     assert rows[0].source_url == "https://jamboreejazz.com/e/b"  # tier-3 match updates fields
+
+
+def test_annotations_round_trip(session):
+    seed(session)
+    upsert_venue_events(session, "jamboree", [
+        _ev(external_id="ann", annotations=["Bossa Nova", "Vocal Jazz"])])
+    session.commit()
+    session.expire_all()
+    ev = session.query(Event).one()
+    assert ev.annotations == ["Bossa Nova", "Vocal Jazz"]
+
+
+def test_annotations_default_empty(session):
+    seed(session)
+    upsert_venue_events(session, "jamboree", [_ev(external_id="noann")])
+    session.commit()
+    session.expire_all()
+    ev = session.query(Event).one()
+    assert ev.annotations == []
