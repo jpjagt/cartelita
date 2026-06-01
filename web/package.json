@@ -13,9 +13,13 @@
     "postgres": "^3.4.0"
   },
   "devDependencies": {
+    "vite-node": "^6.0.0",
     "vitest": "^2.0.0"
   },
   "pnpm": {
-    "onlyBuiltDependencies": ["esbuild", "sharp"]
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "sharp"
+    ]
   }
 }
