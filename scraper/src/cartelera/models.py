@@ -1,7 +1,7 @@
 from __future__ import annotations
 import datetime as dt
 from sqlalchemy import (
-    String, Text, Integer, Date, Time, DateTime, ForeignKey, Table, Column, func,
+    Text, Integer, Date, Time, DateTime, ForeignKey, Table, Column, func,
 )
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
@@ -26,27 +26,28 @@ event_category = Table(
 class Category(Base):
     __tablename__ = "category"
     id: Mapped[int] = mapped_column(primary_key=True)
-    slug: Mapped[str] = mapped_column(String, unique=True)
-    name: Mapped[str] = mapped_column(String)
+    slug: Mapped[str] = mapped_column(Text, unique=True)
+    name: Mapped[str] = mapped_column(Text)
 
 
 class City(Base):
     __tablename__ = "city"
     id: Mapped[int] = mapped_column(primary_key=True)
-    slug: Mapped[str] = mapped_column(String, unique=True)
-    name: Mapped[str] = mapped_column(String)
+    slug: Mapped[str] = mapped_column(Text, unique=True)
+    name: Mapped[str] = mapped_column(Text)
 
 
 class Venue(Base):
     __tablename__ = "venue"
     id: Mapped[int] = mapped_column(primary_key=True)
-    slug: Mapped[str] = mapped_column(String, unique=True)
-    name: Mapped[str] = mapped_column(String)
+    slug: Mapped[str] = mapped_column(Text, unique=True)
+    name: Mapped[str] = mapped_column(Text)
     city_id: Mapped[int] = mapped_column(ForeignKey("city.id"))
     address: Mapped[str | None] = mapped_column(Text)
     site_url: Mapped[str | None] = mapped_column(Text)
+    city: Mapped[City] = relationship()
     categories: Mapped[list[Category]] = relationship(secondary=venue_category)
-    events: Mapped[list["Event"]] = relationship(back_populates="venue")
+    events: Mapped[list["Event"]] = relationship(back_populates="venue", passive_deletes=True)
 
 
 class Event(Base):
@@ -68,7 +69,7 @@ class Event(Base):
     venue: Mapped[Venue] = relationship(back_populates="events")
     categories: Mapped[list[Category]] = relationship(secondary=event_category)
     translations: Mapped[list["EventTranslation"]] = relationship(
-        back_populates="event", cascade="all, delete-orphan")
+        back_populates="event", cascade="all, delete-orphan", passive_deletes=True)
 
 
 class EventTranslation(Base):
@@ -85,10 +86,11 @@ class EventTranslation(Base):
 class List(Base):
     __tablename__ = "list"
     id: Mapped[int] = mapped_column(primary_key=True)
-    slug: Mapped[str] = mapped_column(String, unique=True)
-    name: Mapped[str] = mapped_column(String)
-    author: Mapped[str] = mapped_column(String, default="cartelera")
+    slug: Mapped[str] = mapped_column(Text, unique=True)
+    name: Mapped[str] = mapped_column(Text)
+    author: Mapped[str] = mapped_column(Text, default="cartelera")
     city_id: Mapped[int] = mapped_column(ForeignKey("city.id"))
+    city: Mapped[City] = relationship()
 
 
 class ListVenue(Base):
@@ -97,5 +99,5 @@ class ListVenue(Base):
     list_id: Mapped[int] = mapped_column(ForeignKey("list.id", ondelete="CASCADE"))
     venue_id: Mapped[int] = mapped_column(ForeignKey("venue.id", ondelete="CASCADE"))
     whitelist_category_id: Mapped[int | None] = mapped_column(
-        ForeignKey("category.id", ondelete="CASCADE"), nullable=True
+        ForeignKey("category.id", ondelete="CASCADE")
     )
