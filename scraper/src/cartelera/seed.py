@@ -1,6 +1,16 @@
 from __future__ import annotations
 from sqlalchemy.orm import Session
 from cartelera.models import City, Category, Venue, List, ListVenue
+from cartelera.scrapers import REGISTRY
+from cartelera.types import VenueDefinition
+# Importing each scraper module runs its register(...) call (populates REGISTRY).
+import cartelera.scrapers.jamboree  # noqa: F401
+import cartelera.scrapers.harlem_jazz_club  # noqa: F401
+import cartelera.scrapers.robadors  # noqa: F401
+import cartelera.scrapers.casa_figari  # noqa: F401
+import cartelera.scrapers.sala_beckett  # noqa: F401
+import cartelera.scrapers.big_bang  # noqa: F401
+import cartelera.scrapers.filmoteca  # noqa: F401
 
 CATEGORIES = [
     ("film", "Film"),
@@ -11,61 +21,62 @@ CATEGORIES = [
 ]
 
 
-def _get_or_create_list(session: Session, slug: str, name: str, city_id: int) -> List:
+def _get_or_create_city(session: Session, slug: str, name: str) -> City:
+    city = session.query(City).filter_by(slug=slug).one_or_none()
+    if not city:
+        city = City(slug=slug, name=name)
+        session.add(city)
+        session.flush()
+    return city
+
+
+def _get_or_create_category(session: Session, slug: str, name: str) -> Category:
+    cat = session.query(Category).filter_by(slug=slug).one_or_none()
+    if not cat:
+        cat = Category(slug=slug, name=name)
+        session.add(cat)
+        session.flush()
+    return cat
+
+
+def _get_or_create_list(session: Session, slug: str, city_id: int) -> List:
     lst = session.query(List).filter_by(slug=slug).one_or_none()
     if not lst:
-        lst = List(slug=slug, name=name, author="cartelera", city_id=city_id)
+        lst = List(slug=slug, name=slug.capitalize(), author="cartelera", city_id=city_id)
         session.add(lst)
         session.flush()
     return lst
 
 
-def _ensure_membership(session: Session, list_id: int, venue_id: int, whitelist_category_id: int | None) -> None:
-    existing = session.query(ListVenue).filter_by(
-        list_id=list_id, venue_id=venue_id, whitelist_category_id=whitelist_category_id
-    ).one_or_none()
+def _ensure_membership(
+    session: Session, list_id: int, venue_id: int, whitelist_category_id: int | None
+) -> None:
+    existing = (
+        session.query(ListVenue)
+        .filter_by(list_id=list_id, venue_id=venue_id, whitelist_category_id=whitelist_category_id)
+        .one_or_none()
+    )
     if not existing:
-        session.add(ListVenue(list_id=list_id, venue_id=venue_id,
-                              whitelist_category_id=whitelist_category_id))
+        session.add(ListVenue(list_id=list_id, venue_id=venue_id, whitelist_category_id=whitelist_category_id))
+
+
+def _upsert_venue(session: Session, defn: VenueDefinition, city_id: int, cats: dict[str, Category]) -> None:
+    venue = session.query(Venue).filter_by(slug=defn.slug).one_or_none()
+    if not venue:
+        venue = Venue(slug=defn.slug, name=defn.name, city_id=city_id, address=defn.address, site_url=defn.site_url)
+        session.add(venue)
+        session.flush()
+    venue.categories = [cats[s] for s in defn.category_slugs if s in cats]
+    for membership in defn.list_memberships:
+        lst = _get_or_create_list(session, membership.list_slug, city_id)
+        whitelist_id = cats[membership.whitelist_category_slug].id if membership.whitelist_category_slug else None
+        _ensure_membership(session, lst.id, venue.id, whitelist_id)
 
 
 def seed(session: Session) -> None:
-    """Idempotent seed of launch reference data for Barcelona."""
-    bcn = session.query(City).filter_by(slug="barcelona").one_or_none()
-    if not bcn:
-        bcn = City(slug="barcelona", name="Barcelona")
-        session.add(bcn)
-        session.flush()
-
-    cats: dict[str, Category] = {}
-    for slug, name in CATEGORIES:
-        c = session.query(Category).filter_by(slug=slug).one_or_none()
-        if not c:
-            c = Category(slug=slug, name=name)
-            session.add(c)
-            session.flush()
-        cats[slug] = c
-
-    # Jamboree is a multi-category venue: jazz concerts + club (+18 DJ) nights.
-    jamboree = session.query(Venue).filter_by(slug="jamboree").one_or_none()
-    if not jamboree:
-        jamboree = Venue(
-            slug="jamboree", name="Jamboree", city_id=bcn.id,
-            address="Plaça Reial, 17, 08002 Barcelona",
-            site_url="https://jamboreejazz.com",
-        )
-        session.add(jamboree)
-        session.flush()
-    # Keep the venue's category set current (idempotent).
-    jamboree.categories = [cats["jazz"], cats["club"]]
-
-    # cartelera-authored category lists. Jamboree is in both the jazz and club
-    # lists, each membership whitelisted to that category so a multi-category
-    # venue's events land in the right list.
-    jazz_list = _get_or_create_list(session, "jazz", "Jazz", bcn.id)
-    _ensure_membership(session, jazz_list.id, jamboree.id, cats["jazz"].id)
-
-    club_list = _get_or_create_list(session, "club", "Club", bcn.id)
-    _ensure_membership(session, club_list.id, jamboree.id, cats["club"].id)
-
+    """Idempotent seed: ensures city, categories, and all registered venues exist."""
+    bcn = _get_or_create_city(session, "barcelona", "Barcelona")
+    cats = {slug: _get_or_create_category(session, slug, name) for slug, name in CATEGORIES}
+    for _scraper, venue_def in REGISTRY.values():
+        _upsert_venue(session, venue_def, bcn.id, cats)
     session.commit()

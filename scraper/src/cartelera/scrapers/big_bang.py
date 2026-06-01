@@ -3,7 +3,7 @@ import datetime as dt
 import re
 
 from cartelera.scrapers import register
-from cartelera.types import ScrapedEvent
+from cartelera.types import ScrapedEvent, VenueDefinition, ListMembership
 
 # Big Bang Bar (El Raval, Barcelona) has a fully static weekly schedule — every
 # week repeats the same programme. The homepage server-renders plain text that
@@ -75,4 +75,18 @@ class BigBangBarScraper:
         return generate_events()
 
 
-register(BigBangBarScraper())
+register(
+    scraper=BigBangBarScraper(),
+    venue=VenueDefinition(
+        slug="big-bang-bar",
+        name="Big Bang Bar",
+        city_slug="barcelona",
+        address="Carrer de la Botella, 7, El Raval, 08001 Barcelona",
+        site_url="https://bigbangbar.wixsite.com/bigbang",
+        category_slugs=["jazz", "club"],
+        list_memberships=[
+            ListMembership(list_slug="jazz", whitelist_category_slug="jazz"),
+            ListMembership(list_slug="club", whitelist_category_slug="club"),
+        ],
+    ),
+)

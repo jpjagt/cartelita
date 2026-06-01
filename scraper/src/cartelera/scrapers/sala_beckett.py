@@ -6,7 +6,7 @@ import httpx
 from bs4 import BeautifulSoup, Tag
 
 from cartelera.scrapers import register
-from cartelera.types import ScrapedEvent
+from cartelera.types import ScrapedEvent, VenueDefinition, ListMembership
 
 # Sala Beckett (Poblenou, Barcelona) is a WordPress theatre site. There is NO
 # usable JSON-LD event data — the only `application/ld+json` block is Yoast SEO
@@ -256,4 +256,17 @@ class SalaBeckettScraper:
         return events
 
 
-register(SalaBeckettScraper())
+register(
+    scraper=SalaBeckettScraper(),
+    venue=VenueDefinition(
+        slug="sala-beckett",
+        name="Sala Beckett",
+        city_slug="barcelona",
+        address="C/ de Pere IV, 228-232, 08005 Barcelona",
+        site_url="https://www.salabeckett.cat",
+        category_slugs=["theater"],
+        list_memberships=[
+            ListMembership(list_slug="theater"),
+        ],
+    ),
+)

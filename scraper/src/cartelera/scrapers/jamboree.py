@@ -9,7 +9,7 @@ import httpx
 from bs4 import BeautifulSoup, Tag
 
 from cartelera.scrapers import register
-from cartelera.types import ScrapedEvent, ScrapedTranslation
+from cartelera.types import ScrapedEvent, ScrapedTranslation, VenueDefinition, ListMembership
 
 # The list view renders rich article cards (title, price, genre tags, detail
 # link) for BOTH the Concerts and Disco sections in one page — far more complete
@@ -275,4 +275,18 @@ class JamboreeScraper:
         return events
 
 
-register(JamboreeScraper())
+register(
+    scraper=JamboreeScraper(),
+    venue=VenueDefinition(
+        slug="jamboree",
+        name="Jamboree",
+        city_slug="barcelona",
+        address="Plaça Reial, 17, 08002 Barcelona",
+        site_url="https://jamboreejazz.com",
+        category_slugs=["jazz", "club"],
+        list_memberships=[
+            ListMembership(list_slug="jazz", whitelist_category_slug="jazz"),
+            ListMembership(list_slug="club", whitelist_category_slug="club"),
+        ],
+    ),
+)

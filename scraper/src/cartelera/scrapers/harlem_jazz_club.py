@@ -7,7 +7,7 @@ import httpx
 from bs4 import BeautifulSoup, Tag
 
 from cartelera.scrapers import register
-from cartelera.types import ScrapedEvent
+from cartelera.types import ScrapedEvent, VenueDefinition, ListMembership
 
 # Harlem Jazz Club runs WordPress + EventON. The `/conciertos/` page server-renders
 # the WHOLE upcoming agenda (currently ~42 events across several months) as EventON
@@ -192,4 +192,17 @@ class HarlemJazzClubScraper:
         return parse_agenda(html)
 
 
-register(HarlemJazzClubScraper())
+register(
+    scraper=HarlemJazzClubScraper(),
+    venue=VenueDefinition(
+        slug="harlem-jazz-club",
+        name="Harlem Jazz Club",
+        city_slug="barcelona",
+        address="Carrer de la Comtessa de Sobradiel, 8, 08002 Barcelona",
+        site_url="https://www.harlemjazzclub.es",
+        category_slugs=["jazz"],
+        list_memberships=[
+            ListMembership(list_slug="jazz"),
+        ],
+    ),
+)

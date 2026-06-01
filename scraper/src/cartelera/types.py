@@ -1,6 +1,7 @@
 from __future__ import annotations
 import datetime as dt
 from dataclasses import dataclass, field
+from pydantic import BaseModel
 
 
 @dataclass
@@ -45,3 +46,18 @@ class ScrapeResult:
     ok: bool
     events: list[ScrapedEvent] = field(default_factory=list)
     error: str | None = None
+
+
+class ListMembership(BaseModel):
+    list_slug: str
+    whitelist_category_slug: str | None = None
+
+
+class VenueDefinition(BaseModel):
+    slug: str
+    name: str
+    city_slug: str
+    address: str | None = None
+    site_url: str | None = None
+    category_slugs: list[str] = []
+    list_memberships: list[ListMembership] = []

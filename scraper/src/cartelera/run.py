@@ -8,7 +8,14 @@ from cartelera.seed import seed as seed_db
 from cartelera.upsert import upsert_venue_events
 from cartelera.types import ScrapeResult
 from cartelera.scrapers import REGISTRY
-import cartelera.scrapers.jamboree  # noqa: F401  (registers the scraper)
+# Importing each scraper module runs its register(...) call (populates REGISTRY).
+import cartelera.scrapers.jamboree  # noqa: F401
+import cartelera.scrapers.harlem_jazz_club  # noqa: F401
+import cartelera.scrapers.robadors  # noqa: F401
+import cartelera.scrapers.casa_figari  # noqa: F401
+import cartelera.scrapers.sala_beckett  # noqa: F401
+import cartelera.scrapers.big_bang  # noqa: F401
+import cartelera.scrapers.filmoteca  # noqa: F401
 
 logger = logging.getLogger(__name__)
 
@@ -16,7 +23,7 @@ logger = logging.getLogger(__name__)
 def run_one(session: Session, venue_slug: str) -> ScrapeResult:
     """Scrape + upsert a single venue in its own transaction.
     On any failure, roll back so the venue's existing rows are left untouched."""
-    scraper = REGISTRY[venue_slug]
+    scraper, _ = REGISTRY[venue_slug]
     try:
         events = scraper.scrape()
         upsert_venue_events(session, venue_slug, events)
@@ -61,6 +68,7 @@ def main() -> int:
             print("seeded")
             return 0
         # cmd == "run"
+        seed_db(session)
         target = args[1] if len(args) > 1 else "all"
         if target != "all" and target not in REGISTRY:
             print(f"unknown venue slug {target!r}; known: {sorted(REGISTRY)}", file=sys.stderr)

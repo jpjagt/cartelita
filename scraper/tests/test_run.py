@@ -23,7 +23,7 @@ def test_successful_run_writes_events(session, monkeypatch):
     seed(session)
     ev = ScrapedEvent(title="X", start_date=dt.date(2026, 6, 2),
                       source_url="https://x/", category_slugs=["jazz"], external_id="1")
-    monkeypatch.setitem(REGISTRY, "jamboree", _FakeScraper(events=[ev]))
+    monkeypatch.setitem(REGISTRY, "jamboree", (_FakeScraper(events=[ev]), REGISTRY["jamboree"][1]))
     result = run_one(session, "jamboree")
     assert result.ok and len(result.events) == 1
     assert session.query(Event).count() == 1
@@ -33,10 +33,11 @@ def test_failing_scraper_is_isolated_and_keeps_existing_data(session, monkeypatc
     seed(session)
     good = ScrapedEvent(title="Old", start_date=dt.date(2026, 6, 2),
                         source_url="https://x/", category_slugs=["jazz"], external_id="1")
-    monkeypatch.setitem(REGISTRY, "jamboree", _FakeScraper(events=[good]))
+    jamboree_venue = REGISTRY["jamboree"][1]
+    monkeypatch.setitem(REGISTRY, "jamboree", (_FakeScraper(events=[good]), jamboree_venue))
     run_one(session, "jamboree")
     # now the venue's scraper breaks
-    monkeypatch.setitem(REGISTRY, "jamboree", _FakeScraper(boom=True))
+    monkeypatch.setitem(REGISTRY, "jamboree", (_FakeScraper(boom=True), jamboree_venue))
     result = run_one(session, "jamboree")
     assert not result.ok
     assert "site changed" in result.error
@@ -57,6 +58,8 @@ def test_run_all_isolates_failures_across_venues(session, monkeypatch):
                 raise RuntimeError("boom")
             return self._events
 
+    from cartelera.types import VenueDefinition
+
     good_ev = ScrapedEvent(title="Good", start_date=dt.date(2026, 6, 2),
                            source_url="https://x/", category_slugs=["jazz"], external_id="1")
     # Replace REGISTRY with two venues: jamboree (good) + a broken one.
@@ -69,9 +72,11 @@ def test_run_all_isolates_failures_across_venues(session, monkeypatch):
     session.add(Venue(slug="broken-venue", name="Broken", city_id=bcn.id))
     session.commit()
 
+    jamboree_venue = REGISTRY["jamboree"][1]
+    broken_venue = VenueDefinition(slug="broken-venue", name="Broken", city_slug="barcelona")
     monkeypatch.setattr("cartelera.run.REGISTRY", {
-        "jamboree": _Fake("jamboree", events=[good_ev]),
-        "broken-venue": _Fake("broken-venue", boom=True),
+        "jamboree": (_Fake("jamboree", events=[good_ev]), jamboree_venue),
+        "broken-venue": (_Fake("broken-venue", boom=True), broken_venue),
     })
     results = run_all(session)
     by_slug = {r.venue_slug: r for r in results}

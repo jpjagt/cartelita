@@ -11,7 +11,7 @@ from bs4 import BeautifulSoup
 from PIL import Image
 
 from cartelera.scrapers import register
-from cartelera.types import ScrapedEvent
+from cartelera.types import ScrapedEvent, VenueDefinition, ListMembership
 
 # Casa Figari (Gràcia, Barcelona) is a Squarespace site that publishes its
 # weekly agenda exclusively as a single image (figari+2026+feed.png / WebP).
@@ -366,4 +366,18 @@ class CasaFigariScraper:
         return parse_schedule(image_bytes)
 
 
-register(CasaFigariScraper())
+register(
+    scraper=CasaFigariScraper(),
+    venue=VenueDefinition(
+        slug="casa-figari",
+        name="Casa Figari",
+        city_slug="barcelona",
+        address="Carrer Torrent de l'Olla, 141, 08012 Barcelona",
+        site_url="https://www.casafigari.com",
+        category_slugs=["jazz", "club"],
+        list_memberships=[
+            ListMembership(list_slug="jazz", whitelist_category_slug="jazz"),
+            ListMembership(list_slug="club", whitelist_category_slug="club"),
+        ],
+    ),
+)
