@@ -4,12 +4,13 @@ import { LOCALES, type Locale } from "@/lib/types";
 import { t, categoryName } from "@/i18n";
 
 export async function getStaticPaths() {
-  return LOCALES.map((locale) => ({ params: { locale } }));
+  const lists = await getCategoryLists();
+  return LOCALES.map((locale) => ({ params: { locale }, props: { lists } }));
 }
 
 const locale = Astro.params.locale as Locale;
 const strings = t(locale);
-const lists = await getCategoryLists();
+const { lists } = Astro.props;
 ---
 <html lang={locale}>
   <head><meta charset="utf-8" /><title>{strings.siteTitle}</title>
@@ -17,12 +18,17 @@ const lists = await getCategoryLists();
   </head>
   <body>
     <header><h1>{strings.siteTitle}</h1></header>
-    <nav>{lists.map((l) => <a href={`/${locale}/${l.slug}`}>{categoryName(locale, l.slug)}</a>)}</nav>
-    <p class="langs">{LOCALES.map((lc) => <a href={`/${lc}`}>{lc.toUpperCase()}</a>)}</p>
+    <main>
+      <nav>{lists.map((l) => <a href={`/${locale}/${l.slug}`}>{categoryName(locale, l.slug)}</a>)}</nav>
+      <p class="langs">{LOCALES.map((lc) => (
+        <a href={`/${lc}`} aria-current={lc === locale ? "page" : undefined}>{lc.toUpperCase()}</a>
+      ))}</p>
+    </main>
     <style>
       body { font-family: system-ui, sans-serif; max-width: 60rem; margin: 2rem auto; padding: 0 1rem; }
       nav a { margin-right: 1rem; font-size: 1.1rem; }
       .langs a { margin-right: 0.5rem; color: #888; font-size: 0.85rem; }
+      .langs a[aria-current="page"] { color: #000; font-weight: 600; }
     </style>
   </body>
 </html>

@@ -39,5 +39,6 @@ export function categoryName(locale: Locale, slug: string): string {
 
 /** BCP-47 tag for Intl/date formatting. */
 export function localeTag(locale: Locale): string {
-  return { ca: "ca-ES", es: "es-ES", en: "en-GB" }[locale];
+  const tags = { ca: "ca-ES", es: "es-ES", en: "en-GB" } as const;
+  return tags[locale];
 }
