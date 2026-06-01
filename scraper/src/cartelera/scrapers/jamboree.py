@@ -20,6 +20,7 @@ def _strip_html_entities(text: str) -> str:
     return BeautifulSoup(unescaped, "html.parser").get_text(separator=" ", strip=True)
 
 
+# The site emits local (Barcelona) wall-clock time; we keep the naive local time and drop the offset. If the source ever switches to UTC, this assumption breaks.
 def _parse_iso(value: str) -> tuple[dt.date, dt.time | None]:
     """Parse ISO-8601 datetime string (with or without time part).
 
@@ -33,6 +34,8 @@ def _parse_iso(value: str) -> tuple[dt.date, dt.time | None]:
     return dt.date.fromisoformat(value), None
 
 
+# Returns the first price found. Multi-tier descriptions (e.g. "10€ / 15€") keep
+# only the first tier — acceptable for MVP.
 def _extract_price(description: str) -> str | None:
     """Try to pull a price expression from plain-text description."""
     m = re.search(r"(\d+\s*€|\€\s*\d+)", description)
@@ -45,7 +48,7 @@ def _extract_external_id(url: str) -> str | None:
     return m.group(1) if m else None
 
 
-def parse_agenda(html: str, today: dt.date | None = None) -> list[ScrapedEvent]:  # noqa: ARG001
+def parse_agenda(html: str) -> list[ScrapedEvent]:
     """Parse the Jamboree agenda page and return a list of ScrapedEvents.
 
     Uses the JSON-LD ``application/ld+json`` block that the WordPress/The Events
@@ -103,6 +106,13 @@ def parse_agenda(html: str, today: dt.date | None = None) -> list[ScrapedEvent]:
                 end_date, end_time = _parse_iso(raw_end)
             except (ValueError, AttributeError):
                 pass
+
+        # WordPress / The Events Calendar uses startDate=...T00:00:00 +
+        # endDate=...T23:59:59 as a sentinel meaning "time not set".
+        # Treat this as genuinely unknown time rather than midnight.
+        if start_time == dt.time(0, 0) and end_time == dt.time(23, 59, 59):
+            start_time = None
+            end_time = None
 
         source_url = item.get("url") or AGENDA_URL
         image_url: str | None = item.get("image") or None
