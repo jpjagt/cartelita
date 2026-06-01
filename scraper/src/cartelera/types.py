@@ -22,8 +22,13 @@ class ScrapedEvent:
     source_url: str
     category_slugs: list[str]            # one or more
     start_time: dt.time | None = None
+    start_times: list[dt.time] = field(default_factory=list)  # all sessions; start_time is the earliest
     end_date: dt.date | None = None
     end_time: dt.time | None = None
+    # Price convention: None = unknown, "free" = no admission cost,
+    # "sold-out" = tickets exhausted, otherwise a concise display string
+    # (e.g. "10€", "10–22€"). Skip member/discount tiers; show a range
+    # only when tiers differ meaningfully.
     price: str | None = None
     description: str | None = None
     image_url: str | None = None
