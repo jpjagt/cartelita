@@ -1,6 +1,8 @@
 import datetime as dt
 from pathlib import Path
 
+import pytest
+
 from cartelera.scrapers.sala_beckett import parse_agenda
 
 FIXTURES = Path(__file__).parent / "fixtures"
@@ -130,3 +132,40 @@ def test_closed_and_private_activities_are_excluded():
     )
     assert "tancada al públic" not in blob
     assert "exclusiva per als personatges" not in blob
+
+
+JAZZ_CICLE_URL = "https://www.salabeckett.cat/es/activitat-resta/cicle-de-jazz-el-menjador-de-la-beckett/"
+
+
+def test_jazz_hour_generates_sundays_in_season():
+    from cartelera.scrapers.sala_beckett import generate_jazz_hour_events
+    today = dt.date(2026, 6, 1)  # Monday — next Sunday is June 7
+    events = generate_jazz_hour_events(today=today)
+    assert events, "expected at least one Sunday in the 14-day window"
+    for ev in events:
+        assert ev.start_date.weekday() == 6, "must be Sunday"
+        assert ev.start_date.month != 8, "must not be in August"
+        assert ev.start_time == dt.time(12, 0)
+        assert ev.end_time == dt.time(13, 0)
+        assert ev.category_slugs == ["jazz"]
+        assert ev.price == "free"
+        assert ev.source_url == JAZZ_CICLE_URL
+        assert ev.external_id == f"sala-beckett-jazz-menjador-{ev.start_date.isoformat()}"
+
+
+def test_jazz_hour_skips_august():
+    from cartelera.scrapers.sala_beckett import generate_jazz_hour_events
+    today = dt.date(2026, 7, 28)  # 4 days before August; Sundays in window: Aug 2, Aug 9
+    events = generate_jazz_hour_events(today=today)
+    assert all(ev.start_date.month != 8 for ev in events)
+
+
+def test_jazz_hour_raises_on_changed_assumption():
+    from cartelera.scrapers.sala_beckett import assert_jazz_cicle_season
+    with pytest.raises(ValueError, match="assumption changed"):
+        assert_jazz_cicle_season("This page no longer mentions the season.")
+
+
+def test_jazz_hour_passes_with_valid_page():
+    from cartelera.scrapers.sala_beckett import assert_jazz_cicle_season
+    assert_jazz_cicle_season("El cicle s'ofereix desde septiembre hasta julio cada any.")

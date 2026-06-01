@@ -19,6 +19,8 @@ ACTIVITATS_URL = "https://www.salabeckett.cat/activitats/"
 LIST_URLS = (ESPECTACLES_URL, ACTIVITATS_URL)
 BASE_URL = "https://www.salabeckett.cat"
 VENUE_SLUG = "sala-beckett"
+JAZZ_CICLE_URL = "https://www.salabeckett.cat/es/activitat-resta/cicle-de-jazz-el-menjador-de-la-beckett/"
+LOOKAHEAD_DAYS = 14
 
 # Sala Beckett is a theatre / performing-arts venue: every event maps to
 # `theater`. Should the venue ever programme a music concert, the card's
@@ -56,6 +58,39 @@ def _parse_price(raw: str | None) -> str | None:
     if nums:
         return f"{max(nums)}€"
     return None
+
+
+def assert_jazz_cicle_season(html: str) -> None:
+    """Raise if the Jazz cicle page no longer states the expected season."""
+    if "desde septiembre hasta julio" not in html.lower():
+        raise ValueError(
+            "Sala Beckett Jazz cicle assumption changed — check season dates at "
+            f"{JAZZ_CICLE_URL}"
+        )
+
+
+def generate_jazz_hour_events(today: dt.date | None = None) -> list[ScrapedEvent]:
+    """Emit Sunday Jazz Hour events for the next LOOKAHEAD_DAYS days (skipping August)."""
+    if today is None:
+        today = dt.date.today()
+    events: list[ScrapedEvent] = []
+    for offset in range(LOOKAHEAD_DAYS):
+        date = today + dt.timedelta(days=offset)
+        if date.weekday() != 6 or date.month == 8:
+            continue
+        events.append(
+            ScrapedEvent(
+                title="Cicle de Jazz — El Menjador de la Beckett",
+                start_date=date,
+                start_time=dt.time(12, 0),
+                end_time=dt.time(13, 0),
+                source_url=JAZZ_CICLE_URL,
+                category_slugs=["jazz"],
+                price="free",
+                external_id=f"sala-beckett-jazz-menjador-{date.isoformat()}",
+            )
+        )
+    return events
 
 
 def _normalize_url(url: str) -> str:
@@ -214,6 +249,10 @@ class SalaBeckettScraper:
                     continue
                 seen.add(ev.source_url)
                 events.append(ev)
+        # Jazz Hour: fetch cicle page to assert assumption, then emit static events.
+        cicle_html = httpx.get(JAZZ_CICLE_URL, follow_redirects=True, timeout=30).text
+        assert_jazz_cicle_season(cicle_html)
+        events.extend(generate_jazz_hour_events())
         return events
 
 
