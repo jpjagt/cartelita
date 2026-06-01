@@ -1,0 +1,18 @@
+---
+import type { AgendaDay, Locale } from "@/lib/types";
+import { localeTag } from "@/i18n";
+import EventRow from "@/components/EventRow.astro";
+interface Props { day: AgendaDay; locale: Locale }
+const { day, locale } = Astro.props;
+const heading = new Date(day.date + "T00:00:00").toLocaleDateString(localeTag(locale), {
+  weekday: "long", day: "numeric", month: "long",
+});
+---
+<section>
+  <h2>{heading}</h2>
+  <table><tbody>{day.events.map((e) => <EventRow event={e} />)}</tbody></table>
+</section>
+<style>
+  h2 { background: #e8e8e8; padding: 0.4rem 0.75rem; font-size: 1rem; margin: 1.5rem 0 0; }
+  table { width: 100%; border-collapse: collapse; }
+</style>

@@ -1,0 +1,35 @@
+---
+import { getCategoryLists, getEventsForList } from "@/lib/queries";
+import { groupEventsByDay } from "@/lib/agenda";
+import { LOCALES, type Locale } from "@/lib/types";
+import { t, categoryName } from "@/i18n";
+import AgendaDay from "@/components/AgendaDay.astro";
+
+export async function getStaticPaths() {
+  const lists = await getCategoryLists();
+  return LOCALES.flatMap((locale) =>
+    lists.map((l) => ({ params: { locale, list: l.slug } })));
+}
+
+const locale = Astro.params.locale as Locale;
+const list = Astro.params.list as string;
+const strings = t(locale);
+const name = categoryName(locale, list);
+const events = await getEventsForList(list, locale);
+const days = groupEventsByDay(events);
+---
+<html lang={locale}>
+  <head><meta charset="utf-8" /><title>{name} — {strings.siteTitle}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  </head>
+  <body>
+    <header><a href={`/${locale}`}>{strings.back}</a><h1>{name}</h1></header>
+    {days.length === 0 && <p>{strings.noEvents}</p>}
+    {days.map((d) => <AgendaDay day={d} locale={locale} />)}
+    <style>
+      body { font-family: system-ui, sans-serif; max-width: 60rem; margin: 2rem auto; padding: 0 1rem; }
+      header a { color: #888; text-decoration: none; }
+      h1 { margin: 0.25rem 0 0; }
+    </style>
+  </body>
+</html>
