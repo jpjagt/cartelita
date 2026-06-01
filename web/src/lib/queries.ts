@@ -5,6 +5,7 @@ interface EventRow {
   id: number;
   start_date: Date | string;
   start_time: string | null;
+  start_times: string[] | null;
   recurrence_hint: string | null;
   venue_name: string;
   price: string | null;
@@ -27,7 +28,7 @@ export async function getEventsForList(listSlug: string, locale: Locale): Promis
   // whitelist, from today onward, chronological. Content is resolved per locale:
   // the matching event_translation if present, else the canonical event fields.
   const rows = await sql<EventRow[]>`
-    SELECT DISTINCT e.id, e.start_date, e.start_time, e.recurrence_hint,
+    SELECT DISTINCT e.id, e.start_date, e.start_time, e.start_times, e.recurrence_hint,
                     v.name AS venue_name, e.price,
                     COALESCE(t.title, e.title)            AS title,
                     COALESCE(t.source_url, e.source_url)  AS source_url
@@ -46,14 +47,35 @@ export async function getEventsForList(listSlug: string, locale: Locale): Promis
       )
     ORDER BY e.start_date, e.start_time NULLS FIRST, e.id`;
 
-  return rows.map((r) => ({
-    id: r.id,
-    title: r.title,
-    startDate: toDateStr(r.start_date),
-    startTime: r.start_time ? String(r.start_time).slice(0, 5) : null,
-    venueName: r.venue_name,
-    price: r.price,
-    sourceUrl: r.source_url,
-    recurrenceHint: r.recurrence_hint,
-  }));
+  // Expand one agenda row per showtime: an event with start_times
+  // [19:00, 21:00] renders as two lines. Events with no times yield a single
+  // timeless row. start_times is always populated when start_time is set, but
+  // fall back to the scalar (then null) to stay robust to older rows.
+  const expanded = rows.flatMap((r) => {
+    const times = r.start_times?.length
+      ? r.start_times
+      : r.start_time
+        ? [r.start_time]
+        : [null];
+    return times.map((time) => ({
+      id: r.id,
+      title: r.title,
+      startDate: toDateStr(r.start_date),
+      startTime: time ? String(time).slice(0, 5) : null,
+      venueName: r.venue_name,
+      price: r.price,
+      sourceUrl: r.source_url,
+      recurrenceHint: r.recurrence_hint,
+    }));
+  });
+
+  // Re-sort by (date, time): a multi-showtime event's later sessions must
+  // interleave with other events by their real time, not stay pinned to the
+  // event's earliest-session ordering position. Timeless rows sort first.
+  expanded.sort(
+    (a, b) =>
+      a.startDate.localeCompare(b.startDate) ||
+      (a.startTime ?? "").localeCompare(b.startTime ?? ""),
+  );
+  return expanded;
 }

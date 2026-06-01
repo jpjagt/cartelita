@@ -33,6 +33,11 @@ class ScrapedEvent:
     price: str | None = None
     description: str | None = None
     image_url: str | None = None
+    # Stable, per-OCCURRENCE dedup key within a venue: the upsert dedups on
+    # (venue, external_id) and one Event row is one occurrence. If the venue's
+    # natural id is coarser than an occurrence (e.g. a film slug that screens on
+    # many dates), qualify it with date+time — a bare coarser id silently collapses
+    # occurrences (upsert raises if two events in one batch share one).
     external_id: str | None = None
     recurrence_hint: str | None = None
     annotations: list[str] = field(default_factory=list)  # free-form tags/labels

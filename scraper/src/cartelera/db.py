@@ -2,6 +2,7 @@ import os
 from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import sessionmaker, Session
+from decouple import config
 
 _PSYCOPG_PREFIX = "postgresql+psycopg://"
 
@@ -12,9 +13,7 @@ def _to_psycopg(url: str) -> str:
 
 
 def _url() -> str:
-    url = os.environ.get("DATABASE_URL")
-    if not url:
-        raise RuntimeError("DATABASE_URL is not set")
+    url = config("DATABASE_URL")
     return _to_psycopg(url)
 
 

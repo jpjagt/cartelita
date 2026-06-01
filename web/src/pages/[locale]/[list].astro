@@ -1,22 +1,25 @@
 ---
-import { getCategoryLists, getEventsForList } from "@/lib/queries";
-import { groupEventsByDay } from "@/lib/agenda";
-import { LOCALES, type Locale } from "@/lib/types";
-import { t, categoryName } from "@/i18n";
-import AgendaDay from "@/components/AgendaDay.astro";
+import { getCategoryLists, getEventsForList } from "@/lib/queries"
+import { groupEventsByDay } from "@/lib/agenda"
+import { LOCALES, type Locale } from "@/lib/types"
+import { t, categoryName } from "@/i18n"
+import AgendaDay from "@/components/AgendaDay.astro"
 
 export async function getStaticPaths() {
-  const lists = await getCategoryLists();
-  return LOCALES.flatMap((locale) =>
-    lists.map((l) => ({ params: { locale, list: l.slug } })));
+  const lists = await getCategoryLists()
+  const results = LOCALES.flatMap((locale) =>
+    lists.map((l) => ({ params: { locale, list: l.slug } })),
+  )
+
+  return results
 }
 
-const locale = Astro.params.locale as Locale;
-const list = Astro.params.list as string;
-const strings = t(locale);
-const name = categoryName(locale, list);
-const events = await getEventsForList(list, locale);
-const days = groupEventsByDay(events);
+const locale = Astro.params.locale as Locale
+const list = Astro.params.list as string
+const strings = t(locale)
+const name = categoryName(locale, list)
+const events = await getEventsForList(list, locale)
+const days = groupEventsByDay(events)
 ---
 <html lang={locale}>
   <head><meta charset="utf-8" /><title>{name} — {strings.siteTitle}</title>

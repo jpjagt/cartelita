@@ -8,6 +8,13 @@ keeps the MVP honest about what its foundations should not preclude. See
 Each item notes *why it's deferred* and *what foundation already supports it*, so
 we resist building it early but don't accidentally design it out.
 
+## Scraping
+
+- It would be great to be able to scrape Instagram at some point.
+  - *Deferred because:* more complex scraping functionality (fetch IG posts, image recognition, no guaranteed clear venue identification).
+  - *Foundation:* none
+  - note: bigbangbar (jazz) has sparse info on their website (current source), but more on their IG.
+
 ## Personalization (account-free)
 
 - **Favorites + "my list"** — favorite venues (localStorage, no backend), and a

@@ -59,7 +59,8 @@ class Event(Base):
     description: Mapped[str | None] = mapped_column(Text)
     image_url: Mapped[str | None] = mapped_column(Text)
     start_date: Mapped[dt.date] = mapped_column(Date)
-    start_time: Mapped[dt.time | None] = mapped_column(Time)
+    start_time: Mapped[dt.time | None] = mapped_column(Time)  # earliest session, for ordering
+    start_times: Mapped[list[dt.time]] = mapped_column(ARRAY(Time), server_default="{}")
     end_date: Mapped[dt.date | None] = mapped_column(Date)
     end_time: Mapped[dt.time | None] = mapped_column(Time)
     price: Mapped[str | None] = mapped_column(Text)

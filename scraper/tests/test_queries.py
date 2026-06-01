@@ -31,27 +31,29 @@ def test_per_venue_whitelist_filters_to_one_category(session):
     """A multi-category venue in a list with a film whitelist shows only its film
     events, not its expo events. This is the core multi-category separability."""
     seed(session)
-    # Build a multi-category venue (film + theater) and a 'film' list whitelisting film.
+    # Build a synthetic multi-category venue (film + theater) in a dedicated list
+    # whitelisting film — distinct from the seeded filmoteca/film entries so the
+    # test stays independent of what seed() now creates.
     bcn = session.query(City).filter_by(slug="barcelona").one()
     film = session.query(Category).filter_by(slug="film").one()
     theater = session.query(Category).filter_by(slug="theater").one()
-    filmoteca = Venue(slug="filmoteca", name="Filmoteca", city_id=bcn.id,
-                      categories=[film, theater])
-    session.add(filmoteca)
-    film_list = List(slug="film", name="Film", author="cartelera", city_id=bcn.id)
-    session.add(film_list)
+    multivenue = Venue(slug="multivenue", name="Multivenue", city_id=bcn.id,
+                       categories=[film, theater])
+    session.add(multivenue)
+    wl_list = List(slug="film-whitelist-test", name="Film WL", author="cartelera", city_id=bcn.id)
+    session.add(wl_list)
     session.flush()
-    session.add(ListVenue(list_id=film_list.id, venue_id=filmoteca.id,
+    session.add(ListVenue(list_id=wl_list.id, venue_id=multivenue.id,
                           whitelist_category_id=film.id))
     session.commit()
 
-    upsert_venue_events(session, "filmoteca", [
+    upsert_venue_events(session, "multivenue", [
         _se("film1", dt.date(2026, 6, 3), cats=("film",)),
         _se("play1", dt.date(2026, 6, 4), cats=("theater",)),
     ])
     session.commit()
 
-    evs = events_for_list(session, "film", on_or_after=dt.date(2026, 6, 1))
+    evs = events_for_list(session, "film-whitelist-test", on_or_after=dt.date(2026, 6, 1))
     titles = [e.title for e in evs]
     assert titles == ["Efilm1"]  # the theater event is excluded by the whitelist
 

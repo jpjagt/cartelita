@@ -37,6 +37,24 @@ def upsert_venue_events(session: Session, venue_slug: str, scraped: list[Scraped
     Runs in the caller's transaction; caller commits/rolls back."""
     venue = session.scalars(select(Venue).where(Venue.slug == venue_slug)).one()
     cat_by_slug = {c.slug: c for c in session.scalars(select(Category)).all()}
+    # Guard: external_id is the authoritative per-OCCURRENCE dedup key, so two
+    # scraped events in one batch sharing one would silently overwrite each other
+    # (e.g. a venue keying on a film slug that screens many times — qualify the id
+    # with date+time). Fail loudly rather than collapse occurrences.
+    seen_ids: dict[str, ScrapedEvent] = {}
+    for se in scraped:
+        if se.external_id is None:
+            continue
+        clash = seen_ids.get(se.external_id)
+        if clash is not None:
+            raise ValueError(
+                f"duplicate external_id {se.external_id!r} within one scrape of "
+                f"venue {venue_slug!r}: {clash.title!r} ({clash.start_date} "
+                f"{clash.start_time}) and {se.title!r} ({se.start_date} "
+                f"{se.start_time}). external_id must be unique per occurrence; "
+                "qualify it with date/time if the venue's id is coarser."
+            )
+        seen_ids[se.external_id] = se
     written = 0
     for se in scraped:
         try:
@@ -54,7 +72,10 @@ def upsert_venue_events(session: Session, venue_slug: str, scraped: list[Scraped
             session.add(ev)
         ev.title = se.title
         ev.start_date = se.start_date
-        ev.start_time = se.start_time
+        ev.start_times = list(se.start_times)
+        # start_time is the earliest session (ordering key); fall back to the
+        # scalar the scraper set when no per-session list was provided.
+        ev.start_time = min(se.start_times) if se.start_times else se.start_time
         ev.end_date = se.end_date
         ev.end_time = se.end_time
         ev.price = se.price

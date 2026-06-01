@@ -84,6 +84,15 @@ See the Jamboree scraper's module docstring for the level of detail.
 - Honor the schema invariants: prices are **free text**, never parsed to numbers;
   the all-day sentinel (e.g. `00:00–23:59:59`) means "time unknown" → `None`;
   one row per occurrence (no recurrence expansion logic).
+- **`external_id` is the per-OCCURRENCE dedup key**, not "the venue's id for the
+  thing." The upsert dedups on `(venue, external_id)` and one Event row is one
+  occurrence — so if the venue's natural id is *coarser* than an occurrence (a
+  film slug that screens on many dates, a series id with multiple sessions),
+  qualify it with date+time (e.g. `f"{slug}@{date}T{HHMM}"`). A bare coarser id
+  silently collapses occurrences — later screenings overwrite earlier ones (this
+  was the Filmoteca trap: June 2's Spione/Wendy clobbered by later-week
+  screenings of the same films). The upsert now *raises* on duplicate
+  `external_id` within one batch, so a per-occurrence-uniqueness test catches it.
 
 ## Price convention
 
@@ -138,6 +147,9 @@ dropdb --if-exists cartelera_dev && createdb cartelera_dev
 export DATABASE_URL=postgresql://localhost:5432/cartelera_dev
 cd scraper && uv run cartelera migrate && uv run cartelera seed && uv run cartelera run <venue>
 # check category split + price coverage in psql
+# AND count events per day — they must match the live site. A row count far below
+# the live total means external_ids collapsed occurrences (see Phase 3); the
+# parser tests won't see this because the upsert is where it happens.
 cd ../web && DATABASE_URL=$DATABASE_URL pnpm build
 # confirm the venue's events render on the right category page(s) and NOT the wrong ones
 ```
@@ -152,3 +164,8 @@ Then run both test suites (`uv run pytest`, `pnpm test`) and commit.
 - **Title-keyword categorization.** "DJ" in the title is NOT a reliable club
   signal — two jazz concerts had a DJ warm-up. Use the venue's actual
   discriminator (the `+18` tag), not guesses about the title.
+- **Coarse `external_id` that collapses occurrences.** Filmoteca's film slug is
+  shared across every screening of a film; using it bare made the upsert overwrite
+  earlier screenings with later ones (115 occurrences → 66 rows). Qualify the id
+  with date+time. Invisible in parser tests — caught only by per-day DB counts and
+  the new duplicate-id guard in the upsert.
