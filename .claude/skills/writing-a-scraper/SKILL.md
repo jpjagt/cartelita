@@ -84,6 +84,16 @@ See the Jamboree scraper's module docstring for the level of detail.
 - Honor the schema invariants: prices are **free text**, never parsed to numbers;
   the all-day sentinel (e.g. `00:00–23:59:59`) means "time unknown" → `None`;
   one row per occurrence (no recurrence expansion logic).
+
+## Price convention
+
+The `price` field must be one of:
+- `None` — price unknown or not scrape-able
+- `"free"` — no admission cost (normalize locale-specific phrases: "Entrada gratuita", "Activitat gratuïta", "entrada libre", price==0, etc.)
+- `"sold-out"` — tickets exhausted (normalize: "s.o.", "Sold Out", etc.)
+- A concise display string — informative and short. Prefer a plain value like `"10€"` or `"10–22€"`. Skip member-tier and discount prices. Show a range only when price tiers differ meaningfully for the user.
+
+When a price string contains multiple values (member prices, promo discounts), extract the main/highest public price.
 - Tests assert real properties: parses many events; every event has a valid
   date/title/url and a known category; **price coverage** (e.g. ≥90% have a
   price — this is the test that would have caught the original bug); the category
