@@ -63,3 +63,35 @@ def test_translations_are_written_and_replaced(session):
     session.commit()
     rows = session.query(EventTranslation).all()
     assert len(rows) == 1 and rows[0].lang == "ca"
+
+
+def test_tier2_update_by_source_url_when_no_external_id(session):
+    seed(session)
+    # No external_id -> tier 2 matches on (venue_id, source_url).
+    upsert_venue_events(session, "jamboree", [
+        _ev(source_url="https://jamboreejazz.com/e/unique-1", title="First")])
+    session.commit()
+    upsert_venue_events(session, "jamboree", [
+        _ev(source_url="https://jamboreejazz.com/e/unique-1", title="Updated")])
+    session.commit()
+    rows = session.query(Event).all()
+    assert len(rows) == 1
+    assert rows[0].title == "Updated"
+
+
+def test_tier3_update_by_title_and_date_when_only_those_match(session):
+    seed(session)
+    # No external_id; different source_url each time -> tier 2 misses,
+    # tier 3 matches on (venue_id, title, start_date).
+    upsert_venue_events(session, "jamboree", [
+        _ev(source_url="https://jamboreejazz.com/e/a", title="Same Title",
+            start_date=dt.date(2026, 7, 1))])
+    session.commit()
+    upsert_venue_events(session, "jamboree", [
+        _ev(source_url="https://jamboreejazz.com/e/b", title="Same Title",
+            start_date=dt.date(2026, 7, 1), price="10€")])
+    session.commit()
+    rows = session.query(Event).all()
+    assert len(rows) == 1
+    assert rows[0].price == "10€"
+    assert rows[0].source_url == "https://jamboreejazz.com/e/b"  # tier-3 match updates fields

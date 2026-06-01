@@ -7,7 +7,14 @@ from cartelera.types import ScrapedEvent
 
 
 def _find_existing(session: Session, venue_id: int, se: ScrapedEvent) -> Event | None:
-    """Apply the dedup-key tiers in priority order."""
+    """Apply the dedup-key tiers in priority order.
+
+    Tiers 2 (source_url) and 3 (title + start_date) are best-effort fallbacks
+    for scrapers that cannot supply a stable external_id.  Tier 2 is only
+    reliable when the scraper emits a *per-event* URL — a shared listing URL
+    reused across many events will cause false matches.  Prefer supplying
+    external_id or a per-event source_url wherever possible.
+    """
     if se.external_id is not None:
         e = session.scalars(select(Event).where(
             Event.venue_id == venue_id, Event.external_id == se.external_id)).first()
@@ -32,13 +39,18 @@ def upsert_venue_events(session: Session, venue_slug: str, scraped: list[Scraped
     cat_by_slug = {c.slug: c for c in session.scalars(select(Category)).all()}
     written = 0
     for se in scraped:
-        cats = [cat_by_slug[s] for s in se.category_slugs]
+        try:
+            cats = [cat_by_slug[s] for s in se.category_slugs]
+        except KeyError as exc:
+            raise ValueError(
+                f"unknown category slug {exc.args[0]!r} for venue {venue_slug!r}; "
+                "seed the category before scraping"
+            ) from exc
         existing = _find_existing(session, venue.id, se)
         if existing:
             ev = existing
         else:
-            ev = Event(venue_id=venue.id, title=se.title,
-                       start_date=se.start_date, source_url=se.source_url)
+            ev = Event(venue_id=venue.id)
             session.add(ev)
         ev.title = se.title
         ev.start_date = se.start_date
