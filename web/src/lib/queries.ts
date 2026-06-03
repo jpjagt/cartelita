@@ -35,7 +35,7 @@ export async function getEventsForList(listSlug: string, locale: Locale): Promis
     FROM list l
     JOIN list_venue lv ON lv.list_id = l.id
     JOIN venue v ON v.id = lv.venue_id
-    JOIN event e ON e.venue_id = v.id AND e.start_date >= CURRENT_DATE
+    JOIN event e ON e.venue_id = v.id AND e.start_date >= CURRENT_DATE - INTERVAL '1 day'
     LEFT JOIN event_translation t ON t.event_id = e.id AND t.lang = ${locale}
     WHERE l.slug = ${listSlug}
       AND (

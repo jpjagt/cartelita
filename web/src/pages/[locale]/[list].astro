@@ -36,5 +36,31 @@ const days = groupEventsByDay(events)
       header a { color: #888; text-decoration: none; }
       h1 { margin: 0.25rem 0 0; }
     </style>
+    <script>
+      const now = new Date();
+      const hhmm = now.toTimeString().slice(0, 5);
+      const todayIso = now.toISOString().slice(0, 10);
+      const yesterdayIso = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1)
+        .toISOString().slice(0, 10);
+      const isPostMidnight = hhmm < "05:00";
+
+      document.querySelectorAll<HTMLElement>("section[data-date]").forEach((section) => {
+        const date = section.dataset.date ?? "";
+        if (date < yesterdayIso) {
+          // Fully past days always hidden.
+          section.hidden = true;
+        } else if (date === yesterdayIso && isPostMidnight) {
+          // Previous calendar day: only keep rows with post-midnight times (00:00–04:59).
+          section.querySelectorAll<HTMLElement>("tr[data-time]").forEach((row) => {
+            const t = row.dataset.time ?? "";
+            if (t === "" || t >= "05:00") row.hidden = true;
+          });
+          // Hide the whole section if nothing remains.
+          if (!section.querySelector("tr[data-time]:not([hidden])")) section.hidden = true;
+        } else if (date > todayIso) {
+          // Future days always visible.
+        }
+      });
+    </script>
   </body>
 </html>

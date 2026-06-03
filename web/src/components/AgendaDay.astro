@@ -8,7 +8,7 @@ const heading = new Date(day.date + "T00:00:00").toLocaleDateString(localeTag(lo
   weekday: "long", day: "numeric", month: "long",
 });
 ---
-<section>
+<section data-date={day.date}>
   <h2>{heading}</h2>
   <table>
     <thead class="sr-only">

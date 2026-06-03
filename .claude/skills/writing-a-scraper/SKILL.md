@@ -33,6 +33,15 @@ Invoke the `browser-use` skill. The fast path is `browser-use open <url>` then
 than guessing. (The daemon is occasionally flaky on first launch: if `open`
 times out, run `browser-use close` and retry.)
 
+**ALWAYS pass `--session <venue-slug>` on every `browser-use` command** (e.g.
+`browser-use --session palau-musica open <url>`). The default session is shared,
+so when multiple scraper agents run in parallel they hijack each other's tab — a
+navigation to your venue silently lands on another agent's page (this really
+happened: a Liceu recon kept "redirecting" to auditori/casabatllo/santamariadelmar
+because those were sibling agents' pages in the one shared session). A named
+session per venue gives you an isolated browser. Close it with
+`browser-use --session <venue-slug> close` when done (Phase 4).
+
 Work top-down:
 
 - **Homepage** → screenshot. How does the venue organize its programme? Section
@@ -124,7 +133,8 @@ browser**:
   same events.** They must agree. A mismatch here is a real bug (this is exactly
   how the Jamboree price/category bugs were caught and confirmed fixed).
 - Record the result + date in `SOURCE.md` ("last verified: YYYY-MM-DD").
-- `browser-use close` when done.
+- `browser-use --session <venue-slug> close` when done (close your own session,
+  not the shared default — sibling agents may still be using it).
 
 ## Phase 5 — Seed + categories
 
@@ -141,10 +151,12 @@ browser**:
 
 ## Phase 6 — Full cold-start end-to-end
 
-Prove it from scratch:
+Prove it from scratch — but **NEVER drop `cartelera_dev`**: that is the user's real
+local dev database, not a throwaway. Use a dedicated, clearly-named scratch DB for
+the cold-start so you never touch the user's data. (`migrate` auto-creates the DB
+if it doesn't exist, so no manual `createdb` is needed.)
 ```bash
-dropdb --if-exists cartelera_dev && createdb cartelera_dev
-export DATABASE_URL=postgresql://localhost:5432/cartelera_dev
+export DATABASE_URL=postgresql://localhost:5432/cartelera_coldstart
 cd scraper && uv run cartelera migrate && uv run cartelera seed && uv run cartelera run <venue>
 # check category split + price coverage in psql
 # AND count events per day — they must match the live site. A row count far below
@@ -152,6 +164,7 @@ cd scraper && uv run cartelera migrate && uv run cartelera seed && uv run cartel
 # parser tests won't see this because the upsert is where it happens.
 cd ../web && DATABASE_URL=$DATABASE_URL pnpm build
 # confirm the venue's events render on the right category page(s) and NOT the wrong ones
+dropdb --if-exists cartelera_coldstart   # the scratch DB is yours to drop; cartelera_dev is NOT
 ```
 Then run both test suites (`uv run pytest`, `pnpm test`) and commit.
 

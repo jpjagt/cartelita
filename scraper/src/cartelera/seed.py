@@ -11,6 +11,22 @@ import cartelera.scrapers.casa_figari  # noqa: F401
 import cartelera.scrapers.sala_beckett  # noqa: F401
 import cartelera.scrapers.big_bang  # noqa: F401
 import cartelera.scrapers.filmoteca  # noqa: F401
+import cartelera.scrapers.cines_verdi  # noqa: F401
+import cartelera.scrapers.renoir_floridablanca  # noqa: F401
+import cartelera.scrapers.phenomena  # noqa: F401
+import cartelera.scrapers.zumzeig  # noqa: F401
+import cartelera.scrapers.cinema_malda  # noqa: F401
+import cartelera.scrapers.sala_montjuic  # noqa: F401
+import cartelera.scrapers.cinemes_girona  # noqa: F401
+import cartelera.scrapers.espai_texas  # noqa: F401
+import cartelera.scrapers.palau_musica  # noqa: F401
+import cartelera.scrapers.auditori  # noqa: F401
+import cartelera.scrapers.meam  # noqa: F401
+import cartelera.scrapers.santa_maria_del_mar  # noqa: F401
+import cartelera.scrapers.santa_maria_del_pi  # noqa: F401
+import cartelera.scrapers.ateneu_barcelones  # noqa: F401
+import cartelera.scrapers.generalitat_carillo  # noqa: F401
+import cartelera.scrapers.liceu  # noqa: F401
 
 CATEGORIES = [
     ("film", "Film"),
@@ -18,6 +34,10 @@ CATEGORIES = [
     ("classical", "Classical"),
     ("theater", "Theater"),
     ("club", "Club"),
+    ("flamenco", "Flamenco"),
+    ("dance", "Dance"),
+    ("kids", "Kids"),
+    ("pop", "Pop"),
 ]
 
 

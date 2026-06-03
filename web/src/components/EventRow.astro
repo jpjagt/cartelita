@@ -8,7 +8,7 @@ const displayPrice = event.price
   ? (strings.prices[event.price] ?? event.price)
   : "";
 ---
-<tr>
+<tr data-time={event.startTime ?? ""}>
   <td class="time">{event.startTime ?? ""}</td>
   <td class="title">
     <a href={event.sourceUrl} target="_blank" rel="noopener">{event.title}</a>

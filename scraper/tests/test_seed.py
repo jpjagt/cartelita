@@ -5,15 +5,24 @@ from cartelera.models import Category, Venue, List, ListVenue
 def test_seed_is_idempotent(session):
     seed(session)
     seed(session)  # second run must not duplicate
-    assert session.query(Category).count() == 5
-    for slug in ("jamboree", "harlem-jazz-club", "robadors", "casa-figari", "sala-beckett", "big-bang-bar", "filmoteca"):
+    assert session.query(Category).count() == 9
+    music_theater_venues = ("jamboree", "harlem-jazz-club", "robadors", "casa-figari", "sala-beckett", "big-bang-bar")
+    cinema_venues = ("filmoteca", "cines-verdi", "renoir-floridablanca", "phenomena",
+                     "zumzeig", "cinema-malda", "sala-montjuic", "cinemes-girona", "espai-texas")
+    classical_venues = ("palau-musica", "auditori", "meam", "santa-maria-del-mar",
+                        "santa-maria-del-pi", "ateneu-barcelones", "generalitat-carillo", "liceu")
+    for slug in music_theater_venues + cinema_venues + classical_venues:
         assert session.query(Venue).filter_by(slug=slug).count() == 1
-    for slug in ("jazz", "club", "theater", "film"):
+    for slug in ("jazz", "club", "theater", "film", "classical", "flamenco", "dance", "kids", "pop"):
         assert session.query(List).filter_by(slug=slug).count() == 1
-    # Memberships: jazz list = jamboree+harlem+robadors+casa_figari+big_bang (5);
+    # Memberships: jazz list = jamboree+harlem+robadors+casa_figari+big_bang + palau+auditori+meam (8);
     # club list = jamboree+casa_figari+big_bang (3); theater list = beckett (1);
-    # film list = filmoteca (1).
-    assert session.query(ListVenue).count() == 10
+    # film list = all 9 cinema venues (9);
+    # classical list = palau+auditori+meam + mar+pi+ateneu+carillo + liceu (8);
+    # flamenco list = palau (1);
+    # dance/kids/pop lists = liceu (1 each, 3).
+    # Total = 8 + 3 + 1 + 9 + 8 + 1 + 3 = 33.
+    assert session.query(ListVenue).count() == 33
 
 
 def test_jamboree_is_jazz_and_club(session):
@@ -33,11 +42,52 @@ def test_single_category_venues(session):
     harlem = session.query(Venue).filter_by(slug="harlem-jazz-club").one()
     robadors = session.query(Venue).filter_by(slug="robadors").one()
     beckett = session.query(Venue).filter_by(slug="sala-beckett").one()
-    filmoteca = session.query(Venue).filter_by(slug="filmoteca").one()
     assert [c.slug for c in harlem.categories] == ["jazz"]
     assert [c.slug for c in robadors.categories] == ["jazz"]
     assert [c.slug for c in beckett.categories] == ["theater"]
-    assert [c.slug for c in filmoteca.categories] == ["film"]
+    # All nine cinema venues are single-category film.
+    for slug in ("filmoteca", "cines-verdi", "renoir-floridablanca", "phenomena",
+                 "zumzeig", "cinema-malda", "sala-montjuic", "cinemes-girona", "espai-texas"):
+        v = session.query(Venue).filter_by(slug=slug).one()
+        assert [c.slug for c in v.categories] == ["film"]
+
+
+def test_classical_venues_categories(session):
+    seed(session)
+    # Multi-category classical venues.
+    palau = session.query(Venue).filter_by(slug="palau-musica").one()
+    assert sorted(c.slug for c in palau.categories) == ["classical", "flamenco", "jazz"]
+    for slug in ("auditori", "meam"):
+        v = session.query(Venue).filter_by(slug=slug).one()
+        assert sorted(c.slug for c in v.categories) == ["classical", "jazz"]
+    # Single-category classical venues.
+    for slug in ("santa-maria-del-mar", "santa-maria-del-pi", "ateneu-barcelones", "generalitat-carillo"):
+        v = session.query(Venue).filter_by(slug=slug).one()
+        assert [c.slug for c in v.categories] == ["classical"]
+    # Liceu spans the opera house's strands.
+    liceu = session.query(Venue).filter_by(slug="liceu").one()
+    assert sorted(c.slug for c in liceu.categories) == ["classical", "dance", "kids", "pop"]
+
+
+def test_liceu_splits_into_classical_dance_kids_pop_lists(session):
+    seed(session)
+    liceu = session.query(Venue).filter_by(slug="liceu").one()
+    for list_slug, cat_slug in (("classical", "classical"), ("dance", "dance"),
+                                ("kids", "kids"), ("pop", "pop")):
+        lst = session.query(List).filter_by(slug=list_slug).one()
+        cat = session.query(Category).filter_by(slug=cat_slug).one()
+        mem = session.query(ListVenue).filter_by(list_id=lst.id, venue_id=liceu.id).one()
+        assert mem.whitelist_category_id == cat.id
+
+
+def test_palau_splits_into_classical_jazz_flamenco_lists(session):
+    seed(session)
+    palau = session.query(Venue).filter_by(slug="palau-musica").one()
+    for list_slug, cat_slug in (("classical", "classical"), ("jazz", "jazz"), ("flamenco", "flamenco")):
+        lst = session.query(List).filter_by(slug=list_slug).one()
+        cat = session.query(Category).filter_by(slug=cat_slug).one()
+        mem = session.query(ListVenue).filter_by(list_id=lst.id, venue_id=palau.id).one()
+        assert mem.whitelist_category_id == cat.id
 
 
 def test_multi_category_venues_whitelist_their_category(session):
@@ -61,10 +111,16 @@ def test_single_category_venues_have_null_whitelist(session):
     jazz_list = session.query(List).filter_by(slug="jazz").one()
     theater_list = session.query(List).filter_by(slug="theater").one()
     film_list = session.query(List).filter_by(slug="film").one()
-    for venue_slug, lst in (("harlem-jazz-club", jazz_list),
+    classical_list = session.query(List).filter_by(slug="classical").one()
+    cinema_memberships = [(slug, film_list) for slug in
+                          ("filmoteca", "cines-verdi", "renoir-floridablanca", "phenomena",
+                           "zumzeig", "cinema-malda", "sala-montjuic", "cinemes-girona", "espai-texas")]
+    classical_memberships = [(slug, classical_list) for slug in
+                             ("santa-maria-del-mar", "santa-maria-del-pi",
+                              "ateneu-barcelones", "generalitat-carillo")]
+    for venue_slug, lst in [("harlem-jazz-club", jazz_list),
                             ("robadors", jazz_list),
-                            ("sala-beckett", theater_list),
-                            ("filmoteca", film_list)):
+                            ("sala-beckett", theater_list)] + cinema_memberships + classical_memberships:
         v = session.query(Venue).filter_by(slug=venue_slug).one()
         mem = session.query(ListVenue).filter_by(list_id=lst.id, venue_id=v.id).one()
         assert mem.whitelist_category_id is None

@@ -3,7 +3,7 @@ from cartelera.seed import seed
 from cartelera.models import Event
 from cartelera.types import ScrapedEvent
 from cartelera.scrapers import REGISTRY
-from cartelera.run import run_one, run_all
+from cartelera.run import run_one, run_all, _resolve_run_targets
 
 
 class _FakeScraper:
@@ -84,3 +84,32 @@ def test_run_all_isolates_failures_across_venues(session, monkeypatch):
     assert by_slug["broken-venue"].ok is False
     # the good venue's event is committed despite the other failing
     assert session.query(Event).count() == 1
+
+
+# --- run target resolution (pure: uses the real populated REGISTRY) ---
+
+
+def test_resolve_targets_defaults_to_all():
+    assert _resolve_run_targets([]) == list(REGISTRY)
+    assert _resolve_run_targets(["all"]) == list(REGISTRY)
+
+
+def test_resolve_targets_by_category():
+    film = _resolve_run_targets(["-c", "film"])
+    assert "filmoteca" in film and "cines-verdi" in film
+    # category-filtered venues all actually carry that category
+    assert all("film" in REGISTRY[s][1].category_slugs for s in film)
+    # jazz venues are disjoint from the film set
+    assert "jamboree" not in film
+    assert _resolve_run_targets(["--category", "jazz"]) == _resolve_run_targets(["-c", "jazz"])
+
+
+def test_resolve_targets_comma_and_space_separated():
+    assert _resolve_run_targets(["cines-verdi,phenomena"]) == ["cines-verdi", "phenomena"]
+    assert _resolve_run_targets(["cines-verdi", "phenomena"]) == ["cines-verdi", "phenomena"]
+
+
+def test_resolve_targets_rejects_unknown_slug_and_category():
+    assert _resolve_run_targets(["cines-verdi,nope"]) is None
+    assert _resolve_run_targets(["-c", "bogus"]) is None
+    assert _resolve_run_targets(["-c"]) is None
