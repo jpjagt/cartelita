@@ -8,7 +8,14 @@ _PSYCOPG_PREFIX = "postgresql+psycopg://"
 
 
 def _to_psycopg(url: str) -> str:
-    """Rewrite a plain postgresql:// URL to the psycopg 3 dialect."""
+    """Rewrite a plain postgres(ql):// URL to the psycopg 3 dialect.
+
+    Coolify/Heroku-style URLs use the bare ``postgres://`` scheme, which
+    SQLAlchemy rejects (there is no ``postgres`` dialect); normalize it to
+    ``postgresql://`` first, then point it at the psycopg 3 driver.
+    """
+    if url.startswith("postgres://"):
+        url = "postgresql://" + url[len("postgres://"):]
     return url.replace("postgresql://", _PSYCOPG_PREFIX, 1)
 
 
