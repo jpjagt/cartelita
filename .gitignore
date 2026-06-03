@@ -12,3 +12,4 @@ web/.astro/
 # os
 .DS_Store
 /.claude/worktrees/
+/scraper/.env.production
