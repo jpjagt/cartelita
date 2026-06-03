@@ -42,6 +42,7 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "beautifulsoup4" },
+    { name = "certifi" },
     { name = "httpx" },
     { name = "pillow" },
     { name = "psycopg", extra = ["binary"] },
@@ -59,6 +60,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "beautifulsoup4", specifier = ">=4.12" },
+    { name = "certifi", specifier = ">=2024.0" },
     { name = "httpx", specifier = ">=0.27" },
     { name = "pillow", specifier = ">=12.2.0" },
     { name = "psycopg", extras = ["binary"], specifier = ">=3.2" },
