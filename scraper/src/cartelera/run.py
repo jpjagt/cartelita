@@ -196,7 +196,13 @@ def main() -> int:
         print(f"applied: {applied or 'none (up to date)'}")
         return 0
 
+    # Both `seed` and `run` need the schema in place. Apply migrations first so
+    # the command works against a fresh database without a separate `migrate`
+    # step (migrations are idempotent, so this is a no-op when up to date).
+    if ensure_database_exists():
+        print("created database")
     engine = make_engine()
+    apply_migrations(engine)
 
     session = make_session_factory()()
     try:
