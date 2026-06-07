@@ -1,41 +1,82 @@
 ---
-import { getCategoryLists } from "@/lib/queries";
-import { LOCALES, DEFAULT_LIST, type Locale } from "@/lib/types";
-import { t, categoryName } from "@/i18n";
+import { getCategoryLists } from "@/lib/queries"
+import { LOCALES, DEFAULT_LIST, type Locale } from "@/lib/types"
+import { t, categoryName } from "@/i18n"
 
 interface Props {
-  locale: Locale;
-  activeList: string;
+  locale: Locale
+  activeList: string
 }
 
-const { locale, activeList } = Astro.props;
-const strings = t(locale);
-const lists = await getCategoryLists();
+const { locale, activeList } = Astro.props
+const strings = t(locale)
+const lists = await getCategoryLists()
 ---
-<header class="flex flex-wrap items-baseline gap-x-6 gap-y-2 border-b border-gray-200 py-4">
-  <a href={`/${locale}/${DEFAULT_LIST}`} class="text-lg font-semibold no-underline">
-    {strings.siteTitle}
-  </a>
-  <nav class="flex flex-wrap gap-x-4">
-    {lists.map((l) => (
-      <a
-        href={`/${locale}/${l.slug}`}
-        aria-current={l.slug === activeList ? "page" : undefined}
-        class="text-gray-500 no-underline hover:text-gray-900 aria-[current=page]:font-semibold aria-[current=page]:text-gray-900"
-      >
-        {categoryName(locale, l.slug)}
-      </a>
-    ))}
-  </nav>
-  <p class="ml-auto flex gap-2 text-sm">
-    {LOCALES.map((lc) => (
-      <a
-        href={`/${lc}/${activeList}`}
-        aria-current={lc === locale ? "page" : undefined}
-        class="text-gray-400 no-underline hover:text-gray-900 aria-[current=page]:font-semibold aria-[current=page]:text-gray-900"
-      >
-        {lc.toUpperCase()}
-      </a>
-    ))}
-  </p>
+<header class="gridpaper">
+  {/* Wordmark spans 3 rows; its font-size is 2.6× the cell so the letters
+      fill those three rows. It occupies the left half of the band. */}
+  <a
+    href={`/${locale}/${DEFAULT_LIST}`}
+    style="grid-column: var(--c-time) / span 11; grid-row: 1 / span 3"
+    class="cell cell-truncate font-semibold no-underline text-foreground navbar-wordmark"
+  ><span class="cell-text">Ca<span class="mr-0.5">r</span>telita</span></a>
+
+  {/* Category nav: JS places links on row 3, flowing right from col 12 (after
+      the 11-col wordmark). Wraps up to row 2/1 before the locale zone (last 3 cols). */}
+  {lists.map((l) => (
+    <a
+      data-genre={l.slug}
+      data-navlink
+      href={`/${locale}/${l.slug}`}
+      aria-current={l.slug === activeList ? "page" : undefined}
+      class={`cell cell-truncate cell-genre-hover whitespace-nowrap text-muted-foreground no-underline${l.slug === activeList ? " cell-genre" : ""}`}
+    ><span class="cell-text">{categoryName(locale, l.slug)}</span></a>
+  ))}
+
+  {/* Locale switcher: one cell per locale, top-right row 1, right-aligned. */}
+  {LOCALES.map((lc, i) => (
+    <a
+      href={`/${lc}/${activeList}`}
+      aria-current={lc === locale ? "page" : undefined}
+      style={`grid-column: calc(var(--c-end) - ${LOCALES.length - i}) / span 1; grid-row: 1`}
+      class="cell justify-end text-muted-foreground no-underline hover:text-foreground aria-[current=page]:font-semibold aria-[current=page]:text-foreground"
+    >
+      <span class="cell-text">{lc.toUpperCase()}</span>
+    </a>
+  ))}
+
+  <script>
+    // Place genre nav links starting at col 12 (after 11-col wordmark), row 3.
+    // Wrap up to row 2/1 before the last 3 cols (locale zone). Rows go 3 → 2 → 1.
+    function layoutNav() {
+      const header = document.querySelector<HTMLElement>("header.gridpaper");
+      if (!header) return;
+      const cs = getComputedStyle(header);
+      const cell = parseFloat(cs.getPropertyValue("--cell")) || 32;
+      const colStart = parseInt(cs.getPropertyValue("--col-start")) || 1;
+      const bandCells = parseInt(cs.getPropertyValue("--band-cells")) || 40;
+      const navStart = colStart + 11; // right after the 11-col wordmark
+      const localeCol = colStart + bandCells - 3; // last 3 cols reserved for locales
+
+      let col = navStart;
+      let row = 3;
+      const links = header.querySelectorAll<HTMLElement>("a[data-navlink]");
+      links.forEach((a) => {
+        const text = a.querySelector<HTMLElement>(".cell-text") ?? a;
+        const span = Math.max(1, Math.ceil((text.scrollWidth + 6) / cell));
+        // If this link would overflow into the locale column, wrap up a row.
+        if (col + span > localeCol && col > navStart) {
+          row = Math.max(1, row - 1);
+          col = navStart;
+        }
+        a.style.gridColumn = `${col} / span ${span}`;
+        a.style.gridRow = `${row}`;
+        col += span;
+      });
+    }
+    layoutNav();
+    window.addEventListener("gridsync", layoutNav);
+    window.addEventListener("resize", layoutNav);
+    window.addEventListener("load", layoutNav);
+  </script>
 </header>

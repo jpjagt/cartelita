@@ -1,15 +1,15 @@
 ---
-import type { Locale } from "@/lib/types";
-import "@/styles/global.css";
+import type { Locale } from "@/lib/types"
+import "@/styles/global.css"
 
 interface Props {
-  locale: Locale;
-  title: string;
-  canonical: string;
+  locale: Locale
+  title: string
+  canonical: string
 }
 
-const { locale, title, canonical } = Astro.props;
-const canonicalUrl = new URL(canonical, Astro.site ?? "https://cartelera.barcelona");
+const { locale, title, canonical } = Astro.props
+const canonicalUrl = new URL(canonical, Astro.site)
 ---
 <html lang={locale}>
   <head>
@@ -17,9 +17,47 @@ const canonicalUrl = new URL(canonical, Astro.site ?? "https://cartelera.barcelo
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <link rel="canonical" href={canonicalUrl.href} />
+    <script is:inline>
+      if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+        document.documentElement.classList.add("dark");
+      }
+      window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e) => {
+        document.documentElement.classList.toggle("dark", e.matches);
+      });
+    </script>
   </head>
-  <body class="mx-auto max-w-3xl px-4 font-sans text-gray-900">
+  <body class="font-sans bg-background text-foreground">
     <slot />
+    <script>
+      // One full-bleed grid. JS computes only integers: how many whole
+      // columns fit, the content band width in cells (≈1300px), and the
+      // band's start column snapped so it's centered to the nearest cell
+      // (so the band always lands exactly on gridlines).
+      const BAND_PX = 1300;
+      function syncGrid() {
+        document.querySelectorAll<HTMLElement>(".gridpaper").forEach((grid) => {
+          // Round the cell to a whole pixel so grid tracks and the
+          // background-image lines sit on identical integer boundaries and
+          // can't drift apart across many columns (sub-pixel track widths
+          // were the source of the misalignment).
+          const base = parseFloat(getComputedStyle(grid).getPropertyValue("--font-size")) || 18;
+          const cell = Math.round(base * 1.8);
+          const gridCols = Math.max(1, Math.floor(grid.clientWidth / cell));
+          const bandCells = Math.min(gridCols, Math.max(20, Math.round(BAND_PX / cell)));
+          const colStart = Math.max(1, Math.round((gridCols - bandCells) / 2) + 1);
+          grid.style.setProperty("--cell", `${cell}px`);
+          grid.style.setProperty("--grid-cols", String(gridCols));
+          grid.style.setProperty("--band-cells", String(bandCells));
+          grid.style.setProperty("--col-start", String(colStart));
+        });
+        // Let dependents (e.g. the navbar's cell-snapping) recompute once the
+        // grid's --cell/--col-start are settled for this pass.
+        window.dispatchEvent(new Event("gridsync"));
+      }
+      syncGrid();
+      window.addEventListener("resize", syncGrid);
+      window.addEventListener("load", syncGrid);
+    </script>
     <script>
       const now = new Date();
       const hhmm = now.toTimeString().slice(0, 5);
@@ -35,12 +73,12 @@ const canonicalUrl = new URL(canonical, Astro.site ?? "https://cartelera.barcelo
           section.hidden = true;
         } else if (date === yesterdayIso && isPostMidnight) {
           // Previous calendar day: only keep rows with post-midnight times (00:00–04:59).
-          section.querySelectorAll<HTMLElement>("tr[data-time]").forEach((row) => {
+          section.querySelectorAll<HTMLElement>("[data-time]").forEach((row) => {
             const t = row.dataset.time ?? "";
             if (t === "" || t >= "05:00") row.hidden = true;
           });
           // Hide the whole section if nothing remains.
-          if (!section.querySelector("tr[data-time]:not([hidden])")) section.hidden = true;
+          if (!section.querySelector("[data-time]:not([hidden])")) section.hidden = true;
         } else if (date > todayIso) {
           // Future days always visible.
         }

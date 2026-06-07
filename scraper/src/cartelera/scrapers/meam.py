@@ -44,16 +44,32 @@ _DEFAULT_CATEGORY = "jazz"  # any future concert series defaults to the music bu
 # "Fri,  5 Jun 2026" / "Saturday, 6 Jun 2026" — weekday name, day, abbreviated
 # month, year. The clock-icon line then carries "18:00".
 _MONTHS = {
-    "jan": 1, "feb": 2, "mar": 3, "apr": 4, "may": 5, "jun": 6,
-    "jul": 7, "aug": 8, "sep": 9, "oct": 10, "nov": 11, "dec": 12,
+    "jan": 1,
+    "feb": 2,
+    "mar": 3,
+    "apr": 4,
+    "may": 5,
+    "jun": 6,
+    "jul": 7,
+    "aug": 8,
+    "sep": 9,
+    "oct": 10,
+    "nov": 11,
+    "dec": 12,
 }
 _DATE_RE = re.compile(r"(\d{1,2})\s+([A-Za-z]{3,})\s+(\d{4})")
 _TIME_RE = re.compile(r"(\d{1,2}):(\d{2})")
 
 # English/Catalan/Spanish free-entry phrases to normalize to "free".
 _FREE_PHRASES = (
-    "free admission", "free entry", "entrada gratuïta", "activitat gratuïta",
-    "entrada gratuita", "entrada libre", "gratis", "gratuït",
+    "free admission",
+    "free entry",
+    "entrada gratuïta",
+    "activitat gratuïta",
+    "entrada gratuita",
+    "entrada libre",
+    "gratis",
+    "gratuït",
 )
 _SOLD_OUT_PHRASES = ("sold out", "sold-out", "exhausted", "esgotat", "agotad")
 # A price line like "Advance ticket sales: 18.00€ / Price at the entrance: 18.00€".
@@ -140,12 +156,16 @@ def parse_price(html: str) -> str | None:
     soup = BeautifulSoup(html, "html.parser")
     for h3 in soup.select("h3.short"):
         text = h3.get_text(" ", strip=True)
-        if "€" in text or any(p in text.lower() for p in _FREE_PHRASES + _SOLD_OUT_PHRASES):
+        if "€" in text or any(
+            p in text.lower() for p in _FREE_PHRASES + _SOLD_OUT_PHRASES
+        ):
             return normalize_price(text)
     return None
 
 
-def _external_id(source_url: str, start_date: dt.date | None, start_time: dt.time | None) -> str:
+def _external_id(
+    source_url: str, start_date: dt.date | None, start_time: dt.time | None
+) -> str:
     """Per-OCCURRENCE dedup key. The detail id (e.g. 1415) is unique per concert
     occurrence here (each diary entry is a single dated session), but we qualify it
     with date+time anyway so the key stays per-occurrence-safe if the venue ever
@@ -194,7 +214,9 @@ def parse_agenda(html: str) -> list[ScrapedEvent]:
         seen.add(external_id)
 
         img = item.select_one("img")
-        image_url = _absolutize(img.get("src", "").strip()) if img and img.get("src") else None
+        image_url = (
+            _absolutize(img.get("src", "").strip()) if img and img.get("src") else None
+        )
 
         annotations: list[str] = []
         if series:
@@ -225,7 +247,9 @@ async def _enrich_prices(events: list[ScrapedEvent]) -> None:
     async def fetch_one(event: ScrapedEvent, client: httpx.AsyncClient) -> None:
         async with sem:
             try:
-                resp = await client.get(event.source_url, follow_redirects=True, timeout=30)
+                resp = await client.get(
+                    event.source_url, follow_redirects=True, timeout=30
+                )
                 resp.raise_for_status()
             except httpx.HTTPError:
                 return
@@ -249,7 +273,7 @@ register(
     scraper=MeamScraper(),
     venue=VenueDefinition(
         slug="meam",
-        name="MEAM (Museu Europeu d'Art Modern)",
+        name="MEAM",
         city_slug="barcelona",
         address="Carrer de la Barra de Ferro, 5, Ciutat Vella, 08003 Barcelona",
         site_url="https://www.meam.es",

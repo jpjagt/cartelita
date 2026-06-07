@@ -1,19 +1,49 @@
 ---
-import type { AgendaEvent, Locale } from "@/lib/types";
-import { t } from "@/i18n";
-interface Props { event: AgendaEvent; locale: Locale }
-const { event, locale } = Astro.props;
-const strings = t(locale);
+import type { AgendaEvent, Locale } from "@/lib/types"
+import { t } from "@/i18n"
+interface Props {
+  event: AgendaEvent
+  locale: Locale
+  genre: string
+  row: number
+}
+const { event, locale, genre, row } = Astro.props
+const strings = t(locale)
 const displayPrice = event.price
   ? (strings.prices[event.price] ?? event.price)
-  : "";
+  : ""
 ---
-<tr data-time={event.startTime ?? ""} class="[&>td]:border-b [&>td]:border-gray-100 [&>td]:px-3 [&>td]:py-1.5 [&>td]:align-top">
-  <td class="whitespace-nowrap text-gray-600">{event.startTime ?? ""}</td>
-  <td>
-    <a href={event.sourceUrl} target="_blank" rel="noopener" class="text-inherit no-underline hover:underline">{event.title}</a>
-    {event.recurrenceHint && <span class="ml-1 cursor-help text-gray-500" title={event.recurrenceHint}>↻</span>}
-  </td>
-  <td>{event.venueName}</td>
-  <td class="whitespace-nowrap text-gray-600">{displayPrice}</td>
-</tr>
+{/* One event = one row of the content band: time · title(grows) · place · price.
+   The wrapper carries data-time for the day/row visibility script; it sits
+   on the grid via `display: contents` so its children place directly. */}
+<div data-time={event.startTime ?? ""} data-genre={genre} class="contents">
+  <time
+    style={`grid-row: ${row}`}
+    class="cell cell-truncate gc-time text-muted-foreground"
+  ><span class="cell-text">{event.startTime ?? ""}</span></time>
+
+  {/* The whole title cell IS the link, so the entire row span is clickable. */}
+  <a
+    data-genre={genre}
+    href={event.sourceUrl}
+    target="_blank"
+    rel="noopener"
+    style={`grid-row: ${row}`}
+    class="cell cell-truncate cell-genre-hover gc-title text-foreground no-underline hover:underline"
+  >
+    <span class="cell-text">
+      {event.title}
+      {event.recurrenceHint && <span class="ml-7 cursor-help text-muted-foreground">{event.recurrenceHint}</span>}
+    </span>
+  </a>
+
+  <div
+    style={`grid-row: ${row}`}
+    class="cell cell-truncate cell-right gc-place"
+  ><span class="cell-text">{event.venueName}</span></div>
+
+  <div
+    style={`grid-row: ${row}`}
+    class="cell cell-truncate cell-right gc-price text-muted-foreground"
+  ><span class="cell-text">{displayPrice}</span></div>
+</div>

@@ -68,9 +68,9 @@ Nixpacks buildpack:
 ### 3.3 Web env fix (must fix)
 
 `web/src/lib/db.ts` reads `import.meta.env.DATABASE_URL`. The module's own comment
-and `AGENTS.md` say it must read **`process.env.DATABASE_URL`** — Vite inlines
+and `AGENTS.md` say it must read **`import.meta.env.DATABASE_URL`** — Vite inlines
 `import.meta.env.*` at build time, which is both a leak risk and unreliable for a
-build-time-only secret. Change to `process.env.DATABASE_URL`.
+build-time-only secret. Change to `import.meta.env.DATABASE_URL`.
 
 The existing `ssl: url.includes("localhost") ? false : "require"` would force SSL
 for our internal (non-localhost) DB host, which won't offer SSL. Adjust so the
@@ -125,7 +125,7 @@ DB is created once via Coolify's Postgres provisioning.
    install; runs the `cartelera` CLI.
 2. `scraper/.dockerignore`: exclude `.venv/`, `__pycache__/`, tests fixtures bloat,
    etc.
-3. `web/src/lib/db.ts`: `process.env.DATABASE_URL`; internal (no-SSL) connection.
+3. `web/src/lib/db.ts`: `import.meta.env.DATABASE_URL`; internal (no-SSL) connection.
 4. Coolify-side (not in repo): two apps (scraper from Dockerfile, web from
    Nixpacks), one Postgres service, two scheduled tasks, env vars, domain
    `cartelita.july.dev`.

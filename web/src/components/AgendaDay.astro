@@ -2,18 +2,25 @@
 import type { AgendaDay, Locale } from "@/lib/types";
 import { localeTag } from "@/i18n";
 import EventRow from "@/components/EventRow.astro";
-interface Props { day: AgendaDay; locale: Locale }
-const { day, locale } = Astro.props;
+interface Props { day: AgendaDay; locale: Locale; genre: string }
+const { day, locale, genre } = Astro.props;
 const heading = new Date(day.date + "T00:00:00").toLocaleDateString(localeTag(locale), {
   weekday: "long", day: "numeric", month: "long",
 });
 ---
-<section data-date={day.date}>
-  <h2 class="mt-6 bg-gray-200 px-3 py-1.5 text-base font-medium">{heading}</h2>
-  <table class="w-full border-collapse">
-    <thead class="sr-only">
-      <tr><th scope="col">Time</th><th scope="col">Event</th><th scope="col">Venue</th><th scope="col">Price</th></tr>
-    </thead>
-    <tbody>{day.events.map((e) => <EventRow event={e} locale={locale} />)}</tbody>
-  </table>
+<section data-date={day.date} class="gridpaper">
+  {/* Day heading spans the full content band on its own row.
+      To draw the internal vertical grid lines through this shaded header,
+      add `cell-lined-cols` to the class list below (and `cell-lined-rows`
+      for horizontal). They redraw the same texture pattern inside the cell;
+      see .cell-lined-cols in global.css. */}
+  <h2
+    style="grid-row: 1"
+    class="cell cell-truncate cell-lined gc-full bg-muted font-medium"
+  ><span class="cell-text">{heading}</span></h2>
+  {day.events.map((e, i) => <EventRow event={e} locale={locale} genre={genre} row={i + 2} />)}
+  {/* One empty spacer row beneath the day's events. An auto grid row only
+      gains height when something occupies it, so place an empty cell spanning
+      the band to force a single blank row. */}
+  <div style={`grid-row: ${day.events.length + 2}`} class="cell gc-full" />
 </section>

@@ -57,9 +57,7 @@ single file. For *what Cartelera is and why*, read `MANIFESTO.md`. For dev setup
   per-event `source_url`.
 - **`City` is a scoping layer** — Barcelona is not hardcoded, but it's the only
   city now.
-- **DB credentials are server-only.** `web/src/lib/db.ts` reads
-  `process.env.DATABASE_URL` (NOT `import.meta.env`, which Vite would inline).
-  Never add a `PUBLIC_`-prefixed DB var.
+- Never add a `PUBLIC_`-prefixed DB var.
 - **Adding a category a scraper emits but seed doesn't define fails fast** with
   `unknown category slug '...'` — that's intentional. Add it to `seed.py`'s
   `CATEGORIES` and wire its list/whitelist.

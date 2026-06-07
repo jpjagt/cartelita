@@ -1,1 +1,346 @@
 @import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --radius: 0.625rem;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+}
+
+/* ── Square graph-paper grid ──────────────────────────────────────────
+   ONE full-bleed CSS grid is the whole system. Its own gridlines ARE the
+   graph paper — there is no separate background image and no per-pixel JS
+   sync. Cells are square (font-size × 1.8) and the grid fills the viewport
+   with `repeat(auto-fill, var(--cell))`, leaving at most a sub-cell sliver
+   on the right.
+
+   Content does NOT use a second grid. It places into THIS grid by column
+   line number. JS computes just two integers per resize:
+     --grid-cols   total whole columns that fit
+     --band-cells  width of the centered content band (≈ 1300px / cell)
+     --col-start   1-based column where the band begins, snapped so the band
+                   is centered to the nearest whole cell (so it always lands
+                   exactly on gridlines — texture stays continuous behind).
+
+   Border model: every cell draws a real right + bottom border (= the grid
+   lines). The grid draws its own top + left edge. Each line is therefore
+   drawn exactly once, fully opaque, and any individual edge can be
+   recolored per cell via --cell-top/-right/-bottom/-left.
+
+   Per-cell extrusion: set --wall-top / --wall-left for a faux-isometric
+   hover (translates toward bottom-right, revealing walls).
+*/
+.gridpaper {
+  --font-size: 18px;
+  --cell: calc(var(--font-size) * 1.8); /* ≈ 32px square */
+  --grid-line: var(--muted);
+
+  /* JS overrides these on resize; sane SSR fallbacks below. */
+  --grid-cols: 40;
+  --band-cells: 40;
+  --col-start: 1;
+
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, var(--cell));
+  grid-auto-rows: var(--cell);
+  justify-content: start;
+  font-size: var(--font-size);
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+  /* All grid lines come from ONE source: this background texture, which
+     draws the top + left line of every cell. It shares the grid's exact
+     origin and --cell size, so it aligns by construction. We do NOT add an
+     outer border here — doing so per sub-grid (each AgendaDay is its own
+     .gridpaper) would stack against the previous section's cell borders at
+     the seam and render double-thick. */
+  background-image:
+    linear-gradient(to right, var(--grid-line) 2px, transparent 2px),
+    linear-gradient(to bottom, var(--grid-line) 2px, transparent 2px);
+  background-size: var(--cell) var(--cell);
+  background-position: 0 0;
+}
+
+/* The content band is a sub-range of columns inside the one grid. We define
+   per-field column lines relative to --col-start so children can place by
+   name. Row layout (whole-cell fields, title absorbs slack):
+     time(3) · gap(1) · title(rest) · gap(1) · place(10) · gap(1) · price(4)
+   Band = 3+1+title+1+10+1+4, so title = band-cells − 20. */
+.gridpaper {
+  --c-time: var(--col-start);
+  --c-title: calc(var(--col-start) + 3);
+  --c-place: calc(var(--col-start) + var(--band-cells) - 10);
+  --c-price: calc(var(--col-start) + var(--band-cells) - 3);
+  --c-end: calc(var(--col-start) + var(--band-cells));
+}
+.gc-time {
+  grid-column: var(--c-time) / span 2;
+}
+.gc-title {
+  grid-column: var(--c-title) / calc(var(--c-place) - 1);
+}
+.gc-place {
+  grid-column: var(--c-place) / span 6;
+}
+.gc-price {
+  grid-column: var(--c-price) / span 3;
+}
+.gc-full {
+  grid-column: var(--c-time) / var(--c-end);
+}
+
+/* Opaque cells (e.g. shaded day headers) cover the background texture on
+   their own top + left edges. .cell-lined repaints those edges in the grid
+   line color so the lines stay continuous through the shaded cell. */
+.cell-lined {
+  --cell-top: var(--grid-line);
+  --cell-left: var(--grid-line);
+}
+
+/* WHERE TO ADD INTERNAL GRID LINES through a wide/opaque cell:
+   A single spanning cell (e.g. the gc-full day header) covers the texture's
+   internal vertical AND horizontal lines that would have crossed it. To
+   redraw them inside the cell, add .cell-lined-cols (vertical) / -rows
+   (horizontal) to that cell — apply it on the element in the component,
+   e.g. AgendaDay.astro's <h2 ...>. It paints the same 2px / --cell /
+   --grid-line pattern as .gridpaper's background, so it aligns exactly.
+   background-position is offset by the cell's own --cell-left/-top inset so
+   the first internal line doesn't sit on the edge line. */
+.cell-lined-cols {
+  background-image: linear-gradient(
+    to right,
+    var(--grid-line) 2px,
+    transparent 2px
+  );
+  background-size: var(--cell) 100%;
+  background-position: 0 0;
+  background-repeat: repeat-x;
+}
+.cell-lined-rows {
+  background-image: linear-gradient(
+    to bottom,
+    var(--grid-line) 2px,
+    transparent 2px
+  );
+  background-size: 100% var(--cell);
+  background-position: 0 0;
+  background-repeat: repeat-y;
+}
+
+/* A cell on the grid. Square (inherits row height). Text bottom-left, 1px
+   off the corner. Cells are transparent by default so the single background
+   texture shows through — no per-cell border, so nothing can double up at
+   sub-grid seams. To recolor an edge, set --cell-top/-right/-bottom/-left;
+   that edge draws as an opaque inset box-shadow line (no miter, no gaps). */
+.cell {
+  position: relative;
+  display: flex;
+  align-items: flex-end; /* bottom align */
+  justify-content: flex-start; /* left align */
+  padding: 0 3px 1px 3px; /* 1px off bottom; clears the 2px line */
+  min-width: 0;
+  box-shadow:
+    inset 0 2px 0 0 var(--cell-top, transparent),
+    inset -2px 0 0 0 var(--cell-right, transparent),
+    inset 0 -2px 0 0 var(--cell-bottom, transparent),
+    inset 2px 0 0 0 var(--cell-left, transparent);
+}
+
+/* Right-aligned cell content (used for price + venue). Must come AFTER .cell
+   so its justify-content wins the cascade (same specificity, source order). */
+.cell-right {
+  justify-content: flex-end;
+  text-align: right;
+}
+
+/* ── Genre colors ────────────────────────────────────────────────────
+   Each genre carries a primary (background) + text color, hardcoded per
+   genre so hover contrast is controlled. Set on any element via
+   data-genre="<slug>"; consumers read var(--genre-primary)/--genre-text.
+   Genres without an explicit color fall back to the neutral foreground. */
+[data-genre] {
+  --genre-primary: var(--foreground);
+  --genre-text: var(--background);
+}
+[data-genre="jazz"],
+[data-genre="flamenco"],
+[data-genre="film"] {
+  --genre-primary: #d3000e;
+  --genre-text: #ffffff;
+}
+[data-genre="classical"] {
+  --genre-primary: #0a00cc;
+  --genre-text: #ffffff;
+}
+[data-genre="theater"],
+[data-genre="dance"] {
+  --genre-primary: #2d6c49;
+  --genre-text: #ffffff;
+}
+[data-genre="pop"] {
+  --genre-primary: #f5c449;
+  --genre-text: #000000;
+}
+
+/* On hover, a genre-tinted cell paints its background + text in the genre
+   colors. Outer borders keep the grid-line color (set by --cell-* edges on
+   the element); inner texture lines are hidden because the opaque background
+   covers them and we don't repaint them. Title links keep their underline. */
+.cell-genre,
+.cell-genre-hover:hover {
+  background-color: var(--genre-primary);
+  color: var(--genre-text);
+  /* The opaque bg covers this cell's OWN top+left texture lines (the only two
+     lines a cell ever contributes). Repaint just those in the grid-line color
+     so they stay continuous; the bottom+right lines belong to the neighbor
+     cells' texture and are unaffected — same as everywhere else in the grid. */
+  --cell-top: var(--grid-line);
+  --cell-left: var(--grid-line);
+
+  text-decoration: none;
+}
+/* Children that carry their own muted color (e.g. the ↻ recurrence hint)
+   should inherit the genre text color on hover for contrast against the fill. */
+.cell-genre *,
+.cell-genre-hover:hover * {
+  color: inherit;
+}
+
+/* When the title link (cell-genre-hover) is hovered, tint the time cell in the
+   same row with the genre primary color. The wrapper has display:contents so
+   :has() reaches through it to find the sibling time element. */
+.contents:has(.cell-genre-hover:hover) time {
+  color: var(--genre-primary);
+}
+
+/* Truncate long text horizontally without clipping descenders. The cell
+   itself never clips vertically (overflow visible), so glyph tails like g,
+   y, p stay visible; only the inner text run clips horizontally. */
+.cell-truncate > *,
+.cell-truncate {
+  min-width: 0;
+}
+.cell-truncate {
+  overflow: visible;
+}
+.cell-truncate .cell-text,
+.cell-text {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  /* Tight line-height (1) for visual snugness against the baseline. But
+     overflow:hidden (needed for the ellipsis) would clip descenders (g, y, p)
+     because at line-height 1 the line box is exactly the em height. We pad the
+     clip box at the bottom to give descenders room, then pull it back with an
+     equal negative margin so the cell's bottom alignment is unaffected. */
+  line-height: 1;
+  padding-bottom: 0.25em;
+  margin-bottom: -0.25em;
+}
+
+/* Wordmark sized to fill a 3-row-tall cell (2.6× the cell side). */
+.navbar-wordmark .cell-text {
+  font-size: calc(var(--cell) * 2.6);
+  line-height: 1;
+}
+
+/* Faux isometric extrusion. The ::before is the extruded block behind the
+   cell, offset 20% toward bottom-right. Two-tone walls via conic-gradient:
+   top wall = --wall-top, left wall = --wall-left. Only opacity + transform
+   animate (GPU-composited). Define --wall-top/--wall-left to enable. */
+.cell-extrude {
+  transition: transform 0.15s ease;
+}
+.cell-extrude::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  opacity: 0;
+  transform: translate(20%, 20%);
+  transition: opacity 0.15s ease;
+  background: conic-gradient(
+    from 90deg at 0 0,
+    var(--wall-top, transparent) 0 25%,
+    var(--wall-left, transparent) 25% 50%,
+    transparent 50%
+  );
+}
+.cell-extrude:hover {
+  transform: translate(-2px, -2px);
+}
+.cell-extrude:hover::before {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cell-extrude,
+  .cell-extrude::before {
+    transition: none;
+  }
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+}

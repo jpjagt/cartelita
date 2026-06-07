@@ -13,10 +13,21 @@ interface EventRow {
   source_url: string;
 }
 
+const PREFERRED_LIST_ORDER = ["jazz", "classic", "theater", "film", "club", "pop"];
+
 export async function getCategoryLists(): Promise<CategoryList[]> {
   const rows = await sql<{ slug: string }[]>`
-    SELECT slug FROM list WHERE author = 'cartelera' ORDER BY slug`;
-  return rows.map((r) => ({ slug: r.slug }));
+    SELECT slug FROM list WHERE author = 'cartelera'`;
+  return rows
+    .map((r) => ({ slug: r.slug }))
+    .sort((a, b) => {
+      const ai = PREFERRED_LIST_ORDER.indexOf(a.slug);
+      const bi = PREFERRED_LIST_ORDER.indexOf(b.slug);
+      if (ai !== -1 && bi !== -1) return ai - bi;
+      if (ai !== -1) return -1;
+      if (bi !== -1) return 1;
+      return a.slug.localeCompare(b.slug);
+    });
 }
 
 function toDateStr(v: Date | string): string {

@@ -24,7 +24,13 @@ const days = groupEventsByDay(events)
 <Layout locale={locale} title={`${name} — ${strings.siteTitle}`} canonical={`/${locale}/${list}`}>
   <Navbar locale={locale} activeList={list} />
   <main>
-    {days.length === 0 && <p class="py-8 text-gray-500">{strings.noEvents}</p>}
-    {days.map((d) => <AgendaDay day={d} locale={locale} />)}
+    {days.length === 0 && (
+      <div class="gridpaper">
+        <p style="grid-row: 1" class="cell cell-truncate gc-full text-muted-foreground">
+          <span class="cell-text">{strings.noEvents}</span>
+        </p>
+      </div>
+    )}
+    {days.map((d) => <AgendaDay day={d} locale={locale} genre={list} />)}
   </main>
 </Layout>

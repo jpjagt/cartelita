@@ -18,7 +18,7 @@
 |------|----------------|
 | `scraper/Dockerfile` (create) | Pin Python 3.14, install tesseract + uv + project, expose `cartelera` CLI |
 | `scraper/.dockerignore` (create) | Keep the build context small / reproducible |
-| `web/src/lib/db.ts` (modify) | Read `DATABASE_URL` from `process.env`; no SSL on internal network |
+| `web/src/lib/db.ts` (modify) | Read `DATABASE_URL` from `import.meta.env`; no SSL on internal network |
 | `docs/deploy.md` (create) | Operator runbook for the Coolify setup (the non-code half of the deploy) |
 
 ---
@@ -99,23 +99,23 @@ Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 **Files:**
 - Modify: `web/src/lib/db.ts`
 
-The module comment already says to read `process.env` (not `import.meta.env`, which Vite inlines), but the code does the opposite. Internal-network Postgres has no TLS, so SSL must default off and only turn on when explicitly requested.
+The module comment already says to read `import.meta.env` (not `import.meta.env`, which Vite inlines), but the code does the opposite. Internal-network Postgres has no TLS, so SSL must default off and only turn on when explicitly requested.
 
 - [ ] **Step 1: Replace the body of `web/src/lib/db.ts`**
 
 ```typescript
 import postgres from "postgres"
 
-// Server-only secret: read from the Node process env, NOT import.meta.env
+// Server-only secret: read from the Node import.meta.env, NOT import.meta.env
 // (Vite inlines import.meta.env.* at build time, which could bake the
 // credential into output if this module were ever imported client-side).
-const url = process.env.DATABASE_URL
+const url = import.meta.env.DATABASE_URL
 if (!url) throw new Error("DATABASE_URL is not set (server-only)")
 
 // The production DB lives on Coolify's internal Docker network with no TLS, so
 // SSL is off by default. Set DATABASE_SSL=require to force TLS (e.g. if the DB is
 // ever reached over a public, TLS-terminated port).
-const ssl = process.env.DATABASE_SSL === "require" ? "require" : false
+const ssl = import.meta.env.DATABASE_SSL === "require" ? "require" : false
 
 // One connection for the build process.
 export const sql = postgres(url, { ssl })
@@ -135,7 +135,7 @@ Expected: `OK` (the Vite-inlined read is fully removed).
 
 ```bash
 git add web/src/lib/db.ts
-git commit -m "fix(web): read DATABASE_URL from process.env; SSL off on internal net
+git commit -m "fix(web): read DATABASE_URL from import.meta.env; SSL off on internal net
 
 Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 ```
@@ -156,13 +156,13 @@ cd scraper && DATABASE_URL=postgresql://localhost:5432/cartelera_dev uv run cart
 ```
 Expected: `applied: …` (or "none (up to date)") with no connection error. If the DB doesn't exist, `migrate` creates it; then run `uv run cartelera seed` and `uv run cartelera run jamboree` to populate at least one venue.
 
-- [ ] **Step 2: Build the frontend with DATABASE_URL from process.env**
+- [ ] **Step 2: Build the frontend with DATABASE_URL from import.meta.env**
 
 Run:
 ```bash
 cd web && DATABASE_URL=postgresql://localhost:5432/cartelera_dev pnpm build
 ```
-Expected: build succeeds; `dist/` is produced. This confirms `process.env.DATABASE_URL` is read at build time and the no-SSL localhost connection works (proving the Task 2 change end-to-end).
+Expected: build succeeds; `dist/` is produced. This confirms `import.meta.env.DATABASE_URL` is read at build time and the no-SSL localhost connection works (proving the Task 2 change end-to-end).
 
 - [ ] **Step 3: Confirm static output exists**
 
