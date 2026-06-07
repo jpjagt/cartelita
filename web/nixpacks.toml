@@ -1,0 +1,14 @@
+# Coolify/Nixpacks build overrides.
+#
+# Default Nixpacks install is `pnpm i --frozen-lockfile`, which on this Linux
+# container does NOT materialize the foreign-platform optional binding
+# @rolldown/binding-linux-x64-gnu (pulled in transitively via @tailwindcss/vite
+# -> rolldown). The lockfile is generated on macOS, and pnpm leaves the Linux
+# binding in its "skipped" set under a frozen install, so `astro build` then
+# fails with "Cannot find native binding".
+#
+# Re-running install without --frozen-lockfile lets pnpm honor the
+# supportedArchitectures config in package.json and actually fetch the Linux
+# bindings. See https://github.com/rolldown/rolldown/discussions/9098
+[phases.install]
+cmds = ["pnpm install --no-frozen-lockfile"]
