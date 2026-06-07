@@ -1,0 +1,41 @@
+---
+import { getCategoryLists } from "@/lib/queries";
+import { LOCALES, DEFAULT_LIST, type Locale } from "@/lib/types";
+import { t, categoryName } from "@/i18n";
+
+interface Props {
+  locale: Locale;
+  activeList: string;
+}
+
+const { locale, activeList } = Astro.props;
+const strings = t(locale);
+const lists = await getCategoryLists();
+---
+<header class="flex flex-wrap items-baseline gap-x-6 gap-y-2 border-b border-gray-200 py-4">
+  <a href={`/${locale}/${DEFAULT_LIST}`} class="text-lg font-semibold no-underline">
+    {strings.siteTitle}
+  </a>
+  <nav class="flex flex-wrap gap-x-4">
+    {lists.map((l) => (
+      <a
+        href={`/${locale}/${l.slug}`}
+        aria-current={l.slug === activeList ? "page" : undefined}
+        class="text-gray-500 no-underline hover:text-gray-900 aria-[current=page]:font-semibold aria-[current=page]:text-gray-900"
+      >
+        {categoryName(locale, l.slug)}
+      </a>
+    ))}
+  </nav>
+  <p class="ml-auto flex gap-2 text-sm">
+    {LOCALES.map((lc) => (
+      <a
+        href={`/${lc}/${activeList}`}
+        aria-current={lc === locale ? "page" : undefined}
+        class="text-gray-400 no-underline hover:text-gray-900 aria-[current=page]:font-semibold aria-[current=page]:text-gray-900"
+      >
+        {lc.toUpperCase()}
+      </a>
+    ))}
+  </p>
+</header>
