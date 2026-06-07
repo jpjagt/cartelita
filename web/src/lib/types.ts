@@ -1,6 +1,7 @@
 export type Locale = "ca" | "es" | "en";
 export const LOCALES: Locale[] = ["ca", "es", "en"];
-export const DEFAULT_LOCALE: Locale = "es";
+export const DEFAULT_LOCALE: Locale = "ca";
+export const DEFAULT_LIST = "jazz";
 
 export interface CategoryList {
   slug: string;        // also the category slug, used for name translation

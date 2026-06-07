@@ -8,20 +8,12 @@ const displayPrice = event.price
   ? (strings.prices[event.price] ?? event.price)
   : "";
 ---
-<tr data-time={event.startTime ?? ""}>
-  <td class="time">{event.startTime ?? ""}</td>
-  <td class="title">
-    <a href={event.sourceUrl} target="_blank" rel="noopener">{event.title}</a>
-    {event.recurrenceHint && <span class="recurs" title={event.recurrenceHint}>↻</span>}
+<tr data-time={event.startTime ?? ""} class="[&>td]:border-b [&>td]:border-gray-100 [&>td]:px-3 [&>td]:py-1.5 [&>td]:align-top">
+  <td class="whitespace-nowrap text-gray-600">{event.startTime ?? ""}</td>
+  <td>
+    <a href={event.sourceUrl} target="_blank" rel="noopener" class="text-inherit no-underline hover:underline">{event.title}</a>
+    {event.recurrenceHint && <span class="ml-1 cursor-help text-gray-500" title={event.recurrenceHint}>↻</span>}
   </td>
-  <td class="venue">{event.venueName}</td>
-  <td class="price">{displayPrice}</td>
+  <td>{event.venueName}</td>
+  <td class="whitespace-nowrap text-gray-600">{displayPrice}</td>
 </tr>
-<style>
-  td { padding: 0.4rem 0.75rem; border-bottom: 1px solid #eee; vertical-align: top; }
-  .time { white-space: nowrap; color: #444; }
-  .recurs { color: #888; margin-left: 0.3rem; cursor: help; }
-  .price { white-space: nowrap; color: #444; }
-  a { color: inherit; text-decoration: none; }
-  a:hover { text-decoration: underline; }
-</style>

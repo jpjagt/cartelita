@@ -1,34 +1,26 @@
 ---
-import { getCategoryLists } from "@/lib/queries";
-import { LOCALES, type Locale } from "@/lib/types";
+import { getEventsForList } from "@/lib/queries";
+import { groupEventsByDay } from "@/lib/agenda";
+import { LOCALES, DEFAULT_LIST, type Locale } from "@/lib/types";
 import { t, categoryName } from "@/i18n";
+import Layout from "@/components/Layout.astro";
+import Navbar from "@/components/Navbar.astro";
+import AgendaDay from "@/components/AgendaDay.astro";
 
 export async function getStaticPaths() {
-  const lists = await getCategoryLists();
-  return LOCALES.map((locale) => ({ params: { locale }, props: { lists } }));
+  return LOCALES.map((locale) => ({ params: { locale } }));
 }
 
 const locale = Astro.params.locale as Locale;
 const strings = t(locale);
-const { lists } = Astro.props;
+const name = categoryName(locale, DEFAULT_LIST);
+const events = await getEventsForList(DEFAULT_LIST, locale);
+const days = groupEventsByDay(events);
 ---
-<html lang={locale}>
-  <head><meta charset="utf-8" /><title>{strings.siteTitle}</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-  </head>
-  <body>
-    <header><h1>{strings.siteTitle}</h1></header>
-    <main>
-      <nav>{lists.map((l) => <a href={`/${locale}/${l.slug}`}>{categoryName(locale, l.slug)}</a>)}</nav>
-      <p class="langs">{LOCALES.map((lc) => (
-        <a href={`/${lc}`} aria-current={lc === locale ? "page" : undefined}>{lc.toUpperCase()}</a>
-      ))}</p>
-    </main>
-    <style>
-      body { font-family: system-ui, sans-serif; max-width: 60rem; margin: 2rem auto; padding: 0 1rem; }
-      nav a { margin-right: 1rem; font-size: 1.1rem; }
-      .langs a { margin-right: 0.5rem; color: #888; font-size: 0.85rem; }
-      .langs a[aria-current="page"] { color: #000; font-weight: 600; }
-    </style>
-  </body>
-</html>
+<Layout locale={locale} title={`${name} — ${strings.siteTitle}`} canonical={`/${locale}/${DEFAULT_LIST}`}>
+  <Navbar locale={locale} activeList={DEFAULT_LIST} />
+  <main>
+    {days.length === 0 && <p class="py-8 text-gray-500">{strings.noEvents}</p>}
+    {days.map((d) => <AgendaDay day={d} locale={locale} />)}
+  </main>
+</Layout>

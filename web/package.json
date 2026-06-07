@@ -9,8 +9,10 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@tailwindcss/vite": "^4.3.0",
     "astro": "^5.0.0",
-    "postgres": "^3.4.0"
+    "postgres": "^3.4.0",
+    "tailwindcss": "^4.3.0"
   },
   "devDependencies": {
     "@types/node": "^25.9.1",

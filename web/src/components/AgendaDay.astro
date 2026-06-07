@@ -9,16 +9,11 @@ const heading = new Date(day.date + "T00:00:00").toLocaleDateString(localeTag(lo
 });
 ---
 <section data-date={day.date}>
-  <h2>{heading}</h2>
-  <table>
+  <h2 class="mt-6 bg-gray-200 px-3 py-1.5 text-base font-medium">{heading}</h2>
+  <table class="w-full border-collapse">
     <thead class="sr-only">
       <tr><th scope="col">Time</th><th scope="col">Event</th><th scope="col">Venue</th><th scope="col">Price</th></tr>
     </thead>
     <tbody>{day.events.map((e) => <EventRow event={e} locale={locale} />)}</tbody>
   </table>
 </section>
-<style>
-  h2 { background: #e8e8e8; padding: 0.4rem 0.75rem; font-size: 1rem; margin: 1.5rem 0 0; }
-  table { width: 100%; border-collapse: collapse; }
-  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
-</style>
