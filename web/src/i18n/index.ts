@@ -45,7 +45,7 @@ const DICT: Record<Locale, Strings> = {
       kids: "Infantil",
       pop: "Pop",
     },
-    prices: { free: "Gratis", "sold-out": "No hay" },
+    prices: { free: "Gratis", "sold-out": "Agotado" },
   },
   en: {
     siteTitle: "Cartelita",
