@@ -1,6 +1,38 @@
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { dirname, join } from "node:path";
 import type { Locale } from "@/lib/types";
 import { categoryName } from "@/i18n";
 import { t } from "@/i18n";
+
+// The OG image is set in the same Helvetica clone as the live site (TeX Gyre
+// Heros). The live site loads it from /fonts via @font-face, but Playwright
+// renders this template with page.setContent(), which has NO base URL — a
+// relative font URL would never resolve. So we read the woff2 from public/
+// and inline it as a base64 data: URI. Read once at module load (the script
+// renders many pages). Keep this stack + font in sync with global.css. */
+const FONTS_DIR = join(
+  dirname(fileURLToPath(import.meta.url)),
+  "..",
+  "..",
+  "public",
+  "fonts",
+);
+function fontDataUri(file: string): string {
+  const b64 = readFileSync(join(FONTS_DIR, file)).toString("base64");
+  return `data:font/woff2;base64,${b64}`;
+}
+const FONT_FACE_CSS = `
+@font-face {
+  font-family: "TeX Gyre Heros";
+  src: url("${fontDataUri("TeXGyreHeros-Regular.woff2")}") format("woff2");
+  font-weight: 400; font-style: normal;
+}
+@font-face {
+  font-family: "TeX Gyre Heros";
+  src: url("${fontDataUri("TeXGyreHeros-Bold.woff2")}") format("woff2");
+  font-weight: 700; font-style: normal;
+}`;
 
 export interface OgNavItem {
   slug: string | null; // null for the "and more" pseudo-item
@@ -156,11 +188,12 @@ export function renderOgHtml({ locale, list, lists, days }: RenderOgArgs): strin
 
   return `<!DOCTYPE html>
 <html lang="${locale}"><head><meta charset="utf-8"><style>
+${FONT_FACE_CSS}
 * { margin:0; padding:0; box-sizing:border-box; }
 html,body { width:1200px; height:630px; }
 body {
   background:${BG}; color:${FG}; overflow:hidden;
-  font-family:"Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family:"Helvetica Neue", Helvetica, "TeX Gyre Heros", Arial, sans-serif;
   font-size:${Math.round(cell * 0.56)}px;
   display:grid;
   grid-template-columns:repeat(26, ${cell}px);

@@ -23,9 +23,11 @@ CARTELERA_URL = f"{BASE_URL}/cine/renoir-floridablanca/cartelera/"
 VENUE_SLUG = "renoir-floridablanca"
 
 # The cartelera carries no per-screening price. Renoir's price table is heavily
-# tiered (weekday vs weekend vs "día del espectador" vs promos); we apply a single
-# concise general-admission range (weekday→weekend adult ticket) to every event.
-DEFAULT_PRICE = "8,50–9,80€"
+# tiered (weekday vs weekend vs "día del espectador" vs promos), but the spread is
+# minor (8,50€→9,80€, high < 2× low) and the page gives no per-session signal of
+# which tier applies — so per the price convention we don't show a range; we apply
+# the highest general-admission (weekend) adult ticket to every event.
+DEFAULT_PRICE = "9,80€"
 
 # How many days (incl. today) to scrape if the day picker can't be read.
 _FALLBACK_DAYS = 7

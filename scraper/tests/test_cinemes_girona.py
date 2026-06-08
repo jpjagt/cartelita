@@ -41,17 +41,24 @@ def test_dates_are_in_the_future_window():
 
 
 def test_price_coverage():
-    # No per-screening price on the page → a single public-price default is
-    # applied to every occurrence. This is the coverage test that would catch a
-    # silent price drop.
+    # No per-screening price on the page → a public-price default is applied to
+    # every occurrence. This is the coverage test that would catch a silent price
+    # drop.
     events = _events()
     priced = [e for e in events if e.price]
     assert len(priced) == len(events)
-    assert all(e.price == "7–9€" for e in events)
 
 
-def test_default_price_can_be_overridden_or_cleared():
-    events = parse_agenda(FIXTURE.read_text(), default_price=None)
+def test_price_is_weekday_or_weekend_tier_by_date():
+    # The 7€/9€ spread is minor (high < 2× low) so we never show a range; instead
+    # each occurrence gets the single tier applicable to its date.
+    for ev in _events():
+        expected = "9€" if ev.start_date.weekday() >= 5 else "7€"
+        assert ev.price == expected
+
+
+def test_price_can_be_cleared():
+    events = parse_agenda(FIXTURE.read_text(), price_for_date=lambda _: None)
     assert events
     assert all(e.price is None for e in events)
 

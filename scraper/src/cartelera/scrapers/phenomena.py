@@ -133,7 +133,9 @@ def parse_price(html: str) -> str | None:
     return f"{amount}€"
 
 
-def parse_cartelera(html: str, prices: dict[str, str | None] | None = None) -> list[ScrapedEvent]:
+def parse_cartelera(
+    html: str, prices: dict[str, str | None] | None = None
+) -> list[ScrapedEvent]:
     """Parse the Phenomena full-programme page into one ScrapedEvent per session.
 
     Each `div.cartelera` is one film with 1+ sessions; we emit a ScrapedEvent per
@@ -222,7 +224,7 @@ register(
     scraper=PhenomenaScraper(),
     venue=VenueDefinition(
         slug="phenomena",
-        name="Sala Phenomena Experience",
+        name="Phenomena Experience",
         city_slug="barcelona",
         address="Carrer de Sant Antoni Maria Claret, 168, Horta-Guinardó, 08025 Barcelona",
         site_url="https://phenomena-experience.com",

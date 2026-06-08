@@ -43,7 +43,7 @@ const lists = await getCategoryLists()
       href={`/${lc}/${activeList}`}
       aria-current={lc === locale ? "page" : undefined}
       style={`grid-column: calc(var(--c-end) - ${LOCALES.length - i}) / span 1; grid-row: 1`}
-      class="cell justify-end text-muted-foreground no-underline hover:text-foreground aria-[current=page]:font-semibold aria-[current=page]:text-foreground"
+      class="cell justify-end text-muted-foreground no-underline hover:text-foreground aria-[current=page]:font-medium aria-[current=page]:text-foreground text-xs sm:text-base"
     >
       <span class="cell-text">{lc.toUpperCase()}</span>
     </a>
@@ -77,12 +77,18 @@ const lists = await getCategoryLists()
       };
 
       if (mobile) {
-        // Locales: 2 columns right of the 9-col wordmark, across rows 1–2.
+        // Locales: packed into the top-right corner, flush against the band's
+        // right edge. Fill right-to-left on row 1; if they don't all fit beside
+        // the 9-col wordmark, the overflow wraps onto row 2 (also right-flush).
         const wmEnd = colStart + 9; // first col after the wordmark
-        const cols = Math.max(1, bandEnd - wmEnd); // cols available (≈2)
+        const perRow = Math.max(1, bandEnd - wmEnd); // cols available beside wordmark
         locales.forEach((a, i) => {
-          a.style.gridColumn = `${wmEnd + (i % cols)} / span 1`;
-          a.style.gridRow = `${1 + Math.floor(i / cols)}`;
+          const row = Math.floor(i / perRow);
+          const inRow = i % perRow;
+          const rowCount = Math.min(perRow, locales.length - row * perRow);
+          // Right-align this row: rightmost item sits at bandEnd-1.
+          a.style.gridColumn = `${bandEnd - rowCount + inRow} / span 1`;
+          a.style.gridRow = `${1 + row}`;
         });
         // Genres: flow from band start on row 3, wrapping down at the band edge.
         let col = colStart;

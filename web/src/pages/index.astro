@@ -1,22 +1,5 @@
 ---
-import { getEventsForList } from "@/lib/queries";
-import { groupEventsByDay } from "@/lib/agenda";
-import { DEFAULT_LOCALE, DEFAULT_LIST } from "@/lib/types";
-import { t, categoryName } from "@/i18n";
-import Layout from "@/components/Layout.astro";
-import Navbar from "@/components/Navbar.astro";
-import AgendaDay from "@/components/AgendaDay.astro";
-
-const locale = DEFAULT_LOCALE;
-const strings = t(locale);
-const name = categoryName(locale, DEFAULT_LIST);
-const events = await getEventsForList(DEFAULT_LIST, locale);
-const days = groupEventsByDay(events);
+import { DEFAULT_LOCALE, DEFAULT_LIST } from "@/lib/types"
+import ListView from "@/layouts/ListView.astro"
 ---
-<Layout locale={locale} title={`${name} — ${strings.siteTitle}`} canonical={`/${locale}/${DEFAULT_LIST}`} genre={DEFAULT_LIST}>
-  <Navbar locale={locale} activeList={DEFAULT_LIST} />
-  <main>
-    {days.length === 0 && <p class="py-8 text-gray-500">{strings.noEvents}</p>}
-    {days.map((d) => <AgendaDay day={d} locale={locale} genre={DEFAULT_LIST} />)}
-  </main>
-</Layout>
+<ListView locale={DEFAULT_LOCALE} list={DEFAULT_LIST} />

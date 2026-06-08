@@ -10,7 +10,7 @@ function logicalDate(startDate: string, startTime: string | null): string {
 }
 
 /** Sort key: null first, then times ≥ 05:00 ascending, then times < 05:00 (post-midnight) last. */
-function timeSortKey(t: string | null): string {
+export function timeSortKey(t: string | null): string {
   if (t === null) return "0";
   if (t >= "05:00") return "1" + t;
   return "2" + t;

@@ -2,6 +2,30 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* ── Typography ───────────────────────────────────────────────────────
+   The design is set in Helvetica Neue, which only exists on Apple devices.
+   To keep the look identical on Windows/Linux visitors AND on the Linux OG
+   render server, we bundle TeX Gyre Heros — an OFL-licensed Helvetica clone
+   with matching metrics and near-identical glyphs. The font stack prefers a
+   real Helvetica Neue/Helvetica when the machine has one, then falls back to
+   the bundled clone before any generic sans, so nobody gets a mismatched
+   font. Keep this stack in sync with og-template.ts (which inlines the same
+   woff2 as base64 because Playwright's setContent has no base URL). */
+@font-face {
+  font-family: "TeX Gyre Heros";
+  src: url("/fonts/TeXGyreHeros-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "TeX Gyre Heros";
+  src: url("/fonts/TeXGyreHeros-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --radius: 0.625rem;
   --background: oklch(1 0 0);
@@ -54,11 +78,11 @@
 
    Content does NOT use a second grid. It places into THIS grid by column
    line number. JS computes just two integers per resize:
-     --grid-cols   total whole columns that fit
-     --band-cells  width of the centered content band (≈ 1300px / cell)
-     --col-start   1-based column where the band begins, snapped so the band
-                   is centered to the nearest whole cell (so it always lands
-                   exactly on gridlines — texture stays continuous behind).
+   --grid-cols   total whole columns that fit
+   --band-cells  width of the centered content band (≈ 1300px / cell)
+   --col-start   1-based column where the band begins, snapped so the band
+   is centered to the nearest whole cell (so it always lands
+   exactly on gridlines — texture stays continuous behind).
 
    Border model: every cell draws a real right + bottom border (= the grid
    lines). The grid draws its own top + left edge. Each line is therefore
@@ -67,16 +91,17 @@
 
    Per-cell extrusion: set --wall-top / --wall-left for a faux-isometric
    hover (translates toward bottom-right, revealing walls).
-*/
+ */
 .gridpaper {
   --font-size: 18px;
-  --cell: calc(var(--font-size) * 1.8); /* ≈ 32px square */
+  --cell-multiplier: 1.8;
+  --cell: calc(var(--font-size) * var(--cell-multiplier)); /* ≈ 32px square */
   --grid-line: var(--muted);
 
   /* JS overrides these on resize; sane SSR fallbacks below. */
-  --grid-cols: 40;
+  --grid-cols: 50;
   --band-cells: 40;
-  --col-start: 1;
+  --col-start: 5;
 
   position: relative;
   display: grid;
@@ -84,7 +109,7 @@
   grid-auto-rows: var(--cell);
   justify-content: start;
   font-size: var(--font-size);
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "Helvetica Neue", Helvetica, "TeX Gyre Heros", Arial, sans-serif;
 
   /* All grid lines come from ONE source: this background texture, which
      draws the top + left line of every cell. It shares the grid's exact
@@ -99,11 +124,18 @@
   background-position: 0 0;
 }
 
+@media (max-width: 640px) {
+  .gridpaper {
+    --font-size: 16px;
+    --cell-multiplier: 1.5;
+  }
+}
+
 /* The content band is a sub-range of columns inside the one grid. We define
-   per-field column lines relative to --col-start so children can place by
-   name. Row layout (whole-cell fields, title absorbs slack):
+     per-field column lines relative to --col-start so children can place by
+     name. Row layout (whole-cell fields, title absorbs slack):
      time(3) · gap(1) · title(rest) · gap(1) · place(10) · gap(1) · price(4)
-   Band = 3+1+title+1+10+1+4, so title = band-cells − 20. */
+     Band = 3+1+title+1+10+1+4, so title = band-cells − 20. */
 .gridpaper {
   --c-time: var(--col-start);
   --c-title: calc(var(--col-start) + 3);
@@ -112,16 +144,16 @@
   --c-end: calc(var(--col-start) + var(--band-cells));
 }
 /* Event field placement. Each EventRow wrapper carries --ev (0-based event
-   index within its day). The day header is grid-row 1; events follow.
+     index within its day). The day header is grid-row 1; events follow.
 
-   Desktop: one event = one row. row = 2 + --ev.
+     Desktop: one event = one row. row = 2 + --ev.
      time(2) · title(grows) · place(grows) · price(3), all on the same row.
 
-   Mobile (≤640px): one event = TWO rows (see media query below). The narrow
-   band can't fit all four fields side by side, so the row splits:
+     Mobile (≤640px): one event = TWO rows (see media query below). The narrow
+     band can't fit all four fields side by side, so the row splits:
      row A: time(2) · title(rest)
      row B: place(grows, left) · price(3, right)
-   firstRow = 2 + --ev*2. */
+     firstRow = 2 + --ev*2. */
 .gc-time {
   grid-column: var(--c-time) / span 2;
   grid-row: calc(2 + var(--ev));
@@ -142,15 +174,15 @@
   grid-column: var(--c-time) / var(--c-end);
 }
 /* Blank spacer beneath a day's events; --ev = event count. Desktop = 1 row
-   per event, so it sits at 2 + count. */
+     per event, so it sits at 2 + count. */
 .gc-spacer {
   grid-row: calc(2 + var(--ev));
 }
 
 /* ── Mobile (≤640px): two rows per event ──────────────────────────────
-   The band is only ~11 cells wide here, so the four fields can't sit on one
-   row. Split each event across two rows; the title and place each absorb the
-   slack on their own row. firstRow = 2 + --ev*2, secondRow = firstRow + 1. */
+     The band is only ~11 cells wide here, so the four fields can't sit on one
+     row. Split each event across two rows; the title and place each absorb the
+     slack on their own row. firstRow = 2 + --ev*2, secondRow = firstRow + 1. */
 @media (max-width: 640px) {
   .gc-time {
     grid-column: var(--c-time) / span 2;
@@ -177,23 +209,116 @@
   }
 }
 
+/* ── Film grouped (masonry) layout ───────────────────────────────────
+     Film days render as a masonry of film cards instead of one row per event.
+     Each card occupies a column band on the shared cell grid; its title spans
+     the band, with showtime rows beneath. Packing (which column, which row
+     offset) is computed at build time and emitted as CSS vars on each card:
+       --fcol / --frow  : 3-column packing (desktop)
+       --fcol2 / --frow2: 2-column packing (≤768px)
+     Band = 40 cells. Desktop: 3 cols × 12 + 2 gutters × 2. The card's left
+     edge column = col-start + --fcol * 14 (12 card + 2 gutter stride).
+     Card-internal row: header is grid-row 1, so card top = 2 + --frow.
+     Showtime rows carry --sr (0-based index within the card); the title is
+     the card's first row. */
+.gridpaper {
+  --film-cols: 3;
+  --film-stride: 14;  /* 12 card cells + 2 gutter */
+  --film-width: 12;
+  --fc: var(--fcol);
+  --fr: var(--frow);
+}
+/* The card's left-edge column on the shared grid. */
+.gc-film-card {
+  --film-left: calc(var(--col-start) + var(--fc) * var(--film-stride));
+}
+.gc-film-title {
+  grid-column: var(--film-left) / span var(--film-width);
+  grid-row: calc(2 + var(--fr));
+}
+.gc-film-time {
+  grid-column: var(--film-left) / span 2;
+  grid-row: calc(2 + var(--fr) + 1 + var(--sr));
+}
+.gc-film-place {
+  grid-column: calc(var(--film-left) + 2) / calc(var(--film-left) + var(--film-width) - 3);
+  grid-row: calc(2 + var(--fr) + 1 + var(--sr));
+  justify-content: flex-start;
+  text-align: left;
+}
+.gc-film-price {
+  grid-column: calc(var(--film-left) + var(--film-width) - 3) / calc(var(--film-left) + var(--film-width));
+  grid-row: calc(2 + var(--fr) + 1 + var(--sr));
+}
+/* The film spacer sits one row below the tallest column. --fmax = total cell
+     rows consumed by the day's packing (computed in the component). */
+.gc-film-spacer {
+  grid-row: calc(2 + var(--fmax));
+}
+
+/* ≤768px (md): 2 columns. 2 cols × 19 + 1 gutter × 2 = 40. Use the 2-col
+     packing vars and the 19-cell stride. */
+@media (max-width: 768px) {
+  .gridpaper {
+    --film-stride: 21;  /* 19 card cells + 2 gutter */
+    --film-width: 19;
+    --fc: var(--fcol2);
+    --fr: var(--frow2);
+  }
+  .gc-film-spacer {
+    grid-row: calc(2 + var(--fmax2));
+  }
+}
+
+/* ≤640px (mobile): single column. Every card spans the full band, stacked in
+     source (earliest-first) order via natural auto-flow — the build-time
+     packing is ignored. Showtime rows split into two rows: time+place, then
+     price, mirroring the row layout's mobile split. */
+@media (max-width: 640px) {
+  .gc-film-card {
+    --film-left: var(--col-start);
+  }
+  .gridpaper {
+    --film-width: var(--band-cells);
+  }
+  /* Stack cards by auto-flow: clear explicit rows so each card flows after
+     the previous. Title takes a row; showtimes take two rows each. */
+  .gc-film-title {
+    grid-column: var(--col-start) / var(--c-end);
+    grid-row: auto;
+  }
+  .gc-film-time {
+    grid-column: var(--col-start) / span 2;
+    grid-row: auto;
+  }
+  .gc-film-place {
+    grid-column: calc(var(--col-start) + 2) / calc(var(--c-end) - 3);
+    grid-row: auto;
+    color: var(--muted-foreground);
+  }
+  .gc-film-price {
+    grid-column: calc(var(--c-end) - 3) / var(--c-end);
+    grid-row: auto;
+  }
+}
+
 /* Opaque cells (e.g. shaded day headers) cover the background texture on
-   their own top + left edges. .cell-lined repaints those edges in the grid
-   line color so the lines stay continuous through the shaded cell. */
+     their own top + left edges. .cell-lined repaints those edges in the grid
+     line color so the lines stay continuous through the shaded cell. */
 .cell-lined {
   --cell-top: var(--grid-line);
   --cell-left: var(--grid-line);
 }
 
 /* WHERE TO ADD INTERNAL GRID LINES through a wide/opaque cell:
-   A single spanning cell (e.g. the gc-full day header) covers the texture's
-   internal vertical AND horizontal lines that would have crossed it. To
-   redraw them inside the cell, add .cell-lined-cols (vertical) / -rows
-   (horizontal) to that cell — apply it on the element in the component,
-   e.g. AgendaDay.astro's <h2 ...>. It paints the same 2px / --cell /
-   --grid-line pattern as .gridpaper's background, so it aligns exactly.
-   background-position is offset by the cell's own --cell-left/-top inset so
-   the first internal line doesn't sit on the edge line. */
+     A single spanning cell (e.g. the gc-full day header) covers the texture's
+     internal vertical AND horizontal lines that would have crossed it. To
+     redraw them inside the cell, add .cell-lined-cols (vertical) / -rows
+     (horizontal) to that cell — apply it on the element in the component,
+     e.g. AgendaDay.astro's <h2 ...>. It paints the same 2px / --cell /
+     --grid-line pattern as .gridpaper's background, so it aligns exactly.
+     background-position is offset by the cell's own --cell-left/-top inset so
+     the first internal line doesn't sit on the edge line. */
 .cell-lined-cols {
   background-image: linear-gradient(
     to right,
@@ -216,10 +341,10 @@
 }
 
 /* A cell on the grid. Square (inherits row height). Text bottom-left, 1px
-   off the corner. Cells are transparent by default so the single background
-   texture shows through — no per-cell border, so nothing can double up at
-   sub-grid seams. To recolor an edge, set --cell-top/-right/-bottom/-left;
-   that edge draws as an opaque inset box-shadow line (no miter, no gaps). */
+     off the corner. Cells are transparent by default so the single background
+     texture shows through — no per-cell border, so nothing can double up at
+     sub-grid seams. To recolor an edge, set --cell-top/-right/-bottom/-left;
+     that edge draws as an opaque inset box-shadow line (no miter, no gaps). */
 .cell {
   position: relative;
   display: flex;
@@ -235,17 +360,17 @@
 }
 
 /* Right-aligned cell content (used for price + venue). Must come AFTER .cell
-   so its justify-content wins the cascade (same specificity, source order). */
+     so its justify-content wins the cascade (same specificity, source order). */
 .cell-right {
   justify-content: flex-end;
   text-align: right;
 }
 
 /* ── Genre colors ────────────────────────────────────────────────────
-   Each genre carries a primary (background) + text color, hardcoded per
-   genre so hover contrast is controlled. Set on any element via
-   data-genre="<slug>"; consumers read var(--genre-primary)/--genre-text.
-   Genres without an explicit color fall back to the neutral foreground. */
+     Each genre carries a primary (background) + text color, hardcoded per
+     genre so hover contrast is controlled. Set on any element via
+     data-genre="<slug>"; consumers read var(--genre-primary)/--genre-text.
+     Genres without an explicit color fall back to the neutral foreground. */
 [data-genre] {
   --genre-primary: var(--foreground);
   --genre-text: var(--background);
@@ -270,62 +395,75 @@
   --genre-text: #000000;
 }
 
-/* The "Now" line: a zero-height full-band marker injected by the client script
-   (Layout.astro) into today's section, at the grid-row of the first upcoming
-   event (or below the last event if all are past). It draws a 2px line in the
-   genre primary color on its row's top edge, overlaying the gridline without
-   adding any row height. align-self:start pins it to the top of the (zero-tall)
-   track; --genre-primary resolves from the section's data-genre. */
+/* The "Now" dot: a zero-height full-band marker injected by the client script
+     (Layout.astro) into today's section, at the grid-row of the first upcoming
+     event (or below the last event if all are past). It draws a small circle in
+     the genre primary color at the left end of its row's top edge, overlaying the
+     gridline without adding any row height. align-self:start pins it to the top of
+     the (zero-tall) track; the dot is then nudged up by half its size so it sits
+     centered on that edge. --genre-primary resolves from the section's data-genre. */
 .now-line {
   align-self: start;
-  height: 2px;
+  height: 0;
   padding: 0;
   pointer-events: none;
+  position: relative;
+}
+.now-line::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 1px;
+  width: 8px;
+  height: 8px;
+  /* center the circle on the left end of the row's top gridline */
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
   background: var(--genre-primary);
 }
 
 /* On hover, a genre-tinted cell paints its background + text in the genre
-   colors. Outer borders keep the grid-line color (set by --cell-* edges on
-   the element); inner texture lines are hidden because the opaque background
-   covers them and we don't repaint them. Title links keep their underline. */
+     colors. Outer borders keep the grid-line color (set by --cell-* edges on
+     the element); inner texture lines are hidden because the opaque background
+     covers them and we don't repaint them. Title links keep their underline. */
 .cell-genre,
 .cell-genre-hover:hover {
   background-color: var(--genre-primary);
   color: var(--genre-text);
   /* The opaque bg covers this cell's OWN top+left texture lines (the only two
-     lines a cell ever contributes). Repaint just those in the grid-line color
-     so they stay continuous; the bottom+right lines belong to the neighbor
-     cells' texture and are unaffected — same as everywhere else in the grid. */
+       lines a cell ever contributes). Repaint just those in the grid-line color
+       so they stay continuous; the bottom+right lines belong to the neighbor
+       cells' texture and are unaffected — same as everywhere else in the grid. */
   --cell-top: var(--grid-line);
   --cell-left: var(--grid-line);
 
   text-decoration: none;
 }
 /* Children that carry their own muted color (e.g. the ↻ recurrence hint)
-   should inherit the genre text color on hover for contrast against the fill. */
+     should inherit the genre text color on hover for contrast against the fill. */
 .cell-genre *,
 .cell-genre-hover:hover * {
   color: inherit;
 }
 
 /* When the title link (cell-genre-hover) is hovered, tint the time cell in the
-   same row with the genre primary color. The wrapper has display:contents so
-   :has() reaches through it to find the sibling time element. */
+     same row with the genre primary color. The wrapper has display:contents so
+     :has() reaches through it to find the sibling time element. */
 .contents:has(.cell-genre-hover:hover) time {
   color: var(--genre-primary);
 }
 
 /* ...and draw a genre-colored bottom line across every cell of that row. Each
-   cell paints its own --cell-bottom inset (the row's bottom edge), so the
-   underline runs continuously across the whole band. --genre-primary inherits
-   from the .contents wrapper's data-genre, so every cell resolves it. */
+     cell paints its own --cell-bottom inset (the row's bottom edge), so the
+     underline runs continuously across the whole band. --genre-primary inherits
+     from the .contents wrapper's data-genre, so every cell resolves it. */
 .contents:has(.cell-genre-hover:hover) {
   border-bottom: 2px solid var(--genre-primary);
 }
 
 /* Truncate long text horizontally without clipping descenders. The cell
-   itself never clips vertically (overflow visible), so glyph tails like g,
-   y, p stay visible; only the inner text run clips horizontally. */
+     itself never clips vertically (overflow visible), so glyph tails like g,
+     y, p stay visible; only the inner text run clips horizontally. */
 .cell-truncate > *,
 .cell-truncate {
   min-width: 0;
@@ -341,10 +479,10 @@
   white-space: nowrap;
   text-overflow: ellipsis;
   /* Tight line-height (1) for visual snugness against the baseline. But
-     overflow:hidden (needed for the ellipsis) would clip descenders (g, y, p)
-     because at line-height 1 the line box is exactly the em height. We pad the
-     clip box at the bottom to give descenders room, then pull it back with an
-     equal negative margin so the cell's bottom alignment is unaffected. */
+       overflow:hidden (needed for the ellipsis) would clip descenders (g, y, p)
+       because at line-height 1 the line box is exactly the em height. We pad the
+       clip box at the bottom to give descenders room, then pull it back with an
+       equal negative margin so the cell's bottom alignment is unaffected. */
   line-height: 1;
   padding-bottom: 0.25em;
   margin-bottom: -0.25em;
@@ -362,8 +500,8 @@
 }
 
 /* Mobile: 9 cols × 2 rows; font fills 2 rows (2× the cell). The locale
-   switcher tucks into the columns to the right (placed by the nav script),
-   and genres flow onto rows 3, 4, … below. */
+     switcher tucks into the columns to the right (placed by the nav script),
+     and genres flow onto rows 3, 4, … below. */
 @media (max-width: 640px) {
   .navbar-wordmark {
     grid-column: var(--c-time) / span 9;
@@ -375,9 +513,9 @@
 }
 
 /* Faux isometric extrusion. The ::before is the extruded block behind the
-   cell, offset 20% toward bottom-right. Two-tone walls via conic-gradient:
-   top wall = --wall-top, left wall = --wall-left. Only opacity + transform
-   animate (GPU-composited). Define --wall-top/--wall-left to enable. */
+     cell, offset 20% toward bottom-right. Two-tone walls via conic-gradient:
+     top wall = --wall-top, left wall = --wall-left. Only opacity + transform
+     animate (GPU-composited). Define --wall-top/--wall-left to enable. */
 .cell-extrude {
   transition: transform 0.15s ease;
 }

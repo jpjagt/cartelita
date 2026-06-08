@@ -1,40 +1,52 @@
-import { sql } from "@/lib/db";
-import type { CategoryList, AgendaEvent, Locale } from "@/lib/types";
+import { sql } from "@/lib/db"
+import type { CategoryList, AgendaEvent, Locale } from "@/lib/types"
 
 interface EventRow {
-  id: number;
-  start_date: Date | string;
-  start_time: string | null;
-  start_times: string[] | null;
-  recurrence_hint: string | null;
-  venue_name: string;
-  price: string | null;
-  title: string;
-  source_url: string;
+  id: number
+  start_date: Date | string
+  start_time: string | null
+  start_times: string[] | null
+  recurrence_hint: string | null
+  venue_name: string
+  price: string | null
+  title: string
+  source_url: string
 }
 
-const PREFERRED_LIST_ORDER = ["jazz", "classic", "theater", "film", "club", "pop"];
+const PREFERRED_LIST_ORDER = [
+  "jazz",
+  "classical",
+  "theater",
+  "film",
+  "club",
+  "pop",
+]
 
 export async function getCategoryLists(): Promise<CategoryList[]> {
   const rows = await sql<{ slug: string }[]>`
-    SELECT slug FROM list WHERE author = 'cartelera'`;
+    SELECT slug FROM list WHERE author = 'cartelera'`
   return rows
     .map((r) => ({ slug: r.slug }))
     .sort((a, b) => {
-      const ai = PREFERRED_LIST_ORDER.indexOf(a.slug);
-      const bi = PREFERRED_LIST_ORDER.indexOf(b.slug);
-      if (ai !== -1 && bi !== -1) return ai - bi;
-      if (ai !== -1) return -1;
-      if (bi !== -1) return 1;
-      return a.slug.localeCompare(b.slug);
-    });
+      const ai = PREFERRED_LIST_ORDER.indexOf(a.slug)
+      const bi = PREFERRED_LIST_ORDER.indexOf(b.slug)
+      if (ai !== -1 && bi !== -1) return ai - bi
+      if (ai !== -1) return -1
+      if (bi !== -1) return 1
+      return a.slug.localeCompare(b.slug)
+    })
 }
 
 function toDateStr(v: Date | string): string {
-  return v instanceof Date ? v.toISOString().slice(0, 10) : String(v).slice(0, 10);
+  return v instanceof Date
+    ? v.toISOString().slice(0, 10)
+    : String(v).slice(0, 10)
 }
 
-export async function getEventsForList(listSlug: string, locale: Locale): Promise<AgendaEvent[]> {
+export async function getEventsForList(
+  listSlug: string,
+  locale: Locale,
+): Promise<AgendaEvent[]> {
   // Events from the list's venues, applying each membership's optional category
   // whitelist, from today onward, chronological. Content is resolved per locale:
   // the matching event_translation if present, else the canonical event fields.
@@ -56,7 +68,7 @@ export async function getEventsForList(listSlug: string, locale: Locale): Promis
           WHERE ec.event_id = e.id AND ec.category_id = lv.whitelist_category_id
         )
       )
-    ORDER BY e.start_date, e.start_time NULLS FIRST, e.id`;
+    ORDER BY e.start_date, e.start_time NULLS FIRST, e.id`
 
   // Expand one agenda row per showtime: an event with start_times
   // [19:00, 21:00] renders as two lines. Events with no times yield a single
@@ -67,7 +79,7 @@ export async function getEventsForList(listSlug: string, locale: Locale): Promis
       ? r.start_times
       : r.start_time
         ? [r.start_time]
-        : [null];
+        : [null]
     return times.map((time) => ({
       id: r.id,
       title: r.title,
@@ -77,8 +89,8 @@ export async function getEventsForList(listSlug: string, locale: Locale): Promis
       price: r.price,
       sourceUrl: r.source_url,
       recurrenceHint: r.recurrence_hint,
-    }));
-  });
+    }))
+  })
 
   // Re-sort by (date, time): a multi-showtime event's later sessions must
   // interleave with other events by their real time, not stay pinned to the
@@ -87,6 +99,6 @@ export async function getEventsForList(listSlug: string, locale: Locale): Promis
     (a, b) =>
       a.startDate.localeCompare(b.startDate) ||
       (a.startTime ?? "").localeCompare(b.startTime ?? ""),
-  );
-  return expanded;
+  )
+  return expanded
 }

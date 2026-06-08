@@ -104,9 +104,11 @@ def test_start_times_consistent():
 
 
 def test_price_normalizer():
+    # Meaningful spread (high >= 2× low) keeps the range.
     assert _parse_price("de 35 a 75 €", False) == "35–75€"
-    assert _parse_price("De 38 a 68 euros", False) == "38–68€"
-    assert _parse_price("28 i 38 €", False) == "28–38€"
+    # Minor spreads (high < 2× low) collapse to the highest price per the 2× rule.
+    assert _parse_price("De 38 a 68 euros", False) == "68€"
+    assert _parse_price("28 i 38 €", False) == "38€"
     assert _parse_price("15 €", False) == "15€"
     assert _parse_price("18", False) == "18€"
     assert _parse_price("20.0", False) == "20€"

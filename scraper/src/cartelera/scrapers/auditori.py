@@ -11,6 +11,7 @@ import certifi
 import httpx
 
 from cartelera.scrapers import register
+from cartelera.scrapers.price import format_eur_range
 from cartelera.types import ScrapedEvent, VenueDefinition, ListMembership
 
 # L'Auditori de Barcelona — home of the OBC (Barcelona Symphony Orchestra) and
@@ -83,8 +84,9 @@ def _is_truthy(value) -> bool:
 def normalize_price(raw: str | None, sold_out: bool = False) -> str | None:
     """Normalize the venue's free-text price to the project convention:
     None (unknown/TBD), 'free', 'sold-out', or a concise display string.
-    A numeric range 'De 12 € a 16 €' → '12–16€'; a single/from price → highest
-    value, e.g. 'A partir de 25 €' → '25€'."""
+    A numeric range 'De 12 € a 16 €' → a range or highest price (per the 2× rule
+    in format_eur_range); a single/from price → highest value, e.g.
+    'A partir de 25 €' → '25€'."""
     if sold_out:
         return "sold-out"
     if not raw:
@@ -94,11 +96,12 @@ def normalize_price(raw: str | None, sold_out: bool = False) -> str | None:
         return None
     nums = [int(m.group(1)) for m in _PRICE_NUM.finditer(text)]
     if nums:
-        # A genuine range "De X € a Y €" keeps both ends; otherwise the highest
-        # single public price.
+        # A genuine range "De X € a Y €" may keep both ends; otherwise (and when
+        # the spread is minor) the highest single public price. format_eur_range
+        # applies the 2× rule.
         lo, hi = min(nums), max(nums)
         if len(nums) >= 2 and lo != hi and re.search(r"\bde\b.*\ba\b", text, re.IGNORECASE):
-            return f"{lo}–{hi}€"
+            return format_eur_range(lo, hi)
         return f"{hi}€"
     if _SOLDOUT_MARKERS.search(text):
         return "sold-out"

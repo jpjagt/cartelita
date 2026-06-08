@@ -1,0 +1,55 @@
+---
+import { getEventsForList } from "@/lib/queries"
+import { groupEventsByDay } from "@/lib/agenda"
+import { groupFilmDay } from "@/lib/film-agenda"
+import { type Locale } from "@/lib/types"
+import { t, categoryName } from "@/i18n"
+import Layout from "@/components/Layout.astro"
+import Navbar from "@/components/Navbar.astro"
+import AgendaDay from "@/components/AgendaDay.astro"
+import FilmDay from "@/components/FilmDay.astro"
+
+// The film category groups each day's events by film (masonry of cards) rather
+// than rendering one row per showtime — see FilmDay/FilmCard.
+const FILM_LIST = "film"
+
+interface Props {
+  locale: Locale
+  list: string
+}
+
+const { locale, list } = Astro.props
+const strings = t(locale)
+const name = categoryName(locale, list)
+const events = await getEventsForList(list, locale)
+const allDays = groupEventsByDay(events)
+// Coarse build-time filter: drop days before today (absolute calendar date).
+// Build runs ~05:00 Madrid, so the build clock's date is correct even on a UTC
+// builder. The client script (Layout.astro) does the fine 05:00-boundary
+// correction and heals a stale build.
+const todayAbsolute = new Date().toISOString().slice(0, 10)
+const days = allDays.filter((d) => d.date >= todayAbsolute)
+const isFilm = list === FILM_LIST
+const filmDays = isFilm ? days.map((d) => groupFilmDay(d.date, d.events)) : []
+---
+<Layout
+  locale={locale}
+  title={`${name} — ${strings.siteTitle}`}
+  canonical={`/${locale}/${list}`}
+  ogImage={`/og/${locale}-${list}.png`}
+  genre={list}
+>
+  <Navbar locale={locale} activeList={list} />
+  <main>
+    {days.length === 0 && (
+      <div class="gridpaper">
+        <p style="grid-row: 1" class="cell cell-truncate gc-full text-muted-foreground">
+          <span class="cell-text">{strings.noEvents}</span>
+        </p>
+      </div>
+    )}
+    {isFilm
+      ? filmDays.map((d) => <FilmDay day={d} locale={locale} genre={list} />)
+      : days.map((d) => <AgendaDay day={d} locale={locale} genre={list} />)}
+  </main>
+</Layout>

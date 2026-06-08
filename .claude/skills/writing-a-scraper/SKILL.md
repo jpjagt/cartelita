@@ -109,9 +109,26 @@ The `price` field must be one of:
 - `None` — price unknown or not scrape-able
 - `"free"` — no admission cost (normalize locale-specific phrases: "Entrada gratuita", "Activitat gratuïta", "entrada libre", price==0, etc.)
 - `"sold-out"` — tickets exhausted (normalize: "s.o.", "Sold Out", etc.)
-- A concise display string — informative and short. Prefer a plain value like `"10€"` or `"10–22€"`. Skip member-tier and discount prices. Show a range only when price tiers differ meaningfully for the user.
+- A concise display string — informative and short. Prefer a plain value like `"10€"` or `"10–22€"`. Skip member-tier and discount prices.
 
 When a price string contains multiple values (member prices, promo discounts), extract the main/highest public price.
+
+**Only show a range when the tiers differ meaningfully for the user.** Rule of
+thumb: if the high price point is **< 2× the low** (e.g. 7€ vs 9€), the spread is
+minor — don't emit a range; pick a single price in the scraper logic. Two ways to
+collapse it, in order of preference:
+- If each occurrence carries a signal for which tier applies (e.g. its date, when
+  weekday/weekend pricing differs), pick the **applicable tier per event** — more
+  accurate than a flat value. Cinemes Girona does this: `7€` weekdays, `9€`
+  weekends, keyed off each occurrence's `start_date.weekday()`.
+- Otherwise pick the **highest** public price across the tiers. Cines Verdi does
+  this in `_format_price` (`max(cents)`).
+Reserve a `"x–y€"` range for genuinely large, user-relevant spreads (high ≥ 2×
+low) — e.g. concert halls with real seating tiers (L'Auditori, Palau de la
+Música). When you have an integer-euro `(lo, hi)`, format it with the shared
+`cartelera.scrapers.price.format_eur_range(lo, hi)` helper — it applies this 2×
+rule for you (range only when `hi >= 2*lo`, else `"{hi}€"`). Don't hand-roll
+`f"{lo}–{hi}€"`.
 - Tests assert real properties: parses many events; every event has a valid
   date/title/url and a known category; **price coverage** (e.g. ≥90% have a
   price — this is the test that would have caught the original bug); the category

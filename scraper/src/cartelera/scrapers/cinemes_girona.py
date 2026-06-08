@@ -2,6 +2,7 @@ from __future__ import annotations
 import datetime as dt
 import html as html_module
 import re
+from typing import Callable
 
 import httpx
 from bs4 import BeautifulSoup, Tag
@@ -22,10 +23,18 @@ VENUE_SLUG = "cinemes-girona"
 
 # The cartelera carries no per-screening price. The venue's public (non-member)
 # web ticket is 7€ on weekdays and 9€ on weekends/festives (día-del-espectador 5€
-# and member/senior/youth tiers omitted per the price convention). There is no
-# per-screening signal of which tier applies, so we apply this range as a static
-# default to every occurrence (like Filmoteca's flat institutional rate).
-DEFAULT_PRICE = "7–9€"
+# and member/senior/youth tiers omitted per the price convention). The spread is
+# minor (high < 2× low), so per the price convention we never show a range — but
+# we DO know each occurrence's date, so we pick the single applicable tier per
+# event: 7€ on weekdays, 9€ on weekends. (We have no festive calendar, so holidays
+# falling on a weekday are priced at the weekday rate.)
+WEEKDAY_PRICE = "7€"
+WEEKEND_PRICE = "9€"
+
+
+def _price_for_date(date: dt.date) -> str:
+    # weekday() is 0=Mon … 5=Sat, 6=Sun.
+    return WEEKEND_PRICE if date.weekday() >= 5 else WEEKDAY_PRICE
 
 _BROWSER_UA = (
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
@@ -102,14 +111,20 @@ def _parse_time(text: str) -> dt.time | None:
     return dt.time(hh, mm) if 0 <= hh < 24 and 0 <= mm < 60 else None
 
 
-def parse_agenda(html: str, default_price: str | None = DEFAULT_PRICE) -> list[ScrapedEvent]:
+def parse_agenda(
+    html: str,
+    price_for_date: Callable[[dt.date], str | None] = _price_for_date,
+) -> list[ScrapedEvent]:
     """Parse the Cinemes Girona cartelera into one ScrapedEvent per occurrence.
 
     One occurrence = one (film, date, showtime). Film fields come from the
     `article.article-cartelera` card; the date from each desktop tab-pane id
     (`<filmid>-<YYYYMMDD>`) and the time from each showtime anchor's
     `title="YYYYMMDD HH:MM"`. The version label (DIG/VOSE/CATALÀ/…) and the genre
-    tags become free-form annotations. Every event is category `film`."""
+    tags become free-form annotations. Every event is category `film`.
+
+    `price_for_date` maps an occurrence's date to its display price (weekday vs.
+    weekend tier by default); pass `lambda _: None` to clear prices."""
     soup = BeautifulSoup(html, "html.parser")
 
     events: list[ScrapedEvent] = []
@@ -166,7 +181,7 @@ def parse_agenda(html: str, default_price: str | None = DEFAULT_PRICE) -> list[S
                             start_time=start_time,
                             source_url=source_url,
                             category_slugs=["film"],
-                            price=default_price,
+                            price=price_for_date(start_date),
                             description=description,
                             image_url=image_url,
                             external_id=external_id,

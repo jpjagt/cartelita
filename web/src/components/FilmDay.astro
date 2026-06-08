@@ -1,0 +1,27 @@
+---
+import type { FilmDayLayout, Locale } from "@/lib/types"
+import { localeTag } from "@/i18n"
+import FilmCard from "@/components/FilmCard.astro"
+interface Props { day: FilmDayLayout; locale: Locale; genre: string }
+const { day, locale, genre } = Astro.props
+const heading = new Date(day.date + "T00:00:00").toLocaleDateString(localeTag(locale), {
+  weekday: "long", day: "numeric", month: "long",
+})
+---
+<section data-date={day.date} class="gridpaper">
+  {/* Day heading spans the full content band, same as the row layout. */}
+  <h2
+    style="grid-row: 1"
+    class="cell cell-truncate cell-lined gc-full bg-muted font-medium"
+  ><span class="cell-text">{heading}</span></h2>
+
+  {day.films.map((p) => <FilmCard packed={p} locale={locale} genre={genre} />)}
+
+  {/* One blank spacer row beneath the day's films. --fmax* carry the total cell
+      rows consumed by each packing so the spacer lands just below the tallest
+      column at each breakpoint (see .gc-film-spacer in global.css). */}
+  <div
+    style={`--fmax: ${day.rows3}; --fmax2: ${day.rows2}; --fmax1: ${day.rows1}`}
+    class="cell gc-full gc-film-spacer"
+  />
+</section>

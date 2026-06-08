@@ -30,6 +30,10 @@ async function main() {
         const days = groupEventsByDay(events);
         const html = renderOgHtml({ locale, list, lists, days });
         await page.setContent(html, { waitUntil: "load" });
+        // Wait for the inlined webfont to finish loading before measuring text
+        // widths (below) or screenshotting — otherwise the nav is laid out with
+        // fallback metrics and the PNG can render in the wrong font.
+        await page.evaluate(() => document.fonts.ready);
         // Place the genre nav on the grid: each item spans a whole number of
         // cells fitting its text and flows right from col 12 on row 3 — the
         // same `spanOf` logic the live navbar runs at runtime (Navbar.astro).

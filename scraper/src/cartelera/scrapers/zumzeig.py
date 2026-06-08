@@ -158,7 +158,7 @@ register(
     scraper=ZumzeigScraper(),
     venue=VenueDefinition(
         slug="zumzeig",
-        name="Zumzeig Cinecooperativa",
+        name="Zumzeig Cine",
         city_slug="barcelona",
         address="Carrer de Béjar, 53, Sants-Montjuïc, 08014 Barcelona",
         site_url="https://zumzeigcine.coop",

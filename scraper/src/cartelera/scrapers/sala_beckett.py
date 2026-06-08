@@ -265,9 +265,10 @@ register(
         city_slug="barcelona",
         address="C/ de Pere IV, 228-232, 08005 Barcelona",
         site_url="https://www.salabeckett.cat",
-        category_slugs=["theater"],
+        category_slugs=["theater", "jazz"],
         list_memberships=[
-            ListMembership(list_slug="theater"),
+            ListMembership(list_slug="theater", whitelist_category_slug="theater"),
+            ListMembership(list_slug="jazz", whitelist_category_slug="jazz"),
         ],
     ),
 )

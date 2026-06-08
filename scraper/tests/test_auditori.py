@@ -80,7 +80,9 @@ def test_normalize_price():
     assert normalize_price("15 €") == "15€"
     assert normalize_price("25€") == "25€"
     assert normalize_price("A partir de 25 €") == "25€"
-    assert normalize_price("De 12 € a 16 €") == "12–16€"
+    # Minor spread (high < 2× low) collapses to the highest price per the 2× rule.
+    assert normalize_price("De 12 € a 16 €") == "16€"
+    # Meaningful spread (high >= 2× low) keeps the range.
     assert normalize_price("De 27 € a 85 €") == "27–85€"
     assert normalize_price("75 € / escola") == "75€"
     assert normalize_price("A determinar") is None

@@ -57,9 +57,10 @@ const ogImageUrl = ogImage ? new URL(ogImage, Astro.site).href : undefined
           // background-image lines sit on identical integer boundaries and
           // can't drift apart across many columns (sub-pixel track widths
           // were the source of the misalignment).
-          const base = parseFloat(getComputedStyle(grid).getPropertyValue("--font-size")) || 18;
+          const base = parseFloat(getComputedStyle(grid).getPropertyValue("--font-size")) || 16;
           const width = grid.clientWidth;
-          const target = Math.round(base * 1.8);
+          const cellMultiplier = parseFloat(getComputedStyle(grid).getPropertyValue("--cell-multiplier")) || 1.8
+          const target = Math.round(base * cellMultiplier);
 
           // Mobile (≤640px): no centered band — the content fills the full
           // width. Pick the whole number of cells that fits at the ~32px target,
@@ -155,8 +156,43 @@ const ogImageUrl = ogImage ? new URL(ogImage, Astro.site).href : undefined
             }
           }
           if (date === nowLogicalDate) {
-            drawNowLine(section, nowKey);
+            if (section.querySelector("[data-film-card]")) {
+              drawFilmNowDots(section, nowKey);
+            } else {
+              drawNowLine(section, nowKey);
+            }
           }
+        });
+      }
+
+      // Film layout: a small "now" dot per card, at the card's first still-
+      // upcoming showtime row. Each card is a masonry column, so the dot must
+      // sit at that showtime cell's own grid row AND column (not the band's
+      // left edge). We anchor to the showtime's time cell and copy both.
+      function drawFilmNowDots(section: HTMLElement, nowKey: string) {
+        section.querySelectorAll<HTMLElement>("[data-film-card]").forEach((card) => {
+          const times = [...card.querySelectorAll<HTMLElement>(
+            ".gc-film-showtime[data-time]:not([hidden])",
+          )];
+          if (times.length === 0) return;
+          // First upcoming showtime in this card; skip if all are still ahead
+          // (nothing past yet → no marker, same rule as the row layout).
+          let target: HTMLElement | null = null;
+          for (const cell of times) {
+            if (timeSortKey(cell.dataset.time ?? "") > nowKey) {
+              target = cell;
+              break;
+            }
+          }
+          if (target === times[0]) return;
+          const anchor = target ?? null;
+          if (!anchor) return;
+          const cs = getComputedStyle(anchor);
+          const line = document.createElement("div");
+          line.className = "now-line cell";
+          line.style.gridRow = cs.gridRowStart;
+          line.style.gridColumn = cs.gridColumnStart;
+          section.appendChild(line);
         });
       }
 

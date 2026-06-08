@@ -7,6 +7,7 @@ import httpx
 from bs4 import BeautifulSoup
 
 from cartelera.scrapers import register
+from cartelera.scrapers.price import format_eur_range
 from cartelera.types import ScrapedEvent, VenueDefinition, ListMembership
 
 # Palau de la Música Catalana runs a woost/cocktail CMS. The programme page
@@ -59,7 +60,8 @@ def _strip_html(text: str | None) -> str | None:
 def _parse_price(raw: str | None, gratis: bool) -> str | None:
     """Normalize the Palau's free-text price to the project convention.
 
-    "de 36 a 64 €"/"De 38 a 68 euros"/"28 i 38 €" -> "28–64€" style range;
+    "de 18 a 68 €" -> "18–68€" style range (only when high >= 2× low; minor
+    spreads like "de 36 a 64 €" collapse to "64€" per format_eur_range);
     "32 €"/"32"/"20.0" -> "32€"; gratis flag or a gratuït/lliure phrase -> "free";
     "Concert per invitació" or any value with no number -> None. Member/discount
     tiers (after "(", "/", "socis", "abonats"...) are cut before reading numbers.
@@ -76,7 +78,9 @@ def _parse_price(raw: str | None, gratis: bool) -> str | None:
         # No numeric price: free-admission phrasing -> free, else unknown.
         return "free" if _FREE_MARKERS.search(text) else None
     lo, hi = min(nums), max(nums)
-    return f"{lo}€" if lo == hi else f"{lo}–{hi}€"
+    # format_eur_range applies the 2× rule: a range only when high >= 2× low,
+    # otherwise just the highest price.
+    return format_eur_range(lo, hi)
 
 
 def _parse_start(value: str | None) -> tuple[dt.date, dt.time | None] | None:
