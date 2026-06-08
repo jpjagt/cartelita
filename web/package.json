@@ -16,6 +16,7 @@
   },
   "devDependencies": {
     "@types/node": "^25.9.1",
+    "vite": "^8.0.16",
     "vite-node": "^6.0.0",
     "vitest": "^2.0.0"
   },
@@ -25,9 +26,20 @@
       "sharp"
     ],
     "supportedArchitectures": {
-      "os": ["current", "linux"],
-      "cpu": ["current", "x64", "arm64"],
-      "libc": ["current", "glibc", "musl"]
+      "os": [
+        "current",
+        "linux"
+      ],
+      "cpu": [
+        "current",
+        "x64",
+        "arm64"
+      ],
+      "libc": [
+        "current",
+        "glibc",
+        "musl"
+      ]
     }
   }
 }
