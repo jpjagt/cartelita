@@ -43,7 +43,9 @@ _PRICE_TIER_CUT = re.compile(
     r"\(|/|socis|abonats|palau jove|aula palau|especial|discapacitat|anticipada|general",
     re.IGNORECASE,
 )
-_FREE_MARKERS = re.compile(r"gratu[ïi]?t|acc[ée]s lliure|entrada lliure|\blliure\b", re.IGNORECASE)
+_FREE_MARKERS = re.compile(
+    r"gratu[ïi]?t|acc[ée]s lliure|entrada lliure|\blliure\b", re.IGNORECASE
+)
 _PRICE_NUM = re.compile(r"(\d+)(?:[.,]\d+)?")
 
 
@@ -168,7 +170,9 @@ def parse_programming(json_text: str) -> list[ScrapedEvent]:
         # Genre hashtags as labels, minus the one that already drove the category
         # (e.g. the #jazz hashtag behind category == "jazz", or #flamenc → flamenco).
         annotations.extend(h for h in hashtag_titles if h.lower() != category_hashtag)
-        stage_title = _strip_html((stages.get(str(sess.get("stage"))) or {}).get("title"))
+        stage_title = _strip_html(
+            (stages.get(str(sess.get("stage"))) or {}).get("title")
+        )
         if stage_title and stage_title not in _PALAU_STAGES:
             annotations.append(stage_title)
 
@@ -198,7 +202,9 @@ class PalauMusicaScraper:
     venue_slug = VENUE_SLUG
 
     def scrape(self) -> list[ScrapedEvent]:
-        json_text = httpx.get(PROGRAMMING_JSON_URL, follow_redirects=True, timeout=60).text
+        json_text = httpx.get(
+            PROGRAMMING_JSON_URL, follow_redirects=True, timeout=60
+        ).text
         return parse_programming(json_text)
 
 
@@ -206,7 +212,7 @@ register(
     scraper=PalauMusicaScraper(),
     venue=VenueDefinition(
         slug="palau-musica",
-        name="Palau de la Música Catalana",
+        name="Palau de la Música",
         city_slug="barcelona",
         address="C/ Palau de la Música, 4-6, 08003 Barcelona",
         site_url="https://www.palaumusica.cat",

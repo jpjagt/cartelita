@@ -10,6 +10,7 @@
     "og": "vite-node scripts/og.ts"
   },
   "dependencies": {
+    "@rolldown/binding-linux-x64-gnu": "^1.1.0",
     "@tailwindcss/vite": "^4.3.0",
     "astro": "^5.0.0",
     "postgres": "^3.4.0",

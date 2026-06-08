@@ -96,27 +96,27 @@ export function renderOgHtml({ locale, list, lists, days }: RenderOgArgs): strin
   const cell = 1200 / 26;
 
   // Header: wordmark on the left, genre nav on the wordmark's baseline row. The
-  // wordmark spans cols 1–11 / 3 rows (matching the live site); the nav occupies
-  // a SINGLE grid cell spanning cols 12→end on row 3 and lays its items out with
-  // flexbox, so the browser sizes each item to its actual text. (An earlier
-  // approach placed each item in its own grid column via a label-length
-  // heuristic; that both overflowed the 26-col canvas — clipping the trailing
-  // "and more" — and was fragile across the differing font metrics of the macOS
-  // dev box vs. the Linux build container. Flex sizing is exact and metric-
-  // independent.)
+  // wordmark spans cols 1–11 / 3 rows (matching the live site); the nav items
+  // sit on row 3, flowing right from col 12. Each item is placed in its own
+  // grid columns, sized to a WHOLE number of cells fitting its text — exactly
+  // like the live navbar's `spanOf` logic — so the tabs land on gridlines. The
+  // template can't measure text width (it's a pure string), so each item is
+  // emitted with only its colors and a `data-navitem` marker; og.ts measures
+  // and assigns grid-column/-row in the browser after setContent (where the
+  // real font metrics live, matching the live nav's runtime measurement).
   const navItems = nav
     .map((n) => {
       const c = n.slug ? GENRE_COLORS[n.slug] : undefined;
       const style = n.active && c
         ? `background:${c.primary};color:${c.text};`
         : `color:${MUTED_FG};`;
-      return `<span class="navitem" style="${style}">${esc(n.label)}</span>`;
+      return `<span class="cell navitem" data-navitem style="${style}"><span class="navitem-text">${esc(n.label)}</span></span>`;
     })
     .join("");
-  const navHtml = `<div class="cell nav" style="grid-row:3;grid-column:12/-1;">${navItems}</div>`;
+  const navHtml = navItems;
 
   const rows: string[] = [];
-  let gridRow = 5; // rows 1-3 = header (3-row wordmark + nav), row 4 = spacer
+  let gridRow = 4; // rows 1-3 = header (3-row wordmark + nav on row 3)
 
   for (const day of days) {
     rows.push(
@@ -176,22 +176,29 @@ body {
 }
 .cell.right { justify-content:flex-end; text-align:right; }
 .cell.ellip { text-overflow:ellipsis; }
-/* Genre nav: one grid cell (cols 10→end) flexing its items left→right so the
-   browser sizes each to its text — no fixed columns, no overflow math. */
-.nav { overflow:hidden; padding:0; gap:0; align-items:stretch; }
-.navitem {
-  display:flex; align-items:flex-end; white-space:nowrap;
-  padding:0 8px 2px 8px; line-height:1;
+/* Genre nav items: each is its own grid cell (placed by og.ts), bottom-left
+   aligned and sized to a whole number of cells fitting its text. */
+.navitem { overflow:hidden; white-space:nowrap; }
+.navitem-text {
+  display:block; max-width:100%; overflow:hidden; white-space:nowrap;
+  text-overflow:ellipsis;
 }
+/* Wordmark: 11 cols × 3 rows, font 2.6× the cell, bottom-left aligned. Mirrors
+   .navbar-wordmark from global.css, including the 'r' kerning fix and the
+   margin-left:-3px / line-height:0.78 baseline tuning. */
 .wordmark {
   grid-row:1 / span 3; grid-column:1 / span 11;
-  font-size:${Math.round(cell * 2.6)}px; font-weight:600; color:${FG};
-  align-items:center; overflow:visible;
+  font-weight:600; color:${FG};
+  align-items:flex-end; overflow:visible;
+}
+.wordmark .wordmark-text {
+  font-size:${Math.round(cell * 2.6)}px; line-height:0.78; margin-left:-3px;
+  white-space:nowrap;
 }
 .day { font-weight:500; }
 </style></head>
 <body>
-<div class="cell wordmark">Cartelita</div>
+<div class="cell wordmark"><span class="wordmark-text">Ca<span style="margin-right:2px">r</span>telita</span></div>
 ${navHtml}
 ${rows.join("\n")}
 </body></html>`;
