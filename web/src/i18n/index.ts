@@ -4,6 +4,7 @@ interface Strings {
   siteTitle: string
   noEvents: string
   back: string
+  andMore: string
   // category names keyed by category slug
   categories: Record<string, string>
   prices: Record<string, string>
@@ -14,6 +15,7 @@ const DICT: Record<Locale, Strings> = {
     siteTitle: "Cartelita",
     noEvents: "No hi ha esdeveniments propers.",
     back: "Inici",
+    andMore: "i més",
     categories: {
       film: "Cinema",
       jazz: "Jazz",
@@ -31,6 +33,7 @@ const DICT: Record<Locale, Strings> = {
     siteTitle: "Cartelita",
     noEvents: "No hay eventos próximos.",
     back: "Inicio",
+    andMore: "y más",
     categories: {
       film: "Cine",
       jazz: "Jazz",
@@ -42,12 +45,13 @@ const DICT: Record<Locale, Strings> = {
       kids: "Infantil",
       pop: "Pop",
     },
-    prices: { free: "Gratis", "sold-out": "Agotado" },
+    prices: { free: "Gratis", "sold-out": "No hay" },
   },
   en: {
     siteTitle: "Cartelita",
     noEvents: "No upcoming events.",
     back: "Home",
+    andMore: "and more",
     categories: {
       film: "Film",
       jazz: "Jazz",
