@@ -1,14 +1,19 @@
 # Coolify/Nixpacks build overrides.
 #
-# Default Nixpacks install is `pnpm i --frozen-lockfile`, which on this Linux
-# container does NOT materialize the foreign-platform optional binding
-# @rolldown/binding-linux-x64-gnu (pulled in transitively via @tailwindcss/vite
-# -> rolldown). The lockfile is generated on macOS, and pnpm leaves the Linux
-# binding in its "skipped" set under a frozen install, so `astro build` then
-# fails with "Cannot find native binding".
+# install: re-run without --frozen-lockfile so pnpm honors supportedArchitectures
+# and fetches the Linux rolldown binding (see git history / rolldown#9098), then
+# install the Chromium binary + its system libraries for Playwright OG rendering.
 #
-# Re-running install without --frozen-lockfile lets pnpm honor the
-# supportedArchitectures config in package.json and actually fetch the Linux
-# bindings. See https://github.com/rolldown/rolldown/discussions/9098
+# build: produce the static site, then generate OG PNGs into dist/og/ with the
+# OG render script (needs DATABASE_URL, same as the build).
 [phases.install]
-cmds = ["pnpm install --no-frozen-lockfile"]
+cmds = [
+  "pnpm install --no-frozen-lockfile",
+  "pnpm exec playwright install --with-deps chromium",
+]
+
+[phases.build]
+cmds = [
+  "pnpm build",
+  "pnpm og",
+]
