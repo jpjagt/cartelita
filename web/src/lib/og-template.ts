@@ -86,26 +86,24 @@ export function renderOgHtml({ locale, list, lists, days }: RenderOgArgs): strin
   // Cell ≈ 1200 / 26. Rows are the same square height.
   const cell = 1200 / 26;
 
-  // Header: wordmark on the left, genre nav flowing after it on the wordmark's
-  // baseline row. The wordmark spans cols 1–9 / 2 rows; the nav flows left→right
-  // on row 2 from col 10. Each item gets an EXPLICIT column span — without one,
-  // every span auto-places into the same track and the labels pile on top of
-  // each other. We approximate the live site's text-measured width: at the nav
-  // font size a glyph is ≈0.5 cells, plus 1 cell of breathing room.
-  const navSpan = (label: string) => Math.max(2, Math.ceil(label.length * 0.5) + 1);
-  let navCol = 10;
-  const navHtml = nav
+  // Header: wordmark on the left, genre nav after it on the wordmark's baseline
+  // row. The wordmark spans cols 1–9 / 2 rows; the nav occupies a SINGLE grid
+  // cell spanning cols 10→end on row 2 and lays its items out with flexbox, so
+  // the browser sizes each item to its actual text. (An earlier approach placed
+  // each item in its own grid column via a label-length heuristic; that both
+  // overflowed the 26-col canvas — clipping the trailing "and more" — and was
+  // fragile across the differing font metrics of the macOS dev box vs. the Linux
+  // build container. Flex sizing is exact and metric-independent.)
+  const navItems = nav
     .map((n) => {
       const c = n.slug ? GENRE_COLORS[n.slug] : undefined;
       const style = n.active && c
         ? `background:${c.primary};color:${c.text};`
         : `color:${MUTED_FG};`;
-      const span = navSpan(n.label);
-      const col = navCol;
-      navCol += span;
-      return `<span class="cell" style="grid-row:2;grid-column:${col}/span ${span};${style}">${esc(n.label)}</span>`;
+      return `<span class="navitem" style="${style}">${esc(n.label)}</span>`;
     })
     .join("");
+  const navHtml = `<div class="cell nav" style="grid-row:2;grid-column:10/-1;">${navItems}</div>`;
 
   const rows: string[] = [];
   let gridRow = 4; // rows 1-2 = header, row 3 = spacer
@@ -168,6 +166,13 @@ body {
 }
 .cell.right { justify-content:flex-end; text-align:right; }
 .cell.ellip { text-overflow:ellipsis; }
+/* Genre nav: one grid cell (cols 10→end) flexing its items left→right so the
+   browser sizes each to its text — no fixed columns, no overflow math. */
+.nav { overflow:hidden; padding:0; gap:0; align-items:stretch; }
+.navitem {
+  display:flex; align-items:flex-end; white-space:nowrap;
+  padding:0 8px 2px 8px; line-height:1;
+}
 .wordmark {
   grid-row:1 / span 2; grid-column:1 / span 9;
   font-size:${Math.round(cell * 2.2)}px; font-weight:600; color:${FG};

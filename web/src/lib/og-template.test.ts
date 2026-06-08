@@ -77,20 +77,17 @@ describe("renderOgHtml", () => {
     expect(html).not.toContain(">EN<");
   });
 
-  it("places each genre nav item in its own explicit column after the wordmark", () => {
+  it("lays the genre nav out as one flex cell after the wordmark", () => {
     const html = renderOgHtml({ locale: "es", list: "jazz", lists, days });
-    // The nav row is row 2; every nav item must carry an explicit grid-column
-    // starting at col 10+ (after the 9-col wordmark) so they don't pile into
-    // one track and overlap. Collect the start columns and assert they ascend.
-    const cols = [...html.matchAll(/grid-row:2;grid-column:(\d+)\/span (\d+);/g)].map(
-      (m) => ({ start: Number(m[1]), span: Number(m[2]) }),
-    );
-    expect(cols.length).toBe(5); // Jazz + Clásica + Teatro + Cine + y más
-    expect(cols[0].start).toBe(10);
-    for (let i = 1; i < cols.length; i++) {
-      // Next item starts exactly where the previous one ended — no overlap.
-      expect(cols[i].start).toBe(cols[i - 1].start + cols[i - 1].span);
-    }
+    // The nav is a SINGLE grid cell spanning cols 10→end on row 2 (so it can
+    // never overflow the 26-col canvas the way per-item columns did), and it
+    // flexes its items. There must be exactly one nav container and one
+    // .navitem per nav entry (Jazz + Clásica + Teatro + Cine + y más = 5).
+    expect(html).toContain('class="cell nav" style="grid-row:2;grid-column:10/-1;"');
+    const items = [...html.matchAll(/class="navitem"/g)];
+    expect(items.length).toBe(5);
+    // No leftover per-item grid-column placement on row 2.
+    expect(html).not.toMatch(/grid-row:2;grid-column:\d+\/span/);
   });
 
   it("renders the event row fields with OG column spans", () => {
