@@ -270,6 +270,20 @@
   --genre-text: #000000;
 }
 
+/* The "Now" line: a zero-height full-band marker injected by the client script
+   (Layout.astro) into today's section, at the grid-row of the first upcoming
+   event (or below the last event if all are past). It draws a 2px line in the
+   genre primary color on its row's top edge, overlaying the gridline without
+   adding any row height. align-self:start pins it to the top of the (zero-tall)
+   track; --genre-primary resolves from the section's data-genre. */
+.now-line {
+  align-self: start;
+  height: 2px;
+  padding: 0;
+  pointer-events: none;
+  background: var(--genre-primary);
+}
+
 /* On hover, a genre-tinted cell paints its background + text in the genre
    colors. Outer borders keep the grid-line color (set by --cell-* edges on
    the element); inner texture lines are hidden because the opaque background

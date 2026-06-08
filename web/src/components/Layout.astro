@@ -7,9 +7,12 @@ interface Props {
   title: string
   canonical: string
   ogImage?: string
+  /** Active genre slug; sets data-genre on <body> so --genre-primary resolves
+      page-wide (the now-line and any other genre-tinted chrome read it). */
+  genre: string
 }
 
-const { locale, title, canonical, ogImage } = Astro.props
+const { locale, title, canonical, ogImage, genre } = Astro.props
 const canonicalUrl = new URL(canonical, Astro.site)
 const ogImageUrl = ogImage ? new URL(ogImage, Astro.site).href : undefined
 ---
@@ -40,7 +43,7 @@ const ogImageUrl = ogImage ? new URL(ogImage, Astro.site).href : undefined
       });
     </script>
   </head>
-  <body class="font-sans bg-background text-foreground">
+  <body data-genre={genre} class="font-sans bg-background text-foreground">
     <slot />
     <script>
       // One full-bleed grid. JS computes only integers: how many whole
@@ -92,30 +95,117 @@ const ogImageUrl = ogImage ? new URL(ogImage, Astro.site).href : undefined
       window.addEventListener("load", syncGrid);
     </script>
     <script>
-      const now = new Date();
-      const hhmm = now.toTimeString().slice(0, 5);
-      const todayIso = now.toISOString().slice(0, 10);
-      const yesterdayIso = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1)
-        .toISOString().slice(0, 10);
-      const isPostMidnight = hhmm < "05:00";
+      // Time-aware agenda. Runs on load and whenever the tab is refocused, so a
+      // page left open overnight self-corrects. Reasons in the same "logical
+      // day" frame as src/lib/agenda.ts: the 05:00 boundary means events at
+      // 00:00–04:59 belong to the PREVIOUS evening's section, so section
+      // data-date is a *logical* date and we must compare "now" the same way.
 
-      document.querySelectorAll<HTMLElement>("section[data-date]").forEach((section) => {
-        const date = section.dataset.date ?? "";
-        if (date < yesterdayIso) {
-          // Fully past days always hidden.
-          section.hidden = true;
-        } else if (date === yesterdayIso && isPostMidnight) {
-          // Previous calendar day: only keep rows with post-midnight times (00:00–04:59).
+      // Mirror agenda.ts timeSortKey: empty first, then ≥05:00, then post-midnight last.
+      function timeSortKey(t: string): string {
+        if (t === "") return "0";
+        if (t >= "05:00") return "1" + t;
+        return "2" + t;
+      }
+
+      // Local yyyy-mm-dd (NOT toISOString, which shifts to UTC and can lose a
+      // day). Section data-date values are local calendar dates, so "now" must
+      // be expressed the same way.
+      function localDateStr(d: Date): string {
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, "0");
+        const day = String(d.getDate()).padStart(2, "0");
+        return `${y}-${m}-${day}`;
+      }
+
+      function syncAgenda() {
+        const now = new Date();
+        const hhmm = now.toTimeString().slice(0, 5);
+        const isPostMidnight = hhmm < "05:00";
+        // Logical "today": calendar date, rolled back one day before 05:00.
+        const nowLogicalDate = localDateStr(
+          new Date(now.getFullYear(), now.getMonth(), now.getDate() - (isPostMidnight ? 1 : 0)),
+        );
+        const nowKey = timeSortKey(hhmm);
+
+        document.querySelectorAll<HTMLElement>(".now-line").forEach((el) => el.remove());
+
+        document.querySelectorAll<HTMLElement>("section[data-date]").forEach((section) => {
+          const date = section.dataset.date ?? "";
+          section.hidden = false;
           section.querySelectorAll<HTMLElement>("[data-time]").forEach((row) => {
-            const t = row.dataset.time ?? "";
-            if (t === "" || t >= "05:00") row.hidden = true;
+            row.hidden = false;
           });
-          // Hide the whole section if nothing remains.
-          if (!section.querySelector("[data-time]:not([hidden])")) section.hidden = true;
-        } else if (date > todayIso) {
-          // Future days always visible.
+
+          if (date < nowLogicalDate) {
+            // Fully past logical days hidden (also heals a stale build).
+            section.hidden = true;
+            return;
+          }
+          if (date === nowLogicalDate && isPostMidnight) {
+            // Current logical day viewed after midnight = yesterday's evening,
+            // now over. Keep only post-midnight rows (00:00–04:59).
+            section.querySelectorAll<HTMLElement>("[data-time]").forEach((row) => {
+              const t = row.dataset.time ?? "";
+              if (t === "" || t >= "05:00") row.hidden = true;
+            });
+            if (!section.querySelector("[data-time]:not([hidden])")) {
+              section.hidden = true;
+              return;
+            }
+          }
+          if (date === nowLogicalDate) {
+            drawNowLine(section, nowKey);
+          }
+        });
+      }
+
+      // Insert a zero-height marker (2px --genre-primary top border) at the grid
+      // row of the first still-upcoming event; if all events are past, place it
+      // after the last visible event (before the spacer).
+      function drawNowLine(section: HTMLElement, nowKey: string) {
+        const rows = [...section.querySelectorAll<HTMLElement>(
+          ".contents[data-time]:not([hidden])",
+        )];
+        if (rows.length === 0) return;
+
+        let target: HTMLElement | null = null;
+        for (const row of rows) {
+          if (timeSortKey(row.dataset.time ?? "") > nowKey) {
+            target = row;
+            break;
+          }
         }
+
+        // Don't draw a line above the first event: if "now" is before the day's
+        // first event, there's nothing prior to it, so the marker would just sit
+        // at the top of the section. Only show it once at least one event is past.
+        if (target === rows[0]) return;
+
+        // Anchor element whose top edge the line sits on. For an upcoming
+        // event, that's the event's own first cell. If every event is past,
+        // anchor to the spacer, which is already positioned just below the
+        // last event in both the desktop (1 row/event) and mobile (2
+        // rows/event) layouts — so we never duplicate that row math here.
+        const anchor = target
+          ? target.querySelector<HTMLElement>(".cell")
+          : section.querySelector<HTMLElement>(".gc-spacer");
+        if (!anchor) return;
+        const gridRowStart = getComputedStyle(anchor).gridRowStart;
+
+        const line = document.createElement("div");
+        line.className = "now-line cell gc-full";
+        line.style.gridRow = gridRowStart;
+        section.appendChild(line);
+      }
+
+      syncAgenda();
+      document.addEventListener("visibilitychange", () => {
+        if (!document.hidden) syncAgenda();
       });
+      // Recompute the now-line position after the grid settles on resize
+      // (desktop/mobile row formulas differ).
+      window.addEventListener("resize", syncAgenda);
     </script>
   </body>
 </html>

@@ -1,15 +1,17 @@
 # Coolify/Nixpacks build overrides.
 #
-# install: re-run without --frozen-lockfile so pnpm honors supportedArchitectures
-# and fetches the Linux rolldown binding (see git history / rolldown#9098), then
-# install the Chromium binary + its system libraries for Playwright OG rendering.
+# install: install from the committed lockfile with --frozen-lockfile. The lock
+# already pins every platform's rolldown binding (incl. @rolldown/binding-linux-
+# x64-gnu), so a deterministic install fetches the Linux binding. Deleting the
+# lock and re-resolving instead triggers the pnpm optional-deps bug that drops
+# that binding (npm/cli#4828, rolldown#9098). Then install the Chromium binary +
+# its system libraries for Playwright OG rendering.
 #
 # build: produce the static site, then generate OG PNGs into dist/og/ with the
 # OG render script (needs DATABASE_URL, same as the build).
 [phases.install]
 cmds = [
-  "rm -f pnpm-lock.yaml",
-  "pnpm install --no-frozen-lockfile",
+  "pnpm install --frozen-lockfile",
   "pnpm exec playwright install --with-deps chromium",
 ]
 

@@ -19,13 +19,20 @@ const list = Astro.params.list as string
 const strings = t(locale)
 const name = categoryName(locale, list)
 const events = await getEventsForList(list, locale)
-const days = groupEventsByDay(events)
+const allDays = groupEventsByDay(events)
+// Coarse build-time filter: drop days before today (absolute calendar date).
+// Build runs ~05:00 Madrid, so the build clock's date is correct even on a UTC
+// builder. The client script (Layout.astro) does the fine 05:00-boundary
+// correction and heals a stale build.
+const todayAbsolute = new Date().toISOString().slice(0, 10)
+const days = allDays.filter((d) => d.date >= todayAbsolute)
 ---
 <Layout
   locale={locale}
   title={`${name} — ${strings.siteTitle}`}
   canonical={`/${locale}/${list}`}
   ogImage={`/og/${locale}-${list}.png`}
+  genre={list}
 >
   <Navbar locale={locale} activeList={list} />
   <main>

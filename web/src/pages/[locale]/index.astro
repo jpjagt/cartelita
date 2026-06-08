@@ -17,10 +17,10 @@ const name = categoryName(locale, DEFAULT_LIST);
 const events = await getEventsForList(DEFAULT_LIST, locale);
 const days = groupEventsByDay(events);
 ---
-<Layout locale={locale} title={`${name} — ${strings.siteTitle}`} canonical={`/${locale}/${DEFAULT_LIST}`}>
+<Layout locale={locale} title={`${name} — ${strings.siteTitle}`} canonical={`/${locale}/${DEFAULT_LIST}`} genre={DEFAULT_LIST}>
   <Navbar locale={locale} activeList={DEFAULT_LIST} />
   <main>
     {days.length === 0 && <p class="py-8 text-gray-500">{strings.noEvents}</p>}
-    {days.map((d) => <AgendaDay day={d} locale={locale} />)}
+    {days.map((d) => <AgendaDay day={d} locale={locale} genre={DEFAULT_LIST} />)}
   </main>
 </Layout>
