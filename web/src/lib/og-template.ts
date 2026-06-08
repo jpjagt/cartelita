@@ -8,7 +8,9 @@ export interface OgNavItem {
   active: boolean;
 }
 
-const FIXED_GENRES = ["jazz", "classic", "theater", "film"];
+// Fixed display order for the OG genre nav (slug = DB list slug). The active
+// list keeps its colored fill wherever it lands; it is NOT hoisted to the front.
+const FIXED_GENRES = ["jazz", "theater", "classic", "film"];
 
 /** DB list slug → i18n category key. The list slug is `classic`; the i18n key is `classical`. */
 export function slugForName(slug: string): string {
@@ -16,23 +18,28 @@ export function slugForName(slug: string): string {
 }
 
 /**
- * OG genre nav: active genre first, then the fixed four minus the active one,
- * skipping any slug not in `lists` (real DB lists), then the localized "and more".
+ * OG genre nav, in fixed order: the four FIXED_GENRES that are real DB `lists`,
+ * then the active list IF it isn't one of those four (appended as the `[x]`
+ * "other" slot), then the localized "and more". The active item keeps its
+ * genre-colored fill regardless of position.
  */
 export function ogGenreNav(
   locale: Locale,
   active: string,
   lists: string[],
 ): OgNavItem[] {
-  const item = (slug: string, isActive: boolean): OgNavItem => ({
+  const item = (slug: string): OgNavItem => ({
     slug,
     label: categoryName(locale, slugForName(slug)),
-    active: isActive,
+    active: slug === active,
   });
-  const others = FIXED_GENRES.filter(
-    (s) => s !== active && lists.includes(s),
-  ).map((s) => item(s, false));
-  const nav: OgNavItem[] = [item(active, true), ...others];
+  const fixed = FIXED_GENRES.filter((s) => lists.includes(s)).map(item);
+  const nav: OgNavItem[] = [...fixed];
+  // Append the active list as the `[x]` other-genre slot only when it isn't
+  // already shown among the fixed four.
+  if (!FIXED_GENRES.includes(active)) {
+    nav.push(item(active));
+  }
   nav.push({ slug: null, label: t(locale).andMore, active: false });
   return nav;
 }
@@ -47,13 +54,15 @@ interface RenderOgArgs {
   days: AgendaDay[];
 }
 
-// Dark palette values mirrored from .dark in global.css (resolved to hex-ish
-// strings Playwright/Chromium renders identically; oklch is fine here too).
-const BG = "oklch(0.145 0 0)";
-const FG = "oklch(0.985 0 0)";
-const MUTED_FG = "oklch(0.708 0 0)";
-const MUTED_BG = "oklch(0.269 0 0)";
-const GRID_LINE = MUTED_BG;
+// Light palette values mirrored from :root in global.css (oklch renders
+// identically in Chromium). Background white, near-black foreground, grey
+// muted text, and a light grey grid line. The day-header band uses a slightly
+// darker grey than the grid line so it reads as a shaded row on white.
+const BG = "oklch(1 0 0)";
+const FG = "oklch(0.145 0 0)";
+const MUTED_FG = "oklch(0.556 0 0)";
+const MUTED_BG = "oklch(0.97 0 0)";
+const GRID_LINE = "oklch(0.922 0 0)";
 
 // Genre fill colors (mirrored from [data-genre] rules in global.css).
 const GENRE_COLORS: Record<string, { primary: string; text: string }> = {
@@ -86,14 +95,15 @@ export function renderOgHtml({ locale, list, lists, days }: RenderOgArgs): strin
   // Cell ≈ 1200 / 26. Rows are the same square height.
   const cell = 1200 / 26;
 
-  // Header: wordmark on the left, genre nav after it on the wordmark's baseline
-  // row. The wordmark spans cols 1–9 / 2 rows; the nav occupies a SINGLE grid
-  // cell spanning cols 10→end on row 2 and lays its items out with flexbox, so
-  // the browser sizes each item to its actual text. (An earlier approach placed
-  // each item in its own grid column via a label-length heuristic; that both
-  // overflowed the 26-col canvas — clipping the trailing "and more" — and was
-  // fragile across the differing font metrics of the macOS dev box vs. the Linux
-  // build container. Flex sizing is exact and metric-independent.)
+  // Header: wordmark on the left, genre nav on the wordmark's baseline row. The
+  // wordmark spans cols 1–11 / 3 rows (matching the live site); the nav occupies
+  // a SINGLE grid cell spanning cols 12→end on row 3 and lays its items out with
+  // flexbox, so the browser sizes each item to its actual text. (An earlier
+  // approach placed each item in its own grid column via a label-length
+  // heuristic; that both overflowed the 26-col canvas — clipping the trailing
+  // "and more" — and was fragile across the differing font metrics of the macOS
+  // dev box vs. the Linux build container. Flex sizing is exact and metric-
+  // independent.)
   const navItems = nav
     .map((n) => {
       const c = n.slug ? GENRE_COLORS[n.slug] : undefined;
@@ -103,10 +113,10 @@ export function renderOgHtml({ locale, list, lists, days }: RenderOgArgs): strin
       return `<span class="navitem" style="${style}">${esc(n.label)}</span>`;
     })
     .join("");
-  const navHtml = `<div class="cell nav" style="grid-row:2;grid-column:10/-1;">${navItems}</div>`;
+  const navHtml = `<div class="cell nav" style="grid-row:3;grid-column:12/-1;">${navItems}</div>`;
 
   const rows: string[] = [];
-  let gridRow = 4; // rows 1-2 = header, row 3 = spacer
+  let gridRow = 5; // rows 1-3 = header (3-row wordmark + nav), row 4 = spacer
 
   for (const day of days) {
     rows.push(
@@ -174,9 +184,9 @@ body {
   padding:0 8px 2px 8px; line-height:1;
 }
 .wordmark {
-  grid-row:1 / span 2; grid-column:1 / span 9;
-  font-size:${Math.round(cell * 2.2)}px; font-weight:600; color:${FG};
-  align-items:center;
+  grid-row:1 / span 3; grid-column:1 / span 11;
+  font-size:${Math.round(cell * 2.6)}px; font-weight:600; color:${FG};
+  align-items:center; overflow:visible;
 }
 .day { font-weight:500; }
 </style></head>

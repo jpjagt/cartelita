@@ -13,25 +13,37 @@ describe("slugForName", () => {
 describe("ogGenreNav", () => {
   const lists = ["jazz", "classic", "theater", "film", "club", "pop"];
 
-  it("puts the active genre first, then the fixed four minus active, then andMore", () => {
+  it("keeps the fixed order jazz·theater·classic·film, then andMore", () => {
     const nav = ogGenreNav("es", "jazz", lists);
     expect(nav.map((n) => n.label)).toEqual([
-      "Jazz", "Clásica", "Teatro", "Cine", "y más",
+      "Jazz", "Teatro", "Clásica", "Cine", "y más",
     ]);
-    expect(nav[0].active).toBe(true);
-    expect(nav.slice(1).every((n) => !n.active)).toBe(true);
+    // The active list keeps its fill in place; it is NOT hoisted to the front.
+    expect(nav[0].active).toBe(true); // jazz is first in the fixed order anyway
   });
 
-  it("does not duplicate the active genre when it is one of the fixed four", () => {
+  it("marks the active genre in place without reordering", () => {
     const nav = ogGenreNav("en", "theater", lists);
     expect(nav.map((n) => n.label)).toEqual([
-      "Theater", "Jazz", "Classical", "Film", "and more",
+      "Jazz", "Theater", "Classical", "Film", "and more",
     ]);
+    // Theater stays in its fixed slot (index 1) and is the active one.
+    expect(nav.map((n) => n.active)).toEqual([false, true, false, false, false]);
+  });
+
+  it("appends the active genre as the [x] slot when it is not one of the fixed four", () => {
+    const nav = ogGenreNav("es", "pop", lists);
+    // Fixed four first, then pop (the active 'other' genre), then andMore.
+    expect(nav.map((n) => n.label)).toEqual([
+      "Jazz", "Teatro", "Clásica", "Cine", "Pop", "y más",
+    ]);
+    const pop = nav.find((n) => n.slug === "pop");
+    expect(pop?.active).toBe(true);
   });
 
   it("skips fixed slugs that are not real DB lists", () => {
     const nav = ogGenreNav("en", "jazz", ["jazz", "classic"]);
-    // film + theater dropped (not in lists); classic kept
+    // theater + film dropped (not in lists); jazz + classic kept, in order.
     expect(nav.map((n) => n.label)).toEqual(["Jazz", "Classical", "and more"]);
   });
 
@@ -67,6 +79,14 @@ describe("renderOgHtml", () => {
     expect(html).toContain("repeat(26");
   });
 
+  it("uses the light theme (white background, near-black foreground)", () => {
+    const html = renderOgHtml({ locale: "es", list: "jazz", lists, days });
+    expect(html).toContain("background:oklch(1 0 0)"); // white page
+    expect(html).not.toContain("oklch(0.145 0 0)100%"); // sanity: no concat glitch
+    // The wordmark spans three rows (matching the live site).
+    expect(html).toContain("grid-row:1 / span 3");
+  });
+
   it("includes the wordmark and the genre nav labels but no locale switcher", () => {
     const html = renderOgHtml({ locale: "es", list: "jazz", lists, days });
     expect(html).toContain("Ca"); // wordmark "Cartelita"
@@ -79,15 +99,16 @@ describe("renderOgHtml", () => {
 
   it("lays the genre nav out as one flex cell after the wordmark", () => {
     const html = renderOgHtml({ locale: "es", list: "jazz", lists, days });
-    // The nav is a SINGLE grid cell spanning cols 10→end on row 2 (so it can
-    // never overflow the 26-col canvas the way per-item columns did), and it
-    // flexes its items. There must be exactly one nav container and one
-    // .navitem per nav entry (Jazz + Clásica + Teatro + Cine + y más = 5).
-    expect(html).toContain('class="cell nav" style="grid-row:2;grid-column:10/-1;"');
+    // The nav is a SINGLE grid cell spanning cols 12→end on row 3 (the
+    // wordmark's baseline row; the wordmark is 3 rows tall and 11 cols wide), so
+    // it can never overflow the 26-col canvas the way per-item columns did, and
+    // it flexes its items. Exactly one nav container and one .navitem per nav
+    // entry (Jazz + Teatro + Clásica + Cine + y más = 5).
+    expect(html).toContain('class="cell nav" style="grid-row:3;grid-column:12/-1;"');
     const items = [...html.matchAll(/class="navitem"/g)];
     expect(items.length).toBe(5);
-    // No leftover per-item grid-column placement on row 2.
-    expect(html).not.toMatch(/grid-row:2;grid-column:\d+\/span/);
+    // No leftover per-item grid-column placement on the nav row.
+    expect(html).not.toMatch(/grid-row:3;grid-column:\d+\/span/);
   });
 
   it("renders the event row fields with OG column spans", () => {
