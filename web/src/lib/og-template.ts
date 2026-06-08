@@ -87,14 +87,23 @@ export function renderOgHtml({ locale, list, lists, days }: RenderOgArgs): strin
   const cell = 1200 / 26;
 
   // Header: wordmark on the left, genre nav flowing after it on the wordmark's
-  // baseline row. The wordmark spans the first ~9 cols / 2 rows; nav sits on row 2.
+  // baseline row. The wordmark spans cols 1–9 / 2 rows; the nav flows left→right
+  // on row 2 from col 10. Each item gets an EXPLICIT column span — without one,
+  // every span auto-places into the same track and the labels pile on top of
+  // each other. We approximate the live site's text-measured width: at the nav
+  // font size a glyph is ≈0.5 cells, plus 1 cell of breathing room.
+  const navSpan = (label: string) => Math.max(2, Math.ceil(label.length * 0.5) + 1);
+  let navCol = 10;
   const navHtml = nav
     .map((n) => {
       const c = n.slug ? GENRE_COLORS[n.slug] : undefined;
       const style = n.active && c
         ? `background:${c.primary};color:${c.text};`
         : `color:${MUTED_FG};`;
-      return `<span class="cell" style="grid-row:2;${style}">${esc(n.label)}</span>`;
+      const span = navSpan(n.label);
+      const col = navCol;
+      navCol += span;
+      return `<span class="cell" style="grid-row:2;grid-column:${col}/span ${span};${style}">${esc(n.label)}</span>`;
     })
     .join("");
 

@@ -77,6 +77,22 @@ describe("renderOgHtml", () => {
     expect(html).not.toContain(">EN<");
   });
 
+  it("places each genre nav item in its own explicit column after the wordmark", () => {
+    const html = renderOgHtml({ locale: "es", list: "jazz", lists, days });
+    // The nav row is row 2; every nav item must carry an explicit grid-column
+    // starting at col 10+ (after the 9-col wordmark) so they don't pile into
+    // one track and overlap. Collect the start columns and assert they ascend.
+    const cols = [...html.matchAll(/grid-row:2;grid-column:(\d+)\/span (\d+);/g)].map(
+      (m) => ({ start: Number(m[1]), span: Number(m[2]) }),
+    );
+    expect(cols.length).toBe(5); // Jazz + Clásica + Teatro + Cine + y más
+    expect(cols[0].start).toBe(10);
+    for (let i = 1; i < cols.length; i++) {
+      // Next item starts exactly where the previous one ended — no overlap.
+      expect(cols[i].start).toBe(cols[i - 1].start + cols[i - 1].span);
+    }
+  });
+
   it("renders the event row fields with OG column spans", () => {
     const html = renderOgHtml({ locale: "es", list: "jazz", lists, days });
     expect(html).toContain("Martin Harley");
