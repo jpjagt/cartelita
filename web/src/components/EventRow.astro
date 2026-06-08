@@ -5,9 +5,10 @@ interface Props {
   event: AgendaEvent
   locale: Locale
   genre: string
-  row: number
+  /** 0-based index of this event within its day; drives grid-row via --ev. */
+  index: number
 }
-const { event, locale, genre, row } = Astro.props
+const { event, locale, genre, index } = Astro.props
 const strings = t(locale)
 const displayPrice = event.price
   ? (strings.prices[event.price] ?? event.price)
@@ -16,9 +17,8 @@ const displayPrice = event.price
 {/* One event = one row of the content band: time · title(grows) · place · price.
    The wrapper carries data-time for the day/row visibility script; it sits
    on the grid via `display: contents` so its children place directly. */}
-<div data-time={event.startTime ?? ""} data-genre={genre} class="contents">
+<div data-time={event.startTime ?? ""} data-genre={genre} style={`--ev: ${index}`} class="contents">
   <time
-    style={`grid-row: ${row}`}
     class="cell cell-truncate gc-time text-muted-foreground"
   ><span class="cell-text">{event.startTime ?? ""}</span></time>
 
@@ -28,7 +28,6 @@ const displayPrice = event.price
     href={event.sourceUrl}
     target="_blank"
     rel="noopener"
-    style={`grid-row: ${row}`}
     class="cell cell-truncate cell-genre-hover gc-title text-foreground no-underline hover:underline"
   >
     <span class="cell-text">
@@ -38,12 +37,10 @@ const displayPrice = event.price
   </a>
 
   <div
-    style={`grid-row: ${row}`}
     class="cell cell-truncate cell-right gc-place"
   ><span class="cell-text">{event.venueName}</span></div>
 
   <div
-    style={`grid-row: ${row}`}
     class="cell cell-truncate cell-right gc-price text-muted-foreground"
   ><span class="cell-text">{displayPrice}</span></div>
 </div>

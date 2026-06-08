@@ -111,20 +111,70 @@
   --c-price: calc(var(--col-start) + var(--band-cells) - 3);
   --c-end: calc(var(--col-start) + var(--band-cells));
 }
+/* Event field placement. Each EventRow wrapper carries --ev (0-based event
+   index within its day). The day header is grid-row 1; events follow.
+
+   Desktop: one event = one row. row = 2 + --ev.
+     time(2) · title(grows) · place(grows) · price(3), all on the same row.
+
+   Mobile (≤640px): one event = TWO rows (see media query below). The narrow
+   band can't fit all four fields side by side, so the row splits:
+     row A: time(2) · title(rest)
+     row B: place(grows, left) · price(3, right)
+   firstRow = 2 + --ev*2. */
 .gc-time {
   grid-column: var(--c-time) / span 2;
+  grid-row: calc(2 + var(--ev));
 }
 .gc-title {
   grid-column: var(--c-title) / calc(var(--c-place) - 1);
+  grid-row: calc(2 + var(--ev));
 }
 .gc-place {
   grid-column: var(--c-place) / span 6;
+  grid-row: calc(2 + var(--ev));
 }
 .gc-price {
   grid-column: var(--c-price) / span 3;
+  grid-row: calc(2 + var(--ev));
 }
 .gc-full {
   grid-column: var(--c-time) / var(--c-end);
+}
+/* Blank spacer beneath a day's events; --ev = event count. Desktop = 1 row
+   per event, so it sits at 2 + count. */
+.gc-spacer {
+  grid-row: calc(2 + var(--ev));
+}
+
+/* ── Mobile (≤640px): two rows per event ──────────────────────────────
+   The band is only ~11 cells wide here, so the four fields can't sit on one
+   row. Split each event across two rows; the title and place each absorb the
+   slack on their own row. firstRow = 2 + --ev*2, secondRow = firstRow + 1. */
+@media (max-width: 640px) {
+  .gc-time {
+    grid-column: var(--c-time) / span 2;
+    grid-row: calc(2 + var(--ev) * 2);
+  }
+  .gc-title {
+    grid-column: calc(var(--c-time) + 2) / var(--c-end);
+    grid-row: calc(2 + var(--ev) * 2);
+  }
+  .gc-place {
+    grid-column: calc(var(--c-time) + 2) / calc(var(--c-end) - 3);
+    grid-row: calc(3 + var(--ev) * 2);
+    /* Left-align the place on mobile (overrides .cell-right). */
+    justify-content: flex-start !important;
+    text-align: left !important;
+    color: var(--muted-foreground);
+  }
+  .gc-price {
+    grid-column: calc(var(--c-end) - 3) / var(--c-end);
+    grid-row: calc(3 + var(--ev) * 2);
+  }
+  .gc-spacer {
+    grid-row: calc(2 + var(--ev) * 2);
+  }
 }
 
 /* Opaque cells (e.g. shaded day headers) cover the background texture on
@@ -180,7 +230,7 @@
   box-shadow:
     inset 0 2px 0 0 var(--cell-top, transparent),
     inset -2px 0 0 0 var(--cell-right, transparent),
-    inset 0 -2px 0 0 var(--cell-bottom, transparent),
+    0 4px 0px -2px var(--cell-bottom, transparent),
     inset 2px 0 0 0 var(--cell-left, transparent);
 }
 
@@ -251,6 +301,14 @@
   color: var(--genre-primary);
 }
 
+/* ...and draw a genre-colored bottom line across every cell of that row. Each
+   cell paints its own --cell-bottom inset (the row's bottom edge), so the
+   underline runs continuously across the whole band. --genre-primary inherits
+   from the .contents wrapper's data-genre, so every cell resolves it. */
+.contents:has(.cell-genre-hover:hover) {
+  border-bottom: 2px solid var(--genre-primary);
+}
+
 /* Truncate long text horizontally without clipping descenders. The cell
    itself never clips vertically (overflow visible), so glyph tails like g,
    y, p stay visible; only the inner text run clips horizontally. */
@@ -278,10 +336,28 @@
   margin-bottom: -0.25em;
 }
 
-/* Wordmark sized to fill a 3-row-tall cell (2.6× the cell side). */
+/* Wordmark. Desktop: 11 cols × 3 rows; font fills 3 rows (2.6× the cell). */
+.navbar-wordmark {
+  grid-column: var(--c-time) / span 11;
+  grid-row: 1 / span 3;
+}
 .navbar-wordmark .cell-text {
   font-size: calc(var(--cell) * 2.6);
-  line-height: 1;
+  line-height: 0.78;
+  margin-left: -3px;
+}
+
+/* Mobile: 9 cols × 2 rows; font fills 2 rows (2× the cell). The locale
+   switcher tucks into the columns to the right (placed by the nav script),
+   and genres flow onto rows 3, 4, … below. */
+@media (max-width: 640px) {
+  .navbar-wordmark {
+    grid-column: var(--c-time) / span 9;
+    grid-row: 1 / span 2;
+  }
+  .navbar-wordmark .cell-text {
+    font-size: calc(var(--cell) * 2);
+  }
 }
 
 /* Faux isometric extrusion. The ::before is the extruded block behind the

@@ -18,9 +18,11 @@ const heading = new Date(day.date + "T00:00:00").toLocaleDateString(localeTag(lo
     style="grid-row: 1"
     class="cell cell-truncate cell-lined gc-full bg-muted font-medium"
   ><span class="cell-text">{heading}</span></h2>
-  {day.events.map((e, i) => <EventRow event={e} locale={locale} genre={genre} row={i + 2} />)}
+  {day.events.map((e, i) => <EventRow event={e} locale={locale} genre={genre} index={i} />)}
   {/* One empty spacer row beneath the day's events. An auto grid row only
       gains height when something occupies it, so place an empty cell spanning
-      the band to force a single blank row. */}
-  <div style={`grid-row: ${day.events.length + 2}`} class="cell gc-full" />
+      the band to force a single blank row. Its row is computed from --ev (set
+      to the event count) so it lands after the last event in both the 1-row
+      desktop and 2-row mobile layouts — see .gc-spacer in global.css. */}
+  <div style={`--ev: ${day.events.length}`} class="cell gc-full gc-spacer" />
 </section>
