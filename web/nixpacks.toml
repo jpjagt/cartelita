@@ -8,6 +8,7 @@
 # OG render script (needs DATABASE_URL, same as the build).
 [phases.install]
 cmds = [
+  "rm -f pnpm-lock.yaml",
   "pnpm install --no-frozen-lockfile",
   "pnpm exec playwright install --with-deps chromium",
 ]

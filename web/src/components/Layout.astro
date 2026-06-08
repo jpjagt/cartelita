@@ -55,10 +55,29 @@ const ogImageUrl = ogImage ? new URL(ogImage, Astro.site).href : undefined
           // can't drift apart across many columns (sub-pixel track widths
           // were the source of the misalignment).
           const base = parseFloat(getComputedStyle(grid).getPropertyValue("--font-size")) || 18;
-          const cell = Math.round(base * 1.8);
-          const gridCols = Math.max(1, Math.floor(grid.clientWidth / cell));
-          const bandCells = Math.min(gridCols, Math.max(20, Math.round(BAND_PX / cell)));
-          const colStart = Math.max(1, Math.round((gridCols - bandCells) / 2) + 1);
+          const width = grid.clientWidth;
+          const target = Math.round(base * 1.8);
+
+          // Mobile (≤640px): no centered band — the content fills the full
+          // width. Pick the whole number of cells that fits at the ~32px target,
+          // then grow the cell so gridCols × cell === width exactly. The grid
+          // tracks and the background-image lines both read this same --cell, so
+          // they stay aligned by construction and no sub-cell sliver is left on
+          // the right. (cell is fractional here, which is fine: track width and
+          // line spacing are identical, so they can't drift apart.)
+          let cell, gridCols, bandCells, colStart;
+          if (width <= 640) {
+            gridCols = Math.max(1, Math.floor(width / target));
+            cell = width / gridCols;
+            bandCells = gridCols;
+            colStart = 1;
+          } else {
+            // Desktop: fixed square cell, centered band snapped to gridlines.
+            cell = target;
+            gridCols = Math.max(1, Math.floor(width / cell));
+            bandCells = Math.min(gridCols, Math.max(20, Math.round(BAND_PX / cell)));
+            colStart = Math.max(1, Math.round((gridCols - bandCells) / 2) + 1);
+          }
           grid.style.setProperty("--cell", `${cell}px`);
           grid.style.setProperty("--grid-cols", String(gridCols));
           grid.style.setProperty("--band-cells", String(bandCells));
