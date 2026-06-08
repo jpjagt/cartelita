@@ -21,7 +21,12 @@ const name = categoryName(locale, list)
 const events = await getEventsForList(list, locale)
 const days = groupEventsByDay(events)
 ---
-<Layout locale={locale} title={`${name} — ${strings.siteTitle}`} canonical={`/${locale}/${list}`}>
+<Layout
+  locale={locale}
+  title={`${name} — ${strings.siteTitle}`}
+  canonical={`/${locale}/${list}`}
+  ogImage={`/og/${locale}-${list}.png`}
+>
   <Navbar locale={locale} activeList={list} />
   <main>
     {days.length === 0 && (
