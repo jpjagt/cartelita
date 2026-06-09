@@ -6,7 +6,7 @@ def test_seed_is_idempotent(session):
     seed(session)
     seed(session)  # second run must not duplicate
     assert session.query(Category).count() == 9
-    music_theater_venues = ("jamboree", "harlem-jazz-club", "robadors", "casa-figari", "sala-beckett", "big-bang-bar")
+    music_theater_venues = ("jamboree", "harlem-jazz-club", "robadors", "casa-figari", "sala-beckett", "big-bang-bar", "tnc")
     cinema_venues = ("filmoteca", "cines-verdi", "renoir-floridablanca", "phenomena",
                      "zumzeig", "cinema-malda", "sala-montjuic", "cinemes-girona", "espai-texas")
     classical_venues = ("palau-musica", "auditori", "meam", "santa-maria-del-mar",
@@ -16,13 +16,13 @@ def test_seed_is_idempotent(session):
     for slug in ("jazz", "club", "theater", "film", "classical", "flamenco", "dance", "kids", "pop"):
         assert session.query(List).filter_by(slug=slug).count() == 1
     # Memberships: jazz list = jamboree+harlem+robadors+casa_figari+big_bang + palau+auditori+meam + beckett (9);
-    # club list = jamboree+casa_figari+big_bang (3); theater list = beckett (1);
+    # club list = jamboree+casa_figari+big_bang (3); theater list = beckett+tnc (2);
     # film list = all 9 cinema venues (9);
     # classical list = palau+auditori+meam + mar+pi+ateneu+carillo + liceu (8);
     # flamenco list = palau (1);
     # dance/kids/pop lists = liceu (1 each, 3).
-    # Total = 9 + 3 + 1 + 9 + 8 + 1 + 3 = 34.
-    assert session.query(ListVenue).count() == 34
+    # Total = 9 + 3 + 2 + 9 + 8 + 1 + 3 = 35.
+    assert session.query(ListVenue).count() == 35
 
 
 def test_jamboree_is_jazz_and_club(session):

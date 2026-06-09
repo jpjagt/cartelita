@@ -27,6 +27,7 @@ import cartelera.scrapers.santa_maria_del_pi  # noqa: F401
 import cartelera.scrapers.ateneu_barcelones  # noqa: F401
 import cartelera.scrapers.generalitat_carillo  # noqa: F401
 import cartelera.scrapers.liceu  # noqa: F401
+import cartelera.scrapers.tnc  # noqa: F401
 
 CATEGORIES = [
     ("film", "Film"),
