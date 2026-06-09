@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="ca">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+                <meta name="author" content="Eixample Teatre">
+                    <title>Programació</title>
+                        			<link href="/css/bootstrap.min.css" rel="stylesheet">
+			      <link href="/css/font-awesome.css" rel="stylesheet">
+                <link href="/css/inxt-estils.css" rel="stylesheet">
+						<!--[if lt IE 9]>
+					<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+					<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+			<![endif]-->
+			<script>
+				function check_bsq() {
+					if (document.getElementById('texto_bsq').value.length > 2) {
+						return true;
+					} else {
+						alert('Ha d’introduir almenys tres caràcters');
+						return false;
+					}
+				}
+			</script>
+
+			
+			
+			<!-- Google Tag Manager -->
+			<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+			new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+			j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+			'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+			})(window,document,'script','dataLayer','GTM-PJLTBD3V');</script>
+			<!-- End Google Tag Manager -->
+
+			
+			
+			<!-- Meta Pixel Code -->
+			<script>
+			!function(f,b,e,v,n,t,s)
+			{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+			n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+			if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+			n.queue=[];t=b.createElement(e);t.async=!0;
+			t.src=v;s=b.getElementsByTagName(e)[0];
+			s.parentNode.insertBefore(t,s)}(window, document,'script',
+			'https://connect.facebook.net/en_US/fbevents.js');
+			fbq('init', '877782973683256');
+			fbq('track', 'PageView');
+			</script>
+			<noscript><img height="1" width="1" style="display:none"
+			src="https://www.facebook.com/tr?id=877782973683256&ev=PageView&noscript=1"
+			/></noscript>
+			<!-- End Meta Pixel Code -->
+    </head>
+    <body>
+        
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PJLTBD3V"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+<nav class="navbar-expand-lg navbar-light fixed-top">
+    <div class="container">
+
+        <div class="ctn-cab">
+
+            <div class="float-right">
+
+                
+                <form class="busqueda float-right fixnav-hide" name="form_busq" action="/ca/busqueda" method="get" onsubmit="return check_bsq();">
+                    <input name="texto_bsq" id="texto_bsq" class="form-control" placeholder="" type="text">
+                    <button type="submit" class="btn btn-busqueda">
+                        <span class="fa-stack">
+                            <i class="fa fa-search fa-stack-1x"></i>
+                        </span>
+                    </button>
+                </form>
+
+                                <ul class="idiomas float-right pl-0 mb-0 fixnav-hide">
+                    <li class="nav nav-item dropdown">
+                        <a class="dropdown-toggle idiomas-txt" href="#" id="btnIdiomas" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fa fa fa-globe fa-2x idiomas-ico"></i>
+                             CA                         </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                                            <a class="dropdown-item" href="/ca/programacio">CA</a>
+                                <a class="dropdown-item" href="/es/programacion">ES</a>
+                                                    </div>
+                    </li>
+                </ul>
+
+                                <div class="redes float-right fixnav-hide">
+                    <a href="https://www.facebook.com/TeatreEixample/" target="_blank">
+                        <span class="fa-stack">
+                            <i class="fa fa-circle fa-stack-2x"></i>
+                            <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+                        </span>
+                    </a>
+                    <a href="https://www.instagram.com/eixampleteatre/" target="_blank">
+                        <span class="fa-stack">
+                            <i class="fa fa-circle fa-stack-2x"></i>
+                            <i class="fa fa-instagram fa-stack-1x fa-inverse"></i>
+                        </span>
+                    </a>
+                    <a href="https://twitter.com/eixampleteatre" target="_blank">
+                        <span class="fa-stack">
+                            <i class="fa fa-circle fa-stack-2x"></i>
+                            <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                        </span>
+                    </a>
+                </div>
+            </div>
+
+            <a class="navbar-brand" href="/">
+                <img id="logotipo" alt="" src="/img/eixample-teatre-logo.png">
+            </a>
+
+			            <a href="https://eixampleteatre.koobin.cat/" target="_blank" class="btn btn-primary btn-sm btn-compra-menu-xs btn-compra-menu d-lg-none"><i class="fa fa-ticket fa-lg"></i></a>
+            
+
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#menuPrincipal" aria-controls="menuPrincipal" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+                                            
+
+
+                <div class="collapse navbar-collapse float-right" id="menuPrincipal">
+                    <ul class="navbar-nav">
+                                                                                <li class="nav-item">
+                                                <a class="nav-link" href="/ca/programacio">Programació</a>
+                                            </li>
+                                                                                                                            <li class="nav-item dropdown">
+                                                <a class="nav-link dropdown-toggle" href="/ca/Empresa" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                    Eixample Teatre                                                </a>
+                                                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                                                                                            <a class="dropdown-item" href="/ca/el-teatre">El Teatre</a>
+                                                                                                            <a class="dropdown-item" href="/ca/equip">Equip</a>
+                                                                                                    </div>
+                                            </li>
+                                                                                                                            <li class="nav-item">
+                                                <a class="nav-link" href="/ca/contacte">Contacte</a>
+                                            </li>
+                                                                                
+                                                                                                                <li class="nav-item">
+                                            <a  class="nav-link font-weight-bold" href="/ca/club-eixample-teatre"><i class="fa fa-user fa-1x registro-ico"></i> Club</a>
+                                        </li>
+                                    
+                                                                        <li class="nav-item">
+                                        <a href="https://eixampleteatre.koobin.cat/" target="_blank" class="btn btn-primary btn-sm btn-compra-menu"><i class="fa fa-ticket"></i> Comprar </a>
+                                    </li>
+									                                </ul>
+                            </div>
+
+                        
+                    </div>
+
+                </div>
+            </nav>
+
+
+            <div id="main-ctn">
+
+        <div class="container pt-4">
+
+                        
+                        
+            <div class="row">
+                <div class="col-md-12">
+                                                                <h1 class="pt-2">Programació</h1>
+                                    </div>
+
+                                                                            <div class="col-md-12 pt-2">
+                            <a href="/ca/programacio" class="btn btn-outline-primary btn-sm mb-3">Tots</a>
+                                                            <a href="/ca/programacio?id_estilo=8" class="btn btn-outline-primary btn-sm ml-2 mb-3"><i class="fa fa fa-tag fa-1x"></i> Comèdia</a>
+                                                            <a href="/ca/programacio?id_estilo=16" class="btn btn-outline-primary btn-sm ml-2 mb-3"><i class="fa fa fa-tag fa-1x"></i> Teatre</a>
+                                                    </div>
+                                                </div>
+
+                                    <div class="row">
+                                    <div class="col-md-3 col-sm-6 col-6 pt-4 ">
+                        <div>
+                            <a href="/ca/Bonobos">
+                                                                    <img src="/archivos/minibonobos_060526192203.jpg" alt="" class="img-full-w center-block opacity">      
+                                                                </a>
+                        </div>
+                        <div class="text-left fondo-subapartados">
+                            <h2 class="eventos pt-3">
+                                <a href="/ca/Bonobos" class="opacity">Bonobos</a>
+                                                            </h2>
+                                    
+                                                            <p class="txt-negro-3 mb-1">
+                                    <span>COMÈDIA - CAST - 100min - des de 18€</span>                                </p>	
+                                                          
+                                                              
+                                                            <p class="precios mb-1">
+                                    Des de 20 €
+                                                                            (Club 18 €)
+                                                                    </p>  
+                                                                                </div>
+                    </div>
+                                    <div class="col-md-3 col-sm-6 col-6 pt-4 ">
+                        <div>
+                            <a href="/ca/Livinglos90">
+                                                                    <img src="/archivos/miniliving_070526173555.png" alt="" class="img-full-w center-block opacity">      
+                                                                </a>
+                        </div>
+                        <div class="text-left fondo-subapartados">
+                            <h2 class="eventos pt-3">
+                                <a href="/ca/Livinglos90" class="opacity">Living los 90</a>
+                                                            </h2>
+                                    
+                                                            <p class="txt-negro-3 mb-1">
+                                    COMÈDIA MUSICAL - CAST - 110 min des de 21€                                </p>	
+                                                          
+                                                              
+                                                            <p class="precios mb-1">
+                                    Des de 23€ €
+                                                                    </p>  
+                                                                                </div>
+                    </div>
+                                    <div class="col-md-3 col-sm-6 col-6 pt-4 ">
+                        <div>
+                            <a href="/ca/NOCHE-DE-CHICAS">
+                                                                    <img src="/archivos/ndc_600x806copia_151025131922.jpg" alt="" class="img-full-w center-block opacity">      
+                                                                </a>
+                        </div>
+                        <div class="text-left fondo-subapartados">
+                            <h2 class="eventos pt-3">
+                                <a href="/ca/NOCHE-DE-CHICAS" class="opacity">NOCHE DE CHICAS</a>
+                                                            </h2>
+                                    
+                                                            <p class="txt-negro-3 mb-1">
+                                    <p class="p1"><span>COMÈDIA - CAST - 90min - desde 18€</span></p>                                </p>	
+                                                          
+                                                              
+                                                            <p class="precios mb-1">
+                                    Des de 23 €
+                                                                            (Club 20 €)
+                                                                    </p>  
+                                                                                </div>
+                    </div>
+                                    <div class="col-md-3 col-sm-6 col-6 pt-4 ">
+                        <div>
+                            <a href="/ca/AEROLINEAS-SB---DE-REPENTE-A-KAGAR">
+                                                                    <img src="/archivos/600x806aerolineas_190925093432.png" alt="" class="img-full-w center-block opacity">      
+                                                                </a>
+                        </div>
+                        <div class="text-left fondo-subapartados">
+                            <h2 class="eventos pt-3">
+                                <a href="/ca/AEROLINEAS-SB---DE-REPENTE-A-KAGAR" class="opacity">AEROLÍNEAS SB - DE REPENTE A KAGAR</a>
+                                 <span class="badge badge-primary">Funció especial</span> <span class="badge badge-primary">Novetat</span> <span class="badge badge-primary">Pròximament</span>                            </h2>
+                                    
+                                                            <p class="txt-negro-3 mb-1">
+                                    <span style="color: #333333;"><b>JUEVES 30 OCT</b> - 20.30H<br />NUEVO TURNO DOMINGO 2 NOV - 20:30H<br /><b>DURACIÓN DE LA OBRA:</b> 2Horas. 120 min<br /></span>                                </p>	
+                                                          
+                                                              
+                                                                                </div>
+                    </div>
+                                    <div class="col-md-3 col-sm-6 col-6 pt-4 ">
+                        <div>
+                            <a href="/ca/COMO-SOBREVIVIR-A-MIS-EX">
+                                                                    <img src="/archivos/8338a95b-9b32-4bec-ada8-7643b136234d_070526174127.png" alt="" class="img-full-w center-block opacity">      
+                                                                </a>
+                        </div>
+                        <div class="text-left fondo-subapartados">
+                            <h2 class="eventos pt-3">
+                                <a href="/ca/COMO-SOBREVIVIR-A-MIS-EX" class="opacity">COMO SOBREVIVIR A MIS EX</a>
+                                 <span class="badge badge-primary">Novetat</span>                            </h2>
+                                    
+                                                            <p class="txt-negro-3 mb-1">
+                                    <span>COMÈDIA MUSICAL - CAST - 90min des de 18€</span>                                </p>	
+                                                          
+                                                              
+                                                                                </div>
+                    </div>
+                                    <div class="col-md-3 col-sm-6 col-6 pt-4 ">
+                        <div>
+                            <a href="/ca/Burundanga-de-Jordi-Galceran">
+                                                                    <img src="/archivos/2copia_060526090407.png" alt="" class="img-full-w center-block opacity">      
+                                                                </a>
+                        </div>
+                        <div class="text-left fondo-subapartados">
+                            <h2 class="eventos pt-3">
+                                <a href="/ca/Burundanga-de-Jordi-Galceran" class="opacity">Burundanga de Jordi Galceran</a>
+                                                            </h2>
+                                    
+                                                            <p class="txt-negro-3 mb-1">
+                                    <span>COMÈDIA - CAT i CAST - 90min - des de 18€</span>                                </p>	
+                                                          
+                                                              
+                                                                                </div>
+                    </div>
+                                    <div class="col-md-3 col-sm-6 col-6 pt-4 ">
+                        <div>
+                            <a href="/ca/Luis-Pardo-En-tu-mente">
+                                                                    <img src="/archivos/minientumente_060526083551.png" alt="" class="img-full-w center-block opacity">      
+                                                                </a>
+                        </div>
+                        <div class="text-left fondo-subapartados">
+                            <h2 class="eventos pt-3">
+                                <a href="/ca/Luis-Pardo-En-tu-mente" class="opacity">En tu mente - Luis Pardo</a>
+                                 <span class="badge badge-primary">Novetat</span>                            </h2>
+                                    
+                                                            <p class="txt-negro-3 mb-1">
+                                    <span>METALISME - CAST - 90min - des de 18€</span>                                </p>	
+                                                          
+                                                              
+                                                                                </div>
+                    </div>
+                                    <div class="col-md-3 col-sm-6 col-6 pt-4 ">
+                        <div>
+                            <a href="/ca/Dani-Perez">
+                                                                    <img src="/archivos/mini_060526190646.jpg" alt="" class="img-full-w center-block opacity">      
+                                                                </a>
+                        </div>
+                        <div class="text-left fondo-subapartados">
+                            <h2 class="eventos pt-3">
+                                <a href="/ca/Dani-Perez" class="opacity">Dani Pérez</a>
+                                 <span class="badge badge-primary">Funció especial</span> <span class="badge badge-primary">Novetat</span>                            </h2>
+                                    
+                                                            <p class="txt-negro-3 mb-1">
+                                    <span style="color: #333333;"><span>COMÈDIA - CAST - 90min - des de 18€</span><br /></span>                                </p>	
+                                                          
+                                                              
+                                                            <p class="precios mb-1">
+                                    Des de 16 €
+                                                                    </p>  
+                                                                                </div>
+                    </div>
+                                    <div class="col-md-3 col-sm-6 col-6 pt-4 ">
+                        <div>
+                            <a href="/ca/SENORA-YO">
+                                                                    <img src="/archivos/miniwebsenorayo_241025105858.png" alt="" class="img-full-w center-block opacity">      
+                                                                </a>
+                        </div>
+                        <div class="text-left fondo-subapartados">
+                            <h2 class="eventos pt-3">
+                                <a href="/ca/SENORA-YO" class="opacity">¿SEÑORA YO?</a>
+                                                            </h2>
+                                    
+                                                            <p class="txt-negro-3 mb-1">
+                                    <b>Maria Gómez de Castro</b> presenta <b>¿Señora Yo?</b>                                </p>	
+                                                          
+                                                              
+                                                                                </div>
+                    </div>
+                                    <div class="col-md-3 col-sm-6 col-6 pt-4 ">
+                        <div>
+                            <a href="/ca/Tuppersex">
+                                                                    <img src="/archivos/tuppersexminiweb_050424104404.png" alt="" class="img-full-w center-block opacity">      
+                                                                </a>
+                        </div>
+                        <div class="text-left fondo-subapartados">
+                            <h2 class="eventos pt-3">
+                                <a href="/ca/Tuppersex" class="opacity">Tuppersex</a>
+                                 <span class="badge badge-primary">Pròximament</span>                            </h2>
+                                    
+                                                            <p class="txt-negro-3 mb-1">
+                                    <span>Comèdia -  80 Min - Castellà.</span>                                </p>	
+                                                          
+                                                              
+                                                                                </div>
+                    </div>
+                                    <div class="col-md-3 col-sm-6 col-6 pt-4 ">
+                        <div>
+                            <a href="/ca/David-Fernandez">
+                                                                    <img src="/archivos/mini_web_david_fernandez_170425124034.png" alt="" class="img-full-w center-block opacity">      
+                                                                </a>
+                        </div>
+                        <div class="text-left fondo-subapartados">
+                            <h2 class="eventos pt-3">
+                                <a href="/ca/David-Fernandez" class="opacity">David Fernández</a>
+                                 <span class="badge badge-primary">Novetat</span> <span class="badge badge-primary">Pròximament</span>                            </h2>
+                                    
+                                                          
+                                                              
+                                                            <p class="precios mb-1">
+                                    Des de 20 €
+                                                                            (Club 18 €)
+                                                                    </p>  
+                                                                                </div>
+                    </div>
+                                    <div class="col-md-3 col-sm-6 col-6 pt-4 ">
+                        <div>
+                            <a href="/ca/The-locos---Pedro-Angel-Roca">
+                                                                    <img src="/archivos/sintítulo(1155x1155px)-3_140825114806.png" alt="" class="img-full-w center-block opacity">      
+                                                                </a>
+                        </div>
+                        <div class="text-left fondo-subapartados">
+                            <h2 class="eventos pt-3">
+                                <a href="/ca/The-locos---Pedro-Angel-Roca" class="opacity">The locos - Pedro Ángel Roca</a>
+                                 <span class="badge badge-primary">Novetat</span> <span class="badge badge-primary">Pròximament</span>                            </h2>
+                                    
+                                                            <p class="txt-negro-3 mb-1">
+                                    <h3>viernes 27 de MARZO de 2026 22:30h<br />monólogo</h3>                                </p>	
+                                                          
+                                                              
+                                                                                </div>
+                    </div>
+                                    <div class="col-md-3 col-sm-6 col-6 pt-4 ">
+                        <div>
+                            <a href="/ca/Magia-Comedy-con-Aleix-Vidal">
+                                                                    <img src="/archivos/miniweb(600x806px)-9_231025130219.png" alt="" class="img-full-w center-block opacity">      
+                                                                </a>
+                        </div>
+                        <div class="text-left fondo-subapartados">
+                            <h2 class="eventos pt-3">
+                                <a href="/ca/Magia-Comedy-con-Aleix-Vidal" class="opacity">Magia Comedy con Aleix Vidal</a>
+                                 <span class="badge badge-primary">Novetat</span> <span class="badge badge-primary">Pròximament</span>                            </h2>
+                                    
+                                                          
+                                                              
+                                                            <p class="precios mb-1">
+                                    Des de 20 €
+                                                                            (Club 18 €)
+                                                                    </p>  
+                                                                                </div>
+                    </div>
+                                    <div class="col-md-3 col-sm-6 col-6 pt-4 ">
+                        <div>
+                            <a href="/ca/OPEN">
+                                                                    <img src="/archivos/miniopen_060526084331.png" alt="" class="img-full-w center-block opacity">      
+                                                                </a>
+                        </div>
+                        <div class="text-left fondo-subapartados">
+                            <h2 class="eventos pt-3">
+                                <a href="/ca/OPEN" class="opacity">PAREJA ABIERTA - OPEN </a>
+                                 <span class="badge badge-primary">Novetat</span>                            </h2>
+                                    
+                                                            <p class="txt-negro-3 mb-1">
+                                    <span>COMÈDIA - CAST - 90min - des de 18€</span>                                </p>	
+                                                          
+                                                            <p class="fechas my-2">
+                                    Una Comedia de mente abierta
++ 18 años - Castellano                                </p>	
+                                                              
+                                                                                </div>
+                    </div>
+                                    <div class="col-md-3 col-sm-6 col-6 pt-4 ">
+                        <div>
+                            <a href="/ca/magia-family">
+                                                                    <img src="/archivos/miniweb(600x806px)-10_231025130231.png" alt="" class="img-full-w center-block opacity">      
+                                                                </a>
+                        </div>
+                        <div class="text-left fondo-subapartados">
+                            <h2 class="eventos pt-3">
+                                <a href="/ca/magia-family" class="opacity">Magia Family con Aleix Vidal</a>
+                                 <span class="badge badge-primary">Novetat</span>                            </h2>
+                                    
+                                                            <p class="txt-negro-3 mb-1">
+                                    <span>Magia Familiar - </span><span>60 Min -  Castellà</span>                                </p>	
+                                                          
+                                                              
+                                                            <p class="precios mb-1">
+                                    Des de 12 €
+                                                                            (Club 10 €)
+                                                                    </p>  
+                                                                                </div>
+                    </div>
+                                    <div class="col-md-3 col-sm-6 col-6 pt-4 ">
+                        <div>
+                            <a href="/ca/regala-teatre">
+                                                                    <img src="/archivos/regalaeixample_010225221900.jpg" alt="" class="img-full-w center-block opacity">      
+                                                                </a>
+                        </div>
+                        <div class="text-left fondo-subapartados">
+                            <h2 class="eventos pt-3">
+                                <a href="/ca/regala-teatre" class="opacity">Regala EIXAMPLE TEATRE</a>
+                                                            </h2>
+                                    
+                                                            <p class="txt-negro-3 mb-1">
+                                    EL REGAL MÉS ORIGINAL!                                </p>	
+                                                          
+                                                              
+                                                                                </div>
+                    </div>
+                                                    <div class="col-md-12 d-flex justify-content-center mt-4">
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination">
+                                <li class='page-item active'><a class='page-link' href='Javascript:;'>1</a></li><li class="page-item"><a class="page-link" href="/ca/programacio?Ndeb=16">2</a></li>
+                            </ul>
+                        </nav>
+                    </div>
+                                <div class="col-md-12">
+                                            <a href="?id_estilo=26" class="btn btn-outline-primary btn-sm my-3 float-right">Espectacles realitzats</a>
+                                    </div>
+
+            </div>
+            
+        </div>
+        </div>
+<div class=" container redes-compartir text-center py-4">
+    Compartir:
+    <a onclick="window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(document.URL));" target="_blank" style="cursor:pointer;">
+        <span class="fa-stack">
+            <i class="fa fa-circle fa-stack-2x"></i>
+            <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+        </span>
+    </a>
+    <a onclick="window.open('https://twitter.com/?status=Programació ' + encodeURIComponent(document.URL));" target="_blank" style="cursor:pointer;">
+        <span class="fa-stack">
+            <i class="fa fa-circle fa-stack-2x"></i>
+            <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+        </span>
+    </a>
+    <a onclick="window.open('https://plus.google.com/share?url=' + encodeURIComponent(document.URL));" target="_blank" style="cursor:pointer;">
+        <span class="fa-stack">
+            <i class="fa fa-circle fa-stack-2x"></i>
+            <i class="fa fa-google-plus fa-stack-1x fa-inverse"></i>
+        </span>
+    </a>
+    <a onclick="window.open('http://pinterest.com/pin/create/button/?url=' + encodeURIComponent(document.URL));" target="_blank" style="cursor:pointer;">
+        <span class="fa-stack">
+            <i class="fa fa-circle fa-stack-2x"></i>
+            <i class="fa fa-pinterest-p fa-stack-1x fa-inverse"></i>
+        </span>
+    </a>
+    <a onclick="window.open('http://www.linkedin.com/shareArticle?url=' + encodeURIComponent(document.URL));" target="_blank" style="cursor:pointer;">
+        <span class="fa-stack">
+            <i class="fa fa-circle fa-stack-2x"></i>
+            <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+        </span>
+    </a>
+</div>
+
+<footer>
+    <div class="container py-5">
+        <div class="row">
+            <div class="col-md-9 col-xs-12">
+                <div class="row">
+                    <div class="col-md-3 col-sm-3 col-5 pb-3">
+                        <img src="/img/eixample-teatre-logo-p.png" alt="Eixample Teatre" class="img-fluid">
+                    </div>
+                    <div class="col-md-9 col-sm-9">
+                        <strong>Eixample Teatre és el referent de la comèdia i l’humor de Barcelona.</strong><br>Més de 500 funcions a l’any d’èxits, espectacles teatrals, comèdies, musicals, monòlegs, màgia, teatre familiar, infantil i per a nens, l’han convertit amb el teatre epicentre de la comèdia i l’humor a Barcelona.<br>Un espai únic, amb més de 300 localitats, que rep a l’any a més de 80.000 espectadors.<p class="copyright mt-2"><i class="fa fa-wheelchair"></i> Espai adaptat per a mobilitat reduïda</p>                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-xs-12">
+                <div class="co-md-12"><i class="fa fa-envelope-o fa-1x mr-2"></i><p class="footer-mail mb-2"><a href="mailto:info@eixampleteatre.cat">info@eixampleteatre.cat</a></p></div>                <div class="redes-footer row col-md-12">
+                    <a href="https://www.facebook.com/TeatreEixample/" target="_blank">
+                        <span class="fa-stack">
+                            <i class="fa fa-circle fa-stack-2x"></i>
+                            <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+                        </span>
+                    </a>
+                    <a href="https://www.instagram.com/eixampleteatre/" target="_blank">
+                        <span class="fa-stack">
+                            <i class="fa fa-circle fa-stack-2x"></i>
+                            <i class="fa fa-instagram fa-stack-1x fa-inverse"></i>
+                        </span>
+                    </a>
+                    <a href="https://twitter.com/eixampleteatre" target="_blank">
+                        <span class="fa-stack">
+                            <i class="fa fa-circle fa-stack-2x"></i>
+                            <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                        </span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+<div class="footer-logos-bg pt-2 pb-5">
+    <div class="col-12 pb-4 text-center">
+                <img src="/img/logos-nextgen-01.jpg" alt="logos Next Generation" class="footer-logos-nextgen-01 my-2 mr-md-4 mr-0">
+        <img src="/img/logos-nextgen-02.jpg" alt="logos Next Generation" class="footer-logos-nextgen-02 my-2 ml-md-5 ml-0">
+    </div>
+    <div class="col-12 pb-4 text-center">
+        <p class="copyright mb-0">Amb el suport de:</p>
+        <a href="https://cultura.gencat.cat/" target="_blank"><img src="/img/logo-gencat-cultura.jpg" alt="Generalitat de Catalunya. Departament de Cultura" class="footer-logos my-2 mr-3"></a>
+        <a href="https://icec.gencat.cat/" target="_blank"><img src="/img/logo-gencat.jpg" alt="Institut Català de les Empreses Culturals" class="footer-logos my-2 mx-3"></a>
+        <a href="https://www.barcelona.cat/barcelonacultura/es/icub" target="_blank"><img src="/img/logo-icub.jpg" alt="Institut de Cultura" class="footer-logos my-2 mx-3"></a>
+        <a href="https://www.culturaydeporte.gob.es/cultura/artesescenicas" target="_blank"><img src="/img/logo-inaem.jpg" alt="Instituto Nacional Artes Escénicas y Música>" class="footer-logos my-2 ml-3"></a>
+    </div>
+    <div class="col-md-12 col-sm-12">
+        <div class="copyright text-center">
+            © 2025  Eixample Teatre                            &nbsp;&nbsp;|&nbsp;&nbsp;
+                <a href="/ca/avis-legal">
+                    Avís legal                </a>
+                            &nbsp;&nbsp;|&nbsp;&nbsp;
+                <a href="/ca/politica-de-privacitat">
+                     Política de privacitat                 </a>
+                            &nbsp;&nbsp;|&nbsp;&nbsp;
+                <a href="/ca/Politica-de-cookies">
+                    Política de cookies                </a>
+                            &nbsp;&nbsp;|&nbsp;&nbsp;
+                <a href="/ca/promocions">
+                    Promocions col·lectius                </a>
+                                    <span>
+                &nbsp;&nbsp;|&nbsp;&nbsp;
+                <a href="https://www.internext.es" target="_blank">Disseny web Internext</a>
+            </span>
+        </div>
+    </div>
+</div>
+</div>
+
+<script src="/js/jquery-3.3.1.min.js"></script>
+
+<script src="/js/popper.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+
+
+
+
+<script>
+    $(window).scroll(function () {
+        if ($(window).scrollTop() > 114) {
+            $(".fixnav-hide").css('margin-top', "-100%");
+            $(".navbar-brand img").height(40);
+        } else {
+            $(".fixnav-hide").css('margin-top', "0");
+            $(".navbar-brand img").height(90);
+        }
+    });
+</script>
+    </body>
+</html>
