@@ -138,8 +138,8 @@ describe("groupFilmDay", () => {
     expect([byTitle.C.col2, byTitle.C.row2]).toEqual([1, 3]);
   });
 
-  it("stacks single-column (mobile) sequentially, 2 rows per showtime", () => {
-    // A: 2 showtimes -> 1 title + 2*2 = 5 rows; B starts after A + 1 gutter.
+  it("stacks single-column (mobile) sequentially, 1 row per showtime", () => {
+    // A: 2 showtimes -> 1 title + 2 = 3 rows; B starts after A + 1 gutter.
     const layout = groupFilmDay("2026-06-08", [
       ev(1, "A", "15:00"),
       ev(2, "A", "16:00"),
@@ -147,7 +147,7 @@ describe("groupFilmDay", () => {
     ]);
     const byTitle = Object.fromEntries(layout.films.map((p) => [p.film.title, p]));
     expect(byTitle.A.row1).toBe(0);
-    expect(byTitle.B.row1).toBe(6); // 1 title + 4 showtime rows + 1 gutter
+    expect(byTitle.B.row1).toBe(4); // 1 title + 2 showtime rows + 1 gutter
   });
 
   it("reports total rows for each packing", () => {
@@ -156,10 +156,10 @@ describe("groupFilmDay", () => {
       ev(2, "B", "16:00"),
     ]);
     // Two height-2 cards. 3-col: each in own column, max height 2. 2-col: same.
-    // 1-col: A (1 title + 2 rows) + gutter + B (3 rows) = 3 + 1 + 3 = 7.
+    // 1-col: A (1 title + 1 row) + gutter + B (2 rows) = 2 + 1 + 2 = 5.
     expect(layout.rows3).toBe(2);
     expect(layout.rows2).toBe(2);
-    expect(layout.rows1).toBe(7);
+    expect(layout.rows1).toBe(5);
   });
 
   it("returns empty films for no events", () => {

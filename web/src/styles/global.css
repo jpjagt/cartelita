@@ -221,34 +221,41 @@
      Card-internal row: header is grid-row 1, so card top = 2 + --frow.
      Showtime rows carry --sr (0-based index within the card); the title is
      the card's first row. */
-.gridpaper {
-  --film-cols: 3;
-  --film-stride: 14;  /* 12 card cells + 2 gutter */
-  --film-width: 12;
-  --fc: var(--fcol);
-  --fr: var(--frow);
-}
-/* The card's left-edge column on the shared grid. */
+/* --film-left (start column) and --film-top (start row) are resolved ON THE
+     CARD from the card's own --fcol/--frow inline vars, NOT indirected through
+     .gridpaper — a var() is substituted at the element that declares it, so a
+     `.gridpaper { --fc: var(--fcol) }` would resolve against .gridpaper (where
+     --fcol is unset) and inherit down empty, collapsing every cell to `auto`.
+     Declaring here, where --fcol IS set, fixes that. The title and showtime
+     children read the already-numeric --film-left/--film-top/--film-width,
+     which inherit cleanly through the card's `display: contents`. */
 .gc-film-card {
-  --film-left: calc(var(--col-start) + var(--fc) * var(--film-stride));
+  --film-width: 12; /* card width in cells (desktop: 3 cols × 12 + 2×2 gutter) */
+  --film-stride: 14; /* 12 card + 2 gutter */
+  --film-left: calc(var(--col-start) + var(--fcol) * var(--film-stride));
+  --film-top: calc(2 + var(--frow));
 }
 .gc-film-title {
   grid-column: var(--film-left) / span var(--film-width);
-  grid-row: calc(2 + var(--fr));
+  grid-row: var(--film-top);
 }
-.gc-film-time {
-  grid-column: var(--film-left) / span 2;
-  grid-row: calc(2 + var(--fr) + 1 + var(--sr));
+/* One showtime = one link spanning the full card width, laid out as an inner
+     grid of three sub-cells (time | place | price). The link is the grid cell;
+     the sub-cells subdivide it on a column-template that mirrors the old
+     per-cell spans: time = 2 cells, price = 3 cells, place absorbs the rest. */
+.gc-film-showtime {
+  grid-column: var(--film-left) / span var(--film-width);
+  grid-row: calc(var(--film-top) + 1 + var(--sr));
+  display: grid;
+  grid-template-columns:
+    calc(var(--cell) * 2)
+    1fr
+    calc(var(--cell) * 3);
+  min-width: 0;
 }
-.gc-film-place {
-  grid-column: calc(var(--film-left) + 2) / calc(var(--film-left) + var(--film-width) - 3);
-  grid-row: calc(2 + var(--fr) + 1 + var(--sr));
+.gc-st-place {
   justify-content: flex-start;
   text-align: left;
-}
-.gc-film-price {
-  grid-column: calc(var(--film-left) + var(--film-width) - 3) / calc(var(--film-left) + var(--film-width));
-  grid-row: calc(2 + var(--fr) + 1 + var(--sr));
 }
 /* The film spacer sits one row below the tallest column. --fmax = total cell
      rows consumed by the day's packing (computed in the component). */
@@ -256,55 +263,52 @@
   grid-row: calc(2 + var(--fmax));
 }
 
-/* ≤768px (md): 2 columns. 2 cols × 19 + 1 gutter × 2 = 40. Use the 2-col
-     packing vars and the 19-cell stride. */
+/* ≤768px (md): 2 columns. 2 cols × 19 + 1 gutter × 2 = 40. Recompute the
+     card's left/top from the 2-col packing vars (--fcol2/--frow2) and the
+     19-cell stride; children inherit the new values automatically. */
 @media (max-width: 768px) {
-  .gridpaper {
-    --film-stride: 21;  /* 19 card cells + 2 gutter */
+  .gc-film-card {
     --film-width: 19;
-    --fc: var(--fcol2);
-    --fr: var(--frow2);
+    --film-stride: 21; /* 19 card + 2 gutter */
+    --film-left: calc(var(--col-start) + var(--fcol2) * var(--film-stride));
+    --film-top: calc(2 + var(--frow2));
   }
   .gc-film-spacer {
     grid-row: calc(2 + var(--fmax2));
   }
 }
 
-/* ≤640px (mobile): single column. Every card spans the full band, stacked in
-     source (earliest-first) order via natural auto-flow — the build-time
-     packing is ignored. Showtime rows split into two rows: time+place, then
-     price, mirroring the row layout's mobile split. */
+/* ≤640px (mobile): single column. Each card spans the full band; cards stack
+     in earliest-first source order using the build-time single-column offset
+     (--frow1). Each showtime is still one row — time · place · price on a single
+     line — reusing the desktop inner template, just widened to the full band.
+     Card top = 2 + --frow1; showtime --sr (0-based) sits at (1 + --sr) below. */
 @media (max-width: 640px) {
   .gc-film-card {
-    --film-left: var(--col-start);
-  }
-  .gridpaper {
     --film-width: var(--band-cells);
+    --film-left: var(--col-start);
+    --film-top: calc(2 + var(--frow1));
   }
-  /* Stack cards by auto-flow: clear explicit rows so each card flows after
-     the previous. Title takes a row; showtimes take two rows each. */
   .gc-film-title {
-    grid-column: var(--col-start) / var(--c-end);
-    grid-row: auto;
+    grid-column: var(--film-left) / var(--c-end);
+    grid-row: var(--film-top);
   }
-  .gc-film-time {
-    grid-column: var(--col-start) / span 2;
-    grid-row: auto;
+  .gc-film-showtime {
+    grid-column: var(--film-left) / var(--c-end);
+    grid-row: calc(var(--film-top) + 1 + var(--sr));
   }
-  .gc-film-place {
-    grid-column: calc(var(--col-start) + 2) / calc(var(--c-end) - 3);
-    grid-row: auto;
-    color: var(--muted-foreground);
-  }
-  .gc-film-price {
-    grid-column: calc(var(--c-end) - 3) / var(--c-end);
-    grid-row: auto;
+  .gc-film-spacer {
+    grid-row: calc(2 + var(--fmax1));
   }
 }
 
+.cell-underlined {
+  --cell-bottom: var(--foreground);
+}
+
 /* Opaque cells (e.g. shaded day headers) cover the background texture on
-     their own top + left edges. .cell-lined repaints those edges in the grid
-     line color so the lines stay continuous through the shaded cell. */
+   their own top + left edges. .cell-lined repaints those edges in the grid
+   line color so the lines stay continuous through the shaded cell. */
 .cell-lined {
   --cell-top: var(--grid-line);
   --cell-left: var(--grid-line);
@@ -428,17 +432,24 @@
      covers them and we don't repaint them. Title links keep their underline. */
 .cell-genre,
 .cell-genre-hover:hover {
-  background-color: var(--genre-primary);
+  position: relative;
+  z-index: 0;
   color: var(--genre-text);
-  /* The opaque bg covers this cell's OWN top+left texture lines (the only two
-       lines a cell ever contributes). Repaint just those in the grid-line color
-       so they stay continuous; the bottom+right lines belong to the neighbor
-       cells' texture and are unaffected — same as everywhere else in the grid. */
-  --cell-top: var(--grid-line);
-  --cell-left: var(--grid-line);
 
   text-decoration: none;
 }
+
+.cell-genre:after,
+.cell-genre-hover:hover:after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  top: 2px;
+  left: 2px;
+  background-color: var(--genre-primary);
+}
+
 /* Children that carry their own muted color (e.g. the ↻ recurrence hint)
      should inherit the genre text color on hover for contrast against the fill. */
 .cell-genre *,

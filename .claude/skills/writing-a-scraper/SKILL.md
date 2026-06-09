@@ -158,13 +158,8 @@ browser**:
 - If the scraper emits a category slug that isn't seeded, `run` fails fast with
   `unknown category slug '...'` (by design). Add the category to `seed.py`'s
   `CATEGORIES`.
-- Add the venue to `seed.py` (idempotent get-or-create) with its full category
-  set, and add it to the relevant cartelera category **lists**. For a
-  **multi-category venue** (like Jamboree: jazz + club), add it to each list with
-  that list's category as the **per-venue whitelist** (`whitelist_category_id`),
-  so its events split into the right lists. A single-category venue can use a
-  NULL whitelist (all events).
 - Update `test_seed.py` to match.
+- Any changes made to these files should be reported in your final message.
 
 ## Phase 6 — Full cold-start end-to-end
 
@@ -173,7 +168,7 @@ local dev database, not a throwaway. Use a dedicated, clearly-named scratch DB f
 the cold-start so you never touch the user's data. (`migrate` auto-creates the DB
 if it doesn't exist, so no manual `createdb` is needed.)
 ```bash
-export DATABASE_URL=postgresql://localhost:5432/cartelera_coldstart
+export DATABASE_URL=postgresql://localhost:5432/cartelera_<venue>
 cd scraper && uv run cartelera migrate && uv run cartelera seed && uv run cartelera run <venue>
 # check category split + price coverage in psql
 # AND count events per day — they must match the live site. A row count far below
@@ -181,7 +176,7 @@ cd scraper && uv run cartelera migrate && uv run cartelera seed && uv run cartel
 # parser tests won't see this because the upsert is where it happens.
 cd ../web && DATABASE_URL=$DATABASE_URL pnpm build
 # confirm the venue's events render on the right category page(s) and NOT the wrong ones
-dropdb --if-exists cartelera_coldstart   # the scratch DB is yours to drop; cartelera_dev is NOT
+dropdb --if-exists cartelera_<venue>   # the scratch DB is yours to drop; cartelera_dev is NOT
 ```
 Then run both test suites (`uv run pytest`, `pnpm test`) and commit.
 

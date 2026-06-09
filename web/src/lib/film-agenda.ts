@@ -90,13 +90,13 @@ function pack(
   return { placed, rows };
 }
 
-/** Single-column (mobile) stack: cards in order, each showtime row occupying
-    two grid rows. Returns the row offset per film and the total rows. */
+/** Single-column (mobile) stack: cards in order, each showtime on one grid row
+    (same height as desktop). Returns the row offset per film and total rows. */
 function stackSingle(films: FilmGroup[]): { rows1: number[]; total: number } {
   let acc = 0;
   const rows1 = films.map((film) => {
     const at = acc;
-    acc += 1 + film.showtimes.length * 2 + 1; // title + 2/showtime + gutter
+    acc += cardHeight(film) + 1; // title + 1/showtime + gutter
     return at;
   });
   return { rows1, total: Math.max(0, acc - 1) };
