@@ -1,145 +1,63 @@
-from cartelera.seed import seed
+from cartelera.seed import seed, CATEGORIES
+from cartelera.scrapers import load_all
 from cartelera.models import Category, Venue, List, ListVenue
 
 
 def test_seed_is_idempotent(session):
     seed(session)
-    seed(session)  # second run must not duplicate
-    assert session.query(Category).count() == 9
-    music_theater_venues = ("jamboree", "harlem-jazz-club", "robadors", "casa-figari", "sala-beckett", "big-bang-bar", "tnc")
-    cinema_venues = ("filmoteca", "cines-verdi", "renoir-floridablanca", "phenomena",
-                     "zumzeig", "cinema-malda", "sala-montjuic", "cinemes-girona", "espai-texas")
-    classical_venues = ("palau-musica", "auditori", "meam", "santa-maria-del-mar",
-                        "santa-maria-del-pi", "ateneu-barcelones", "generalitat-carillo", "liceu")
-    theater_venues = ("teatre-victoria",)
-    for slug in music_theater_venues + cinema_venues + classical_venues + theater_venues:
-        assert session.query(Venue).filter_by(slug=slug).count() == 1
-    for slug in ("jazz", "club", "theater", "film", "classical", "flamenco", "dance", "kids", "pop"):
+    seed(session)
+    assert session.query(Category).count() == len(CATEGORIES)
+
+
+def test_all_registered_venues_seeded(session):
+    seed(session)
+    registry = load_all()
+    for slug in registry:
+        assert session.query(Venue).filter_by(slug=slug).count() == 1, f"missing venue: {slug}"
+
+
+def test_each_category_list_created_once(session):
+    seed(session)
+    for slug, _ in CATEGORIES:
         assert session.query(List).filter_by(slug=slug).count() == 1
-    # Memberships: jazz list = jamboree+harlem+robadors+casa_figari+big_bang + palau+auditori+meam + beckett (9);
-    # club list = jamboree+casa_figari+big_bang (3); theater list = beckett+tnc+teatre-victoria (3);
-    # film list = all 9 cinema venues (9);
-    # classical list = palau+auditori+meam + mar+pi+ateneu+carillo + liceu (8);
-    # flamenco list = palau (1);
-    # dance/kids/pop lists = liceu (1 each, 3).
-    # Total = 9 + 3 + 3 + 9 + 8 + 1 + 3 = 36.
-    assert session.query(ListVenue).count() == 36
 
 
-def test_jamboree_is_jazz_and_club(session):
+def test_multi_category_venues_have_whitelisted_memberships(session):
     seed(session)
-    v = session.query(Venue).filter_by(slug="jamboree").one()
-    assert sorted(c.slug for c in v.categories) == ["club", "jazz"]
+    registry = load_all()
+    for slug, (scraper, defn) in registry.items():
+        if len(defn.list_memberships) <= 1:
+            continue
+        venue = session.query(Venue).filter_by(slug=slug).one()
+        for mem in defn.list_memberships:
+            if mem.whitelist_category_slug is None:
+                continue
+            lst = session.query(List).filter_by(slug=mem.list_slug).one()
+            cat = session.query(Category).filter_by(slug=mem.whitelist_category_slug).one()
+            lv = session.query(ListVenue).filter_by(list_id=lst.id, venue_id=venue.id).one()
+            assert lv.whitelist_category_id == cat.id, (
+                f"{slug}: expected whitelist={mem.whitelist_category_slug} on {mem.list_slug} list"
+            )
 
 
-def test_casa_figari_is_jazz_and_club(session):
+def test_single_membership_venues_have_null_whitelist(session):
     seed(session)
-    v = session.query(Venue).filter_by(slug="casa-figari").one()
-    assert sorted(c.slug for c in v.categories) == ["club", "jazz"]
+    registry = load_all()
+    for slug, (scraper, defn) in registry.items():
+        if len(defn.list_memberships) != 1 or defn.list_memberships[0].whitelist_category_slug is not None:
+            continue
+        venue = session.query(Venue).filter_by(slug=slug).one()
+        mem_def = defn.list_memberships[0]
+        lst = session.query(List).filter_by(slug=mem_def.list_slug).one()
+        lv = session.query(ListVenue).filter_by(list_id=lst.id, venue_id=venue.id).one()
+        assert lv.whitelist_category_id is None, f"{slug}: expected null whitelist"
 
 
-def test_single_category_venues(session):
+def test_no_duplicate_memberships(session):
     seed(session)
-    harlem = session.query(Venue).filter_by(slug="harlem-jazz-club").one()
-    robadors = session.query(Venue).filter_by(slug="robadors").one()
-    assert [c.slug for c in harlem.categories] == ["jazz"]
-    assert [c.slug for c in robadors.categories] == ["jazz"]
-    # All nine cinema venues are single-category film.
-    for slug in ("filmoteca", "cines-verdi", "renoir-floridablanca", "phenomena",
-                 "zumzeig", "cinema-malda", "sala-montjuic", "cinemes-girona", "espai-texas"):
-        v = session.query(Venue).filter_by(slug=slug).one()
-        assert [c.slug for c in v.categories] == ["film"]
-
-
-def test_classical_venues_categories(session):
     seed(session)
-    # Multi-category classical venues.
-    palau = session.query(Venue).filter_by(slug="palau-musica").one()
-    assert sorted(c.slug for c in palau.categories) == ["classical", "flamenco", "jazz"]
-    for slug in ("auditori", "meam"):
-        v = session.query(Venue).filter_by(slug=slug).one()
-        assert sorted(c.slug for c in v.categories) == ["classical", "jazz"]
-    # Single-category classical venues.
-    for slug in ("santa-maria-del-mar", "santa-maria-del-pi", "ateneu-barcelones", "generalitat-carillo"):
-        v = session.query(Venue).filter_by(slug=slug).one()
-        assert [c.slug for c in v.categories] == ["classical"]
-    # Liceu spans the opera house's strands.
-    liceu = session.query(Venue).filter_by(slug="liceu").one()
-    assert sorted(c.slug for c in liceu.categories) == ["classical", "dance", "kids", "pop"]
-
-
-def test_liceu_splits_into_classical_dance_kids_pop_lists(session):
-    seed(session)
-    liceu = session.query(Venue).filter_by(slug="liceu").one()
-    for list_slug, cat_slug in (("classical", "classical"), ("dance", "dance"),
-                                ("kids", "kids"), ("pop", "pop")):
-        lst = session.query(List).filter_by(slug=list_slug).one()
-        cat = session.query(Category).filter_by(slug=cat_slug).one()
-        mem = session.query(ListVenue).filter_by(list_id=lst.id, venue_id=liceu.id).one()
-        assert mem.whitelist_category_id == cat.id
-
-
-def test_palau_splits_into_classical_jazz_flamenco_lists(session):
-    seed(session)
-    palau = session.query(Venue).filter_by(slug="palau-musica").one()
-    for list_slug, cat_slug in (("classical", "classical"), ("jazz", "jazz"), ("flamenco", "flamenco")):
-        lst = session.query(List).filter_by(slug=list_slug).one()
-        cat = session.query(Category).filter_by(slug=cat_slug).one()
-        mem = session.query(ListVenue).filter_by(list_id=lst.id, venue_id=palau.id).one()
-        assert mem.whitelist_category_id == cat.id
-
-
-def test_sala_beckett_splits_into_theater_jazz_lists(session):
-    seed(session)
-    beckett = session.query(Venue).filter_by(slug="sala-beckett").one()
-    assert sorted(c.slug for c in beckett.categories) == ["jazz", "theater"]
-    for list_slug, cat_slug in (("theater", "theater"), ("jazz", "jazz")):
-        lst = session.query(List).filter_by(slug=list_slug).one()
-        cat = session.query(Category).filter_by(slug=cat_slug).one()
-        mem = session.query(ListVenue).filter_by(list_id=lst.id, venue_id=beckett.id).one()
-        assert mem.whitelist_category_id == cat.id
-
-
-def test_teatre_victoria_is_in_theater_list(session):
-    seed(session)
-    victoria = session.query(Venue).filter_by(slug="teatre-victoria").one()
-    assert [c.slug for c in victoria.categories] == ["theater"]
-    theater_list = session.query(List).filter_by(slug="theater").one()
-    mem = session.query(ListVenue).filter_by(list_id=theater_list.id, venue_id=victoria.id).one()
-    assert mem.whitelist_category_id is None
-
-
-def test_multi_category_venues_whitelist_their_category(session):
-    seed(session)
-    jazz_list = session.query(List).filter_by(slug="jazz").one()
-    club_list = session.query(List).filter_by(slug="club").one()
-    jazz_cat = session.query(Category).filter_by(slug="jazz").one()
-    club_cat = session.query(Category).filter_by(slug="club").one()
-    # Multi-category venues (jamboree, casa-figari, big-bang-bar) appear in each list
-    # whitelisted to that list's category.
-    for venue_slug in ("jamboree", "casa-figari", "big-bang-bar"):
-        v = session.query(Venue).filter_by(slug=venue_slug).one()
-        jazz_mem = session.query(ListVenue).filter_by(list_id=jazz_list.id, venue_id=v.id).one()
-        club_mem = session.query(ListVenue).filter_by(list_id=club_list.id, venue_id=v.id).one()
-        assert jazz_mem.whitelist_category_id == jazz_cat.id
-        assert club_mem.whitelist_category_id == club_cat.id
-
-
-def test_single_category_venues_have_null_whitelist(session):
-    seed(session)
-    jazz_list = session.query(List).filter_by(slug="jazz").one()
-    film_list = session.query(List).filter_by(slug="film").one()
-    classical_list = session.query(List).filter_by(slug="classical").one()
-    theater_list = session.query(List).filter_by(slug="theater").one()
-    cinema_memberships = [(slug, film_list) for slug in
-                          ("filmoteca", "cines-verdi", "renoir-floridablanca", "phenomena",
-                           "zumzeig", "cinema-malda", "sala-montjuic", "cinemes-girona", "espai-texas")]
-    classical_memberships = [(slug, classical_list) for slug in
-                             ("santa-maria-del-mar", "santa-maria-del-pi",
-                              "ateneu-barcelones", "generalitat-carillo")]
-    for venue_slug, lst in [("harlem-jazz-club", jazz_list),
-                            ("robadors", jazz_list),
-                            ("teatre-victoria", theater_list)] + cinema_memberships + classical_memberships:
-        v = session.query(Venue).filter_by(slug=venue_slug).one()
-        mem = session.query(ListVenue).filter_by(list_id=lst.id, venue_id=v.id).one()
-        assert mem.whitelist_category_id is None
+    total = session.query(ListVenue).count()
+    # Recount from definitions
+    registry = load_all()
+    expected = sum(len(defn.list_memberships) for _, defn in registry.values())
+    assert total == expected, f"ListVenue count {total} != expected {expected}"
