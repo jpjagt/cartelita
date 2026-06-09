@@ -65,6 +65,38 @@ def test_translations_are_written_and_replaced(session):
     assert len(rows) == 1 and rows[0].lang == "ca"
 
 
+def test_rescrape_same_lang_translations_for_multiple_events(session):
+    """Re-scraping existing events that keep the SAME translation langs, with
+    several events in one batch (no commit between them, as run.py does), must
+    not collide on the (event_id, lang) unique constraint. A mid-loop autoflush
+    triggered by the next event's lookup used to flush new translation INSERTs
+    before the orphaned old rows were deleted → IntegrityError. Mirrors the
+    real Liceu failure (many sessions of one production sharing es/en)."""
+    from cartelera.types import ScrapedTranslation
+    from cartelera.models import EventTranslation
+    seed(session)
+
+    def batch():
+        return [
+            _ev(external_id="a", translations=[
+                ScrapedTranslation(lang="es", title="ES a"),
+                ScrapedTranslation(lang="en", title="EN a")]),
+            _ev(external_id="b", translations=[
+                ScrapedTranslation(lang="es", title="ES b"),
+                ScrapedTranslation(lang="en", title="EN b")]),
+        ]
+
+    # First scrape: insert both events + their translations.
+    upsert_venue_events(session, "jamboree", batch())
+    session.commit()
+    assert session.query(EventTranslation).count() == 4
+
+    # Re-scrape the SAME batch (existing rows, same langs) in one call.
+    upsert_venue_events(session, "jamboree", batch())
+    session.commit()
+    assert session.query(EventTranslation).count() == 4
+
+
 def test_tier2_update_by_source_url_when_no_external_id(session):
     seed(session)
     # No external_id -> tier 2 matches on (venue_id, source_url).

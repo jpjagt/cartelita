@@ -87,12 +87,29 @@ def upsert_venue_events(session: Session, venue_slug: str, scraped: list[Scraped
         ev.annotations = list(se.annotations)
         ev.scraped_at = dt.datetime.now(dt.timezone.utc)
         ev.categories = cats
-        # Replace translations wholesale (canonical content lives on the event).
-        ev.translations = [
-            EventTranslation(lang=t.lang, title=t.title,
-                             description=t.description, source_url=t.source_url)
-            for t in se.translations
-        ]
+        # Reconcile translations in place, keyed by lang. We do NOT reassign the
+        # whole collection: replacing it makes the cascade DELETE the old rows and
+        # INSERT brand-new ones for the same (event_id, lang) keys, and a mid-loop
+        # autoflush (triggered by the next event's _find_existing SELECT) can flush
+        # those INSERTs before the orphan DELETEs land — colliding on the
+        # (event_id, lang) unique constraint (the Liceu failure: many sessions of
+        # one production sharing es/en). Updating matching langs in place and only
+        # adding/removing the genuine diff avoids any same-key delete+insert churn.
+        by_lang = {t.lang: t for t in ev.translations}
+        scraped_langs = {t.lang for t in se.translations}
+        for t in se.translations:
+            row = by_lang.get(t.lang)
+            if row is None:
+                ev.translations.append(EventTranslation(
+                    lang=t.lang, title=t.title,
+                    description=t.description, source_url=t.source_url))
+            else:
+                row.title = t.title
+                row.description = t.description
+                row.source_url = t.source_url
+        for lang, row in by_lang.items():
+            if lang not in scraped_langs:
+                ev.translations.remove(row)
         written += 1
     session.flush()
     return written
