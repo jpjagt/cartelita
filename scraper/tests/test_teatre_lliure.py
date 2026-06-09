@@ -184,6 +184,37 @@ def test_category_kids_for_age_recommendation(shows: list[dict]) -> None:
         assert ev.category_slugs == ["kids"]
 
 
+def test_category_dance_for_dansa_metropolitana_in_desc(shows: list[dict]) -> None:
+    """Shows whose list-page desc contains 'Dansa Metropolitana' should be dance."""
+    dance_shows = [s for s in shows if s.get("desc") and "Dansa Metropolitana" in s["desc"]]
+    assert dance_shows, "No Dansa Metropolitana show found in fixture"
+    detail_soup = _make_detail_soup({"Preu": "De 14 a 32 €"})
+    for show in dance_shows:
+        ev = _build_event(show, detail_soup)
+        if ev is not None:
+            assert ev.category_slugs == ["dance"], f"{show['title']} should be dance"
+
+
+def test_category_dance_for_ball_item_set(shows: list[dict]) -> None:
+    """Shows with a 'BALL' item-set on the detail page should be dance."""
+    adult_shows = [s for s in shows if "elpetit" not in s["slug"]]
+    show = next(s for s in adult_shows if parse_period(s["period_text"])[0] is not None)
+    detail_soup = _make_detail_soup({"Preu": "De 14 a 32 €", "BALL": "Rocío Molina"})
+    ev = _build_event(show, detail_soup)
+    assert ev is not None
+    assert ev.category_slugs == ["dance"]
+
+
+def test_category_dance_for_coreografia_item_set(shows: list[dict]) -> None:
+    """Shows with a 'COREOGRAFIA' item-set on the detail page should be dance."""
+    adult_shows = [s for s in shows if "elpetit" not in s["slug"]]
+    show = next(s for s in adult_shows if parse_period(s["period_text"])[0] is not None)
+    detail_soup = _make_detail_soup({"Preu": "De 14 a 32 €", "COREOGRAFIA I DIRECCIÓ": "Rocío Molina"})
+    ev = _build_event(show, detail_soup)
+    assert ev is not None
+    assert ev.category_slugs == ["dance"]
+
+
 def test_all_categories_are_known(shows: list[dict]) -> None:
     """_build_event should never emit an unknown category slug."""
     detail_soup = _make_detail_soup({"Preu": "De 14 a 32 €"})

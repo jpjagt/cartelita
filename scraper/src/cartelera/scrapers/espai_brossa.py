@@ -40,7 +40,9 @@ _DATE_RE = re.compile(r"(\d{2})\.(\d{2})\.(\d{4})")
 _PRICE_RE = re.compile(r"[Pp]reu[:\s]+(\d+(?:[.,]\d+)?)\s*€")
 # General euro amount (used as fallback body scan)
 _EURO_RE = re.compile(r"(\d+(?:[.,]\d+)?)\s*€")
-_FREE_RE = re.compile(r"gratu[ïi]t|entrada\s+lliure|entrada\s+gratuïta|entrada libre", re.IGNORECASE)
+_FREE_RE = re.compile(
+    r"gratu[ïi]t|entrada\s+lliure|entrada\s+gratuïta|entrada libre", re.IGNORECASE
+)
 _SOLDOUT_RE = re.compile(r"sold.?out|entrades\s+exhaurides|esgotades", re.IGNORECASE)
 
 
@@ -137,7 +139,9 @@ def _fetch_detail_price(url: str, client: httpx.Client) -> str | None:
         # in the main content rather than a sidebar (e.g. Casal d'estiu).
         # Restrict to the main content section to avoid footer noise.
         main = soup.select_one(".entry-content, .post-content, #content, main")
-        body_text = main.get_text(" ", strip=True) if main else soup.get_text(" ", strip=True)
+        body_text = (
+            main.get_text(" ", strip=True) if main else soup.get_text(" ", strip=True)
+        )
         return _parse_price_from_body(body_text)
     except Exception:
         return None
@@ -149,7 +153,11 @@ def _map_category(site_cat: str, title: str) -> str:
     title_lower = title.lower()
     if "activitat" in cat:
         # Summer camp / children's workshop
-        if "casal" in title_lower or "escola" in title_lower or "infants" in title_lower:
+        if (
+            "casal" in title_lower
+            or "escola" in title_lower
+            or "infants" in title_lower
+        ):
             return "kids"
         return "theater"
     # espectacle and exposició both map to theater at this performing-arts venue
@@ -272,7 +280,7 @@ register(
     scraper=EspaiBrossaScraper(),
     venue=VenueDefinition(
         slug=VENUE_SLUG,
-        name="Espai Brossa / Centre de les Arts Lliures",
+        name="Fundacio Joan Brossa",
         city_slug="barcelona",
         address="C/ Flassaders, 40, 08003 Barcelona",
         site_url="https://www.fundaciojoanbrossa.cat",

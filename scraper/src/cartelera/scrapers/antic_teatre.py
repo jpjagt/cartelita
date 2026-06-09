@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import datetime as dt
 import re
+import time
 import warnings
 from functools import lru_cache
 
@@ -286,9 +287,16 @@ class AnticTeatreScraper:
     def _get(self, url: str) -> str:
         warnings.filterwarnings("ignore", message=".*SSL.*")
         warnings.filterwarnings("ignore", category=UserWarning)
-        r = httpx.get(url, headers=_HEADERS, **_HTTPX_KWARGS)
-        r.raise_for_status()
-        return r.text
+        for attempt in range(3):
+            try:
+                r = httpx.get(url, headers=_HEADERS, **_HTTPX_KWARGS)
+                r.raise_for_status()
+                return r.text
+            except httpx.ConnectError:
+                if attempt == 2:
+                    raise
+                time.sleep(2 ** attempt)
+        raise RuntimeError("unreachable")
 
     def _discover_month_urls(self) -> list[str]:
         """Return the current-programme monthly list-page URLs from the nav menu."""

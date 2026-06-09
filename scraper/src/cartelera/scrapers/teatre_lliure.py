@@ -81,6 +81,9 @@ _KIDS_SLUG_RE = re.compile(r"elpetit", re.IGNORECASE)
 # Age recommendation strings that signal a children's event
 _KIDS_AGE_RE = re.compile(r"\bde\s+\d+\s+a\s+\d+\s+anys\b", re.IGNORECASE)
 
+# Dance signals: festival name in list-page desc, or role credits in detail page
+_DANSA_METRO_RE = re.compile(r"Dansa Metropolitana", re.IGNORECASE)
+
 
 def _normalize_year(y: int) -> int:
     return 2000 + y if y < 100 else y
@@ -241,9 +244,18 @@ def _build_event(show: dict, detail_soup: BeautifulSoup) -> ScrapedEvent | None:
     slug = show["slug"]
     is_kids = bool(_KIDS_SLUG_RE.search(slug))
     if not is_kids and edat:
-        # "De 3 a 5 anys" style → kids
         is_kids = bool(_KIDS_AGE_RE.search(edat))
-    category = "kids" if is_kids else "theater"
+
+    is_dance = (
+        bool(_DANSA_METRO_RE.search(show.get("desc") or ""))
+        or _item_set_value(detail_soup, "BALL") is not None
+        or any(
+            "COREOGRAFIA" in (b.select_one("h3").get_text(strip=True) if b.select_one("h3") else "")
+            for b in detail_soup.select(".item-set")
+        )
+    )
+
+    category = "kids" if is_kids else ("dance" if is_dance else "theater")
 
     # Annotations: room, schedule, age recommendation
     annotations: list[str] = []
@@ -306,9 +318,10 @@ register(
         city_slug="barcelona",
         address="Pg. de Santa Madrona, 40-46, 08038 Barcelona",
         site_url=BASE_URL,
-        category_slugs=["theater", "kids"],
+        category_slugs=["theater", "dance", "kids"],
         list_memberships=[
             ListMembership(list_slug="theater", whitelist_category_slug="theater"),
+            ListMembership(list_slug="dance", whitelist_category_slug="dance"),
             ListMembership(list_slug="kids", whitelist_category_slug="kids"),
         ],
     ),
