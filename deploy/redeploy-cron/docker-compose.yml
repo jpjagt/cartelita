@@ -1,0 +1,45 @@
+# Inline-cron redeploy service for Coolify.
+#
+# Why this exists: Coolify has no native "scheduled redeploy" action, and its
+# Scheduled Tasks run a shell command inside a throwaway container — useless for
+# a static-site app, whose served dist/ is a deploy-time snapshot the proxy reads,
+# not a live folder. The only way to republish is a real redeploy. So we run a
+# tiny always-on Alpine container that, on a cron schedule, calls Coolify's deploy
+# API to redeploy the web app. The redeploy re-runs pnpm install/build/og against
+# the freshly-scraped DB.
+#
+# Deploy this as its own Coolify application (Build Pack: Docker Compose, Base
+# Directory: deploy/redeploy-cron). Set the env vars below in the Coolify UI.
+#
+# Required env vars:
+#   COOLIFY_SERVER   Coolify host, e.g. coolify.july.dev (no scheme)
+#   COOLIFY_TOKEN    Coolify API token WITH deploy permission
+#   WEB_APP_UUID     UUID of the web app to redeploy (Webhooks page of that app)
+#   CRON_SCHEDULE    5-field cron, e.g. "0 5 * * *" (server timezone)
+#
+# If you enable Coolify's API allow-list, add this server's IP to it.
+
+services:
+  redeploy-cron:
+    image: alpine:3
+    container_name: cartelera-redeploy-cron
+    restart: unless-stopped
+    environment:
+      - COOLIFY_SERVER=${COOLIFY_SERVER}
+      - COOLIFY_TOKEN=${COOLIFY_TOKEN}
+      - WEB_APP_UUID=${WEB_APP_UUID}
+      - CRON_SCHEDULE=${CRON_SCHEDULE:-0 5 * * *}
+    command:
+      - sh
+      - -c
+      - |
+        set -eu
+        apk add --no-cache curl tzdata
+        # Build the crontab. The deploy URL is single-quoted so & in the query
+        # string is not treated by the shell as a background operator.
+        printf '%s curl -fsS -X POST -H "Authorization: Bearer %s" "https://%s/api/v1/deploy?uuid=%s&force=true" && echo "[CRON] redeploy triggered at $(date -u)"\n' \
+          "$CRON_SCHEDULE" "$COOLIFY_TOKEN" "$COOLIFY_SERVER" "$WEB_APP_UUID" \
+          > /etc/crontabs/root
+        echo "[boot] crontab installed:"
+        cat /etc/crontabs/root
+        exec crond -f -l 2

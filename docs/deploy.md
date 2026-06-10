@@ -37,18 +37,31 @@ Postgres stays on Coolify's internal Docker network — never published publicly
 
 ## 4. Scheduled tasks
 
-In Coolify, add two Scheduled Tasks (cron, server timezone):
+**Scrape (02:00).** Add a Coolify Scheduled Task (cron, server timezone) on the
+scraper app:
 
 | Schedule (cron) | App     | Command                                  |
 |-----------------|---------|------------------------------------------|
 | `0 2 * * *`     | scraper | `cartelera migrate && cartelera run all` |
-| `0 5 * * *`     | web     | redeploy (trigger a rebuild)             |
 
-- The 02:00 scraper task runs `migrate` (idempotent) then `run all`. Its exit
-  code is non-zero if any venue failed — check the task logs.
-- The 05:00 web task triggers a redeploy so Astro rebuilds the static site from
-  the freshly-scraped DB. If Coolify's scheduled task can't trigger a redeploy
-  directly, use the web app's **deploy webhook**: `curl -fsS <deploy-webhook-url>`.
+- Runs `migrate` (idempotent) then `run all`. Exit code is non-zero if any venue
+  failed — check the task logs for `[ok] <venue>: N events` lines.
+
+**Web redeploy (05:00).** The web app is a **static site**: Coolify serves the
+prebuilt `dist/` from the deploy-time image via its proxy. There is no live web
+container to run a command in, and rebuilding `dist/` in an ephemeral task
+container would not change what the proxy serves. The **only** way to republish is
+a real redeploy. Coolify also has **no** native scheduled-redeploy action — its
+Scheduled Tasks just run a shell command in a throwaway container (coollabsio/
+coolify discussions #2772, #4837; issue #8500).
+
+So the redeploy is driven by a small always-on **`deploy/redeploy-cron`** Compose
+service (Alpine + `crond`) that calls Coolify's deploy API on a schedule. A
+redeploy re-runs `pnpm install` → `pnpm build` → `pnpm og` (per
+`web/nixpacks.toml`) against the freshly-scraped DB. Deploy it as its own Coolify
+app — see `deploy/redeploy-cron/README.md`. Default schedule `0 5 * * *` (an hour
+after the scrape); set `CRON_SCHEDULE`, `COOLIFY_SERVER`, `COOLIFY_TOKEN`, and the
+web app's `WEB_APP_UUID` in its env vars.
 
 ## 5. First deploy & verification
 
