@@ -13,23 +13,22 @@ interface EventRow {
   source_url: string
 }
 
-const PREFERRED_LIST_ORDER = [
-  "jazz",
-  "classical",
-  "theater",
-  "film",
-  "club",
-  "pop",
-]
+// Broad-appeal genres, in display order. These lead the navbar at full weight;
+// everything else (pop, flamenco, kids, …) trails after and renders muted so the
+// eye skips past it without the niche genres being hidden behind a control.
+const PRIMARY_LIST_ORDER = ["jazz", "classical", "theater", "film", "dance"]
 
 export async function getCategoryLists(): Promise<CategoryList[]> {
   const rows = await sql<{ slug: string }[]>`
     SELECT slug FROM list WHERE author = 'cartelera'`
   return rows
-    .map((r) => ({ slug: r.slug }))
+    .map((r) => ({
+      slug: r.slug,
+      primary: PRIMARY_LIST_ORDER.includes(r.slug),
+    }))
     .sort((a, b) => {
-      const ai = PREFERRED_LIST_ORDER.indexOf(a.slug)
-      const bi = PREFERRED_LIST_ORDER.indexOf(b.slug)
+      const ai = PRIMARY_LIST_ORDER.indexOf(a.slug)
+      const bi = PRIMARY_LIST_ORDER.indexOf(b.slug)
       if (ai !== -1 && bi !== -1) return ai - bi
       if (ai !== -1) return -1
       if (bi !== -1) return 1

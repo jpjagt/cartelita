@@ -8,6 +8,8 @@ import Layout from "@/components/Layout.astro"
 import Navbar from "@/components/Navbar.astro"
 import AgendaDay from "@/components/AgendaDay.astro"
 import FilmDay from "@/components/FilmDay.astro"
+import OptionsPanel from "@/components/OptionsPanel.astro"
+import GridRadioButtons from "@/components/ui/GridRadioButtons.astro"
 
 // The film category groups each day's events by film (masonry of cards) rather
 // than rendering one row per showtime — see FilmDay/FilmCard.
@@ -48,8 +50,86 @@ const filmDays = isFilm ? days.map((d) => groupFilmDay(d.date, d.events)) : []
         </p>
       </div>
     )}
-    {isFilm
-      ? filmDays.map((d) => <FilmDay day={d} locale={locale} genre={list} />)
-      : days.map((d) => <AgendaDay day={d} locale={locale} genre={list} />)}
+    {!isFilm && days.map((d) => <AgendaDay day={d} locale={locale} genre={list} />)}
+
+    {/* Film list ships BOTH views; a toggle (below) swaps which is visible and
+        persists the choice. Default = films (cards). The film-view-root carries
+        data-active-view, read by CSS to hide the inactive tree. */}
+    {isFilm && (
+      <div id="film-view-root" data-active-view="films">
+        {/* View toggle in the page's options panel — a band above the first day
+            with one empty cell row breathing under the navbar (see .options-panel
+            in global.css). */}
+        <OptionsPanel colspan={4}>
+          <GridRadioButtons
+            name="film-view"
+            value="films"
+            options={[
+              { value: "films", label: strings.viewFilms },
+              { value: "time", label: strings.viewByTime },
+            ]}
+          />
+        </OptionsPanel>
+
+        <div data-film-view="films">
+          {filmDays.map((d) => <FilmDay day={d} locale={locale} genre={list} />)}
+        </div>
+        {/* The film time-view hides screenings that started >2h ago and offers a
+            row to reveal them (see syncAgenda). data-early-hide turns the
+            behavior on for this subtree only; the label rides along for the
+            client script (strings aren't otherwise reachable there). */}
+        <div data-film-view="time" data-early-hide data-show-earlier-label={strings.showEarlier}>
+          {days.map((d) => <AgendaDay day={d} locale={locale} genre={list} />)}
+        </div>
+      </div>
+    )}
   </main>
+
+  {isFilm && (
+    <script>
+      // Film view toggle: read the stored preference, apply it, and on change
+      // persist + re-run the agenda script so the now-dots are (re)placed for
+      // the view that just became visible (the hidden tree's dots are stale).
+      const KEY = "film-view"
+      const root = document.getElementById("film-view-root")
+      const group = document.querySelector<HTMLElement>('[data-grid-radio="film-view"]')
+      if (root && group) {
+        const stored = localStorage.getItem(KEY)
+        const initial = stored === "time" ? "time" : "films"
+        applyView(initial)
+
+        group.addEventListener("gridradiochange", (e) => {
+          const view = (e as CustomEvent<string>).detail
+          localStorage.setItem(KEY, view)
+          applyView(view)
+        })
+      }
+
+      function applyView(view: string) {
+        if (!root) return
+        root.dataset.activeView = view
+        // Reflect the stored choice into the radio control on load. Check the
+        // matching input and move data-active to the matching option so the
+        // indicator fill follows (CSS keys off [data-grid-radio-option]
+        // [data-active]). The options are <label data-grid-radio-option
+        // data-value=…> — match that attribute, not a class.
+        const input = group?.querySelector<HTMLInputElement>(
+          `input[value="${view}"]`,
+        )
+        if (input) input.checked = true
+        group
+          ?.querySelectorAll<HTMLElement>("[data-grid-radio-option]")
+          .forEach((opt) =>
+            opt.dataset.value === view
+              ? opt.setAttribute("data-active", "")
+              : opt.removeAttribute("data-active"),
+          )
+        // The just-revealed tree may have been display:none at first paint, so
+        // its .gridpaper sections still carry --cell:0px (clientWidth was 0).
+        // Re-sync the grid first, then re-place the now-dots.
+        window.syncGrid?.()
+        window.syncAgenda?.()
+      }
+    </script>
+  )}
 </Layout>

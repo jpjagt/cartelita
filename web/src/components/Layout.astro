@@ -87,11 +87,40 @@ const ogImageUrl = ogImage ? new URL(ogImage, Astro.site).href : undefined
           grid.style.setProperty("--grid-cols", String(gridCols));
           grid.style.setProperty("--band-cells", String(bandCells));
           grid.style.setProperty("--col-start", String(colStart));
+
+          // Film masonry columns, chosen LOGICALLY from how many whole cells
+          // the band actually has — not a guessed pixel breakpoint (a CSS
+          // @media query can't read --band-cells). Cards SCALE to fill the band:
+          // with `cols` columns and a 2-cell gutter between them, each card is
+          // floor((bandCells − 2·(cols−1)) / cols) cells wide. Pick the most
+          // columns that keep a card ≥ MIN_CARD cells, so a narrower band drops
+          // to 2 (then 1) columns instead of overflowing. data-film-cols selects
+          // which build-time packing (col3/col2/col1) the CSS reads; --film-width
+          // / --film-stride feed the scaled geometry to the cards.
+          const MIN_CARD = 10;
+          const GUTTER = 2;
+          let filmCols = 1;
+          let cardW = bandCells;
+          for (const c of [3, 2]) {
+            const w = Math.floor((bandCells - GUTTER * (c - 1)) / c);
+            if (w >= MIN_CARD) {
+              filmCols = c;
+              cardW = w;
+              break;
+            }
+          }
+          grid.dataset.filmCols = String(filmCols);
+          grid.style.setProperty("--film-width", String(cardW));
+          grid.style.setProperty("--film-stride", String(cardW + GUTTER));
         });
         // Let dependents (e.g. the navbar's cell-snapping) recompute once the
         // grid's --cell/--col-start are settled for this pass.
         window.dispatchEvent(new Event("gridsync"));
       }
+      // Exposed so the film view toggle can re-sync a tree that was display:none
+      // at first paint (a hidden .gridpaper has clientWidth 0, so it would keep
+      // --cell:0px and render invisible until the next resize).
+      (window as any).syncGrid = syncGrid;
       syncGrid();
       window.addEventListener("resize", syncGrid);
       window.addEventListener("load", syncGrid);
@@ -132,31 +161,41 @@ const ogImageUrl = ogImage ? new URL(ogImage, Astro.site).href : undefined
 
         document.querySelectorAll<HTMLElement>(".now-line").forEach((el) => el.remove());
 
+        // Sort key for "2 hours ago" on the wall clock. Subtracting on the Date
+        // wraps midnight correctly; timeSortKey then maps it into the same
+        // logical-day ordering the rows use (post-midnight sorts last). Only
+        // applied to the current logical day, so a 23:00 cutoff after midnight
+        // never reaches into a future day's evening.
+        const cutoff = new Date(now.getTime() - 2 * 60 * 60 * 1000);
+        const cutoffKey = timeSortKey(cutoff.toTimeString().slice(0, 5));
+
         document.querySelectorAll<HTMLElement>("section[data-date]").forEach((section) => {
           const date = section.dataset.date ?? "";
           section.hidden = false;
           section.querySelectorAll<HTMLElement>("[data-time]").forEach((row) => {
             row.hidden = false;
           });
+          // Drop any prior early-screenings toggle; renumbering below recreates it.
+          section.querySelector(".gc-early-toggle")?.remove();
 
           if (date < nowLogicalDate) {
             // Fully past logical days hidden (also heals a stale build).
             section.hidden = true;
             return;
           }
-          if (date === nowLogicalDate && isPostMidnight) {
-            // Current logical day viewed after midnight = yesterday's evening,
-            // now over. Keep only post-midnight rows (00:00–04:59).
-            section.querySelectorAll<HTMLElement>("[data-time]").forEach((row) => {
-              const t = row.dataset.time ?? "";
-              if (t === "" || t >= "05:00") row.hidden = true;
-            });
-            if (!section.querySelector("[data-time]:not([hidden])")) {
-              section.hidden = true;
-              return;
-            }
-          }
           if (date === nowLogicalDate) {
+            // Film time-view only: collapse the leading run of screenings that
+            // started >2h ago behind a "show earlier" toggle (unless the user
+            // expanded this section). Renumbering --ev keeps the explicit grid
+            // gap-free. Other lists/views show everything.
+            const earlyHide = section.closest("[data-early-hide]");
+            if (earlyHide && !section.querySelector("[data-film-card]")) {
+              applyEarlyHide(section, earlyHide as HTMLElement, cutoffKey);
+            }
+            // Keep every (remaining) event visible — even after midnight, when
+            // the evening's ≥05:00 events are all past — and draw the now-marker.
+            // nowKey sorts post-midnight times last, so after midnight every
+            // ≥05:00 row reads as past and the marker lands at the end.
             if (section.querySelector("[data-film-card]")) {
               drawFilmNowDots(section, nowKey);
             } else {
@@ -164,6 +203,80 @@ const ogImageUrl = ogImage ? new URL(ogImage, Astro.site).href : undefined
             }
           }
         });
+
+        // Mark the first *visible* day in each view so CSS can drop its top
+        // breathing space (the first day sits right under the options panel).
+        // Past days are merely hidden, not removed, so :first-of-type in CSS
+        // would wrongly match a hidden past section — do it here instead.
+        document
+          .querySelectorAll<HTMLElement>("[data-first-day]")
+          .forEach((el) => el.removeAttribute("data-first-day"));
+        document
+          .querySelectorAll<HTMLElement>("[data-film-view]")
+          .forEach((view) => {
+            const first = [...view.querySelectorAll<HTMLElement>("section[data-date]")].find(
+              (s) => !s.hidden,
+            );
+            first?.setAttribute("data-first-day", "");
+          });
+      }
+
+      // Collapse the leading run of screenings that started >2h ago (cutoffKey)
+      // behind a "show earlier screenings" toggle row. Rows are chronological,
+      // so the hidden ones are always a contiguous block at the top — no interior
+      // gap. The grid places rows at explicit lines via --ev, so hiding rows
+      // means renumbering the survivors (and the spacer) to pack them gap-free.
+      // The toggle occupies the top visible row; clicking it sets data-show-early
+      // and re-runs syncAgenda, which then shows everything.
+      function applyEarlyHide(section: HTMLElement, root: HTMLElement, cutoffKey: string) {
+        const rows = [...section.querySelectorAll<HTMLElement>(".contents[data-time]")];
+        if (rows.length === 0) return;
+
+        const expanded = section.hasAttribute("data-show-early");
+        // Count the leading run of >2h-past rows. Stop at the first still-recent
+        // row so we never hide something in the middle.
+        let nEarly = 0;
+        for (const row of rows) {
+          if (timeSortKey(row.dataset.time ?? "") < cutoffKey) nEarly += 1;
+          else break;
+        }
+        // Nothing early, or everything is early (don't hide a whole day — there'd
+        // be only the toggle left): show all, plain numbering.
+        if (nEarly === 0 || nEarly === rows.length || expanded) {
+          rows.forEach((row, i) => row.style.setProperty("--ev", String(i)));
+          const spacerAll = section.querySelector<HTMLElement>(".gc-spacer");
+          spacerAll?.style.setProperty("--ev", String(rows.length));
+          return;
+        }
+
+        // Collapsed: hide the early rows, drop a toggle on the top row, and pack
+        // the survivors below it.
+        rows.forEach((row, i) => {
+          if (i < nEarly) {
+            row.hidden = true;
+          } else {
+            // +1 for the toggle row above the first visible screening.
+            row.style.setProperty("--ev", String(i - nEarly + 1));
+          }
+        });
+
+        const toggle = document.createElement("button");
+        toggle.type = "button";
+        toggle.className =
+          "gc-early-toggle cell cell-truncate gc-full text-muted-foreground hover:text-foreground";
+        toggle.style.setProperty("--ev", "0");
+        const label = root.dataset.showEarlierLabel ?? "Show earlier screenings";
+        toggle.innerHTML = `<span class="cell-text">${label}</span>`;
+        toggle.addEventListener("click", () => {
+          section.setAttribute("data-show-early", "");
+          syncAgenda();
+        });
+        // Insert before the first row so it's first in source order (placement is
+        // by --ev, but keeping source order tidy helps AT/tab order).
+        section.insertBefore(toggle, rows[0]);
+
+        const spacer = section.querySelector<HTMLElement>(".gc-spacer");
+        spacer?.style.setProperty("--ev", String(rows.length - nEarly + 1));
       }
 
       // Film layout: a small "now" dot per card, at the card's first still-
@@ -176,8 +289,10 @@ const ogImageUrl = ogImage ? new URL(ogImage, Astro.site).href : undefined
             ".gc-film-showtime[data-time]:not([hidden])",
           )];
           if (times.length === 0) return;
-          // First upcoming showtime in this card; skip if all are still ahead
-          // (nothing past yet → no marker, same rule as the row layout).
+          // First upcoming showtime in this card. If "now" is before all of
+          // them, anchor to the first; if all are past, anchor to the last so
+          // the dot always shows (at the start before the first showtime, at
+          // the end after the last).
           let target: HTMLElement | null = null;
           for (const cell of times) {
             if (timeSortKey(cell.dataset.time ?? "") > nowKey) {
@@ -185,14 +300,25 @@ const ogImageUrl = ogImage ? new URL(ogImage, Astro.site).href : undefined
               break;
             }
           }
-          if (target === times[0]) return;
-          const anchor = target ?? null;
-          if (!anchor) return;
+          // Upcoming showtime: the dot sits ON its row (marks "now is just before
+          // this showtime"). If every showtime is past, there's no upcoming row
+          // to sit on, so anchor to the last showtime and push the dot ONE row
+          // below it — otherwise it would overlap the last showtime, and because
+          // each card's last showtime is at a different --sr the dots would land
+          // at scattered heights across cards.
+          const anchor = target ?? times[times.length - 1];
           const cs = getComputedStyle(anchor);
+          const rowStart = parseInt(cs.gridRowStart, 10);
+          const gridRow = target ? cs.gridRow : String(rowStart + 1);
+          // The dot is a section-level grid item that must land on the showtime
+          // link's OWN cell. The link spans `--film-left / span --film-width`,
+          // so copy the full grid-column shorthand (start AND end), not just
+          // gridColumnStart — reading only the start sometimes resolved to a
+          // bare/auto value and the dot drifted to the band's left edge.
           const line = document.createElement("div");
           line.className = "now-line cell";
-          line.style.gridRow = cs.gridRowStart;
-          line.style.gridColumn = cs.gridColumnStart;
+          line.style.gridRow = gridRow;
+          line.style.gridColumn = cs.gridColumn;
           section.appendChild(line);
         });
       }
@@ -214,11 +340,6 @@ const ogImageUrl = ogImage ? new URL(ogImage, Astro.site).href : undefined
           }
         }
 
-        // Don't draw a line above the first event: if "now" is before the day's
-        // first event, there's nothing prior to it, so the marker would just sit
-        // at the top of the section. Only show it once at least one event is past.
-        if (target === rows[0]) return;
-
         // Anchor element whose top edge the line sits on. For an upcoming
         // event, that's the event's own first cell. If every event is past,
         // anchor to the spacer, which is already positioned just below the
@@ -236,6 +357,9 @@ const ogImageUrl = ogImage ? new URL(ogImage, Astro.site).href : undefined
         section.appendChild(line);
       }
 
+      // Expose so the film view toggle can re-place dots when it swaps views.
+      (window as any).syncAgenda = syncAgenda;
+
       syncAgenda();
       document.addEventListener("visibilitychange", () => {
         if (!document.hidden) syncAgenda();
@@ -243,6 +367,14 @@ const ogImageUrl = ogImage ? new URL(ogImage, Astro.site).href : undefined
       // Recompute the now-line position after the grid settles on resize
       // (desktop/mobile row formulas differ).
       window.addEventListener("resize", syncAgenda);
+      // The dots read each cell's resolved grid row/column via getComputedStyle.
+      // Those are only correct once Layout's grid script has set --cell /
+      // --col-start / the packing-derived tracks. On first paint syncAgenda can
+      // run before that settles, so gridColumnStart/gridRowStart come back
+      // "auto" and the browser auto-places the dot at the end of the grid (it
+      // appears at the bottom of the day until a later relayout). Re-running on
+      // the grid's own `gridsync` event places them against settled tracks.
+      window.addEventListener("gridsync", syncAgenda);
     </script>
   </body>
 </html>

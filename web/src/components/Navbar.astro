@@ -11,6 +11,26 @@ interface Props {
 const { locale, activeList } = Astro.props
 const strings = t(locale)
 const lists = await getCategoryLists()
+
+// SSR placement for the genre links so they don't pile up one-per-cell in the
+// top-left corner before the nav script runs. We flow them left-to-right on
+// row 3 from col 12 (after the 11-col wordmark), estimating each link's
+// cell-span from its label length: 2 cells up to 6 chars, then +1 cell per ~3
+// chars (7–9 → 3, 10–12 → 4, 13–15 → 5, …). The nav script remeasures exact
+// widths on gridsync/load and overrides these; this is just a close-enough
+// first paint. Wrapping is left to JS — we only seed start cols on row 3, which
+// is where the desktop layout lands them anyway.
+const NAV_START_COL = 16 // col-start(5) + 11-col wordmark
+let ssrCol = NAV_START_COL
+const navSSR = lists.map((l) => {
+  const chars = categoryName(locale, l.slug).length
+  const span = Math.max(2, 2 + Math.floor((chars - 4) / 3))
+  const startCol = ssrCol
+  ssrCol += span
+  return { slug: l.slug, startCol, span }
+})
+const ssrPos = (slug: string) =>
+  navSSR.find((n) => n.slug === slug) ?? { startCol: NAV_START_COL, span: 4 }
 ---
 <header class="gridpaper">
   {/* Wordmark. Desktop: 11 cols × 3 rows, font 2.6× the cell. Mobile: 9 cols
@@ -29,7 +49,8 @@ const lists = await getCategoryLists()
       data-navlink
       href={`/${locale}/${l.slug}`}
       aria-current={l.slug === activeList ? "page" : undefined}
-      class={`cell cell-truncate cell-genre-hover whitespace-nowrap text-muted-foreground no-underline${l.slug === activeList ? " cell-genre" : ""}`}
+      style={`grid-column: ${ssrPos(l.slug).startCol} / span ${ssrPos(l.slug).span}; grid-row: 3`}
+      class={`cell cell-truncate cell-genre-hover whitespace-nowrap no-underline ${l.primary ? "text-foreground" : "text-muted-foreground"}${l.slug === activeList ? " cell-genre" : ""}`}
     ><span class="cell-text">{categoryName(locale, l.slug)}</span></a>
   ))}
 

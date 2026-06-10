@@ -5,6 +5,9 @@ interface Strings {
   noEvents: string
   back: string
   andMore: string
+  viewFilms: string
+  viewByTime: string
+  showEarlier: string
   // category names keyed by category slug
   categories: Record<string, string>
   prices: Record<string, string>
@@ -16,6 +19,9 @@ const DICT: Record<Locale, Strings> = {
     noEvents: "No hi ha esdeveniments propers.",
     back: "Inici",
     andMore: "i més",
+    viewFilms: "Per pel·li",
+    viewByTime: "Per hora",
+    showEarlier: "Mostra sessions anteriors",
     categories: {
       film: "Cinema",
       jazz: "Jazz",
@@ -34,6 +40,9 @@ const DICT: Record<Locale, Strings> = {
     noEvents: "No hay eventos próximos.",
     back: "Inicio",
     andMore: "y más",
+    viewFilms: "Por peli",
+    viewByTime: "Por hora",
+    showEarlier: "Mostrar sesiones anteriores",
     categories: {
       film: "Cine",
       jazz: "Jazz",
@@ -52,6 +61,9 @@ const DICT: Record<Locale, Strings> = {
     noEvents: "No upcoming events.",
     back: "Home",
     andMore: "and more",
+    viewFilms: "By film",
+    viewByTime: "By time",
+    showEarlier: "Show earlier screenings",
     categories: {
       film: "Film",
       jazz: "Jazz",

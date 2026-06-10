@@ -3,8 +3,16 @@ export const LOCALES: Locale[] = ["ca", "es", "en"];
 export const DEFAULT_LOCALE: Locale = "ca";
 export const DEFAULT_LIST = "jazz";
 
+/** One option in a GridRadioButtons control. */
+export interface GridRadioOption {
+  value: string;
+  label: string;
+}
+
 export interface CategoryList {
   slug: string;        // also the category slug, used for name translation
+  primary: boolean;    // broad-appeal genre, shown full-weight in the navbar;
+                       // niche genres (false) render muted so the eye skips them
 }
 
 export interface AgendaEvent {

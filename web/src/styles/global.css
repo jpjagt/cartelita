@@ -178,6 +178,18 @@
 .gc-spacer {
   grid-row: calc(2 + var(--ev));
 }
+/* "Show earlier screenings" toggle (film time-view). A full-width clickable row
+     placed by --ev like any event; reset native button chrome so it reads as a
+     muted text cell that brightens on hover. */
+.gc-early-toggle {
+  grid-row: calc(2 + var(--ev));
+  appearance: none;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
 
 /* ── Mobile (≤640px): two rows per event ──────────────────────────────
      The band is only ~11 cells wide here, so the four fields can't sit on one
@@ -207,6 +219,9 @@
   .gc-spacer {
     grid-row: calc(2 + var(--ev) * 2);
   }
+  .gc-early-toggle {
+    grid-row: calc(2 + var(--ev) * 2);
+  }
 }
 
 /* ── Film grouped (masonry) layout ───────────────────────────────────
@@ -229,9 +244,22 @@
      Declaring here, where --fcol IS set, fixes that. The title and showtime
      children read the already-numeric --film-left/--film-top/--film-width,
      which inherit cleanly through the card's `display: contents`. */
+/* --film-width / --film-stride are set on the SECTION by the grid sync script
+     (scaled so `cols` cards fill the band exactly) and inherit down to the card.
+     --film-left/-top are resolved HERE because the packing vars (--fcol/--frow)
+     are inline on the card; a var() resolves at the element that declares it.
+     Defaults are the 3-column packing; data-film-cols="2"/"1" swap the packing
+     var below. SSR fallbacks for --film-width/-stride cover first paint before
+     the script runs. */
+/* SSR / first-paint default: 3-column geometry on the section, inherited by
+     cards. The script overwrites --film-width/-stride (scaled to the band) and
+     sets data-film-cols once it runs. Declared on .gridpaper so the card can
+     INHERIT it (declaring on the card would shadow the script's section value). */
+.gridpaper {
+  --film-width: 12;
+  --film-stride: 14;
+}
 .gc-film-card {
-  --film-width: 12; /* card width in cells (desktop: 3 cols × 12 + 2×2 gutter) */
-  --film-stride: 14; /* 12 card + 2 gutter */
   --film-left: calc(var(--col-start) + var(--fcol) * var(--film-stride));
   --film-top: calc(2 + var(--frow));
 }
@@ -250,7 +278,7 @@
   grid-template-columns:
     calc(var(--cell) * 2)
     1fr
-    calc(var(--cell) * 3);
+    calc(var(--cell) * 2);
   min-width: 0;
 }
 .gc-st-place {
@@ -263,47 +291,135 @@
   grid-row: calc(2 + var(--fmax));
 }
 
-/* ≤768px (md): 2 columns. 2 cols × 19 + 1 gutter × 2 = 40. Recompute the
-     card's left/top from the 2-col packing vars (--fcol2/--frow2) and the
-     19-cell stride; children inherit the new values automatically. */
+/* Column count is chosen LOGICALLY from the band's cell width, not a pixel
+     breakpoint: the grid sync script (Layout.astro) sets data-film-cols (3/2/1)
+     and the scaled --film-width/-stride on each .gridpaper section so `cols`
+     cards fill the band exactly at any width. The default rules above are the
+     3-column case (packing vars --fcol/--frow); the overrides below only swap
+     the packing var per column count — width/stride are inherited from the
+     section, never redeclared on the card (that would shadow the script value).
+     The SSR media-query fallbacks at the end cover first paint before the
+     script runs (no data-film-cols yet). */
+.gridpaper[data-film-cols="2"] .gc-film-card {
+  --film-left: calc(var(--col-start) + var(--fcol2) * var(--film-stride));
+  --film-top: calc(2 + var(--frow2));
+}
+.gridpaper[data-film-cols="2"] .gc-film-spacer {
+  grid-row: calc(2 + var(--fmax2));
+}
+
+/* 1 column: each card spans the full band; cards stack in earliest-first source
+     order using the single-column offset (--frow1). Each showtime stays one row
+     (time · place · price), reusing the inner template widened to the band. */
+.gridpaper[data-film-cols="1"] .gc-film-card {
+  --film-left: var(--col-start);
+  --film-top: calc(2 + var(--frow1));
+}
+.gridpaper[data-film-cols="1"] .gc-film-title {
+  grid-column: var(--film-left) / var(--c-end);
+  grid-row: var(--film-top);
+}
+.gridpaper[data-film-cols="1"] .gc-film-showtime {
+  grid-column: var(--film-left) / var(--c-end);
+  grid-row: calc(var(--film-top) + 1 + var(--sr));
+}
+.gridpaper[data-film-cols="1"] .gc-film-spacer {
+  grid-row: calc(2 + var(--fmax1));
+}
+
+/* First-paint fallback (before the script sets data-film-cols): approximate the
+     old pixel breakpoints so SSR isn't stuck on the 3-col layout. Once the
+     script runs, the data-film-cols selectors above take over (the attribute +
+     descendant give higher specificity). These set width/stride too, since the
+     script hasn't set the section value yet. */
 @media (max-width: 768px) {
-  .gc-film-card {
+  .gridpaper:not([data-film-cols]) .gc-film-card {
     --film-width: 19;
-    --film-stride: 21; /* 19 card + 2 gutter */
+    --film-stride: 21;
     --film-left: calc(var(--col-start) + var(--fcol2) * var(--film-stride));
     --film-top: calc(2 + var(--frow2));
   }
-  .gc-film-spacer {
+  .gridpaper:not([data-film-cols]) .gc-film-spacer {
     grid-row: calc(2 + var(--fmax2));
   }
 }
-
-/* ≤640px (mobile): single column. Each card spans the full band; cards stack
-     in earliest-first source order using the build-time single-column offset
-     (--frow1). Each showtime is still one row — time · place · price on a single
-     line — reusing the desktop inner template, just widened to the full band.
-     Card top = 2 + --frow1; showtime --sr (0-based) sits at (1 + --sr) below. */
 @media (max-width: 640px) {
-  .gc-film-card {
+  .gridpaper:not([data-film-cols]) .gc-film-card {
     --film-width: var(--band-cells);
     --film-left: var(--col-start);
     --film-top: calc(2 + var(--frow1));
   }
-  .gc-film-title {
+  .gridpaper:not([data-film-cols]) .gc-film-title {
     grid-column: var(--film-left) / var(--c-end);
     grid-row: var(--film-top);
   }
-  .gc-film-showtime {
+  .gridpaper:not([data-film-cols]) .gc-film-showtime {
     grid-column: var(--film-left) / var(--c-end);
     grid-row: calc(var(--film-top) + 1 + var(--sr));
   }
-  .gc-film-spacer {
+  .gridpaper:not([data-film-cols]) .gc-film-spacer {
     grid-row: calc(2 + var(--fmax1));
   }
 }
 
 .cell-underlined {
   --cell-bottom: var(--foreground);
+}
+
+/* ── Options panel + GridRadioButtons ────────────────────────────────
+   A thin band of page-level controls between the navbar and the day list. It's
+   its own .gridpaper, so its cells sit on the same gridlines. Controls place
+   themselves onto this grid by column line (see GridRadioButtons / OptionsPanel
+   scripts), so every cell is square and aligned by construction — never sized
+   in rem.
+
+   The panel renders inline as a band above the first day and publishes
+   --gr-vertical / --gr-start-col / --gr-row (set inline as SSR defaults). The
+   controls read those to place themselves; CSS never owns the geometry. */
+
+/* GridRadioButtons cells. The indicator is a bordered square cell placed one
+   cell wide; the label is a text cell beside it. The indicator border stays
+   foreground-toned (muted at rest, full foreground on hover); the active option
+   fills with the genre primary but keeps a foreground border so the square
+   stays legible on dark themes. */
+.grid-radio-indicator {
+  /* Fill the whole cell square (drop .cell's text padding) so the border sits
+     just inside the gridlines. */
+  padding: 0;
+  border: 2px solid var(--muted-foreground);
+  background: transparent;
+}
+[data-grid-radio-option]:hover .grid-radio-indicator {
+  border-color: var(--foreground);
+}
+[data-grid-radio-option][data-active] .grid-radio-indicator {
+  background: var(--genre-primary);
+  border-color: var(--muted-foreground);
+}
+
+/* Film view toggle: hide whichever tree isn't active. */
+#film-view-root[data-active-view="films"] [data-film-view="time"],
+#film-view-root[data-active-view="time"] [data-film-view="films"] {
+  display: none;
+}
+
+/* Film page: two empty cell rows of breathing space above each day header, in
+   both view modes. Use padding (not margin) so the section's own .gridpaper
+   background keeps drawing its gridlines through the gap — the lines stay
+   continuous instead of leaving a blank band. background-position is nudged by
+   the same 2 cells so the texture still lands on whole-cell boundaries (the
+   grid tracks begin below the padding). Each section is its own .gridpaper. */
+#film-view-root section[data-date] {
+  padding-top: calc(var(--cell) * 2);
+  background-position: 0 calc(var(--cell) * 2);
+}
+/* The first VISIBLE day of each view sits right under the options panel, so it
+   needs no extra gap above it. The first day is marked at runtime by syncAgenda
+   (data-first-day) because past days are hidden, not removed — a CSS
+   :first-of-type would wrongly match a hidden past section. */
+#film-view-root section[data-date][data-first-day] {
+  padding-top: 0;
+  background-position: 0 0;
 }
 
 /* Opaque cells (e.g. shaded day headers) cover the background texture on
@@ -397,6 +513,21 @@
 [data-genre="pop"] {
   --genre-primary: #f5c449;
   --genre-text: #000000;
+}
+
+/* Selected text picks up the genre primary as its highlight, with the matching
+   genre text color on top. Falls back to --foreground/--background for genres
+   without an explicit color (set by the [data-genre] default above). Scoped to
+   selections inside a genred subtree so non-genre text keeps the browser
+   default. ::selection can't be merged into a comma list with descendant
+   selectors, so the element and its descendants get separate rules. */
+[data-genre]::selection {
+  background-color: var(--genre-primary);
+  color: var(--genre-text);
+}
+[data-genre] ::selection {
+  background-color: var(--genre-primary);
+  color: var(--genre-text);
 }
 
 /* The "Now" dot: a zero-height full-band marker injected by the client script

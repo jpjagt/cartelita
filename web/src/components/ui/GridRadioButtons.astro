@@ -1,0 +1,150 @@
+---
+import type { GridRadioOption } from "@/lib/types"
+interface Props {
+  /** Group id; emitted as data-grid-radio so a page script can find this
+      control and listen for its `gridradiochange` events. */
+  name: string
+  options: GridRadioOption[]
+  /** Selected value. The matching option carries data-active. */
+  value: string
+  /** horizontal: options flow left-to-right on one row. vertical: each option
+      sits on its own row, stacked downward. Placement is computed by the inline
+      script onto the parent .gridpaper grid, so every cell stays square and on
+      the gridlines. */
+  orientation?: "horizontal" | "vertical"
+}
+const { name, options, value, orientation = "horizontal" } = Astro.props
+
+// SSR placement so the cells don't flash auto-placed (top-left) before the
+// layout script runs. Mirrors layoutGridRadios' horizontal flow: each option is
+// indicator(1) + label(span) + a 1-cell gap, starting at the band's left edge
+// (--col-start) on the inline row (--gr-row defaults to 2). Label span estimates
+// from char count (2 cells up to 6 chars, +1 per ~3 after) — same rule as the
+// navbar. The script remeasures exact widths on load and overrides these.
+let ssrOffset = 0
+const ssrPos = options.map((opt) => {
+  const span = Math.max(2, 2 + Math.floor((opt.label.length - 4) / 3))
+  const indicatorCol = ssrOffset
+  ssrOffset += 1 + span + 1 // indicator + label + one-cell gap
+  return { indicatorCol, labelCol: indicatorCol + 1, span }
+})
+---
+{/* A radio group placed directly onto the parent .gridpaper grid. Each option
+   is one square indicator cell + a label cell spanning whole cells. The wrapper
+   uses `display: contents` so the cells become direct grid items (the script
+   sets their grid-column/grid-row). One hidden radio per option drives keyboard
+   / AT and the change event. */}
+<div
+  data-grid-radio={name}
+  data-orientation={orientation}
+  role="radiogroup"
+  class="grid-radio contents"
+>
+  {options.map((opt, i) => (
+    <label
+      data-grid-radio-option
+      data-value={opt.value}
+      data-active={opt.value === value ? "" : undefined}
+      class="contents cursor-pointer"
+    >
+      <input
+        type="radio"
+        name={name}
+        value={opt.value}
+        checked={opt.value === value}
+        class="sr-only"
+      />
+      <span
+        class="grid-radio-indicator cell"
+        aria-hidden="true"
+        style={`grid-column: calc(var(--col-start) + ${ssrPos[i].indicatorCol}) / span 1; grid-row: 2`}
+      />
+      <span
+        class="grid-radio-label cell cell-truncate text-foreground"
+        style={`grid-column: calc(var(--col-start) + ${ssrPos[i].labelCol}) / span ${ssrPos[i].span}; grid-row: 2`}
+      >
+        <span class="cell-text">{opt.label}</span>
+      </span>
+    </label>
+  ))}
+</div>
+
+<script>
+  // Pack each radio group onto its parent .gridpaper by column line, the same
+  // way the navbar packs its links: measure each label's whole-cell width and
+  // lay indicator + label pairs out from the band's start column. Runs on load,
+  // on `gridsync` (after Layout settles --cell/--col-start), and on resize.
+  function spanCells(el: HTMLElement, cell: number): number {
+    const text = el.querySelector<HTMLElement>(".cell-text") ?? el
+    return Math.max(1, Math.ceil((text.scrollWidth + 6) / cell))
+  }
+
+  function layoutGridRadios() {
+    document.querySelectorAll<HTMLElement>("[data-grid-radio]").forEach((group) => {
+      const grid = group.closest<HTMLElement>(".gridpaper")
+      if (!grid) return
+      const gcs = getComputedStyle(grid)
+      const cell = parseFloat(gcs.getPropertyValue("--cell")) || 32
+      const colStart = parseInt(gcs.getPropertyValue("--col-start")) || 1
+      const cs = getComputedStyle(group)
+      // The host (e.g. OptionsPanel) publishes placement via CSS vars:
+      //   --gr-vertical  1 = stack each option on its own row; 0 = flow inline
+      //   --gr-start-col column the control starts at
+      //   --gr-row       first row (host may reserve an empty row above)
+      // Each falls back sensibly so the component works standalone too.
+      const cssVertical = cs.getPropertyValue("--gr-vertical").trim()
+      const vertical =
+        cssVertical !== "" ? cssVertical === "1" : group.dataset.orientation === "vertical"
+      const startCol =
+        parseInt(cs.getPropertyValue("--gr-start-col")) || colStart
+      const baseRow = parseInt(cs.getPropertyValue("--gr-row")) || 1
+
+      let col = startCol
+      let row = baseRow
+      group.querySelectorAll<HTMLElement>("[data-grid-radio-option]").forEach((opt) => {
+        const ind = opt.querySelector<HTMLElement>(".grid-radio-indicator")!
+        const lbl = opt.querySelector<HTMLElement>(".grid-radio-label")!
+        const labelSpan = spanCells(lbl, cell)
+        ind.style.gridColumn = `${col} / span 1`
+        ind.style.gridRow = `${row}`
+        lbl.style.gridColumn = `${col + 1} / span ${labelSpan}`
+        lbl.style.gridRow = `${row}`
+        if (vertical) {
+          row += 2 // one empty cell row between stacked options
+        } else {
+          col += 1 + labelSpan + 1 // indicator + label + one-cell gap
+        }
+      })
+    })
+  }
+
+  layoutGridRadios()
+  window.addEventListener("gridsync", layoutGridRadios)
+  window.addEventListener("optionspanel", layoutGridRadios)
+  window.addEventListener("resize", layoutGridRadios)
+  window.addEventListener("load", layoutGridRadios)
+
+  // Wire selection: clicking an option moves data-active and emits a
+  // `gridradiochange` CustomEvent (detail = value). Stateless beyond the DOM.
+  function wireGridRadios() {
+    document.querySelectorAll<HTMLElement>("[data-grid-radio]").forEach((group) => {
+      if (group.dataset.wired) return
+      group.dataset.wired = "1"
+      group.addEventListener("change", (e) => {
+        const input = e.target as HTMLInputElement
+        if (!input.matches('input[type="radio"]')) return
+        group
+          .querySelectorAll<HTMLElement>("[data-grid-radio-option]")
+          .forEach((opt) =>
+            opt.dataset.value === input.value
+              ? opt.setAttribute("data-active", "")
+              : opt.removeAttribute("data-active"),
+          )
+        group.dispatchEvent(
+          new CustomEvent("gridradiochange", { detail: input.value, bubbles: true }),
+        )
+      })
+    })
+  }
+  wireGridRadios()
+</script>
