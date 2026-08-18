@@ -16,4 +16,26 @@ describe("i18n", () => {
     expect(t("es").noEvents).toContain("eventos");
     expect(localeTag("ca")).toBe("ca-ES");
   });
+
+  it("serves the Yerevan locales", () => {
+    expect(categoryName("hy", "jazz")).toBe("Ջազ");
+    expect(categoryName("ru", "film")).toBe("Кино");
+    expect(localeTag("hy")).toBe("hy-AM");
+    expect(localeTag("ru")).toBe("ru-RU");
+  });
+
+  it("every locale translates every seeded category", () => {
+    const locales = ["ca", "es", "en", "hy", "ru"] as const;
+    // Mirror of scraper seed.CATEGORIES — a category a scraper can emit must
+    // have a display name in every locale's chrome.
+    const slugs = ["film", "jazz", "classical", "theater", "club", "flamenco",
+                   "dance", "kids", "pop", "folk", "rock"];
+    for (const locale of locales) {
+      for (const slug of slugs) {
+        expect(categoryName(locale, slug), `${locale}/${slug}`).not.toBe(slug);
+      }
+      expect(t(locale).prices["free"]).toBeTruthy();
+      expect(t(locale).prices["sold-out"]).toBeTruthy();
+    }
+  });
 });

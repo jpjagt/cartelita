@@ -16,14 +16,15 @@ import GridRadioButtons from "@/components/ui/GridRadioButtons.astro"
 const FILM_LIST = "film"
 
 interface Props {
+  city: string
   locale: Locale
   list: string
 }
 
-const { locale, list } = Astro.props
+const { city, locale, list } = Astro.props
 const strings = t(locale)
 const name = categoryName(locale, list)
-const events = await getEventsForList(list, locale)
+const events = await getEventsForList(city, list, locale)
 const allDays = groupEventsByDay(events)
 // Coarse build-time filter: drop days before today (absolute calendar date).
 // Build runs ~05:00 Madrid, so the build clock's date is correct even on a UTC
@@ -37,11 +38,11 @@ const filmDays = isFilm ? days.map((d) => groupFilmDay(d.date, d.events)) : []
 <Layout
   locale={locale}
   title={`${name} — ${strings.siteTitle}`}
-  canonical={`/${locale}/${list}`}
-  ogImage={`/og/${locale}-${list}.png`}
+  canonical={`/${city}/${locale}/${list}`}
+  ogImage={`/og/${city}-${locale}-${list}.png`}
   genre={list}
 >
-  <Navbar locale={locale} activeList={list} />
+  <Navbar city={city} locale={locale} activeList={list} />
   <main>
     {days.length === 0 && (
       <div class="gridpaper">

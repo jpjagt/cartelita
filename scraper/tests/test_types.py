@@ -23,5 +23,5 @@ def test_scraped_event_carries_translations():
 
 
 def test_scrape_result_defaults():
-    r = ScrapeResult(venue_slug="jamboree", ok=True)
+    r = ScrapeResult(source_slug="jamboree", ok=True)
     assert r.events == [] and r.error is None

@@ -1,7 +1,7 @@
 from __future__ import annotations
 import datetime as dt
 from sqlalchemy import (
-    Text, Date, Time, DateTime, ForeignKey, Table, Column, func,
+    Text, Date, Time, DateTime, ForeignKey, Table, Column, UniqueConstraint, func,
 )
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
@@ -46,6 +46,7 @@ class Venue(Base):
     city_id: Mapped[int] = mapped_column(ForeignKey("city.id"))
     address: Mapped[str | None] = mapped_column(Text)
     site_url: Mapped[str | None] = mapped_column(Text)
+    instagram_url: Mapped[str | None] = mapped_column(Text)
     city: Mapped[City] = relationship()
     categories: Mapped[list[Category]] = relationship(secondary=venue_category)
     events: Mapped[list["Event"]] = relationship(back_populates="venue", passive_deletes=True)
@@ -67,6 +68,9 @@ class Event(Base):
     source_url: Mapped[str] = mapped_column(Text)
     external_id: Mapped[str | None] = mapped_column(Text)
     recurrence_hint: Mapped[str | None] = mapped_column(Text)
+    # Display-only performance/source language ("VOSE", "hy", "non-verbal");
+    # free text on the price convention, never parsed. NULL = unknown.
+    language: Mapped[str | None] = mapped_column(Text)
     annotations: Mapped[list[str]] = mapped_column(ARRAY(Text), server_default="{}")
     scraped_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     venue: Mapped[Venue] = relationship(back_populates="events")
@@ -88,8 +92,10 @@ class EventTranslation(Base):
 
 class List(Base):
     __tablename__ = "list"
+    # Slugs are unique PER CITY, not globally: every city has its own "jazz".
+    __table_args__ = (UniqueConstraint("city_id", "slug", name="list_city_slug_key"),)
     id: Mapped[int] = mapped_column(primary_key=True)
-    slug: Mapped[str] = mapped_column(Text, unique=True)
+    slug: Mapped[str] = mapped_column(Text)
     name: Mapped[str] = mapped_column(Text)
     author: Mapped[str] = mapped_column(Text, default="cartelera")
     city_id: Mapped[int] = mapped_column(ForeignKey("city.id"))

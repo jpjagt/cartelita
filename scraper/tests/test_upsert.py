@@ -146,3 +146,20 @@ def test_annotations_default_empty(session):
     session.expire_all()
     ev = session.query(Event).one()
     assert ev.annotations == []
+
+
+def test_language_round_trip(session):
+    from cartelera.seed import seed
+    seed(session)
+    ev = ScrapedEvent(title="VO film", start_date=dt.date(2026, 6, 2),
+                      source_url="https://x/vo", category_slugs=["film"],
+                      external_id="vo1", language="VOSE")
+    upsert_venue_events(session, "jamboree", [ev])
+    session.commit()
+    row = session.query(Event).filter_by(external_id="vo1").one()
+    assert row.language == "VOSE"
+    # re-scrape without language clears it (mirror of the price convention)
+    ev.language = None
+    upsert_venue_events(session, "jamboree", [ev])
+    session.commit()
+    assert session.query(Event).filter_by(external_id="vo1").one().language is None

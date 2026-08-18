@@ -2,13 +2,19 @@ from __future__ import annotations
 import datetime as dt
 from sqlalchemy import select
 from sqlalchemy.orm import Session
-from cartelera.models import List, ListVenue, Event, event_category
+from cartelera.models import City, List, ListVenue, Event, event_category
 
 
-def events_for_list(session: Session, list_slug: str, on_or_after: dt.date) -> list[Event]:
+def events_for_list(
+    session: Session, city_slug: str, list_slug: str, on_or_after: dt.date
+) -> list[Event]:
     """Events from a list's venues, applying each venue's optional category
-    whitelist, from `on_or_after` onward, chronological."""
-    lst = session.scalars(select(List).where(List.slug == list_slug)).one()
+    whitelist, from `on_or_after` onward, chronological. List slugs are unique
+    per city, so the list is addressed as (city, slug)."""
+    lst = session.scalars(
+        select(List).join(City, City.id == List.city_id)
+        .where(City.slug == city_slug, List.slug == list_slug)
+    ).one()
     memberships = session.scalars(select(ListVenue).where(ListVenue.list_id == lst.id)).all()
 
     results: dict[int, Event] = {}

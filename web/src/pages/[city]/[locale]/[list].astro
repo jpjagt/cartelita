@@ -1,0 +1,24 @@
+---
+import { getCategoryLists } from "@/lib/queries"
+import { CITIES } from "@/lib/cities"
+import type { Locale } from "@/lib/types"
+import ListView from "@/layouts/ListView.astro"
+
+export async function getStaticPaths() {
+  const paths = []
+  for (const city of Object.values(CITIES)) {
+    const lists = await getCategoryLists(city.slug)
+    for (const locale of city.locales) {
+      for (const l of lists) {
+        paths.push({ params: { city: city.slug, locale, list: l.slug } })
+      }
+    }
+  }
+  return paths
+}
+
+const city = Astro.params.city as string
+const locale = Astro.params.locale as Locale
+const list = Astro.params.list as string
+---
+<ListView city={city} locale={locale} list={list} />

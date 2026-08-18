@@ -9,6 +9,7 @@ interface EventRow {
   recurrence_hint: string | null
   venue_name: string
   price: string | null
+  language: string | null
   title: string
   source_url: string
 }
@@ -18,9 +19,12 @@ interface EventRow {
 // eye skips past it without the niche genres being hidden behind a control.
 const PRIMARY_LIST_ORDER = ["jazz", "classical", "theater", "film", "dance"]
 
-export async function getCategoryLists(): Promise<CategoryList[]> {
+export async function getCategoryLists(citySlug: string): Promise<CategoryList[]> {
+  // List slugs are unique per city (each city has its own "jazz" list).
   const rows = await sql<{ slug: string }[]>`
-    SELECT slug FROM list WHERE author = 'cartelera'`
+    SELECT l.slug FROM list l
+    JOIN city c ON c.id = l.city_id
+    WHERE l.author = 'cartelera' AND c.slug = ${citySlug}`
   return rows
     .map((r) => ({
       slug: r.slug,
@@ -43,23 +47,27 @@ function toDateStr(v: Date | string): string {
 }
 
 export async function getEventsForList(
+  citySlug: string,
   listSlug: string,
   locale: Locale,
 ): Promise<AgendaEvent[]> {
   // Events from the list's venues, applying each membership's optional category
   // whitelist, from today onward, chronological. Content is resolved per locale:
   // the matching event_translation if present, else the canonical event fields.
+  // Lists are addressed as (city, slug): slugs are only unique per city.
   const rows = await sql<EventRow[]>`
     SELECT DISTINCT e.id, e.start_date, e.start_time, e.start_times, e.recurrence_hint,
-                    v.name AS venue_name, e.price,
+                    v.name AS venue_name, e.price, e.language,
                     COALESCE(t.title, e.title)            AS title,
                     COALESCE(t.source_url, e.source_url)  AS source_url
     FROM list l
+    JOIN city c ON c.id = l.city_id
     JOIN list_venue lv ON lv.list_id = l.id
     JOIN venue v ON v.id = lv.venue_id
     JOIN event e ON e.venue_id = v.id AND e.start_date >= CURRENT_DATE - INTERVAL '1 day'
     LEFT JOIN event_translation t ON t.event_id = e.id AND t.lang = ${locale}
-    WHERE l.slug = ${listSlug}
+    WHERE c.slug = ${citySlug}
+      AND l.slug = ${listSlug}
       AND (
         lv.whitelist_category_id IS NULL
         OR EXISTS (
@@ -88,6 +96,7 @@ export async function getEventsForList(
       price: r.price,
       sourceUrl: r.source_url,
       recurrenceHint: r.recurrence_hint,
+      language: r.language,
     }))
   })
 

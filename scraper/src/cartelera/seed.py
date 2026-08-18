@@ -4,6 +4,16 @@ from cartelera.models import City, Category, Venue, List, ListVenue
 from cartelera.scrapers import REGISTRY, load_all
 from cartelera.types import VenueDefinition
 
+# Every city Cartelita runs in. A venue definition whose city_slug isn't here
+# fails fast in seed() — add the city deliberately, not by side effect.
+CITIES = [
+    ("barcelona", "Barcelona"),
+    ("yerevan", "Yerevan"),
+]
+
+# Categories are global (shared across cities); lists are per-city, created
+# lazily from venue list_memberships — so a city simply never gets lists for
+# categories none of its venues program.
 CATEGORIES = [
     ("film", "Film"),
     ("jazz", "Jazz"),
@@ -14,6 +24,8 @@ CATEGORIES = [
     ("dance", "Dance"),
     ("kids", "Kids"),
     ("pop", "Pop"),
+    ("folk", "Folk"),
+    ("rock", "Rock"),
 ]
 
 
@@ -36,7 +48,8 @@ def _get_or_create_category(session: Session, slug: str, name: str) -> Category:
 
 
 def _get_or_create_list(session: Session, slug: str, city_id: int) -> List:
-    lst = session.query(List).filter_by(slug=slug).one_or_none()
+    # List slugs are unique per city (every city has its own "jazz").
+    lst = session.query(List).filter_by(slug=slug, city_id=city_id).one_or_none()
     if not lst:
         lst = List(slug=slug, name=slug.capitalize(), author="cartelera", city_id=city_id)
         session.add(lst)
@@ -59,13 +72,15 @@ def _ensure_membership(
 def _upsert_venue(session: Session, defn: VenueDefinition, city_id: int, cats: dict[str, Category]) -> None:
     venue = session.query(Venue).filter_by(slug=defn.slug).one_or_none()
     if not venue:
-        venue = Venue(slug=defn.slug, name=defn.name, city_id=city_id, address=defn.address, site_url=defn.site_url)
+        venue = Venue(slug=defn.slug, name=defn.name, city_id=city_id, address=defn.address,
+                      site_url=defn.site_url, instagram_url=defn.instagram_url)
         session.add(venue)
         session.flush()
     else:
         venue.name = defn.name
         venue.address = defn.address
         venue.site_url = defn.site_url
+        venue.instagram_url = defn.instagram_url
     venue.categories = [cats[s] for s in defn.category_slugs if s in cats]
     for membership in defn.list_memberships:
         lst = _get_or_create_list(session, membership.list_slug, city_id)
@@ -74,10 +89,17 @@ def _upsert_venue(session: Session, defn: VenueDefinition, city_id: int, cats: d
 
 
 def seed(session: Session) -> None:
-    """Idempotent seed: ensures city, categories, and all registered venues exist."""
+    """Idempotent seed: ensures cities, categories, and all registered venues exist."""
     load_all()
-    bcn = _get_or_create_city(session, "barcelona", "Barcelona")
+    cities = {slug: _get_or_create_city(session, slug, name) for slug, name in CITIES}
     cats = {slug: _get_or_create_category(session, slug, name) for slug, name in CATEGORIES}
-    for _scraper, venue_def in REGISTRY.values():
-        _upsert_venue(session, venue_def, bcn.id, cats)
+    for _scraper, source in REGISTRY.values():
+        for venue_def in source.venues:
+            city = cities.get(venue_def.city_slug)
+            if city is None:
+                raise ValueError(
+                    f"unknown city slug {venue_def.city_slug!r} for venue "
+                    f"{venue_def.slug!r}; add it to seed.CITIES"
+                )
+            _upsert_venue(session, venue_def, city.id, cats)
     session.commit()

@@ -1,16 +1,20 @@
 ---
 import { getCategoryLists } from "@/lib/queries"
-import { LOCALES, DEFAULT_LIST, type Locale } from "@/lib/types"
+import { cityConfig } from "@/lib/cities"
+import { type Locale } from "@/lib/types"
 import { t, categoryName } from "@/i18n"
 
 interface Props {
+  city: string
   locale: Locale
   activeList: string
 }
 
-const { locale, activeList } = Astro.props
+const { city, locale, activeList } = Astro.props
 const strings = t(locale)
-const lists = await getCategoryLists()
+const cityCfg = cityConfig(city)
+const LOCALES = cityCfg.locales // the locale switcher offers the CITY's locales
+const lists = await getCategoryLists(city)
 
 // SSR placement for the genre links so they don't pile up one-per-cell in the
 // top-left corner before the nav script runs. We flow them left-to-right on
@@ -37,7 +41,7 @@ const ssrPos = (slug: string) =>
       × 2 rows, font 2× (see .navbar-wordmark in global.css). Placement lives
       in CSS so the media query can override it (inline styles can't be). */}
   <a
-    href={`/${locale}/${DEFAULT_LIST}`}
+    href={`/${city}/${locale}/${cityCfg.defaultList}`}
     class="cell cell-truncate font-semibold no-underline text-foreground navbar-wordmark"
   ><span class="cell-text">Ca<span class="mr-0.5">r</span>telita</span></a>
 
@@ -47,7 +51,7 @@ const ssrPos = (slug: string) =>
     <a
       data-genre={l.slug}
       data-navlink
-      href={`/${locale}/${l.slug}`}
+      href={`/${city}/${locale}/${l.slug}`}
       aria-current={l.slug === activeList ? "page" : undefined}
       style={`grid-column: ${ssrPos(l.slug).startCol} / span ${ssrPos(l.slug).span}; grid-row: 3`}
       class={`cell cell-truncate cell-genre-hover whitespace-nowrap no-underline ${l.primary ? "text-foreground" : "text-muted-foreground"}${l.slug === activeList ? " cell-genre" : ""}`}
@@ -61,7 +65,7 @@ const ssrPos = (slug: string) =>
     <a
       data-locale
       data-locale-index={i}
-      href={`/${lc}/${activeList}`}
+      href={`/${city}/${lc}/${activeList}`}
       aria-current={lc === locale ? "page" : undefined}
       style={`grid-column: calc(var(--c-end) - ${LOCALES.length - i}) / span 1; grid-row: 1`}
       class="cell justify-end text-muted-foreground no-underline hover:text-foreground aria-[current=page]:font-medium aria-[current=page]:text-foreground text-xs sm:text-base"

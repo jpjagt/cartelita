@@ -20,7 +20,7 @@ def test_list_returns_chronological_future_events(session):
         _se("past", dt.date(2026, 5, 1)),
     ])
     session.commit()
-    evs = events_for_list(session, "jazz", on_or_after=dt.date(2026, 6, 1))
+    evs = events_for_list(session, "barcelona", "jazz", on_or_after=dt.date(2026, 6, 1))
     # chronological: date then time -> Eb (6/2 19:00), Ec (6/2 22:00), Ea (6/9 21:00)
     assert [e.title for e in evs] == ["Eb", "Ec", "Ea"]
     # past event excluded
@@ -53,7 +53,7 @@ def test_per_venue_whitelist_filters_to_one_category(session):
     ])
     session.commit()
 
-    evs = events_for_list(session, "film-whitelist-test", on_or_after=dt.date(2026, 6, 1))
+    evs = events_for_list(session, "barcelona", "film-whitelist-test", on_or_after=dt.date(2026, 6, 1))
     titles = [e.title for e in evs]
     assert titles == ["Efilm1"]  # the theater event is excluded by the whitelist
 
@@ -68,6 +68,6 @@ def test_null_whitelist_includes_all_venue_events(session):
         _se("y", dt.date(2026, 6, 6)),
     ])
     session.commit()
-    evs = events_for_list(session, "jazz", on_or_after=dt.date(2026, 6, 1))
+    evs = events_for_list(session, "barcelona", "jazz", on_or_after=dt.date(2026, 6, 1))
     assert len(evs) == 3
     assert evs[0].title == "Eboundary"  # boundary event sorts first

@@ -31,6 +31,21 @@ single file. For *what Cartelera is and why*, read `MANIFESTO.md`. For dev setup
 ## Conventions & invariants that bite if you don't know them
 
 - **Prices are free text** (`"12€"`, `"s.o."`, `""`), never parsed to numbers.
+  Same convention for **`event.language`** (`"VOSE"`, `"hy"`, `"non-verbal"`,
+  NULL = unknown): display-only, never parsed or inferred.
+- **A "source" and a "venue" are distinct.** A source is the unit of SCRAPING;
+  a venue the unit of CURATION. `REGISTRY` maps `source_slug → (Scraper,
+  SourceDefinition)`; most sources are 1:1 with a venue via the
+  `register(scraper, venue)` sugar (unchanged for existing scrapers), while
+  aggregators/social profiles use `register_source(...)` with several venues.
+  A multi-venue source sets `venue_slug` on every ScrapedEvent; its venue list
+  is its editorial whitelist and the runner fails fast on any event outside
+  it. `cartelera run <slug>` takes source slugs. Sources have no DB table.
+- **Cities**: `seed.CITIES` (scraper) and `web/src/lib/cities.ts` (locales,
+  defaults — UI config lives web-side, not in Postgres) must both know a city.
+  URLs are `/:city[/:locale[/:category]]`; bare `/` is the city selector.
+  **List slugs are unique per city** (every city has its own "jazz" list), so
+  lists are always addressed as (city, slug).
 - **Events carry 1+ categories**; `category` is the model name and `categories`
   the column/relationship (no "tag" naming — that was renamed).
 - **A "category" and a "list" are related but distinct.** A `List` is an authored
@@ -55,8 +70,10 @@ single file. For *what Cartelera is and why*, read `MANIFESTO.md`. For dev setup
   `(venue_id, external_id)` → `(venue_id, source_url)` → `(venue_id, title, start_date)`.
   Tiers 2/3 are best-effort; a scraper should supply a stable `external_id` or a
   per-event `source_url`.
-- **`City` is a scoping layer** — Barcelona is not hardcoded, but it's the only
-  city now.
+- **`City` is a scoping layer** — Barcelona and Yerevan exist; all queries
+  (web + `queries.py`) are city-scoped. Yerevan's design doc:
+  `docs/superpowers/specs/2026-08-18-multi-city-yerevan-design.md`; its
+  venue/genre research: `docs/yerevan.md`.
 - Never add a `PUBLIC_`-prefixed DB var.
 - **Adding a category a scraper emits but seed doesn't define fails fast** with
   `unknown category slug '...'` — that's intentional. Add it to `seed.py`'s

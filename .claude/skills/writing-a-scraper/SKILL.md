@@ -11,11 +11,21 @@ club nights as jazz — because it parsed only the JSON-LD, which happens not to
 carry price or category. The lesson: **verify the scraper's output against what a
 human sees on the live page, field by field.** This skill is that discipline.
 
-Each venue scraper is one module in `scraper/src/cartelera/scrapers/<venue>.py`
-implementing the `Scraper` contract (`venue_slug` + `scrape() -> list[ScrapedEvent]`),
-plus an offline test against a saved HTML fixture, plus a `SOURCE.md` recording
-where each field comes from. Use `browser-use` (project skill) for recon and
+Each scraper is one module in `scraper/src/cartelera/scrapers/<venue>.py`
+implementing the `Scraper` contract (`scrape() -> list[ScrapedEvent]`; by
+convention single-venue scrapers also carry a `venue_slug` attribute), plus an
+offline test against a saved HTML fixture, plus a `SOURCE.md` recording where
+each field comes from. Use `browser-use` (project skill) for recon and
 verification.
+
+A scraper registers as a **source**. The common case is one venue's own site:
+end the module with `register(<Venue>Scraper(), venue)` and the venue slug is
+the source slug. A **multi-venue source** (an aggregator site, a social-media
+profile feeding several venues) instead uses `register_source(scraper,
+SourceDefinition(slug=..., name=..., venues=[...]))` and must set `venue_slug`
+on every ScrapedEvent; the source's venue list is its editorial whitelist — the
+runner fails fast on events for any venue outside it. Everything below applies
+either way; `<venue>` then means the source.
 
 ## Checklist (create a TodoWrite item per phase)
 
@@ -88,8 +98,11 @@ See the Jamboree scraper's module docstring for the level of detail.
   `scrape()` fetches and delegates. End the module with `register(<Venue>Scraper())`.
 - Emit fully-populated `ScrapedEvent`s: `title`, `start_date`, `source_url`,
   `category_slugs` (1+), and whatever else is available — `start_time`, `price`
-  (free text, e.g. `"12€"`, `"s.o."`), `annotations` (genre tags etc.),
-  `external_id`, `recurrence_hint`, `image_url`, `translations`.
+  (free text, e.g. `"12€"`, `"s.o."`), `language` (display-only free text on
+  the price convention: exactly what the source states — `"VOSE"`, `"hy"`,
+  `"non-verbal"` — `None` when unstated, never inferred), `annotations` (genre
+  tags etc.), `external_id`, `recurrence_hint`, `image_url`, `translations`.
+  Multi-venue sources also set `venue_slug` on every event.
 - Honor the schema invariants: prices are **free text**, never parsed to numbers;
   the all-day sentinel (e.g. `00:00–23:59:59`) means "time unknown" → `None`;
   one row per occurrence (no recurrence expansion logic).
@@ -158,6 +171,11 @@ browser**:
 - If the scraper emits a category slug that isn't seeded, `run` fails fast with
   `unknown category slug '...'` (by design). Add the category to `seed.py`'s
   `CATEGORIES`.
+- Same for cities: a venue definition whose `city_slug` isn't in `seed.CITIES`
+  fails fast in seed. A genuinely new city also needs a `web/src/lib/cities.ts`
+  entry (locales, defaults) and i18n dictionaries; adding a venue to an
+  existing city needs nothing there. (Lists are per-city — slugs like "jazz"
+  exist once per city — but seed handles that automatically.)
 - Update `test_seed.py` to match.
 - Any changes made to these files should be reported in your final message.
 

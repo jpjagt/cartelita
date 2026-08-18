@@ -32,6 +32,7 @@ const displayPrice = event.price
   >
     <span class="cell-text">
       {event.title}
+      {event.language && <span class="ml-7 text-muted-foreground">{event.language}</span>}
       {event.recurrenceHint && <span class="ml-7 cursor-help text-muted-foreground">{event.recurrenceHint}</span>}
     </span>
   </a>

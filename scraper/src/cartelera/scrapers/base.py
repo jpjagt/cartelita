@@ -4,12 +4,16 @@ from cartelera.types import ScrapedEvent
 
 
 class Scraper(Protocol):
-    """Uniform per-venue scraper interface.
+    """Uniform per-source scraper interface.
 
-    `venue_slug` ties the scraper to a seeded venue row.
+    A scraper's identity comes from its registration (see scrapers/__init__.py):
+    single-venue scrapers register via register(scraper, venue) and by
+    convention also carry a `venue_slug` attribute; multi-venue sources
+    register via register_source(scraper, source) and set `venue_slug` on each
+    ScrapedEvent instead.
+
     `scrape()` returns fully-categorized ScrapedEvents, or raises on failure.
     """
-    venue_slug: str
 
     def scrape(self) -> list[ScrapedEvent]:
         ...

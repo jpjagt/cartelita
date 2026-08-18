@@ -32,6 +32,8 @@ const DICT: Record<Locale, Strings> = {
       dance: "Dansa",
       kids: "Infantil",
       pop: "Pop",
+      folk: "Folk",
+      rock: "Rock",
     },
     prices: { free: "Gratuït", "sold-out": "Exhaurit" },
   },
@@ -53,6 +55,8 @@ const DICT: Record<Locale, Strings> = {
       dance: "Danza",
       kids: "Infantil",
       pop: "Pop",
+      folk: "Folk",
+      rock: "Rock",
     },
     prices: { free: "Gratis", "sold-out": "Agotado" },
   },
@@ -74,8 +78,56 @@ const DICT: Record<Locale, Strings> = {
       dance: "Dance",
       kids: "Kids",
       pop: "Pop",
+      folk: "Folk",
+      rock: "Rock",
     },
     prices: { free: "Free", "sold-out": "Sold out" },
+  },
+  hy: {
+    siteTitle: "Cartelita",
+    noEvents: "Առաջիկա միջոցառումներ չկան։",
+    back: "Գլխավոր",
+    andMore: "և ավելին",
+    viewFilms: "Ըստ ֆիլմի",
+    viewByTime: "Ըստ ժամի",
+    showEarlier: "Ցույց տալ ավելի վաղ սեանսները",
+    categories: {
+      film: "Կինո",
+      jazz: "Ջազ",
+      classical: "Դասական",
+      theater: "Թատրոն",
+      club: "Ակումբ",
+      flamenco: "Ֆլամենկո",
+      dance: "Պար",
+      kids: "Մանկական",
+      pop: "Փոփ",
+      folk: "Ժողովրդական",
+      rock: "Ռոք",
+    },
+    prices: { free: "Անվճար", "sold-out": "Սպառված" },
+  },
+  ru: {
+    siteTitle: "Cartelita",
+    noEvents: "Ближайших событий нет.",
+    back: "Главная",
+    andMore: "и ещё",
+    viewFilms: "По фильмам",
+    viewByTime: "По времени",
+    showEarlier: "Показать более ранние сеансы",
+    categories: {
+      film: "Кино",
+      jazz: "Джаз",
+      classical: "Классика",
+      theater: "Театр",
+      club: "Клуб",
+      flamenco: "Фламенко",
+      dance: "Танец",
+      kids: "Детям",
+      pop: "Поп",
+      folk: "Фолк",
+      rock: "Рок",
+    },
+    prices: { free: "Бесплатно", "sold-out": "Распродано" },
   },
 }
 
@@ -89,6 +141,6 @@ export function categoryName(locale: Locale, slug: string): string {
 
 /** BCP-47 tag for Intl/date formatting. */
 export function localeTag(locale: Locale): string {
-  const tags = { ca: "ca-ES", es: "es-ES", en: "en-GB" } as const
+  const tags = { ca: "ca-ES", es: "es-ES", en: "en-GB", hy: "hy-AM", ru: "ru-RU" } as const
   return tags[locale]
 }

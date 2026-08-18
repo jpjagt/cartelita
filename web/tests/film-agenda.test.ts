@@ -16,6 +16,7 @@ const ev = (
   price: "8,50€",
   sourceUrl: `https://x/${id}`,
   recurrenceHint: null,
+  language: null,
 });
 
 describe("groupFilmDay", () => {

@@ -1,0 +1,15 @@
+---
+import { CITIES } from "@/lib/cities"
+import type { Locale } from "@/lib/types"
+import ListView from "@/layouts/ListView.astro"
+
+export function getStaticPaths() {
+  return Object.values(CITIES).flatMap((city) =>
+    city.locales.map((locale) => ({ params: { city: city.slug, locale } })),
+  )
+}
+
+const city = Astro.params.city as string
+const locale = Astro.params.locale as Locale
+---
+<ListView city={city} locale={locale} list={CITIES[city].defaultList} />

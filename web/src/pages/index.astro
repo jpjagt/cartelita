@@ -1,5 +1,50 @@
 ---
-import { DEFAULT_LOCALE, DEFAULT_LIST } from "@/lib/types"
-import ListView from "@/layouts/ListView.astro"
+import { CITIES } from "@/lib/cities"
+import Layout from "@/components/Layout.astro"
+
+// Bare / is the city selector: the gridpaper, the wordmark, and the cities in
+// a centered vertical list. Each city link lands on /:city (its default
+// locale + list). Deliberately bare — the product lives inside a city.
+const cities = Object.values(CITIES)
 ---
-<ListView locale={DEFAULT_LOCALE} list={DEFAULT_LIST} />
+<Layout locale="en" title="Cartelita" canonical="/" genre="">
+  <main class="gridpaper city-picker-page">
+    <div class="city-picker">
+      <span class="city-picker-wordmark font-semibold">Ca<span class="mr-0.5">r</span>telita</span>
+      <nav class="city-picker-list">
+        {cities.map((city) => (
+          <a href={`/${city.slug}`} class="text-foreground no-underline hover:underline">
+            {city.name}
+          </a>
+        ))}
+      </nav>
+    </div>
+  </main>
+</Layout>
+
+<style>
+  .city-picker-page {
+    min-height: 100svh;
+  }
+  /* Centered overlay on the gridpaper; the list itself is the page. */
+  .city-picker {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: calc(var(--cell) * 1.5);
+  }
+  .city-picker-wordmark {
+    font-size: calc(var(--cell) * 1.6);
+    line-height: 1;
+  }
+  .city-picker-list {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: calc(var(--cell) * 0.5);
+    font-size: calc(var(--cell) * 0.8);
+  }
+</style>

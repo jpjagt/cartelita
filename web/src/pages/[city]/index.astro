@@ -1,0 +1,13 @@
+---
+import { CITIES } from "@/lib/cities"
+import ListView from "@/layouts/ListView.astro"
+
+export function getStaticPaths() {
+  return Object.values(CITIES).map((city) => ({ params: { city: city.slug } }))
+}
+
+// Bare /:city renders the city's default landing (default locale + list);
+// explicit-locale pages live under /:city/:locale.
+const city = CITIES[Astro.params.city as string]
+---
+<ListView city={city.slug} locale={city.defaultLocale} list={city.defaultList} />

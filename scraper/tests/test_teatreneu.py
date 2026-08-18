@@ -260,7 +260,8 @@ def test_scraper_registered():
     from cartelera.scrapers import REGISTRY
     import cartelera.scrapers.teatreneu  # noqa: F401 (trigger register)
     assert VENUE_SLUG in REGISTRY, f"Scraper {VENUE_SLUG!r} not in REGISTRY"
-    scraper, venue_def = REGISTRY[VENUE_SLUG]
+    scraper, source = REGISTRY[VENUE_SLUG]
     assert scraper.venue_slug == VENUE_SLUG
+    (venue_def,) = source.venues
     assert "theater" in venue_def.category_slugs
     assert "kids" in venue_def.category_slugs

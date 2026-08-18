@@ -1,7 +1,14 @@
-export type Locale = "ca" | "es" | "en";
-export const LOCALES: Locale[] = ["ca", "es", "en"];
-export const DEFAULT_LOCALE: Locale = "ca";
-export const DEFAULT_LIST = "jazz";
+export type Locale = "ca" | "es" | "en" | "hy" | "ru";
+
+/** A city Cartelita runs in; which locales it serves and its landing list.
+    The config values live in cities.ts. */
+export interface CityConfig {
+  slug: string;
+  name: string;
+  locales: Locale[];
+  defaultLocale: Locale;
+  defaultList: string;
+}
 
 /** One option in a GridRadioButtons control. */
 export interface GridRadioOption {
@@ -24,6 +31,7 @@ export interface AgendaEvent {
   price: string | null;
   sourceUrl: string;   // resolved for the active locale
   recurrenceHint: string | null;
+  language: string | null; // display-only performance/source language ("VOSE", "hy")
 }
 
 export interface AgendaDay {

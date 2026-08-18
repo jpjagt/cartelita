@@ -7,46 +7,74 @@ from cartelera.db import make_engine, make_session_factory, ensure_database_exis
 from cartelera.migrate import apply_migrations
 from cartelera.seed import seed as seed_db
 from cartelera.upsert import upsert_venue_events
-from cartelera.types import ScrapeResult, ScrapedEvent
+from cartelera.types import ScrapeResult, ScrapedEvent, SourceDefinition
 from cartelera.scrapers import REGISTRY, load_all
 
 logger = logging.getLogger(__name__)
 
 
-def run_one(session: Session, venue_slug: str) -> ScrapeResult:
-    """Scrape + upsert a single venue in its own transaction.
-    On any failure, roll back so the venue's existing rows are left untouched."""
-    scraper, _ = REGISTRY[venue_slug]
+def _group_events_by_venue(
+    source: SourceDefinition, events: list[ScrapedEvent]
+) -> dict[str, list[ScrapedEvent]]:
+    """Resolve each event to one of the source's venues, failing fast on any
+    mismatch. For a single-venue source, events may leave venue_slug unset (it
+    resolves to the sole venue); a multi-venue source must set it on every
+    event, and any slug outside the source's venue list — its editorial
+    whitelist — is an error, never a silent drop."""
+    known = {v.slug for v in source.venues}
+    sole = source.venues[0].slug if len(source.venues) == 1 else None
+    by_venue: dict[str, list[ScrapedEvent]] = {}
+    for ev in events:
+        slug = ev.venue_slug or sole
+        if slug is None:
+            raise ValueError(
+                f"source {source.slug!r} has {len(source.venues)} venues, so every "
+                f"event must set venue_slug; {ev.title!r} ({ev.start_date}) doesn't"
+            )
+        if slug not in known:
+            raise ValueError(
+                f"event {ev.title!r} ({ev.start_date}) names venue {slug!r}, which is "
+                f"not among source {source.slug!r}'s venues {sorted(known)}"
+            )
+        by_venue.setdefault(slug, []).append(ev)
+    return by_venue
+
+
+def run_one(session: Session, source_slug: str) -> ScrapeResult:
+    """Scrape + upsert a single source in its own transaction.
+    On any failure, roll back so the source's existing rows are left untouched."""
+    scraper, source = REGISTRY[source_slug]
     try:
         events = scraper.scrape()
-        upsert_venue_events(session, venue_slug, events)
+        for venue_slug, venue_events in _group_events_by_venue(source, events).items():
+            upsert_venue_events(session, venue_slug, venue_events)
         session.commit()
-        return ScrapeResult(venue_slug=venue_slug, ok=True, events=events)
-    except Exception as exc:  # noqa: BLE001 - we want all failures isolated per venue
+        return ScrapeResult(source_slug=source_slug, ok=True, events=events)
+    except Exception as exc:  # noqa: BLE001 - we want all failures isolated per source
         session.rollback()
-        logger.exception("scrape failed for venue %r", venue_slug)
-        return ScrapeResult(venue_slug=venue_slug, ok=False, error=f"{type(exc).__name__}: {exc}")
+        logger.exception("scrape failed for source %r", source_slug)
+        return ScrapeResult(source_slug=source_slug, ok=False, error=f"{type(exc).__name__}: {exc}")
 
 
 def run_all(session: Session) -> list[ScrapeResult]:
     return [run_one(session, slug) for slug in REGISTRY]
 
 
-def _venues_in_category(category_slug: str) -> list[str]:
-    """Registered venue slugs whose VenueDefinition lists `category_slug`."""
+def _sources_in_category(category_slug: str) -> list[str]:
+    """Registered source slugs where any venue lists `category_slug`."""
     return [
-        slug for slug, (_scraper, venue) in REGISTRY.items()
-        if category_slug in venue.category_slugs
+        slug for slug, (_scraper, source) in REGISTRY.items()
+        if any(category_slug in v.category_slugs for v in source.venues)
     ]
 
 
 def _resolve_run_targets(run_args: list[str]) -> list[str] | None:
-    """Turn the `run` args into the ordered list of venue slugs to scrape.
+    """Turn the `run` args into the ordered list of source slugs to scrape.
 
     Forms:
-      (none) / all        -> every registered venue
-      -c <category_slug>  -> every venue whose definition has that category
-      <slug>[,<slug>...]  -> the listed venues (comma- or space-separated)
+      (none) / all        -> every registered source
+      -c <category_slug>  -> every source with a venue in that category
+      <slug>[,<slug>...]  -> the listed sources (comma- or space-separated)
     Returns None (after printing the error) if a slug/category is unknown.
     """
     if not run_args or run_args == ["all"]:
@@ -57,10 +85,13 @@ def _resolve_run_targets(run_args: list[str]) -> list[str] | None:
             print("usage: cartelera run -c <category_slug>", file=sys.stderr)
             return None
         category = run_args[1]
-        slugs = _venues_in_category(category)
+        slugs = _sources_in_category(category)
         if not slugs:
-            known = sorted({c for _s, v in REGISTRY.values() for c in v.category_slugs})
-            print(f"no venues in category {category!r}; known categories: {known}", file=sys.stderr)
+            known = sorted({
+                c for _s, source in REGISTRY.values()
+                for v in source.venues for c in v.category_slugs
+            })
+            print(f"no sources in category {category!r}; known categories: {known}", file=sys.stderr)
             return None
         return slugs
 
@@ -68,7 +99,7 @@ def _resolve_run_targets(run_args: list[str]) -> list[str] | None:
     slugs = [s for arg in run_args for s in arg.split(",") if s]
     unknown = [s for s in slugs if s not in REGISTRY]
     if unknown:
-        print(f"unknown venue slug(s) {unknown}; known: {sorted(REGISTRY)}", file=sys.stderr)
+        print(f"unknown source slug(s) {unknown}; known: {sorted(REGISTRY)}", file=sys.stderr)
         return None
     return slugs
 
@@ -76,9 +107,9 @@ def _resolve_run_targets(run_args: list[str]) -> list[str] | None:
 def _report(results: list[ScrapeResult]) -> None:
     for r in results:
         if r.ok:
-            print(f"[ok]   {r.venue_slug}: {len(r.events)} events")
+            print(f"[ok]   {r.source_slug}: {len(r.events)} events")
         else:
-            print(f"[FAIL] {r.venue_slug}: {r.error}", file=sys.stderr)
+            print(f"[FAIL] {r.source_slug}: {r.error}", file=sys.stderr)
 
 
 def _dry_run(module_name: str) -> int:
@@ -94,33 +125,34 @@ def _dry_run(module_name: str) -> int:
     except ModuleNotFoundError as exc:
         print(f"no scraper module {module_name!r}: {exc}", file=sys.stderr)
         return 1
-    # The module's register(...) keys the REGISTRY by venue_slug, which may differ
-    # from the module name; take the entry it just added (last one registered).
+    # The module's register(...) keys the REGISTRY by source slug, which may
+    # differ from the module name; take the entry it just added (last one
+    # registered).
     if not REGISTRY:
         print(f"module {module_name!r} registered no scraper", file=sys.stderr)
         return 1
-    # Find the scraper whose module matches; fall back to the sole/last entry.
-    scraper = None
-    for s, _ in REGISTRY.values():
+    # Find the entry whose scraper module matches; fall back to the sole/last one.
+    slug, scraper = None, None
+    for s_slug, (s, _) in REGISTRY.items():
         if type(s).__module__.endswith(f".{module_name}"):
-            scraper = s
+            slug, scraper = s_slug, s
             break
     if scraper is None:
-        scraper = list(REGISTRY.values())[-1][0]
+        slug, (scraper, _) = list(REGISTRY.items())[-1]
 
     try:
         events = scraper.scrape()
     except Exception as exc:  # noqa: BLE001 - report cleanly for the author
-        print(f"[FAIL] {scraper.venue_slug}: {type(exc).__name__}: {exc}", file=sys.stderr)
+        print(f"[FAIL] {slug}: {type(exc).__name__}: {exc}", file=sys.stderr)
         return 1
 
-    _print_coverage(scraper.venue_slug, events)
+    _print_coverage(slug, events)
     return 0
 
 
-def _print_coverage(venue_slug: str, events: list[ScrapedEvent]) -> None:
+def _print_coverage(source_slug: str, events: list[ScrapedEvent]) -> None:
     n = len(events)
-    print(f"[dry-run] {venue_slug}: {n} events")
+    print(f"[dry-run] {source_slug}: {n} events")
     if not n:
         return
     pct = lambda c: f"{c}/{n} ({100 * c // n}%)"  # noqa: E731
