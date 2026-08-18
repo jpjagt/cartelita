@@ -1,0 +1,937 @@
+{
+  "result": {
+    "eventOccurrenceIds": [
+      "f6035f6c-4b6f-4a0d-b83a-b444896f72ef",
+      "63336395-5c3d-4abd-9864-53d4ae2d77c3",
+      "8c4dcdd1-33dd-4002-8bf5-c4a5906bde52",
+      "a2c7c628-5d99-4cb7-b029-181a3a9b94ea",
+      "6fbfb4ad-cc49-44b9-b01a-2cd43267b1b1",
+      "8c18c596-af44-4d02-9d9d-cfe5a14b0682",
+      "d3895b36-9827-48ec-b342-cb82a3cbb896",
+      "60a39148-4de2-4798-9dca-8cc1ba327620",
+      "1fec20c2-9524-4727-bf0f-cc4d05137831",
+      "e5878d4d-c735-42fc-8752-a2653546a4f6",
+      "3db1b5da-ea63-405b-b94e-5248a0c17eee",
+      "f8a94066-3e71-40c5-ae0f-551998959010",
+      "eafbb8f2-6af9-4c54-8e94-5c43e59ad523",
+      "844a2163-13af-45d7-b4dd-032958a3f962",
+      "0ff05c91-3e76-4dfd-a5b8-2643a75e2a98"
+    ],
+    "pagination": {
+      "page": 1,
+      "limit": 100,
+      "total": 15,
+      "totalPages": 1
+    }
+  },
+  "entities": {
+    "events": {
+      "0644926a-df78-4bf4-a739-1dc0aebb3009": {
+        "eventId": "0644926a-df78-4bf4-a739-1dc0aebb3009",
+        "cityId": "b744f790-d71f-4e2f-b35a-832aa5a0aa97",
+        "eventSourceId": "a1fbbfa7-8119-4fd6-a348-9f8df287ae45",
+        "filmId": null,
+        "eventType": "standard",
+        "title": "YereOne Project at Kami",
+        "description": "Sunday crazy vibes, full of bright emotions and dance mood by YereOne Project!\n\nTicket price: 5000 AMD\n\nՍեղանները միացնելու համար պարտադիր է տոմսերը գնելու պահին համաձայնեցնել Tomsarkgh.am-ի հետ։\n\nԱմրագրման համար պարտադիր է ապահովել սեղանի շուրջ նախատեսված աթոռների քանակը\n\nVIP սեղանի ամրագրման դեպքում պահանջվում է դեպոզիտ՝ 120.000դրամ + մուտքավճար ( 4 անձի համար նախատեսված սեղաններ) :\n\nՄինչև 10 տարեկան մեկ անձը անվճար երկու անձը մեկ տոմս\n\nԿազմակերպիչ՝ Կամի ակումբ",
+        "i18n": {
+          "title": {
+            "en": {
+              "origin": "source",
+              "content": "YereOne Project"
+            },
+            "hy": {
+              "origin": "translation",
+              "content": "YereOne Project"
+            },
+            "ru": {
+              "origin": "translation",
+              "content": "YereOne Project"
+            }
+          },
+          "description": {
+            "en": {
+              "origin": "source",
+              "content": "Bright emotions and a dance mood by YereOne Project.\n\nTo join tables, please coordinate with Tomsarkgh.am at the time of ticket purchase. Reservations require full occupancy of the seats at the table.\n\nVIP table bookings require a deposit of 120,000 AMD (tables for 4 people).\n\nReservations: 091 50 90 20"
+            },
+            "hy": {
+              "origin": "translation",
+              "content": "Պարային տրամադրություն և վառ էմոցիաներ YereOne Project-ի կողմից:\n\nՍեղանները միացնելու համար պարտադիր է տոմսերը գնելու պահին համաձայնեցնել Tomsarkgh.am-ի հետ։ Ամրագրման համար պարտադիր է ապահովել սեղանի շուրջ նախատեսված աթոռների քանակը։\n\nVIP սեղանի ամրագրման դեպքում գործում է 120,000 դրամ դեպոզիտ (4 անձի համար նախատեսված սեղաններ)։\n\nԱմրագրում՝ 091 50 90 20"
+            },
+            "ru": {
+              "origin": "translation",
+              "content": "Танцевальное настроение и яркие эмоции от YereOne Project.\n\nДля объединения столов необходимо согласовать это с Tomsarkgh.am в момент покупки билетов. Для бронирования обязательно заполнение всех посадочных мест за столом.\n\nПри бронировании VIP-стола требуется депозит в размере 120,000 драм (столы на 4 персоны).\n\nРезерв: 091 50 90 20"
+            }
+          }
+        },
+        "category": "live_music",
+        "tags": [
+          "live_music_other"
+        ],
+        "timezone": "Asia/Yerevan",
+        "detailUrl": "https://www.instagram.com/p/Dby6-p8ttXv/",
+        "media": [
+          {
+            "id": "b3c5998b-1611-43c9-9c90-888e39d99274",
+            "type": "image",
+            "width": 1080,
+            "height": 1440,
+            "sourceUrl": "https://scontent-lga3-3.cdninstagram.com/v/t51.82787-15/687496457_18584875705024748_1341162518366436270_n.jpg?stp=dst-jpg_e35_p1080x1080_sh2.08_tt6&_nc_ht=scontent-lga3-3.cdninstagram.com&_nc_cat=108&_nc_oc=Q6cZ2gFK0LIrPA7GBsZtjyhS-zEJVqZA0kf52XjTABUG6Alq6MgLDea0zsFcas-Ar-h_Ag4&_nc_ohc=iXGGYa-O5PoQ7kNvwGJXZg4&_nc_gid=wzrFdJh8NBfnnP0ih4dxwQ&edm=AOQ1c0wBAAAA&ccb=7-5&ig_cache_key=Mzg4OTEwMTk2MDgxMzI4ODM5Mw%3D%3D.3-ccb7-5&oh=00_Af77EH2GvfzPVm7Xf_UWA324lpZbK8nL0Bf60k5PNI79fA&oe=69FD7CD5&_nc_sid=8b3546",
+            "thumbhash": "ivgBBQAOl+eZmIm1h4X4F1713d3v",
+            "isDisabled": false,
+            "description": "A weekly event schedule for Kami Music Club. The background shows a person in dark clothing and a bucket of ice with bottles. \n\nLINEUP\nMON-SUN / 04 - 10 MAY\n\nMAY 04 / 21:00 YereOne Project\nMAY 06 / 21:00 DOPHAMIN\nMAY 07 / 21:00 A.CHILLA\nMAY 08 / 22:00 Kami Friends\nMAY 09 / 22:00 Kami Friends\nMAY 10 / 21:30 DOPHAMIN\n\nKami\n— MUSIC CLUB —\nRSRV: 091 50 90 20",
+            "colorPalette": {
+              "muted": "#a09154",
+              "vibrant": "#97883f",
+              "darkMuted": "#51542b",
+              "lightMuted": "#cdd0ae",
+              "darkVibrant": "#5e551c",
+              "lightVibrant": "#d8dcac"
+            },
+            "localFileName": "873f8154c2c25fe20b7f706cd1ae76e9.jpg",
+            "downloadStatus": "completed",
+            "durationSeconds": null
+          }
+        ],
+        "featuredCover": null,
+        "visibility": "feed",
+        "ticketingMode": "external",
+        "access": null,
+        "pinnedFields": {},
+        "disabledAt": null,
+        "createdAt": "2026-04-30T14:15:21.456Z",
+        "updatedAt": "2026-08-18T02:02:26.136Z"
+      },
+      "08f6618a-9027-472e-aea9-8cd4d804a099": {
+        "eventId": "08f6618a-9027-472e-aea9-8cd4d804a099",
+        "cityId": "b744f790-d71f-4e2f-b35a-832aa5a0aa97",
+        "eventSourceId": "a1fbbfa7-8119-4fd6-a348-9f8df287ae45",
+        "filmId": null,
+        "eventType": "standard",
+        "title": "Dophamin",
+        "description": "Սեղանների ամրագրման համար զանգահարել 091 50 90 20 հեռախոսահամարով:",
+        "i18n": {
+          "title": {
+            "en": {
+              "origin": "source",
+              "content": "Dophamin"
+            },
+            "hy": {
+              "origin": "translation",
+              "content": "Dophamin"
+            },
+            "ru": {
+              "origin": "translation",
+              "content": "Dophamin"
+            }
+          },
+          "description": {
+            "en": {
+              "origin": "source",
+              "content": "For reservations, call 091 50 90 20."
+            },
+            "hy": {
+              "origin": "translation",
+              "content": "Սեղանների ամրագրման համար զանգահարել 091 50 90 20 հեռախոսահամարով:"
+            },
+            "ru": {
+              "origin": "translation",
+              "content": "Для бронирования столов звоните по телефону 091 50 90 20."
+            }
+          }
+        },
+        "category": "live_music",
+        "tags": [
+          "live_music_other"
+        ],
+        "timezone": "Asia/Yerevan",
+        "detailUrl": "https://www.instagram.com/p/DcGNcoFteoV/",
+        "media": [
+          {
+            "id": "05e328be-1a6a-43d8-aacf-74d5473ee2fe",
+            "type": "image",
+            "width": 1550,
+            "height": 1877,
+            "sourceUrl": "https://scontent-lax3-2.cdninstagram.com/v/t51.82787-15/777622062_18617410633024748_8103210269963214243_n.jpg?stp=dst-jpg_e35_tt6&_nc_cat=107&ig_cache_key=Mzk2NDkxNTY2Mzc0MTc3NDM1Nw%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkZFRUQueHBpZHMuMTU1MC5zZHIucmVndWxhcl9waG90by5DMyJ9&_nc_ohc=OExc0smfNlIQ7kNvwHSHM8q&_nc_oc=AdoNgLzLTGAt-oNmhUPT7NkAg93rZ6DZck-daRbDVE6mN0HQ2h0OL5vpz4EipXHTbEY&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-lax3-2.cdninstagram.com&_nc_gid=-C9KRg1ZADEvWsmMMAZR8A&_nc_ss=7a22e&oh=00_AQHbnkAGxVtKd3eiCYLZI9M9k-sdOZc6UDYoDueL6VnIOA&oe=6A8770C1",
+            "thumbhash": "TAgGDgJLdkmXlwiGmZeIhReX0r9E+DY=",
+            "isDisabled": false,
+            "description": "A promotional poster for a weekly lineup at Kami Music Club, featuring two women in elegant evening wear. \n\nweekly\nLINEUP\n/ 19.08-23.08 /\n\n19 AUG WED, 21:00 YEREONE PROJECT\n20 AUG THU, 21:00 DOPHAMIN\n21 AUG FRI, 22:00 VIDA DE CUBA\n22 AUG SAT, 22:00 KAMI FRIENDS\n23 AUG SUN, 21:30 DOPHAMIN\n\nkami\n— MUSIC CLUB —\nFOR RESERVATION: 091 50 90 20",
+            "colorPalette": {
+              "muted": "#6e6452",
+              "vibrant": "#d1a12d",
+              "darkMuted": "#3e3221",
+              "lightMuted": "#d0cdcc",
+              "darkVibrant": "#534012",
+              "lightVibrant": "#e7ce92"
+            },
+            "localFileName": "12f9aa5bbf9c4c32df5800125de42d6a.jpg",
+            "downloadStatus": "completed",
+            "durationSeconds": null
+          }
+        ],
+        "featuredCover": null,
+        "visibility": "feed",
+        "ticketingMode": "none",
+        "access": null,
+        "pinnedFields": {},
+        "disabledAt": null,
+        "createdAt": "2026-08-16T11:37:08.475Z",
+        "updatedAt": "2026-08-16T11:37:51.113Z"
+      },
+      "7b368a45-82b4-430d-b945-a7977363a053": {
+        "eventId": "7b368a45-82b4-430d-b945-a7977363a053",
+        "cityId": "b744f790-d71f-4e2f-b35a-832aa5a0aa97",
+        "eventSourceId": "a1fbbfa7-8119-4fd6-a348-9f8df287ae45",
+        "filmId": null,
+        "eventType": "standard",
+        "title": "Menq Project at Kami club",
+        "description": "Mark your calendars!\n\nJoin us for a night of incredible live music and vibrant energy with Menq Project. Let’s make this Tuesday night special with great vibes and amazing performances!\n\nTime: 21:00\n\nVenue: Kami Music Club\n\nDon’t miss out on one of the most exciting musical projects in town!\n\nՏոմսերի արժեքը ՝ 5000 դրամ\n\nՍեղանները միացնելու համար պարտադիր է տոմսերը գնելու պահին համաձայնեցնել Tomsarkgh.am-ի հետ։\n\nԱմրագրման համար պարտադիր է ապահովել սեղանի շուրջ նախատեսված աթոռների քանակը\n\nVIP սեղանի ամրագրման դեպքում պահանջվում է դեպոզիտ՝ 120.000դրամ ( 4 անձի համար նախատեսված սեղաններ) :\n\nՄինչև 10 տարեկան մեկ անձը անվճար երկու անձը մեկ տոմս\n\nԿազմակերպիչ՝ Կամի ակումբ",
+        "i18n": {
+          "title": {
+            "en": {
+              "origin": "translation",
+              "content": "MENQ PROJECT"
+            },
+            "hy": {
+              "origin": "source",
+              "content": "MENQ PROJECT"
+            },
+            "ru": {
+              "origin": "translation",
+              "content": "MENQ PROJECT"
+            }
+          },
+          "description": {
+            "en": {
+              "origin": "translation",
+              "content": "A live music performance by MENQ PROJECT.\n\nFor reservations, call 091 50 90 20."
+            },
+            "hy": {
+              "origin": "source",
+              "content": "Կենդանի երաժշտության երեկո MENQ PROJECT-ի հետ։\n\nԱմրագրումների համար զանգահարել 091 50 90 20 հեռախոսահամարով։"
+            },
+            "ru": {
+              "origin": "translation",
+              "content": "Вечер живой музыки в исполнении MENQ PROJECT.\n\nДля бронирования столиков звоните по телефону 091 50 90 20."
+            }
+          }
+        },
+        "category": "live_music",
+        "tags": [
+          "live_music_other"
+        ],
+        "timezone": "Asia/Yerevan",
+        "detailUrl": "https://www.instagram.com/p/Dby64JMNtay/",
+        "media": [
+          {
+            "id": "a2fea75b-315e-4b50-92cc-750e534eabc2",
+            "type": "image",
+            "width": 1080,
+            "height": 1308,
+            "sourceUrl": "https://scontent-lga3-3.cdninstagram.com/v/t51.82787-15/670804158_18580641475024748_8625075814722470130_n.jpg?stp=dst-jpg_e35_p1080x1080_sh0.08_tt6&_nc_ht=scontent-lga3-3.cdninstagram.com&_nc_cat=108&_nc_oc=Q6cZ2gGm2ph8g7OqRCJtrL_R-WQwMZNf8LMSU957Go9sf_b0BudXZ9pkktjZESodLsL_R_0&_nc_ohc=PLskW_HS11QQ7kNvwEgN9TY&_nc_gid=WDzE-PWIko3EIdyAmRFf3A&edm=AOQ1c0wBAAAA&ccb=7-5&ig_cache_key=Mzg3Nzc5MjczNTg3NjkzMTQzMg%3D%3D.3-ccb7-5&oh=00_Af1FcZWibZbaiBnK5lMumTP5e6WL3ad96abD4oc0647fzA&oe=69E947A6&_nc_sid=8b3546",
+            "thumbhash": "YggOBgB2h7hph/d4aGGJhKd3mUqQ9HY=",
+            "isDisabled": false,
+            "description": "Promotional poster for a musical performance featuring a group of five people (four men and one woman) sitting on a green leather sofa. \n\nMENQ PROJECT\n\n21 APRIL — / TUE, 21:00 /\n\nkami\n— MUSIC CLUB —\n\nFOR RESERVATION: 091 50 90 20",
+            "colorPalette": {
+              "muted": "#977e71",
+              "vibrant": "#d4d42a",
+              "darkMuted": "#46412c",
+              "lightMuted": "#c4c3bb",
+              "darkVibrant": "#141404",
+              "lightVibrant": "#e8cfb9"
+            },
+            "localFileName": "1e90bc6abd03f1a19e310683373f1635.jpg",
+            "downloadStatus": "completed",
+            "durationSeconds": null
+          }
+        ],
+        "featuredCover": null,
+        "visibility": "feed",
+        "ticketingMode": "external",
+        "access": null,
+        "pinnedFields": {},
+        "disabledAt": null,
+        "createdAt": "2026-01-04T03:10:55.257Z",
+        "updatedAt": "2026-08-18T02:02:26.136Z"
+      },
+      "cea441f0-686e-48a8-9ca5-b76664b4a97a": {
+        "eventId": "cea441f0-686e-48a8-9ca5-b76664b4a97a",
+        "cityId": "b744f790-d71f-4e2f-b35a-832aa5a0aa97",
+        "eventSourceId": "a1fbbfa7-8119-4fd6-a348-9f8df287ae45",
+        "filmId": null,
+        "eventType": "standard",
+        "title": "YEREONE PROJECT",
+        "description": "Յոթ արտիստներից բաղկացած խմբի կենդանի երաժշտական երեկո:\n\nԱմրագրման համար՝ 091 50 90 20",
+        "i18n": {
+          "title": {
+            "en": {
+              "origin": "source",
+              "content": "YEREONE PROJECT"
+            },
+            "hy": {
+              "origin": "translation",
+              "content": "YEREONE PROJECT"
+            },
+            "ru": {
+              "origin": "translation",
+              "content": "YEREONE PROJECT"
+            }
+          },
+          "description": {
+            "en": {
+              "origin": "source",
+              "content": "A live performance by the seven-piece musical collective.\n\nFor reservation: 091 50 90 20"
+            },
+            "hy": {
+              "origin": "translation",
+              "content": "Յոթ արտիստներից բաղկացած խմբի կենդանի երաժշտական երեկո:\n\nԱմրագրման համար՝ 091 50 90 20"
+            },
+            "ru": {
+              "origin": "translation",
+              "content": "Живое выступление музыкального коллектива из семи артистов.\n\nБронирование по телефону: 091 50 90 20"
+            }
+          }
+        },
+        "category": "live_music",
+        "tags": [
+          "live_music_other"
+        ],
+        "timezone": "Asia/Yerevan",
+        "detailUrl": "https://www.instagram.com/p/DcGNcoFteoV/",
+        "media": [
+          {
+            "id": "ab80392a-3ad0-4ee0-a9fe-5c12bee98e47",
+            "type": "image",
+            "width": 1550,
+            "height": 1877,
+            "sourceUrl": "https://scontent-lax3-2.cdninstagram.com/v/t51.82787-15/777622062_18617410633024748_8103210269963214243_n.jpg?stp=dst-jpg_e35_tt6&_nc_cat=107&ig_cache_key=Mzk2NDkxNTY2Mzc0MTc3NDM1Nw%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkZFRUQueHBpZHMuMTU1MC5zZHIucmVndWxhcl9waG90by5DMyJ9&_nc_ohc=OExc0smfNlIQ7kNvwHSHM8q&_nc_oc=AdoNgLzLTGAt-oNmhUPT7NkAg93rZ6DZck-daRbDVE6mN0HQ2h0OL5vpz4EipXHTbEY&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-lax3-2.cdninstagram.com&_nc_gid=-C9KRg1ZADEvWsmMMAZR8A&_nc_ss=7a22e&oh=00_AQHbnkAGxVtKd3eiCYLZI9M9k-sdOZc6UDYoDueL6VnIOA&oe=6A8770C1",
+            "thumbhash": "TAgGDgJLdkmXlwiGmZeIhReX0r9E+DY=",
+            "isDisabled": false,
+            "description": "A promotional poster for a weekly lineup at Kami Music Club, featuring two women in elegant evening wear. \n\nweekly\nLINEUP\n/ 19.08-23.08 /\n\n19 AUG WED, 21:00 YEREONE PROJECT\n20 AUG THU, 21:00 DOPHAMIN\n21 AUG FRI, 22:00 VIDA DE CUBA\n22 AUG SAT, 22:00 KAMI FRIENDS\n23 AUG SUN, 21:30 DOPHAMIN\n\nkami\n— MUSIC CLUB —\nFOR RESERVATION: 091 50 90 20",
+            "colorPalette": {
+              "muted": "#6e6452",
+              "vibrant": "#d1a12d",
+              "darkMuted": "#3e3221",
+              "lightMuted": "#d0cdcc",
+              "darkVibrant": "#534012",
+              "lightVibrant": "#e7ce92"
+            },
+            "localFileName": "12f9aa5bbf9c4c32df5800125de42d6a.jpg",
+            "downloadStatus": "completed",
+            "durationSeconds": null
+          }
+        ],
+        "featuredCover": null,
+        "visibility": "feed",
+        "ticketingMode": "none",
+        "access": null,
+        "pinnedFields": {},
+        "disabledAt": null,
+        "createdAt": "2026-01-21T05:15:49.919Z",
+        "updatedAt": "2026-08-17T07:37:26.476Z"
+      },
+      "cf5a55a4-e4bc-472f-adba-683121958dcf": {
+        "eventId": "cf5a55a4-e4bc-472f-adba-683121958dcf",
+        "cityId": "b744f790-d71f-4e2f-b35a-832aa5a0aa97",
+        "eventSourceId": "a1fbbfa7-8119-4fd6-a348-9f8df287ae45",
+        "filmId": null,
+        "eventType": "standard",
+        "title": "KAMI FRIENDS",
+        "description": "Ուղիղ միացում Kami Music Club-ի ռեզիդենտ խմբի կատարումներին։ Երեկոյի ընթացքում սպասվում է կենդանի երաժշտություն և ակումբային մթնոլորտ։\n\nՍեղանների ամրագրման համար զանգահարել 091 50 90 20 հեռախոսահամարով։",
+        "i18n": {
+          "title": {
+            "en": {
+              "origin": "source",
+              "content": "KAMI FRIENDS"
+            },
+            "hy": {
+              "origin": "translation",
+              "content": "KAMI FRIENDS"
+            },
+            "ru": {
+              "origin": "translation",
+              "content": "KAMI FRIENDS"
+            }
+          },
+          "description": {
+            "en": {
+              "origin": "source",
+              "content": "Live performance by the resident band of Kami Music Club. An evening of energetic live music and club atmosphere.\n\nFor reservations, call 091 50 90 20."
+            },
+            "hy": {
+              "origin": "translation",
+              "content": "Ուղիղ միացում Kami Music Club-ի ռեզիդենտ խմբի կատարումներին։ Երեկոյի ընթացքում սպասվում է կենդանի երաժշտություն և ակումբային մթնոլորտ։\n\nՍեղանների ամրագրման համար զանգահարել 091 50 90 20 հեռախոսահամարով։"
+            },
+            "ru": {
+              "origin": "translation",
+              "content": "Вечер живой музыки от резидентов Kami Music Club. В программе — выступления группы KAMI FRIENDS и фирменная атмосфера клуба.\n\nБронирование столов по телефону: 091 50 90 20."
+            }
+          }
+        },
+        "category": "live_music",
+        "tags": [
+          "live_music_other"
+        ],
+        "timezone": "Asia/Yerevan",
+        "detailUrl": "https://www.instagram.com/p/DcGNcoFteoV/",
+        "media": [
+          {
+            "id": "121e1468-bbd3-4024-9507-919165589186",
+            "type": "image",
+            "width": 1080,
+            "height": 1307,
+            "sourceUrl": "https://scontent-ord5-1.cdninstagram.com/v/t51.82787-15/712099705_18592738315024748_8396053818328511865_n.jpg?stp=dst-jpg_e35_p1080x1080_sh2.08_tt6&_nc_ht=scontent-ord5-1.cdninstagram.com&_nc_cat=108&_nc_oc=Q6cZ2gHE1KhesqEvq15CIdaoIhPbb0ocDkd-Gz5_GHqhH9XrvbL52DhkbaXLFoFiyU0EPLs&_nc_ohc=T-T7lNE3Z5YQ7kNvwENslpN&_nc_gid=1vMQgTW_hcBwtbWmgrlKlg&edm=AOQ1c0wBAAAA&ccb=7-5&ig_cache_key=MzkwODg2NDk2MTQ2NTU0OTIyMg%3D%3D.3-ccb7-5&oh=00_Af94OPsMdCH3wzI61BrCPWCHZuGDDgP4-21XVtzoZmTh4A&oe=6A21699D&_nc_sid=8b3546",
+            "thumbhash": "ifgFDgANd4WZdgeWpoyGdFpnT5fwRAo=",
+            "isDisabled": false,
+            "description": "A weekly event schedule for Kami Music Club. The background shows a dimly lit scene with hands holding cocktail glasses.\n\nLINEUP\nMON-SUN / 01 - 07 JUNE\n\nJUNE 01 / 21:00 YereOne Project\nJUNE 02 / 21:00 Menq Project\nJUNE 04 / 21:00 DOPHAMIN\nJUNE 05 / 22:00 Kami Friends\nJUNE 06 / 22:00 Kami Friends\nJUNE 07 / 21:30 DOPHAMIN\n\nKami\n— MUSIC CLUB —\n\nRSRV: 091 50 90 20",
+            "colorPalette": {
+              "muted": "#95946c",
+              "vibrant": "#eabb14",
+              "darkMuted": "#605631",
+              "lightMuted": "#d1cfae",
+              "darkVibrant": "#2d2404",
+              "lightVibrant": "#f4f5c7"
+            },
+            "localFileName": "6dcf25875f398dd6a3d1ed35d37b44ee.jpg",
+            "downloadStatus": "completed",
+            "durationSeconds": null
+          }
+        ],
+        "featuredCover": null,
+        "visibility": "feed",
+        "ticketingMode": "external",
+        "access": null,
+        "pinnedFields": {},
+        "disabledAt": null,
+        "createdAt": "2026-02-16T10:44:51.993Z",
+        "updatedAt": "2026-08-18T08:12:41.970Z"
+      },
+      "de3342d4-c9bc-4529-b25c-edc84442127c": {
+        "eventId": "de3342d4-c9bc-4529-b25c-edc84442127c",
+        "cityId": "b744f790-d71f-4e2f-b35a-832aa5a0aa97",
+        "eventSourceId": "a1fbbfa7-8119-4fd6-a348-9f8df287ae45",
+        "filmId": null,
+        "eventType": "standard",
+        "title": "Vida De Cuba at Kami",
+        "description": "Vida De Cuba at Kami Club\n\nՍեղանները միացնելու համար պարտադիր է տոմսերը գնելու պահին համաձայնեցնել Tomsarkgh.am-ի հետ։\n\nԱմրագրման համար պարտադիր է ապահովել սեղանի շուրջ նախատեսված աթոռների քանակը\n\nVIP սեղանի ամրագրման դեպքում պահանջվում է դեպոզիտ՝ 120.000դրամ ( 4 անձի համար նախատեսված սեղաններ) :\n\nՄինչև 10 տարեկան մեկ անձը անվճար երկու անձը մեկ տոմս\n\nՏոմսի արժեքը՝ 5000դրամ\n\nԿազմակերպիչ՝ Կամի ակումբ",
+        "i18n": {
+          "title": {
+            "en": {
+              "origin": "source",
+              "content": "VIDA DE CUBA"
+            },
+            "hy": {
+              "origin": "translation",
+              "content": "VIDA DE CUBA"
+            },
+            "ru": {
+              "origin": "translation",
+              "content": "VIDA DE CUBA"
+            }
+          },
+          "description": {
+            "en": {
+              "origin": "source",
+              "content": "A night of Cuban rhythms and festive atmosphere at Kami Music Club.\n\nReservations: 091 50 90 20"
+            },
+            "hy": {
+              "origin": "translation",
+              "content": "Կուբայական ռիթմերով և տոնական մթնոլորտով երեկո Kami Music Club-ում:\n\nԱմրագրումների համար՝ 091 50 90 20"
+            },
+            "ru": {
+              "origin": "translation",
+              "content": "Вечер кубинских ритмов и праздничная атмосфера в Kami Music Club.\n\nРезерв: 091 50 90 20"
+            }
+          }
+        },
+        "category": "live_music",
+        "tags": [
+          "live_music_other"
+        ],
+        "timezone": "Asia/Yerevan",
+        "detailUrl": "https://www.instagram.com/p/DcGNcoFteoV/",
+        "media": [
+          {
+            "id": "1192645c-2556-40c0-bc12-fb22b68b4b31",
+            "type": "image",
+            "width": 1080,
+            "height": 1308,
+            "sourceUrl": "https://scontent-lax3-1.cdninstagram.com/v/t51.82787-15/670269742_18579034153024748_5272308734632815397_n.jpg?stp=dst-jpg_e35_p1080x1080_sh0.08_tt6&_nc_ht=scontent-lax3-1.cdninstagram.com&_nc_cat=108&_nc_oc=Q6cZ2gGntCRFnzEZj510RMZA26Jr9etfSgbOlkQekMz0r9HxkBfEtrSAEI3KzfQhY606ddY&_nc_ohc=CPkk1sl-uykQ7kNvwE3i8Zj&_nc_gid=BvOvX4CP8FLQQBuW1d6kHg&edm=AOQ1c0wBAAAA&ccb=7-5&ig_cache_key=Mzg3MjMwOTU2NDE4Mzk0OTM2NQ%3D%3D.3-ccb7-5&oh=00_Af0KmbGKJCsCjetV7ym-2CUz2pryskcHZGtMdeSlW38K3Q&oe=69DF4709&_nc_sid=8b3546",
+            "thumbhash": "UBgGFgglhveHpgiIl4yHeblHrJCTCGg=",
+            "isDisabled": false,
+            "description": "13 APRIL\nMONDAY, 21:00\n\nVIDA DE CUBA\n\nFOR RESERVATION: 091 50 90 20\n\nPoster-style image showing a seven-piece band posed in front of colorful, weathered Havana-style apartment buildings and tall palm trees under a teal, vintage film-grain sky; the musicians wear tropical/floral shirts and include keyboard players, percussionists (congas), a bassist with an electric bass, and a seated drummer, with a Cuban flag draped over one keyboard. A simple chevron logo sits above the date. The overall mood is festive and retro; event name \"VIDA DE CUBA\", date/time (13 April, Monday 21:00) and a reservation phone number (091 50 90 20) are the key event details visible on the poster.",
+            "colorPalette": {
+              "muted": "#ad8271",
+              "vibrant": "#d73c37",
+              "darkMuted": "#346464",
+              "lightMuted": "#c1a18c",
+              "darkVibrant": "#14646a",
+              "lightVibrant": "#e89390"
+            },
+            "localFileName": "c763524cdc2133a27bf6eabb9ec5f923.jpg",
+            "downloadStatus": "completed",
+            "durationSeconds": null
+          }
+        ],
+        "featuredCover": null,
+        "visibility": "feed",
+        "ticketingMode": "external",
+        "access": null,
+        "pinnedFields": {},
+        "disabledAt": null,
+        "createdAt": "2026-04-10T20:54:56.662Z",
+        "updatedAt": "2026-08-18T02:02:26.136Z"
+      },
+      "f5591059-cee2-4e0b-ac6c-9afe449ea133": {
+        "eventId": "f5591059-cee2-4e0b-ac6c-9afe449ea133",
+        "cityId": "b744f790-d71f-4e2f-b35a-832aa5a0aa97",
+        "eventSourceId": "a1fbbfa7-8119-4fd6-a348-9f8df287ae45",
+        "filmId": null,
+        "eventType": "standard",
+        "title": "Dophamin",
+        "description": "Get ready for an unforgettable Sunday night! We’re bringing the ultimate vibes to the stage with Dophamin. Join us for a live performance that’s all about high energy, incredible vocals, and pure musical magic.\n\nVocals: Ayla & Maré\n\nFull Live Band: Zare Gasparyan, David Poghosyan, Koryun Bobikyan, Vahram Yanikyan, Hovsep Asatryan, & Rafael Tatencyan.\n\nDoors Open: 21:30\n\nՍեղանները միացնելու համար պարտադիր է տոմսերը գնելու պահին համաձայնեցնել Tomsarkgh.am-ի հետ։\n\nԱմրագրման համար պարտադիր է ապահովել սեղանի շուրջ նախատեսված աթոռների քանակը\n\nVIP սեղանի ամրագրման դեպքում պահանջվում է դեպոզիտ՝ 120.000դրամ ( 4 անձի համար նախատեսված սեղաններ) :\n\nՄինչև 10 տարեկան մեկ անձը անվճար երկու անձը մեկ տոմս\n\nԿազմակերպիչ՝ Կամի ակումբ",
+        "i18n": {
+          "title": {
+            "en": {
+              "origin": "source",
+              "content": "Dophamin"
+            },
+            "hy": {
+              "origin": "translation",
+              "content": "Dophamin"
+            },
+            "ru": {
+              "origin": "translation",
+              "content": "Dophamin"
+            }
+          },
+          "description": {
+            "en": {
+              "origin": "source",
+              "content": "Live performance at Kami Music Club.\n\nFor reservations: 091 50 90 20."
+            },
+            "hy": {
+              "origin": "translation",
+              "content": "Կենդանի երաժշտություն Kami Music Club-ում:\n\nԱմրագրումների համար զանգահարել 091 50 90 20:"
+            },
+            "ru": {
+              "origin": "translation",
+              "content": "Живое выступление в Kami Music Club.\n\nДля бронирования: 091 50 90 20."
+            }
+          }
+        },
+        "category": "live_music",
+        "tags": [
+          "live_music_other"
+        ],
+        "timezone": "Asia/Yerevan",
+        "detailUrl": "https://www.instagram.com/p/DcGNcoFteoV/",
+        "media": [
+          {
+            "id": "4d94f485-a7f6-4bda-af11-bc11aa8b46fa",
+            "type": "image",
+            "width": 1080,
+            "height": 1307,
+            "sourceUrl": "https://scontent-lga3-3.cdninstagram.com/v/t51.82787-15/730373520_18601740220024748_9146690405014907470_n.jpg?stp=dst-jpg_e35_p1080x1080_sh2.08_tt6&_nc_ht=scontent-lga3-3.cdninstagram.com&_nc_cat=108&_nc_oc=Q6cZ2gH4P1LptW0epoS50mK_9sYURy6gvd7JqYk487LAqKT0y4lvlGFDSnivdLl7xPIA5KY&_nc_ohc=DOVUzsA22dQQ7kNvwEOmhUY&_nc_gid=I6fC2ZLhNXYXfrnRdvOuwQ&edm=AOQ1c0wBAAAA&ccb=7-5&ig_cache_key=MzkyOTk0NTYxODE5NTI1OTYyOA%3D%3D.3-ccb7-5&oh=00_Af8hTOxiYrHBc_nTTX5Keyyy1B-FA4L3I_3jM0m4wSGiUQ&oe=6A47F0B5&_nc_sid=8b3546",
+            "thumbhash": "LRgWDgSHh/iHiCh4d3qIiGiobnXfZvc=",
+            "isDisabled": false,
+            "description": "Weekly lineup for Kami Music Club from 29.06 to 05.07. \n\nweekly\nLINEUP\n\n29.06 | MON, 21:00 | YEREONE PROJECT\n30.06 | TUE, 21:00 | VIDA DE CUBA\n02.07 | THU, 21:00 | YEREONE PROJECT\n03.07 | FRI, 22:00 | DOPHAMIN\n04.07 | SAT, 22:00 | DOPHAMIN\n05.07 | SUN, 21:30 | DOPHAMIN\n\nKami Music Club\nFOR RESERVATION: 091 50 90 20",
+            "colorPalette": {
+              "muted": "#a67c73",
+              "vibrant": "#d43431",
+              "darkMuted": "#62322c",
+              "lightMuted": "#d6bcb4",
+              "darkVibrant": "#631410",
+              "lightVibrant": "#d69697"
+            },
+            "localFileName": "6ada1f298330a71b34c6c650d691c0a3.jpg",
+            "downloadStatus": "completed",
+            "durationSeconds": null
+          }
+        ],
+        "featuredCover": null,
+        "visibility": "feed",
+        "ticketingMode": "external",
+        "access": null,
+        "pinnedFields": {},
+        "disabledAt": null,
+        "createdAt": "2026-04-27T10:43:17.862Z",
+        "updatedAt": "2026-08-18T02:02:26.136Z"
+      }
+    },
+    "eventOccurrences": {
+      "f6035f6c-4b6f-4a0d-b83a-b444896f72ef": {
+        "eventOccurrenceId": "f6035f6c-4b6f-4a0d-b83a-b444896f72ef",
+        "placeId": "917f8697-57e2-40b4-95cd-38865d6d5603",
+        "venueAddress": "18 Abovyan St.",
+        "startDate": "2026-08-19",
+        "startTime": "21:00:00",
+        "endDate": null,
+        "endTime": null,
+        "price": null,
+        "eventId": "cea441f0-686e-48a8-9ca5-b76664b4a97a",
+        "metadata": null,
+        "pinnedFields": {},
+        "disabledAt": null,
+        "createdAt": "2026-08-16T11:37:01.060Z",
+        "updatedAt": "2026-08-16T11:37:01.060Z"
+      },
+      "63336395-5c3d-4abd-9864-53d4ae2d77c3": {
+        "eventOccurrenceId": "63336395-5c3d-4abd-9864-53d4ae2d77c3",
+        "placeId": "917f8697-57e2-40b4-95cd-38865d6d5603",
+        "venueAddress": "Աբովյան փող., 18, Yerevan, Armenia",
+        "startDate": "2026-08-20",
+        "startTime": "21:00:00",
+        "endDate": null,
+        "endTime": null,
+        "price": "5000 AMD",
+        "eventId": "f5591059-cee2-4e0b-ac6c-9afe449ea133",
+        "metadata": {
+          "ticketUrls": {
+            "tomsarkgh": "https://www.tomsarkgh.am/place/hallplan?sessionid=990203"
+          }
+        },
+        "pinnedFields": {},
+        "disabledAt": null,
+        "createdAt": "2026-07-29T14:02:29.715Z",
+        "updatedAt": "2026-07-29T14:02:29.715Z"
+      },
+      "8c4dcdd1-33dd-4002-8bf5-c4a5906bde52": {
+        "eventOccurrenceId": "8c4dcdd1-33dd-4002-8bf5-c4a5906bde52",
+        "placeId": "917f8697-57e2-40b4-95cd-38865d6d5603",
+        "venueAddress": "Աբովյան փող., 18, Yerevan, Armenia",
+        "startDate": "2026-08-21",
+        "startTime": "21:00:00",
+        "endDate": null,
+        "endTime": null,
+        "price": "5000 AMD",
+        "eventId": "de3342d4-c9bc-4529-b25c-edc84442127c",
+        "metadata": {
+          "ticketUrls": {
+            "tomsarkgh": "https://www.tomsarkgh.am/place/hallplan?sessionid=992544"
+          }
+        },
+        "pinnedFields": {},
+        "disabledAt": null,
+        "createdAt": "2026-08-13T02:02:34.906Z",
+        "updatedAt": "2026-08-13T02:02:34.906Z"
+      },
+      "a2c7c628-5d99-4cb7-b029-181a3a9b94ea": {
+        "eventOccurrenceId": "a2c7c628-5d99-4cb7-b029-181a3a9b94ea",
+        "placeId": "917f8697-57e2-40b4-95cd-38865d6d5603",
+        "venueAddress": "18 Abovyan St.",
+        "startDate": "2026-08-21",
+        "startTime": "22:00:00",
+        "endDate": null,
+        "endTime": null,
+        "price": null,
+        "eventId": "de3342d4-c9bc-4529-b25c-edc84442127c",
+        "metadata": null,
+        "pinnedFields": {},
+        "disabledAt": null,
+        "createdAt": "2026-08-16T11:37:04.241Z",
+        "updatedAt": "2026-08-16T11:37:04.241Z"
+      },
+      "6fbfb4ad-cc49-44b9-b01a-2cd43267b1b1": {
+        "eventOccurrenceId": "6fbfb4ad-cc49-44b9-b01a-2cd43267b1b1",
+        "placeId": "917f8697-57e2-40b4-95cd-38865d6d5603",
+        "venueAddress": "Աբովյան փող., 18, Yerevan, Armenia",
+        "startDate": "2026-08-22",
+        "startTime": "21:00:00",
+        "endDate": null,
+        "endTime": null,
+        "price": "7000 AMD",
+        "eventId": "cf5a55a4-e4bc-472f-adba-683121958dcf",
+        "metadata": {
+          "ticketUrls": {
+            "tomsarkgh": "https://www.tomsarkgh.am/place/hallplan?sessionid=992545"
+          }
+        },
+        "pinnedFields": {},
+        "disabledAt": null,
+        "createdAt": "2026-08-13T02:02:34.924Z",
+        "updatedAt": "2026-08-13T02:02:34.924Z"
+      },
+      "8c18c596-af44-4d02-9d9d-cfe5a14b0682": {
+        "eventOccurrenceId": "8c18c596-af44-4d02-9d9d-cfe5a14b0682",
+        "placeId": "917f8697-57e2-40b4-95cd-38865d6d5603",
+        "venueAddress": "18 Abovyan St.",
+        "startDate": "2026-08-22",
+        "startTime": "22:00:00",
+        "endDate": null,
+        "endTime": null,
+        "price": null,
+        "eventId": "cf5a55a4-e4bc-472f-adba-683121958dcf",
+        "metadata": null,
+        "pinnedFields": {},
+        "disabledAt": null,
+        "createdAt": "2026-08-16T11:37:05.169Z",
+        "updatedAt": "2026-08-16T11:37:05.169Z"
+      },
+      "d3895b36-9827-48ec-b342-cb82a3cbb896": {
+        "eventOccurrenceId": "d3895b36-9827-48ec-b342-cb82a3cbb896",
+        "placeId": "917f8697-57e2-40b4-95cd-38865d6d5603",
+        "venueAddress": "Աբովյան փող., 18, Yerevan, Armenia",
+        "startDate": "2026-08-23",
+        "startTime": "21:00:00",
+        "endDate": null,
+        "endTime": null,
+        "price": "5000 AMD",
+        "eventId": "f5591059-cee2-4e0b-ac6c-9afe449ea133",
+        "metadata": {
+          "ticketUrls": {
+            "tomsarkgh": "https://www.tomsarkgh.am/place/hallplan?sessionid=990202"
+          }
+        },
+        "pinnedFields": {},
+        "disabledAt": null,
+        "createdAt": "2026-07-29T14:02:29.718Z",
+        "updatedAt": "2026-07-29T14:02:29.718Z"
+      },
+      "60a39148-4de2-4798-9dca-8cc1ba327620": {
+        "eventOccurrenceId": "60a39148-4de2-4798-9dca-8cc1ba327620",
+        "placeId": "917f8697-57e2-40b4-95cd-38865d6d5603",
+        "venueAddress": "18 Abovyan St.",
+        "startDate": "2026-08-23",
+        "startTime": "21:30:00",
+        "endDate": null,
+        "endTime": null,
+        "price": null,
+        "eventId": "f5591059-cee2-4e0b-ac6c-9afe449ea133",
+        "metadata": null,
+        "pinnedFields": {},
+        "disabledAt": null,
+        "createdAt": "2026-08-17T07:37:27.594Z",
+        "updatedAt": "2026-08-17T07:37:27.594Z"
+      },
+      "1fec20c2-9524-4727-bf0f-cc4d05137831": {
+        "eventOccurrenceId": "1fec20c2-9524-4727-bf0f-cc4d05137831",
+        "placeId": "917f8697-57e2-40b4-95cd-38865d6d5603",
+        "venueAddress": "18 Abovyan St.",
+        "startDate": "2026-08-23",
+        "startTime": "21:30:00",
+        "endDate": null,
+        "endTime": null,
+        "price": null,
+        "eventId": "08f6618a-9027-472e-aea9-8cd4d804a099",
+        "metadata": null,
+        "pinnedFields": {},
+        "disabledAt": null,
+        "createdAt": "2026-08-16T11:37:10.684Z",
+        "updatedAt": "2026-08-16T11:37:10.684Z"
+      },
+      "e5878d4d-c735-42fc-8752-a2653546a4f6": {
+        "eventOccurrenceId": "e5878d4d-c735-42fc-8752-a2653546a4f6",
+        "placeId": "917f8697-57e2-40b4-95cd-38865d6d5603",
+        "venueAddress": "Աբովյան փող., 18, Yerevan, Armenia",
+        "startDate": "2026-08-24",
+        "startTime": "21:00:00",
+        "endDate": null,
+        "endTime": null,
+        "price": "5000 AMD",
+        "eventId": "7b368a45-82b4-430d-b945-a7977363a053",
+        "metadata": {
+          "ticketUrls": {
+            "tomsarkgh": "https://www.tomsarkgh.am/place/hallplan?sessionid=991148"
+          }
+        },
+        "pinnedFields": {},
+        "disabledAt": null,
+        "createdAt": "2026-08-04T14:03:34.262Z",
+        "updatedAt": "2026-08-04T14:03:34.262Z"
+      },
+      "3db1b5da-ea63-405b-b94e-5248a0c17eee": {
+        "eventOccurrenceId": "3db1b5da-ea63-405b-b94e-5248a0c17eee",
+        "placeId": "917f8697-57e2-40b4-95cd-38865d6d5603",
+        "venueAddress": "Աբովյան փող., 18, Yerevan, Armenia",
+        "startDate": "2026-08-26",
+        "startTime": "21:30:00",
+        "endDate": null,
+        "endTime": null,
+        "price": "5000 AMD",
+        "eventId": "0644926a-df78-4bf4-a739-1dc0aebb3009",
+        "metadata": {
+          "ticketUrls": {
+            "tomsarkgh": "https://www.tomsarkgh.am/place/hallplan?sessionid=990210"
+          }
+        },
+        "pinnedFields": {},
+        "disabledAt": null,
+        "createdAt": "2026-07-29T14:02:29.770Z",
+        "updatedAt": "2026-07-29T14:02:29.770Z"
+      },
+      "f8a94066-3e71-40c5-ae0f-551998959010": {
+        "eventOccurrenceId": "f8a94066-3e71-40c5-ae0f-551998959010",
+        "placeId": "917f8697-57e2-40b4-95cd-38865d6d5603",
+        "venueAddress": "Աբովյան փող., 18, Yerevan, Armenia",
+        "startDate": "2026-08-27",
+        "startTime": "21:00:00",
+        "endDate": null,
+        "endTime": null,
+        "price": "5000 AMD",
+        "eventId": "f5591059-cee2-4e0b-ac6c-9afe449ea133",
+        "metadata": {
+          "ticketUrls": {
+            "tomsarkgh": "https://www.tomsarkgh.am/place/hallplan?sessionid=990201"
+          }
+        },
+        "pinnedFields": {},
+        "disabledAt": null,
+        "createdAt": "2026-07-29T14:02:29.723Z",
+        "updatedAt": "2026-07-29T14:02:29.723Z"
+      },
+      "eafbb8f2-6af9-4c54-8e94-5c43e59ad523": {
+        "eventOccurrenceId": "eafbb8f2-6af9-4c54-8e94-5c43e59ad523",
+        "placeId": "917f8697-57e2-40b4-95cd-38865d6d5603",
+        "venueAddress": "Աբովյան փող., 18, Yerevan, Armenia",
+        "startDate": "2026-08-28",
+        "startTime": "21:00:00",
+        "endDate": null,
+        "endTime": null,
+        "price": "7000 AMD",
+        "eventId": "cf5a55a4-e4bc-472f-adba-683121958dcf",
+        "metadata": {
+          "ticketUrls": {
+            "tomsarkgh": "https://www.tomsarkgh.am/place/hallplan?sessionid=990212"
+          }
+        },
+        "pinnedFields": {},
+        "disabledAt": null,
+        "createdAt": "2026-07-29T14:02:29.750Z",
+        "updatedAt": "2026-07-29T14:02:29.750Z"
+      },
+      "844a2163-13af-45d7-b4dd-032958a3f962": {
+        "eventOccurrenceId": "844a2163-13af-45d7-b4dd-032958a3f962",
+        "placeId": "917f8697-57e2-40b4-95cd-38865d6d5603",
+        "venueAddress": "Աբովյան փող., 18, Yerevan, Armenia",
+        "startDate": "2026-08-29",
+        "startTime": "21:00:00",
+        "endDate": null,
+        "endTime": null,
+        "price": "7000 AMD",
+        "eventId": "cf5a55a4-e4bc-472f-adba-683121958dcf",
+        "metadata": {
+          "ticketUrls": {
+            "tomsarkgh": "https://www.tomsarkgh.am/place/hallplan?sessionid=991713"
+          }
+        },
+        "pinnedFields": {},
+        "disabledAt": null,
+        "createdAt": "2026-08-10T02:02:20.428Z",
+        "updatedAt": "2026-08-10T02:02:20.428Z"
+      },
+      "0ff05c91-3e76-4dfd-a5b8-2643a75e2a98": {
+        "eventOccurrenceId": "0ff05c91-3e76-4dfd-a5b8-2643a75e2a98",
+        "placeId": "917f8697-57e2-40b4-95cd-38865d6d5603",
+        "venueAddress": "Աբովյան փող., 18, Yerevan, Armenia",
+        "startDate": "2026-08-30",
+        "startTime": "21:00:00",
+        "endDate": null,
+        "endTime": null,
+        "price": "5000 AMD",
+        "eventId": "f5591059-cee2-4e0b-ac6c-9afe449ea133",
+        "metadata": {
+          "ticketUrls": {
+            "tomsarkgh": "https://www.tomsarkgh.am/place/hallplan?sessionid=990200"
+          }
+        },
+        "pinnedFields": {},
+        "disabledAt": null,
+        "createdAt": "2026-07-29T14:02:29.727Z",
+        "updatedAt": "2026-07-29T14:02:29.727Z"
+      }
+    },
+    "eventSources": {
+      "a1fbbfa7-8119-4fd6-a348-9f8df287ae45": {
+        "eventSourceId": "a1fbbfa7-8119-4fd6-a348-9f8df287ae45",
+        "cityId": "b744f790-d71f-4e2f-b35a-832aa5a0aa97",
+        "name": "Kami Music Club",
+        "url": null,
+        "placeId": "917f8697-57e2-40b4-95cd-38865d6d5603",
+        "description": "Intimate live-music club in Yerevan known for energetic nights, cocktails, and a strong live-band program. Features a resident band (Kami Friends) and a hospitality-forward, upscale nightlife vibe with bartender-led performances.",
+        "tags": [
+          "music",
+          "nightlife",
+          "food_drink",
+          "performance",
+          "upscale",
+          "date_friendly"
+        ],
+        "i18n": {
+          "name": {
+            "en": {
+              "origin": "translation",
+              "content": "Kami Music Club"
+            },
+            "hy": {
+              "origin": "translation",
+              "content": "Kami Music Club"
+            },
+            "ru": {
+              "origin": "translation",
+              "content": "Kami Music Club"
+            },
+            "und": {
+              "origin": "source",
+              "content": "Kami Music Club"
+            }
+          },
+          "description": {
+            "en": {
+              "origin": "source",
+              "content": "Intimate live-music club in Yerevan known for energetic nights, cocktails, and a strong live-band program. Features a resident band (Kami Friends) and a hospitality-forward, upscale nightlife vibe with bartender-led performances."
+            },
+            "hy": {
+              "origin": "translation",
+              "content": "Կենդանի երաժշտության մթնոլորտային ակումբ Երևանում, որը հայտնի է իր էներգիկ գիշերներով, կոկտեյլներով և որակյալ կենդանի երաժշտությամբ: Այստեղ հանդես է գալիս Kami Friends ռեզիդենտ խումբը, իսկ հյուրընկալ և շքեղ միջավայրը լրացվում է բարմենների կողմից իրականացվող շոու-ծրագրերով:"
+            },
+            "ru": {
+              "origin": "translation",
+              "content": "Уютный клуб с живой музыкой в Ереване, известный своими энергичными ночами, коктейлями и качественной музыкальной программой. В заведении выступает резидент-группа Kami Friends, а гостеприимная и изысканная атмосфера ночной жизни дополняется оригинальными выступлениями барменов."
+            }
+          }
+        },
+        "profilePic": "9dbea4d8f98d3bbc4470f18bcb07630a.jpg",
+        "profilePicThumbhash": "j5cFBwAneJd2eYeAfLhYqGdyiWIHJ3YA",
+        "ticketingEnabled": false,
+        "adapterKey": null,
+        "metaPixelId": null,
+        "createdAt": "2025-11-07T07:52:51.751Z",
+        "updatedAt": "2026-08-18T11:40:57.919Z",
+        "instagramUsername": "kami.musicclub",
+        "facebookUsername": null,
+        "isCinema": null
+      }
+    },
+    "places": {
+      "917f8697-57e2-40b4-95cd-38865d6d5603": {
+        "placeId": "917f8697-57e2-40b4-95cd-38865d6d5603",
+        "cityId": "b744f790-d71f-4e2f-b35a-832aa5a0aa97",
+        "name": "Kami Club",
+        "address": "18 Abovyan poxoc, Yerevan 0010, Armenia",
+        "googlePlaceId": "ChIJLyRTxOS8akARiPeIJfZrOY4",
+        "coordinates": {
+          "lat": 40.1813924,
+          "lng": 44.517353899999996
+        },
+        "i18n": {
+          "name": {
+            "en": {
+              "origin": "source",
+              "content": "Kami Club"
+            },
+            "hy": {
+              "origin": "translation",
+              "content": "«Քամի» ակումբ"
+            },
+            "ru": {
+              "origin": "translation",
+              "content": "Клуб «Kami»"
+            }
+          },
+          "translationVersion": "v3"
+        }
+      }
+    }
+  }
+}

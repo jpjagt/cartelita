@@ -108,6 +108,24 @@ def test_resolve_targets_by_category():
     assert _resolve_run_targets(["--category", "jazz"]) == _resolve_run_targets(["-c", "jazz"])
 
 
+def test_resolve_targets_by_city():
+    yerevan = _resolve_run_targets([":yerevan"])
+    assert yerevan
+    # city-filtered sources all actually have a venue in that city
+    assert all(
+        any(v.city_slug == "yerevan" for v in REGISTRY[s][1].venues) for s in yerevan
+    )
+    # barcelona venues are disjoint from the yerevan set
+    assert "jamboree" not in yerevan
+    barcelona = _resolve_run_targets([":barcelona"])
+    assert "jamboree" in barcelona
+
+
+def test_resolve_targets_rejects_unknown_city():
+    assert _resolve_run_targets([":bogus"]) is None
+    assert _resolve_run_targets([":"]) is None
+
+
 def test_resolve_targets_comma_and_space_separated():
     assert _resolve_run_targets(["cines-verdi,phenomena"]) == ["cines-verdi", "phenomena"]
     assert _resolve_run_targets(["cines-verdi", "phenomena"]) == ["cines-verdi", "phenomena"]

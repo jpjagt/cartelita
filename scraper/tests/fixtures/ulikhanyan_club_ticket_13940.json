@@ -1,0 +1,552 @@
+{
+    "img": "https://api.haytoms.am/upload/hall_1694724079_sadsadasd1.jpg",
+    "map": {
+        "Levels": [
+            {
+                "LevelId": "1",
+                "LevelName": "\u054d\u0580\u0561\u0570\u0578\u0582\u0574 / \u0412 \u0437\u0430\u043b\u0435 / In hall",
+                "Min": "2",
+                "Type": null,
+                "specType": null,
+                "Places": [
+                    {
+                        "Id": "30",
+                        "X": 182,
+                        "Y": 69,
+                        "Row": "1",
+                        "Seat": "30",
+                        "Price": 5000,
+                        "active": false,
+                        "Color": "#ffff00"
+                    },
+                    {
+                        "Id": "29",
+                        "X": 162,
+                        "Y": 69,
+                        "Row": "1",
+                        "Seat": "29",
+                        "Price": 5000,
+                        "active": false,
+                        "Color": "#ffff00"
+                    },
+                    {
+                        "Id": "28",
+                        "X": 142,
+                        "Y": 69,
+                        "Row": "1",
+                        "Seat": "28",
+                        "Price": 5000,
+                        "active": true,
+                        "Color": "#ffff00"
+                    },
+                    {
+                        "Id": "27",
+                        "X": 122,
+                        "Y": 69,
+                        "Row": "1",
+                        "Seat": "27",
+                        "Price": 5000,
+                        "active": true,
+                        "Color": "#ffff00"
+                    },
+                    {
+                        "Id": "26",
+                        "X": 102,
+                        "Y": 69,
+                        "Row": "1",
+                        "Seat": "26",
+                        "Price": 5000,
+                        "active": true,
+                        "Color": "#ffff00"
+                    },
+                    {
+                        "Id": "25",
+                        "X": 82,
+                        "Y": 69,
+                        "Row": "1",
+                        "Seat": "25",
+                        "Price": 5000,
+                        "active": true,
+                        "Color": "#ffff00"
+                    },
+                    {
+                        "Id": "24",
+                        "X": 62,
+                        "Y": 69,
+                        "Row": "1",
+                        "Seat": "24",
+                        "Price": 5000,
+                        "active": true,
+                        "Color": "#ffff00"
+                    },
+                    {
+                        "Id": "23",
+                        "X": 42,
+                        "Y": 69,
+                        "Row": "1",
+                        "Seat": "23",
+                        "Price": 5000,
+                        "active": true,
+                        "Color": "#ffff00"
+                    },
+                    {
+                        "Id": "22",
+                        "X": 22,
+                        "Y": 69,
+                        "Row": "1",
+                        "Seat": "22",
+                        "Price": 5000,
+                        "active": true,
+                        "Color": "#ffff00"
+                    },
+                    {
+                        "Id": "21",
+                        "X": 420,
+                        "Y": 40,
+                        "Row": "1",
+                        "Seat": "21",
+                        "Price": 5000,
+                        "active": true,
+                        "Color": "#ffff00"
+                    },
+                    {
+                        "Id": "20",
+                        "X": 400,
+                        "Y": 40,
+                        "Row": "1",
+                        "Seat": "20",
+                        "Price": 5000,
+                        "active": true,
+                        "Color": "#ffff00"
+                    },
+                    {
+                        "Id": "19",
+                        "X": 380,
+                        "Y": 40,
+                        "Row": "1",
+                        "Seat": "19",
+                        "Price": 5000,
+                        "active": true,
+                        "Color": "#ffff00"
+                    },
+                    {
+                        "Id": "18",
+                        "X": 360,
+                        "Y": 40,
+                        "Row": "1",
+                        "Seat": "18",
+                        "Price": 5000,
+                        "active": true,
+                        "Color": "#ffff00"
+                    },
+                    {
+                        "Id": "17",
+                        "X": 340,
+                        "Y": 40,
+                        "Row": "1",
+                        "Seat": "17",
+                        "Price": 5000,
+                        "active": true,
+                        "Color": "#ffff00"
+                    },
+                    {
+                        "Id": "16",
+                        "X": 320,
+                        "Y": 40,
+                        "Row": "1",
+                        "Seat": "16",
+                        "Price": 5000,
+                        "active": true,
+                        "Color": "#ffff00"
+                    },
+                    {
+                        "Id": "15",
+                        "X": 300,
+                        "Y": 40,
+                        "Row": "1",
+                        "Seat": "15",
+                        "Price": 5000,
+                        "active": true,
+                        "Color": "#ffff00"
+                    },
+                    {
+                        "Id": "14",
+                        "X": 280,
+                        "Y": 40,
+                        "Row": "1",
+                        "Seat": "14",
+                        "Price": 5000,
+                        "active": true,
+                        "Color": "#ffff00"
+                    },
+                    {
+                        "Id": "13",
+                        "X": 260,
+                        "Y": 40,
+                        "Row": "1",
+                        "Seat": "13",
+                        "Price": 5000,
+                        "active": true,
+                        "Color": "#ffff00"
+                    },
+                    {
+                        "Id": "12",
+                        "X": 240,
+                        "Y": 40,
+                        "Row": "1",
+                        "Seat": "12",
+                        "Price": 5000,
+                        "active": true,
+                        "Color": "#ffff00"
+                    },
+                    {
+                        "Id": "11",
+                        "X": 220,
+                        "Y": 40,
+                        "Row": "1",
+                        "Seat": "11",
+                        "Price": 5000,
+                        "active": true,
+                        "Color": "#ffff00"
+                    },
+                    {
+                        "Id": "10",
+                        "X": 200,
+                        "Y": 40,
+                        "Row": "1",
+                        "Seat": "10",
+                        "Price": 5000,
+                        "active": true,
+                        "Color": "#ffff00"
+                    },
+                    {
+                        "Id": "9",
+                        "X": 180,
+                        "Y": 40,
+                        "Row": "1",
+                        "Seat": "9",
+                        "Price": 5000,
+                        "active": true,
+                        "Color": "#ffff00"
+                    },
+                    {
+                        "Id": "8",
+                        "X": 160,
+                        "Y": 40,
+                        "Row": "1",
+                        "Seat": "8",
+                        "Price": 5000,
+                        "active": true,
+                        "Color": "#ffff00"
+                    },
+                    {
+                        "Id": "7",
+                        "X": 140,
+                        "Y": 40,
+                        "Row": "1",
+                        "Seat": "7",
+                        "Price": 5000,
+                        "active": true,
+                        "Color": "#ffff00"
+                    },
+                    {
+                        "Id": "6",
+                        "X": 120,
+                        "Y": 40,
+                        "Row": "1",
+                        "Seat": "6",
+                        "Price": 5000,
+                        "active": true,
+                        "Color": "#ffff00"
+                    },
+                    {
+                        "Id": "5",
+                        "X": 100,
+                        "Y": 40,
+                        "Row": "1",
+                        "Seat": "5",
+                        "Price": 5000,
+                        "active": true,
+                        "Color": "#ffff00"
+                    },
+                    {
+                        "Id": "4",
+                        "X": 80,
+                        "Y": 40,
+                        "Row": "1",
+                        "Seat": "4",
+                        "Price": 5000,
+                        "active": true,
+                        "Color": "#ffff00"
+                    },
+                    {
+                        "Id": "3",
+                        "X": 60,
+                        "Y": 40,
+                        "Row": "1",
+                        "Seat": "3",
+                        "Price": 5000,
+                        "active": true,
+                        "Color": "#ffff00"
+                    },
+                    {
+                        "Id": "2",
+                        "X": 40,
+                        "Y": 40,
+                        "Row": "1",
+                        "Seat": "2",
+                        "Price": 5000,
+                        "active": true,
+                        "Color": "#ffff00"
+                    },
+                    {
+                        "Id": "1",
+                        "X": 20,
+                        "Y": 40,
+                        "Row": "1",
+                        "Seat": "1",
+                        "Price": 5000,
+                        "active": true,
+                        "Color": "#ffff00"
+                    }
+                ],
+                "Active": null,
+                "active": false
+            },
+            {
+                "LevelId": "2",
+                "LevelName": "\u0532\u0561\u0580\u0578\u0582\u0574 / \u0412 \u0431\u0430\u0440\u0435 / In bar",
+                "Min": null,
+                "Type": null,
+                "specType": null,
+                "Places": [
+                    {
+                        "Id": "20",
+                        "X": 403,
+                        "Y": 128,
+                        "Row": "1",
+                        "Seat": "20",
+                        "Price": 5000,
+                        "active": false,
+                        "Color": "#ff33cc"
+                    },
+                    {
+                        "Id": "19",
+                        "X": 383,
+                        "Y": 128,
+                        "Row": "1",
+                        "Seat": "19",
+                        "Price": 5000,
+                        "active": true,
+                        "Color": "#ff33cc"
+                    },
+                    {
+                        "Id": "18",
+                        "X": 363,
+                        "Y": 128,
+                        "Row": "1",
+                        "Seat": "18",
+                        "Price": 5000,
+                        "active": true,
+                        "Color": "#ff33cc"
+                    },
+                    {
+                        "Id": "17",
+                        "X": 343,
+                        "Y": 128,
+                        "Row": "1",
+                        "Seat": "17",
+                        "Price": 5000,
+                        "active": true,
+                        "Color": "#ff33cc"
+                    },
+                    {
+                        "Id": "16",
+                        "X": 323,
+                        "Y": 128,
+                        "Row": "1",
+                        "Seat": "16",
+                        "Price": 5000,
+                        "active": true,
+                        "Color": "#ff33cc"
+                    },
+                    {
+                        "Id": "15",
+                        "X": 303,
+                        "Y": 128,
+                        "Row": "1",
+                        "Seat": "15",
+                        "Price": 5000,
+                        "active": true,
+                        "Color": "#ff33cc"
+                    },
+                    {
+                        "Id": "14",
+                        "X": 283,
+                        "Y": 128,
+                        "Row": "1",
+                        "Seat": "14",
+                        "Price": 5000,
+                        "active": true,
+                        "Color": "#ff33cc"
+                    },
+                    {
+                        "Id": "13",
+                        "X": 263,
+                        "Y": 128,
+                        "Row": "1",
+                        "Seat": "13",
+                        "Price": 5000,
+                        "active": true,
+                        "Color": "#ff33cc"
+                    },
+                    {
+                        "Id": "12",
+                        "X": 243,
+                        "Y": 128,
+                        "Row": "1",
+                        "Seat": "12",
+                        "Price": 5000,
+                        "active": true,
+                        "Color": "#ff33cc"
+                    },
+                    {
+                        "Id": "11",
+                        "X": 223,
+                        "Y": 128,
+                        "Row": "1",
+                        "Seat": "11",
+                        "Price": 5000,
+                        "active": true,
+                        "Color": "#ff33cc"
+                    },
+                    {
+                        "Id": "10",
+                        "X": 203,
+                        "Y": 128,
+                        "Row": "1",
+                        "Seat": "10",
+                        "Price": 5000,
+                        "active": true,
+                        "Color": "#ff33cc"
+                    },
+                    {
+                        "Id": "9",
+                        "X": 183,
+                        "Y": 128,
+                        "Row": "1",
+                        "Seat": "9",
+                        "Price": 5000,
+                        "active": true,
+                        "Color": "#ff33cc"
+                    },
+                    {
+                        "Id": "8",
+                        "X": 163,
+                        "Y": 128,
+                        "Row": "1",
+                        "Seat": "8",
+                        "Price": 5000,
+                        "active": true,
+                        "Color": "#ff33cc"
+                    },
+                    {
+                        "Id": "7",
+                        "X": 143,
+                        "Y": 128,
+                        "Row": "1",
+                        "Seat": "7",
+                        "Price": 5000,
+                        "active": true,
+                        "Color": "#ff33cc"
+                    },
+                    {
+                        "Id": "6",
+                        "X": 123,
+                        "Y": 128,
+                        "Row": "1",
+                        "Seat": "6",
+                        "Price": 5000,
+                        "active": true,
+                        "Color": "#ff33cc"
+                    },
+                    {
+                        "Id": "5",
+                        "X": 103,
+                        "Y": 128,
+                        "Row": "1",
+                        "Seat": "5",
+                        "Price": 5000,
+                        "active": true,
+                        "Color": "#ff33cc"
+                    },
+                    {
+                        "Id": "4",
+                        "X": 83,
+                        "Y": 128,
+                        "Row": "1",
+                        "Seat": "4",
+                        "Price": 5000,
+                        "active": true,
+                        "Color": "#ff33cc"
+                    },
+                    {
+                        "Id": "3",
+                        "X": 63,
+                        "Y": 128,
+                        "Row": "1",
+                        "Seat": "3",
+                        "Price": 5000,
+                        "active": true,
+                        "Color": "#ff33cc"
+                    },
+                    {
+                        "Id": "2",
+                        "X": 43,
+                        "Y": 128,
+                        "Row": "1",
+                        "Seat": "2",
+                        "Price": 5000,
+                        "active": true,
+                        "Color": "#ff33cc"
+                    },
+                    {
+                        "Id": "1",
+                        "X": 23,
+                        "Y": 128,
+                        "Row": "1",
+                        "Seat": "1",
+                        "Price": 5000,
+                        "active": true,
+                        "Color": "#ff33cc"
+                    }
+                ],
+                "Active": null,
+                "active": false
+            }
+        ],
+        "ImageUrl": "/upload/hall_1694724079_sadsadasd1.jpg"
+    },
+    "width": 490,
+    "height": 367,
+    "jwt": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJncm91cF9pZCI6IjE3IiwiZXhwIjoxNzg3MDYyNjkwfQ.rHIh6EYtPMEpTuiaA0FHAdHcxO-XjgT6RymNvsRnydM",
+    "type": "1",
+    "timeline": "18 \u0410\u0432\u0433\u0443\u0441\u0442 \u0412\u0442\u043e\u0440\u043d\u0438\u043a 20:30",
+    "timeline_am": "18 \u0555\u0563\u0578\u057d\u057f\u0578\u057d \u0535\u0580\u0565\u0584\u0577\u0561\u0562\u0569\u056b 20:30",
+    "timeline_en": "18 August Tuesday 20:30",
+    "timeline_sale": "0",
+    "group_phone": "077 586573",
+    "group_inn_code": "0",
+    "group_visa": "1",
+    "group_epayment": "0",
+    "group_delivery": null,
+    "group_idram": "1",
+    "group_telcell": "1",
+    "event_payment": "",
+    "group_type": "0",
+    "group_id": "17",
+    "time": true,
+    "group_policy": "https://haytoms.am/polycy",
+    "timeline_group": "17",
+    "event_currency": ""
+}

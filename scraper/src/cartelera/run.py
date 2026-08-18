@@ -68,17 +68,40 @@ def _sources_in_category(category_slug: str) -> list[str]:
     ]
 
 
+def _sources_in_city(city_slug: str) -> list[str]:
+    """Registered source slugs where any venue belongs to `city_slug`."""
+    return [
+        slug for slug, (_scraper, source) in REGISTRY.items()
+        if any(v.city_slug == city_slug for v in source.venues)
+    ]
+
+
 def _resolve_run_targets(run_args: list[str]) -> list[str] | None:
     """Turn the `run` args into the ordered list of source slugs to scrape.
 
     Forms:
       (none) / all        -> every registered source
+      :<city_slug>         -> every source with a venue in that city
       -c <category_slug>  -> every source with a venue in that category
       <slug>[,<slug>...]  -> the listed sources (comma- or space-separated)
-    Returns None (after printing the error) if a slug/category is unknown.
+    Returns None (after printing the error) if a slug/category/city is unknown.
     """
     if not run_args or run_args == ["all"]:
         return list(REGISTRY)
+
+    if run_args[0].startswith(":"):
+        city = run_args[0][1:]
+        if not city:
+            print("usage: cartelera run :<city_slug>", file=sys.stderr)
+            return None
+        slugs = _sources_in_city(city)
+        if not slugs:
+            known = sorted({
+                v.city_slug for _s, source in REGISTRY.values() for v in source.venues
+            })
+            print(f"no sources in city {city!r}; known cities: {known}", file=sys.stderr)
+            return None
+        return slugs
 
     if run_args[0] in ("-c", "--category"):
         if len(run_args) < 2:
@@ -182,7 +205,7 @@ def main() -> int:
     if cmd not in {"migrate", "seed", "run", "dry-run"}:
         print(
             "usage: cartelera [migrate|seed|"
-            "run [all|<slug>[,<slug>...]|-c <category_slug>]|"
+            "run [all|<slug>[,<slug>...]|:<city_slug>|-c <category_slug>]|"
             "dry-run <module_name>]",
             file=sys.stderr,
         )
