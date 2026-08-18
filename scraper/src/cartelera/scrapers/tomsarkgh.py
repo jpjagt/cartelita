@@ -7,6 +7,7 @@ import httpx
 from bs4 import BeautifulSoup
 
 from cartelera.scrapers import register_source
+from cartelera.scrapers.price import format_amd_range
 from cartelera.types import (
     ScrapedEvent,
     VenueDefinition,
@@ -152,12 +153,9 @@ _DIGIT_RUN_RE = re.compile(r"\d{1,3}(?:[ .,]\d{3})+|\d+")
 
 
 def format_amd(lo: int, hi: int) -> str:
-    """AMD price formatting, hand-rolled (not the euro helper — see the skill's
-    price convention). Same 2x-spread rule: a single price when the spread is
-    minor, a range only when the high tier is >= 2x the low."""
-    if lo == hi or hi < 2 * lo:
-        return f"{hi} AMD"
-    return f"{lo}–{hi} AMD"
+    """Dram price via the shared helper: 2x-spread rule, symbol convention
+    ("5000֏", range "2500–5000֏")."""
+    return format_amd_range(lo, hi)
 
 
 def parse_price(description_lines: list[str]) -> str | None:

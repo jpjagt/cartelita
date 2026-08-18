@@ -7,6 +7,7 @@ import httpx
 from bs4 import BeautifulSoup
 
 from cartelera.scrapers import register
+from cartelera.scrapers.price import format_amd_range
 from cartelera.types import (
     ListMembership,
     ScrapedEvent,
@@ -53,8 +54,7 @@ class _PlaceEvent:
 
 
 def format_price(raw: str | None) -> str | None:
-    """AMD free text, hand-formatted per the project's 2x-range rule (NOT the
-    EUR-specific format_eur_range helper). Extracts every digit run (>=3
+    """Dram free text per the project's 2x-range rule (shared AMD helper). Extracts every digit run (>=3
     digits) from the raw price text; a genuinely large tier spread (high >=
     2x low) becomes a range, otherwise the single highest public tier."""
     if not raw:
@@ -63,9 +63,7 @@ def format_price(raw: str | None) -> str | None:
     if not nums:
         return None
     lo, hi = min(nums), max(nums)
-    if hi >= 2 * lo:
-        return f"{lo}–{hi} AMD"
-    return f"{hi} AMD"
+    return format_amd_range(lo, hi)
 
 
 def _extract_ticket_id(href: str | None) -> str | None:

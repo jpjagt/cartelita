@@ -1,6 +1,6 @@
 ---
 name: writing-a-scraper
-description: Use when adding or repairing a venue scraper for Cartelera — a recon → author → verify procedure that uses the browser to find where each event field really lives, writes the scraper against a saved fixture with TDD, then cross-checks the output against the live site so no field is silently dropped.
+description: Use when adding or repairing a venue scraper for Cartelera — an HTTP-first recon → author → verify procedure that finds where each event field really lives, writes the scraper against a saved fixture with TDD, then cross-checks the output against the live site so no field is silently dropped.
 ---
 
 # Writing (and verifying) a Cartelera scraper
@@ -15,8 +15,8 @@ Each scraper is one module in `scraper/src/cartelera/scrapers/<venue>.py`
 implementing the `Scraper` contract (`scrape() -> list[ScrapedEvent]`; by
 convention single-venue scrapers also carry a `venue_slug` attribute), plus an
 offline test against a saved HTML fixture, plus a `SOURCE.md` recording where
-each field comes from. Use `browser-use` (project skill) for recon and
-verification.
+each field comes from. Recon and verification are HTTP-first (see Phase 1);
+the browser is a fallback for JS-only sites.
 
 A scraper registers as a **source**. The common case is one venue's own site:
 end the module with `register(<Venue>Scraper(), venue)` and the venue slug is
@@ -29,33 +29,40 @@ either way; `<venue>` then means the source.
 
 ## Checklist (create a TodoWrite item per phase)
 
-1. Recon the site with the browser
+1. Recon the site (HTTP-first)
 2. Write the source map (`SOURCE.md`)
 3. Author the scraper against a saved fixture (TDD)
 4. Verify the output against the live site, field by field
 5. Wire up seed + categories
 6. Full cold-start end-to-end
 
-## Phase 1 — Recon (browser-use)
+## Phase 1 — Recon (HTTP-first; browser only if the site demands it)
 
-Invoke the `browser-use` skill. The fast path is `browser-use open <url>` then
-`browser-use eval "<js>"` to probe the DOM and inventory selectors — far faster
-than guessing. (The daemon is occasionally flaky on first launch: if `open`
-times out, run `browser-use close` and retry.)
+**Start with plain HTTP** (`httpx.get`, a desktop User-Agent header if needed):
+most venue/aggregator sites are server-rendered, and for those raw HTML ≡
+rendered DOM, so `httpx` + BeautifulSoup probing answers everything the browser
+would — faster and parallel-safe. Also probe for structured back-ends before
+scraping HTML: an events SPA usually has a JSON API one `curl` away (check
+`page-data.json`, `/api/...` paths, `__NEXT_DATA__`, RSC flight data — e.g.
+esora.app exposes `GET /api/event-sources?city=<city>&limit=500` and
+`GET /api/events/feed?eventSourceId=...`, the source behind several Yerevan
+scrapers).
 
-**ALWAYS pass `--session <venue-slug>` on every `browser-use` command** (e.g.
-`browser-use --session palau-musica open <url>`). The default session is shared,
-so when multiple scraper agents run in parallel they hijack each other's tab — a
-navigation to your venue silently lands on another agent's page (this really
-happened: a Liceu recon kept "redirecting" to auditori/casabatllo/santamariadelmar
-because those were sibling agents' pages in the one shared session). A named
-session per venue gives you an isolated browser. Close it with
-`browser-use --session <venue-slug> close` when done (Phase 4).
+Reach for the `browser-use` skill only when HTTP is genuinely insufficient
+(JS-only rendering with no discoverable API). **Caveat (2026-08-18):**
+browser-use CLI 3.x dropped `--session` isolation and attaches to the user's
+real Chrome via remote debugging, which requires an interactive approval —
+NEVER attach to the user's personal browser from an agent, and don't run the
+shared daemon from parallel agents (they hijack each other's tab). If the
+browser is unavailable, do recon and verification via HTTP and record that in
+`SOURCE.md`; if the site is truly browser-only, report the blocker instead of
+working around it (a scraper that only works in a browser can't run in
+production anyway).
 
 Work top-down:
 
-- **Homepage** → screenshot. How does the venue organize its programme? Section
-  nav (e.g. "Concerts" vs "Disco") often maps to our top-level categories.
+- **Homepage** → fetch and skim. How does the venue organize its programme?
+  Section nav (e.g. "Concerts" vs "Disco") often maps to our top-level categories.
 - **Find the events list.** Check the nav, `/sitemap.xml`, and common paths
   (`/agenda`, `/agenda/llista`, `/events`, `/programacio`). Prefer a **list/`llista`
   view** — it usually renders every event's fields in one page.
@@ -64,16 +71,13 @@ Work top-down:
      `__NEXT_DATA__`, or a state script. Robust, but **verify it carries every
      field you need** — JSON-LD frequently omits price and category (this was the
      Jamboree trap). Use it for what it has (clean ISO dates), not blindly.
-  2. **Rendered DOM cards** — one element per event (`article`, `.event`, a card
-     div) with child elements for each field. Probe with `eval`:
-     ```
-     browser-use eval "(()=>{const a=document.querySelectorAll('article'); return JSON.stringify({n:a.length, sample:a[0]?.outerHTML.slice(0,1500)})})()"
-     ```
-     then find the selectors for title, detail link, date/time, price, category
-     tags. Measure coverage (e.g. how many of N cards have a `.price`) — low
+  2. **Server-rendered cards** — one element per event (`article`, `.event`, a
+     card div) with child elements for each field. Probe the fetched HTML with
+     BeautifulSoup (`select`/`select_one` in a scratch script) to find the
+     selectors for title, detail link, date/time, price, category tags. Measure coverage (e.g. how many of N cards have a `.price`) — low
      coverage is a smell that you're reading the wrong element.
-- **Open one event-detail page** → screenshot + `eval`. Confirm which fields live
-  ONLY on the detail page vs. the list. Prefer the list if it has everything
+- **Fetch one event-detail page** and probe it the same way. Confirm which
+  fields live ONLY on the detail page vs. the list. Prefer the list if it has everything
   (one request beats N).
 - **Find the category discriminator.** It may be a section URL, a body class, or
   a tag. For Jamboree it's a tag: `+18` ⇒ `club`, else `jazz`. Genre/sub-genre
@@ -141,7 +145,10 @@ low) — e.g. concert halls with real seating tiers (L'Auditori, Palau de la
 Música). When you have an integer-euro `(lo, hi)`, format it with the shared
 `cartelera.scrapers.price.format_eur_range(lo, hi)` helper — it applies this 2×
 rule for you (range only when `hi >= 2*lo`, else `"{hi}€"`). Don't hand-roll
-`f"{lo}–{hi}€"`.
+`f"{lo}–{hi}€"`. Armenian dram uses the same rules with the symbol convention
+(`"5000֏"`, range `"2500–5000֏"`): `format_amd_range(lo, hi)` for numeric
+bounds, `normalize_amd(text)` for source free text ("5000 AMD" → "5000֏") —
+never emit the "AMD" unit in output.
 - Tests assert real properties: parses many events; every event has a valid
   date/title/url and a known category; **price coverage** (e.g. ≥90% have a
   price — this is the test that would have caught the original bug); the category
@@ -152,19 +159,23 @@ rule for you (range only when `hi >= 2*lo`, else `"{hi}€"`). Don't hand-roll
 ## Phase 4 — Verify against the live site (the part people skip)
 
 This is non-negotiable and is what distinguishes this skill from "just write a
-scraper." Run the scraper live and **cross-check, field by field, against the
-browser**:
+scraper." Run the scraper live and **cross-check, field by field, against an
+INDEPENDENT read of the live site**:
 
 - `uv run python -c "from cartelera.scrapers.<venue> import <Venue>Scraper; ..."`
   to print totals and per-field coverage (with price / with category / with
   annotations).
-- Open the live list page in `browser-use`, `eval` to read the DOM's title / tags
-  / price for the first ~6 events, and **compare to the scraper's output for the
-  same events.** They must agree. A mismatch here is a real bug (this is exactly
-  how the Jamboree price/category bugs were caught and confirmed fixed).
-- Record the result + date in `SOURCE.md` ("last verified: YYYY-MM-DD").
-- `browser-use --session <venue-slug> close` when done (close your own session,
-  not the shared default — sibling agents may still be using it).
+- Fetch the live list page FRESH (httpx, not the fixture, not through the
+  scraper's own code path) and extract title / tags / price for the first ~6
+  events with throwaway parsing logic written independently of the scraper —
+  **compare to the scraper's output for the same events.** They must agree. A
+  mismatch here is a real bug (this is exactly how the Jamboree price/category
+  bugs were caught and confirmed fixed). For a server-rendered site this is
+  equivalent to (and stricter than) eyeballing the browser DOM; if the site is
+  JS-rendered, verify against its underlying JSON API instead. Use the browser
+  only if neither exists — see the Phase 1 caveat.
+- Record the result + date + method in `SOURCE.md` ("last verified: YYYY-MM-DD
+  via HTTP cross-check").
 
 ## Phase 5 — Seed + categories
 

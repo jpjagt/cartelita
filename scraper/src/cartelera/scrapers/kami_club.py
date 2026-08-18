@@ -6,6 +6,7 @@ from zoneinfo import ZoneInfo
 import httpx
 
 from cartelera.scrapers import register
+from cartelera.scrapers.price import normalize_amd
 from cartelera.types import (
     ListMembership,
     ScrapedEvent,
@@ -64,8 +65,8 @@ def _price(raw) -> str | None:
     if raw is None:
         return None
     if isinstance(raw, (int, float)):
-        return f"{int(raw)} AMD" if raw else "free"
-    text = str(raw).strip()
+        return f"{int(raw)}֏" if raw else "free"
+    text = normalize_amd(str(raw).strip())
     return text or None
 
 

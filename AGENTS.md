@@ -109,8 +109,9 @@ from a real discriminator and put genres in `annotations`).
 
 ## Gotchas
 
-- `browser-use`'s daemon occasionally times out on first launch — `browser-use
-  close` then retry. `close` when done.
+- `browser-use` CLI 3.x lost `--session` isolation and attaches to the user's
+  real Chrome (interactive approval required) — scraper recon/verification is
+  HTTP-first now; see the writing-a-scraper skill's Phase 1 caveat.
 - The migration runner pre-creates `schema_migrations`, so its SQL uses
   `CREATE TABLE IF NOT EXISTS`. Migrations are applied in filename order and are
   idempotent; reset a dev/test DB with

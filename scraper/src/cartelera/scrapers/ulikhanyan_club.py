@@ -7,6 +7,7 @@ import httpx
 from bs4 import BeautifulSoup
 
 from cartelera.scrapers import register
+from cartelera.scrapers.price import format_amd_range
 from cartelera.types import ScrapedEvent, VenueDefinition, ListMembership
 
 # Ulikhanyan Club (jazz club, Yerevan) runs on the Haytoms.am ticketing
@@ -175,9 +176,7 @@ def price_from_ticket(payload: dict) -> str | None:
     if not positive:
         return "free"
     lo, hi = min(positive), max(positive)
-    if hi >= 2 * lo:
-        return f"{lo}–{hi} AMD"
-    return f"{hi} AMD"
+    return format_amd_range(lo, hi)
 
 
 class UlikhanyanClubScraper:

@@ -95,7 +95,7 @@ def test_parse_event_detail_concert_event_fields():
     assert detail["start_date"] == dt.date(2026, 12, 13)
     assert detail["start_time"] == dt.time(20, 0)
     assert detail["type_label"] == "Concert"
-    assert detail["price"] == "6000–12000 AMD"
+    assert detail["price"] == "6000–12000֏"
     assert detail["description"]
 
 
@@ -105,7 +105,7 @@ def test_parse_event_detail_jazz_event_fields():
     assert detail["start_date"] == dt.date(2026, 8, 19)
     assert detail["start_time"] == dt.time(21, 0)
     assert detail["type_label"] == "Jazz"
-    assert detail["price"] == "20000 AMD"
+    assert detail["price"] == "20000֏"
     assert detail["image_url"] and detail["image_url"].startswith("https://www.tomsarkgh.am/")
 
 
@@ -115,7 +115,7 @@ def test_parse_event_detail_theater_event_ignores_free_child_clause():
     # the price into "free".
     detail = parse_event_detail(EVENT_THEATER_FREE_CHILD)
     assert detail is not None
-    assert detail["price"] == "1000–3000 AMD"
+    assert detail["price"] == "1000–3000֏"
     assert detail["price"] != "free"
 
 
@@ -124,43 +124,43 @@ def test_parse_event_detail_missing_start_date_returns_none():
 
 
 # ---------------------------------------------------------------------------
-# parse_price (AMD, hand-rolled — not the euro format_eur_range helper)
+# parse_price (dram, symbol convention via the shared AMD helper)
 # ---------------------------------------------------------------------------
 
 def test_parse_price_single_value():
-    assert parse_price(["Տոմսերի արժեքը՝ 20000 ՀՀ դրամ։"]) == "20000 AMD"
+    assert parse_price(["Տոմսերի արժեքը՝ 20000 ՀՀ դրամ։"]) == "20000֏"
 
 
 def test_parse_price_large_spread_becomes_range():
-    assert parse_price(["Տոմսերի արժեքը՝ 1000-5000 դրամ:"]) == "1000–5000 AMD"
+    assert parse_price(["Տոմսերի արժեքը՝ 1000-5000 դրամ:"]) == "1000–5000֏"
 
 
 def test_parse_price_minor_spread_collapses_to_highest():
     # 25000 -> 30000 is < 2x: not a meaningful spread, so the highest tier wins.
-    assert parse_price(["Տոմսերի արժեքը՝ 25000, 30000 դրամ"]) == "30000 AMD"
+    assert parse_price(["Տոմսերի արժեքը՝ 25000, 30000 դրամ"]) == "30000֏"
 
 
 def test_parse_price_comma_separated_list_not_merged_into_one_giant_number():
     # Regression: a naive digit-run regex reads "25000, 30000" as thousands
     # grouping and merges it into "2500030000". The two numbers must stay
     # distinct tokens.
-    assert parse_price(["Տոմսերի արժեքը՝ 25000, 30000 դրամ"]) != "2500030000 AMD"
+    assert parse_price(["Տոմսերի արժեքը՝ 25000, 30000 դրամ"]) != "2500030000֏"
 
 
 def test_parse_price_period_thousands_separator():
-    assert parse_price(["Տոմսերի արժեքը ՝ 25.000 ՀՀ դրամ։"]) == "25000 AMD"
+    assert parse_price(["Տոմսերի արժեքը ՝ 25.000 ՀՀ դրամ։"]) == "25000֏"
 
 
 def test_parse_price_space_thousands_separator_in_range():
-    assert parse_price(["Տոմսերի արժեքը՝ 3000-10 000 դրամ։"]) == "3000–10000 AMD"
+    assert parse_price(["Տոմսերի արժեքը՝ 3000-10 000 դրամ։"]) == "3000–10000֏"
 
 
 def test_parse_price_russian_trigger_word():
-    assert parse_price(["Цена билета: 8000 др"]) == "8000 AMD"
+    assert parse_price(["Цена билета: 8000 др"]) == "8000֏"
 
 
 def test_parse_price_russian_range():
-    assert parse_price(["Цена билета: 2000-5000 др"]) == "2000–5000 AMD"
+    assert parse_price(["Цена билета: 2000-5000 др"]) == "2000–5000֏"
 
 
 def test_parse_price_trigger_line_with_no_digits_is_unknown():
@@ -173,15 +173,15 @@ def test_parse_price_no_trigger_line_is_unknown():
 
 def test_parse_price_ignores_free_child_clause_on_a_different_line():
     lines = ["Տոմսերի արժեքը՝ 1000-3000 դր.:", "Մինչև 4 տարեկան երեխայի մուտքն անվճար է:"]
-    assert parse_price(lines) == "1000–3000 AMD"
+    assert parse_price(lines) == "1000–3000֏"
 
 
 def test_format_amd_boundary_2x_is_a_range():
-    assert format_amd(3000, 6000) == "3000–6000 AMD"
+    assert format_amd(3000, 6000) == "3000–6000֏"
 
 
 def test_format_amd_equal_bounds():
-    assert format_amd(5000, 5000) == "5000 AMD"
+    assert format_amd(5000, 5000) == "5000֏"
 
 
 # ---------------------------------------------------------------------------

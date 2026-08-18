@@ -60,12 +60,12 @@ def test_end_time_when_range(events):
 
 
 def test_price_coverage(events):
-    # Every card on the afisha shows a price; ֏ is normalized to AMD.
+    # Every card on the afisha shows a price; "AMD" text normalizes to ֏.
     priced = [e for e in events if e.price]
     assert len(priced) == len(events)
     for e in priced:
-        assert e.price in ("free", "sold-out") or "AMD" in e.price
-        assert "֏" not in e.price
+        assert e.price in ("free", "sold-out") or "֏" in e.price
+        assert "AMD" not in e.price
 
 
 def test_specific_performance(events):
@@ -75,7 +75,7 @@ def test_specific_performance(events):
     e = matches[0]
     assert e.start_date == dt.date(2026, 8, 23)
     assert e.start_time == dt.time(19, 0)
-    assert e.price == "5000 AMD"
+    assert e.price == "5000֏"
     assert e.source_url == "https://www.arten.theater/hy/performances/osen-patriarha"
     assert e.image_url and e.image_url.startswith("https://")
 

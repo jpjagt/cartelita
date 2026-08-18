@@ -1,4 +1,5 @@
 from __future__ import annotations
+import re
 
 # Shared price-display helpers for scrapers.
 #
@@ -22,3 +23,27 @@ def format_eur_range(lo: int, hi: int) -> str:
     if lo == hi or hi < _RANGE_FACTOR * lo:
         return f"{hi}€"
     return f"{lo}–{hi}€"
+
+
+def format_amd_range(lo: int, hi: int) -> str:
+    """Render an Armenian-dram price from its low/high integer bounds.
+
+    Same 2x-spread rule as format_eur_range, with the dram symbol appended in
+    the €-style ("5000֏", range "2500–5000֏")."""
+    if hi <= 0:
+        return f"{hi}֏"
+    if lo == hi or hi < _RANGE_FACTOR * lo:
+        return f"{hi}֏"
+    return f"{lo}–{hi}֏"
+
+
+# A trailing dram unit in source free text: " AMD" (any case, word-bounded) or
+# a spaced "֏" — both normalize to the bare symbol glued to the number.
+_AMD_UNIT_RE = re.compile(r"\s*(?:\bAMD\b|֏)", re.IGNORECASE)
+
+
+def normalize_amd(text: str) -> str:
+    """Rewrite free-text dram prices to the symbol convention: "5000 AMD" and
+    "5000 ֏" both become "5000֏". Text without a dram unit passes through
+    untouched (e.g. "Tickets at the bar")."""
+    return _AMD_UNIT_RE.sub("֏", text)

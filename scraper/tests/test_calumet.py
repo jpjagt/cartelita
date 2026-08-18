@@ -88,11 +88,11 @@ def test_free_entry_is_normalized():
 
 
 def test_minor_amd_spread_collapses_to_the_high_value():
-    # "5000–7000 AMD" (hi < 2x lo) should collapse to "7000 AMD", not a range.
+    # "5000–7000֏" (hi < 2x lo) should collapse to "7000֏", not a range.
     events = parse_feed(FIXTURE.read_text(), today=dt.date(2026, 3, 1))
     matched = [ev for ev in events if ev.start_date == dt.date(2026, 3, 28)]
     assert matched
-    assert matched[0].price == "7000 AMD"
+    assert matched[0].price == "7000֏"
 
 
 def test_language_is_never_inferred():

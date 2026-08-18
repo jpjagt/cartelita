@@ -105,32 +105,32 @@ def test_parse_schedule_missing_select_returns_empty():
 
 
 # ---------------------------------------------------------------------------
-# format_price (AMD, hand-rolled 2x-range rule)
+# format_price (dram, shared 2x-range helper, symbol convention)
 # ---------------------------------------------------------------------------
 
 def test_format_price_minor_spread_collapses_to_highest():
-    assert format_price("Price 3000, 4000, 5000 AMD") == "5000 AMD"
+    assert format_price("Price 3000, 4000, 5000֏") == "5000֏"
 
 
 def test_format_price_large_spread_becomes_range():
-    assert format_price("Price 3000, 5000, 8000, 10000  AMD") == "3000–10000 AMD"
+    assert format_price("Price 3000, 5000, 8000, 10000 ֏") == "3000–10000֏"
 
 
 def test_format_price_boundary_2x_is_a_range():
     # 3000 -> 6000 is exactly 2x: rule is >=, so this is a range.
-    assert format_price("Price 3000, 4000, 5000, 7000 AMD") == "3000–7000 AMD"
+    assert format_price("Price 3000, 4000, 5000, 7000֏") == "3000–7000֏"
 
 
 def test_format_price_task_example():
-    assert format_price("Price 2000, 3000, 4000, 5000 AMD") == "2000–5000 AMD"
+    assert format_price("Price 2000, 3000, 4000, 5000֏") == "2000–5000֏"
 
 
 def test_format_price_hyphen_range_source_text():
-    assert format_price("Price 3000 - 10000 AMD") == "3000–10000 AMD"
+    assert format_price("Price 3000 - 10000֏") == "3000–10000֏"
 
 
 def test_format_price_armenian_text():
-    assert format_price("Տոմսերի արժեքը` 4000, 5000, 7000 դրամ") == "7000 AMD"
+    assert format_price("Տոմսերի արժեքը` 4000, 5000, 7000 դրամ") == "7000֏"
 
 
 def test_format_price_no_digits():
@@ -174,7 +174,7 @@ def test_merge_events_uses_schedule_time_over_description_text():
     ev = events["komitas-schedule-13907"]
     assert ev.start_date == dt.date(2026, 9, 4)
     assert ev.start_time == dt.time(19, 30)
-    assert ev.price == "5000 AMD"
+    assert ev.price == "5000֏"
 
 
 def test_merge_events_fallback_when_no_schedule():

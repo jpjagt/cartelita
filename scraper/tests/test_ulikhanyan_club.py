@@ -94,9 +94,9 @@ def test_token_extracted():
 def test_price_from_seat_map_fixtures():
     # Flat 5000 AMD night and the 3000 AMD Monday jam session.
     regular = json.loads((FIXTURES / "ulikhanyan_club_ticket_13940.json").read_text())
-    assert price_from_ticket(regular) == "5000 AMD"
+    assert price_from_ticket(regular) == "5000֏"
     jam = json.loads((FIXTURES / "ulikhanyan_club_ticket_13946.json").read_text())
-    assert price_from_ticket(jam) == "3000 AMD"
+    assert price_from_ticket(jam) == "3000֏"
 
 
 def _payload(places):
@@ -112,10 +112,10 @@ def test_price_convention_edge_cases():
     assert price_from_ticket(free) == "free"
     # Minor tier spread (hi < 2*lo) collapses to the highest public price.
     minor = _payload([{"Price": 5000, "active": True}, {"Price": 7000, "active": True}])
-    assert price_from_ticket(minor) == "7000 AMD"
+    assert price_from_ticket(minor) == "7000֏"
     # Meaningful spread (hi >= 2*lo) keeps the range.
     wide = _payload([{"Price": 3000, "active": True}, {"Price": 8000, "active": True}])
-    assert price_from_ticket(wide) == "3000–8000 AMD"
+    assert price_from_ticket(wide) == "3000–8000֏"
     # No seat map at all => unknown.
     assert price_from_ticket({"map": None}) is None
     assert price_from_ticket({}) is None

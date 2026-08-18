@@ -7,6 +7,7 @@ from zoneinfo import ZoneInfo
 import httpx
 
 from cartelera.scrapers import register
+from cartelera.scrapers.price import normalize_amd
 from cartelera.types import (
     ScrapedEvent,
     ScrapedTranslation,
@@ -111,8 +112,8 @@ def _normalize_price(raw: str | None, status: str | None) -> str | None:
         return None
     if any(w in raw.lower() for w in _FREE_WORDS):
         return "free"
-    out = re.sub(r"\s+", " ", raw.replace("֏", "AMD")).strip()
-    if re.fullmatch(r"0 ?AMD", out):
+    out = normalize_amd(re.sub(r"\s+", " ", raw).strip())
+    if re.fullmatch(r"0\s*֏", out):
         return "free"
     return out or None
 

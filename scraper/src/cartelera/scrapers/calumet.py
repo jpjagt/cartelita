@@ -7,6 +7,7 @@ from zoneinfo import ZoneInfo
 import httpx
 
 from cartelera.scrapers import register
+from cartelera.scrapers.price import normalize_amd
 from cartelera.types import (
     ListMembership,
     ScrapedEvent,
@@ -56,7 +57,7 @@ _CLUBBING = "clubbing"
 _PLACEHOLDER_TAG_RE = re.compile(r"_other$")
 
 _FREE_RE = re.compile(r"no entrance fee|free entrance|^free$|entrance is free", re.I)
-_RANGE_RE = re.compile(r"^([\d,]+)\s*[–-]\s*([\d,]+)\s*AMD$", re.I)
+_RANGE_RE = re.compile(r"^([\d,]+)\s*[–-]\s*([\d,]+)\s*(?:AMD|֏)$", re.I)
 _RANGE_FACTOR = 2
 
 
@@ -87,9 +88,9 @@ def _price(raw) -> str | None:
         lo = int(match.group(1).replace(",", ""))
         hi = int(match.group(2).replace(",", ""))
         if hi > 0 and hi >= _RANGE_FACTOR * lo:
-            return f"{lo}–{hi} AMD"
-        return f"{hi} AMD"
-    return text
+            return f"{lo}–{hi}֏"
+        return f"{hi}֏"
+    return normalize_amd(text)
 
 
 def _category_slugs(event: dict) -> list[str]:
