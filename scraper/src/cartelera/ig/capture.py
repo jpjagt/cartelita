@@ -207,14 +207,13 @@ def select_new_posts(
     back down the feed we look, so archived posts inside the window do not pull
     older posts into view."""
     seen: set[str] = set()
-    window: list[CapturedPost] = []
+    ordered: list[CapturedPost] = []
     for post in posts:
         if post.shortcode in seen:
             continue
         seen.add(post.shortcode)
-        window.append(post)
-        if len(window) >= limit:
-            break
+        ordered.append(post)
+    window = ordered[:limit] if limit > 0 else []
     return [p for p in window if p.shortcode not in known_shortcodes]
 
 

@@ -185,6 +185,10 @@ def test_select_new_posts_handles_empty_input():
     assert select_new_posts([], {"a"}, 12) == []
 
 
+def test_select_new_posts_with_a_zero_limit_looks_at_nothing():
+    assert select_new_posts([_cap("a")], set(), 0) == []
+
+
 # --- proxy_settings ---------------------------------------------------------
 
 def test_proxy_settings_none_without_url():
