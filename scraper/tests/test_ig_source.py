@@ -404,6 +404,16 @@ def test_the_first_content_is_canonical_when_the_configured_language_is_absent(
     assert [t.lang for t in events[0].translations] == ["en"]
 
 
+def test_an_untitled_event_is_dropped_and_logged(monkeypatch, session, factory, caplog):
+    extraction = _extraction(
+        _event(contents=[{"lang": "hy", "title": "  ", "description": "no title"}]),
+        _event(),
+    )
+    events = _run_one_post(monkeypatch, session, factory, extraction, caplog=caplog)
+    assert [e.external_id for e in events] == ["ig-AAA-1"]
+    assert "title" in caplog.text
+
+
 def test_a_post_with_no_events_emits_nothing(monkeypatch, session, factory):
     assert _run_one_post(monkeypatch, session, factory, _extraction()) == []
 

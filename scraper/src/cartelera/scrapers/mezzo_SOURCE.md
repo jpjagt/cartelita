@@ -111,6 +111,11 @@ uv run cartelera ig-login          # once: human logs in, storage_state -> Postg
 uv run cartelera dry-run mezzo
 ```
 
+Unlike an ordinary scraper's, this `dry-run` **does** touch Postgres
+(`DATABASE_URL`, migrations applied): the archive is where captured posts and
+their extractions live. It writes to `ig_post`/`ig_post_image` but never to
+`event` — no upsert, no seed.
+
 `dry-run` prints:
 
 ```

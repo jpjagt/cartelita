@@ -46,6 +46,7 @@ from cartelera.ig.archive import (
 from cartelera.ig.capture import capture_new_posts
 from cartelera.ig.extract import (
     PROMPT_VERSION,
+    ExtractedContent,
     GatedEvent,
     confidence_threshold,
     extract_model,
@@ -226,6 +227,14 @@ class IgProfileScraper:
 
         source_url = POST_URL.format(shortcode=post.shortcode)
         canonical, translations = self._split_contents(gate, source_url)
+        if not canonical.title.strip():
+            # The schema demands a title but cannot demand a non-empty one; an
+            # untitled event is a blank card on the site, so drop it here.
+            logger.info(
+                "%s %s: drop event %d: no title in the %r content",
+                self._slug, post.shortcode, gate.index, canonical.lang,
+            )
+            return None
         return ScrapedEvent(
             title=canonical.title,
             description=canonical.description,
@@ -268,7 +277,9 @@ class IgProfileScraper:
         )
         return None
 
-    def _split_contents(self, gate: GatedEvent, source_url: str):
+    def _split_contents(
+        self, gate: GatedEvent, source_url: str
+    ) -> tuple[ExtractedContent, list[ScrapedTranslation]]:
         """Canonical content + one translation per other language.
 
         The canonical variant is the city's default locale when the post
