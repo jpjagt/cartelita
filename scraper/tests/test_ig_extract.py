@@ -5,8 +5,10 @@ from types import SimpleNamespace
 
 import litellm
 import pytest
+from decouple import Config as DecoupleConfig, RepositoryEmpty
 from pydantic import ValidationError
 
+from cartelera.ig import extract as ig_extract
 from cartelera.ig.types import RosterVenue
 from cartelera.ig.extract import (
     PROMPT_VERSION,
@@ -574,21 +576,43 @@ def test_gate_logs_without_a_label(caplog):
 # --------------------------------------------------------------------------
 # config helpers
 # --------------------------------------------------------------------------
+#
+# decouple.config is a process-wide AutoConfig singleton: on its first call
+# it auto-detects and caches a Repository (a RepositoryEnv reading the
+# nearest .env file, found by walking up from the caller's path) for the
+# rest of the process. Config.get then checks os.environ first and that
+# cached repository second — so monkeypatch.delenv alone is NOT hermetic: a
+# value merely sitting in a developer's scraper/.env was never in
+# os.environ to begin with, and would still leak through the repository
+# fallback into a "default" assertion. We swap extract.py's module-level
+# `config` for a fresh Config backed by an always-empty repository, so only
+# os.environ — which these tests fully control — can supply a value.
 
-def test_extract_model_defaults_to_gemini_flash():
+
+def _isolated_config(monkeypatch, *env_names):
+    for name in env_names:
+        monkeypatch.delenv(name, raising=False)
+    monkeypatch.setattr(ig_extract, "config", DecoupleConfig(RepositoryEmpty()))
+
+
+def test_extract_model_defaults_to_gemini_flash(monkeypatch):
+    _isolated_config(monkeypatch, "IG_EXTRACT_MODEL")
     assert extract_model() == "gemini/gemini-2.5-flash"
 
 
 def test_extract_model_is_configurable(monkeypatch):
+    _isolated_config(monkeypatch, "IG_EXTRACT_MODEL")
     monkeypatch.setenv("IG_EXTRACT_MODEL", "anthropic/claude-haiku-4-5")
     assert extract_model() == "anthropic/claude-haiku-4-5"
 
 
-def test_confidence_threshold_defaults_to_0_75():
+def test_confidence_threshold_defaults_to_0_75(monkeypatch):
+    _isolated_config(monkeypatch, "IG_CONFIDENCE_THRESHOLD")
     assert confidence_threshold() == 0.75
 
 
 def test_confidence_threshold_is_configurable_and_cast_to_float(monkeypatch):
+    _isolated_config(monkeypatch, "IG_CONFIDENCE_THRESHOLD")
     monkeypatch.setenv("IG_CONFIDENCE_THRESHOLD", "0.9")
     value = confidence_threshold()
     assert value == 0.9 and isinstance(value, float)
