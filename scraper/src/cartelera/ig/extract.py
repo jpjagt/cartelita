@@ -193,14 +193,21 @@ def _completion(model: str, messages: list[dict]):
     litellm takes a pydantic model as `response_format` and translates it to
     whatever the provider supports. Providers that reject that outright get
     one retry in plain JSON mode — the reply is validated against the schema
-    either way, so the only thing lost is the provider-side guarantee."""
+    either way, so the only thing lost is the provider-side guarantee.
+
+    The catch is deliberately broad rather than provider-conditional: a
+    schema rejection surfaces as a different exception per provider, and
+    sniffing for each is exactly the per-provider matrix litellm exists to
+    spare us. A failure that had nothing to do with the schema (no API key,
+    no network) simply fails the same way twice, and the retry's traceback
+    still chains the original."""
     import litellm  # heavy import; only the call half needs it
 
     try:
         return litellm.completion(model=model, messages=messages, response_format=IgExtraction)
     except Exception as err:
         logger.warning(
-            "%s rejected the schema response_format (%s); retrying in JSON mode", model, err
+            "%s failed with a schema response_format (%s); retrying in JSON mode", model, err
         )
         return litellm.completion(
             model=model, messages=messages, response_format={"type": "json_object"}
@@ -238,7 +245,7 @@ def extract_post(post: IgPost, roster: list[RosterVenue], model: str) -> dict:
 # the publish gate
 # --------------------------------------------------------------------------
 
-@dataclass(frozen=True)
+@dataclass
 class GatedEvent:
     """An extracted event that passed the gate, with its date resolved.
 
