@@ -109,6 +109,10 @@ from a real discriminator and put genres in `annotations`).
 
 ## Gotchas
 
+- **Instagram ingest go-live** (dedicated account warm-up, residential proxy,
+  the one-time human `cartelera ig-login`, and the manual re-extraction
+  escape hatch) is `docs/ig-ops.md` — read it before flipping on `cinema-house`
+  or `mezzo` in production.
 - `browser-use` CLI 3.x lost `--session` isolation and attaches to the user's
   real Chrome (interactive approval required) — scraper recon/verification is
   HTTP-first now; see the writing-a-scraper skill's Phase 1 caveat.
