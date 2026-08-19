@@ -34,6 +34,14 @@ logger = logging.getLogger(__name__)
 # recognise a timeline response.
 TIMELINE_CONNECTION_KEY = "xdt_api__v1__feed__user_timeline_graphql_connection"
 
+# How a timeline body can plausibly reach us: an XHR/fetch, or inlined in the
+# profile document itself. This is a cheap filter to avoid pulling image,
+# media and script bytes back over CDP — NOT a content check. We deliberately
+# do not look at the content-type header: Meta's GraphQL surfaces have served
+# JSON as text/javascript, and gating on it would drop a real timeline
+# silently, making a live profile look empty. The body decides.
+TIMELINE_RESOURCE_TYPES = frozenset({"xhr", "fetch", "document", "other"})
+
 PROFILE_URL = "https://www.instagram.com/{handle}/"
 LOGIN_URL = "https://www.instagram.com/accounts/login/"
 INSTAGRAM_URL = "https://www.instagram.com/"
@@ -363,18 +371,31 @@ def _load_profile(page, handle: str, reload: bool = False) -> list[str]:
         page.wait_for_timeout(TIMELINE_SETTLE_MS)
     finally:
         page.remove_listener("response", handler)
-    return _json_bodies(responses)
+    return timeline_bodies(responses)
 
 
-def _json_bodies(responses) -> list[str]:
-    """Bodies of the JSON responses that mention the timeline connection.
+def timeline_bodies(responses) -> list[str]:
+    """Bodies of the responses that carry the timeline connection.
 
-    Non-JSON responses (images above all) are skipped without being read, and
-    any body that is no longer retrievable is skipped rather than fatal."""
+    The *body* is the only discriminator we trust. The URL isn't one (a single
+    `/graphql/query` endpoint serves every query, keyed by an opaque doc_id)
+    and neither is the content-type header — Meta's GraphQL surfaces have
+    served timeline JSON as `text/javascript` before now, so gating on
+    `application/json` would drop a real timeline silently and leave a live
+    profile looking empty.
+
+    So we filter only on how the request was made — the XHR/fetch/document
+    responses that can plausibly carry it — which keeps us from pulling image,
+    media and bundle bytes back over CDP, then let the connection-key
+    substring decide. A body that is no longer retrievable is skipped, never
+    fatal.
+
+    Duck-typed on Playwright's `Response` (`.request.resource_type`, `.text()`)
+    so it can be tested without a browser."""
     bodies = []
     for response in responses:
         try:
-            if "json" not in response.headers.get("content-type", ""):
+            if not _may_carry_timeline(response):
                 continue
             body = response.text()
         except Exception:  # noqa: BLE001 - a body we can't read is simply not a post
@@ -382,6 +403,16 @@ def _json_bodies(responses) -> list[str]:
         if TIMELINE_CONNECTION_KEY in body:
             bodies.append(body)
     return bodies
+
+
+def _may_carry_timeline(response) -> bool:
+    """Could this response's body hold timeline JSON, judging by nothing but
+    how the request was initiated? A response whose resource type we can't
+    read is kept — the body check is the real gate, this is just a filter."""
+    try:
+        return response.request.resource_type in TIMELINE_RESOURCE_TYPES
+    except Exception:  # noqa: BLE001 - no resource type is not a reason to skip
+        return True
 
 
 def _has_login_form(page) -> bool:

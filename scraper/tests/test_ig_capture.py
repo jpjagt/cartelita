@@ -1,11 +1,14 @@
 import datetime as dt
 import pytest
+import json
 from cartelera.ig.capture import (
     TIMELINE_CONNECTION_KEY,
     parse_timeline,
     select_new_posts,
     proxy_settings,
     is_session_invalid,
+    timeline_bodies,
+    timeline_payloads,
 )
 
 
@@ -187,6 +190,99 @@ def test_select_new_posts_handles_empty_input():
 
 def test_select_new_posts_with_a_zero_limit_looks_at_nothing():
     assert select_new_posts([_cap("a")], set(), 0) == []
+
+
+# --- timeline_bodies / timeline_payloads (response selection) ---------------
+# Duck-typed stand-ins for Playwright's Response; no browser involved.
+
+
+class _FakeRequest:
+    def __init__(self, resource_type):
+        self.resource_type = resource_type
+
+
+class _FakeResponse:
+    def __init__(self, body, resource_type="fetch", content_type="application/json",
+                 raises=False):
+        self.request = _FakeRequest(resource_type)
+        self.headers = {"content-type": content_type}
+        self._body = body
+        self._raises = raises
+
+    def text(self):
+        if self._raises:
+            raise RuntimeError("body is no longer available")
+        return self._body
+
+
+def _timeline_body(code="Cbody1"):
+    return json.dumps(_payload(_node(code=code)))
+
+
+def test_timeline_body_is_selected():
+    assert timeline_bodies([_FakeResponse(_timeline_body())]) == [_timeline_body()]
+
+
+def test_timeline_body_served_as_javascript_is_still_selected():
+    # Meta's GraphQL surfaces have served JSON as text/javascript; gating on
+    # the content-type header would silently produce an empty capture.
+    responses = [_FakeResponse(_timeline_body(), content_type="text/javascript; charset=utf-8")]
+    assert timeline_bodies(responses) == [_timeline_body()]
+
+
+def test_timeline_body_without_any_content_type_is_still_selected():
+    resp = _FakeResponse(_timeline_body())
+    resp.headers = {}
+    assert timeline_bodies([resp]) == [_timeline_body()]
+
+
+def test_document_responses_are_read_not_skipped():
+    body = f"<html><script>window.__d({_timeline_body()})</script></html>"
+    assert timeline_bodies([_FakeResponse(body, resource_type="document")]) == [body]
+
+
+def test_unrelated_response_is_not_selected():
+    assert timeline_bodies([_FakeResponse('{"data": {"other": 1}}')]) == []
+
+
+def test_image_and_script_responses_are_never_read():
+    class _Exploding(_FakeResponse):
+        def text(self):
+            raise AssertionError("binary/bundle bodies must not be pulled over CDP")
+
+    responses = [
+        _Exploding(_timeline_body(), resource_type="image"),
+        _Exploding(_timeline_body(), resource_type="media"),
+        _Exploding(_timeline_body(), resource_type="script"),
+        _Exploding(_timeline_body(), resource_type="stylesheet"),
+    ]
+    assert timeline_bodies(responses) == []
+
+
+def test_unreadable_body_is_skipped_not_fatal():
+    responses = [
+        _FakeResponse("", raises=True),
+        _FakeResponse(_timeline_body()),
+    ]
+    assert timeline_bodies(responses) == [_timeline_body()]
+
+
+def test_response_without_a_resource_type_is_still_read():
+    resp = _FakeResponse(_timeline_body())
+    del resp.request.resource_type
+    assert timeline_bodies([resp]) == [_timeline_body()]
+
+
+def test_timeline_payloads_parses_and_skips_unparseable():
+    bodies = [
+        "<html>" + TIMELINE_CONNECTION_KEY + " not json</html>",  # unparseable
+        json.dumps([TIMELINE_CONNECTION_KEY]),                    # parses, but not a dict
+        '{"data": {"other": 1}}',                                 # no connection key
+        _timeline_body("Cok1"),
+    ]
+    payloads = timeline_payloads(bodies)
+    assert len(payloads) == 1
+    assert [p.shortcode for p in parse_timeline(payloads[0], "h")] == ["Cok1"]
 
 
 # --- proxy_settings ---------------------------------------------------------
