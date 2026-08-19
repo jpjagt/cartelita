@@ -1,9 +1,9 @@
 from __future__ import annotations
 import datetime as dt
 from sqlalchemy import (
-    Text, Date, Time, DateTime, ForeignKey, Table, Column, UniqueConstraint, func,
+    Text, Date, Time, DateTime, Integer, ForeignKey, Table, Column, UniqueConstraint, func,
 )
-from sqlalchemy.dialects.postgresql import ARRAY
+from sqlalchemy.dialects.postgresql import ARRAY, JSONB, BYTEA
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 
@@ -110,3 +110,50 @@ class ListVenue(Base):
     whitelist_category_id: Mapped[int | None] = mapped_column(
         ForeignKey("category.id", ondelete="CASCADE")
     )
+
+
+class IgPost(Base):
+    """One row per Instagram post ever captured, keyed by shortcode.
+
+    Invariants: capture is append-only — an archived post's raw columns
+    (caption/posted_at/images) are never modified after insert, a captured
+    post is immutable history. The extraction columns (extraction/model_id/
+    prompt_version/extracted_at) stay NULL until an LLM parses the post, and
+    in production a post is parsed at most once ever: prompt_version records
+    which prompt produced the extraction (provenance), it is not a cache key
+    that triggers re-extraction when bumped.
+    """
+    __tablename__ = "ig_post"
+    shortcode: Mapped[str] = mapped_column(Text, primary_key=True)
+    source_slug: Mapped[str] = mapped_column(Text)
+    handle: Mapped[str] = mapped_column(Text)
+    caption: Mapped[str | None] = mapped_column(Text)
+    posted_at: Mapped[dt.datetime | None] = mapped_column(DateTime(timezone=True))
+    captured_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    extraction: Mapped[dict | None] = mapped_column(JSONB)
+    model_id: Mapped[str | None] = mapped_column(Text)
+    prompt_version: Mapped[int | None] = mapped_column(Integer)
+    extracted_at: Mapped[dt.datetime | None] = mapped_column(DateTime(timezone=True))
+    images: Mapped[list["IgPostImage"]] = relationship(
+        back_populates="post", order_by="IgPostImage.idx",
+        cascade="all, delete-orphan", passive_deletes=True,
+    )
+
+
+class IgPostImage(Base):
+    __tablename__ = "ig_post_image"
+    shortcode: Mapped[str] = mapped_column(
+        Text, ForeignKey("ig_post.shortcode", ondelete="CASCADE"), primary_key=True)
+    idx: Mapped[int] = mapped_column(Integer, primary_key=True)
+    url: Mapped[str] = mapped_column(Text)  # CDN URL the image was downloaded from
+    content_type: Mapped[str] = mapped_column(Text)
+    data: Mapped[bytes] = mapped_column(BYTEA)
+    post: Mapped[IgPost] = relationship(back_populates="images")
+
+
+class IgSession(Base):
+    """Single-row (id=1) storage of the Playwright login session state."""
+    __tablename__ = "ig_session"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    storage_state: Mapped[dict] = mapped_column(JSONB)
+    updated_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
