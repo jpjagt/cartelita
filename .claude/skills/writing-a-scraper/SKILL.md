@@ -59,6 +59,32 @@ browser is unavailable, do recon and verification via HTTP and record that in
 working around it (a scraper that only works in a browser can't run in
 production anyway).
 
+**When a venue looks IG-only** (dead/absent website, all announcements on
+Instagram): Instagram capture is the FLOOR of the recon ladder, not the
+default. Exhaust the easier surfaces in order, and only fall through when
+each genuinely has nothing dated:
+
+1. **esora.app** — `GET /api/event-sources?city=<city>&limit=500`, then the
+   per-source feed. Many IG-only venues are already ingested there (that's
+   how Malkhas/Kami/Pantomime/Mihr are scraped). An esora source that exists
+   but is empty may just be dormant — registering a trivial esora-feed
+   scraper (see `scrapers/esora.py`) doubles as the re-check.
+2. **Link-in-bio services** — the IG bio usually links a Linktree /
+   linkin.bio / taplink page, fetchable with plain HTTP; sometimes it points
+   at a ticketing page with dates.
+3. **The Facebook page** — public event pages are sometimes server-rendered
+   enough to probe.
+4. **Ticketing/aggregator sites** — for Yerevan: tomsarkgh.am, ticket-am.com,
+   eventix.am, toms.am; check the venue name in each.
+5. **Google Maps business posts** — venues that post flyers to IG often
+   cross-post to their Business Profile.
+6. Only then: an IG source via the ingest engine (`cartelera/ig/`,
+   design: `docs/superpowers/specs/2026-08-19-instagram-ingest-design.md`) —
+   a thin config module, but it depends on the scrape account + proxy being
+   provisioned, and extraction quality needs per-venue prompt-hint tuning.
+   Record in `SOURCE.md` which rungs of this ladder you checked and what
+   each showed.
+
 Work top-down:
 
 - **Homepage** → fetch and skim. How does the venue organize its programme?
