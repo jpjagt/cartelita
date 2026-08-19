@@ -21,6 +21,11 @@ RUN uv sync --frozen --no-dev
 
 ENV PATH="/app/.venv/bin:$PATH"
 
+# Chromium + its system libraries for the Playwright-driven IG capture path
+# (cartelera/ig/). Must run after uv sync (needs the playwright package).
+RUN playwright install --with-deps chromium \
+    && rm -rf /var/lib/apt/lists/*
+
 # Default command; the nightly Coolify Scheduled Task overrides/wraps this with
 # `cartelera migrate && cartelera run all`.
 CMD ["cartelera", "run", "all"]
