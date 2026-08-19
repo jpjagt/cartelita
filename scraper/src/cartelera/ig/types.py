@@ -12,6 +12,20 @@ class RawImage:
 
 
 @dataclass
+class RosterVenue:
+    """One venue an IG source may emit events for, as the LLM is told about it.
+
+    The roster is a source's editorial whitelist (AGENTS.md: a source is the
+    unit of scraping, a venue the unit of curation) rendered for the prompt:
+    the model must pick `venue_slug` from these slugs and `category` from that
+    venue's `category_slugs`."""
+    slug: str
+    name: str
+    category_slugs: list[str]
+    hints: str | None = None  # free-text prompt hints about this venue's posting style
+
+
+@dataclass
 class CapturedPost:
     """One Instagram post as captured from the timeline XHR, before download."""
     shortcode: str
