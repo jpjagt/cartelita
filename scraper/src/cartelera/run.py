@@ -2,6 +2,7 @@ from __future__ import annotations
 import importlib
 import logging
 import sys
+from decouple import config
 from sqlalchemy.orm import Session
 from cartelera.db import make_engine, make_session_factory, ensure_database_exists
 from cartelera.migrate import apply_migrations
@@ -198,18 +199,59 @@ def _print_coverage(source_slug: str, events: list[ScrapedEvent]) -> None:
         print(f"  {e.start_date} {t} | {e.price or '-':>8} | {e.title[:60]}")
 
 
+def _ig_login() -> int:
+    """One-off bootstrap: log into Instagram by hand, store the session.
+
+    Opens a *headed* Chromium (through IG_PROXY_URL, so the session is minted
+    from the same exit IP the nightly capture will use) and waits for a human
+    to log in — no form automation, because checkpoints and 2FA are precisely
+    what an automated login fails at, and a human clears them in seconds. The
+    resulting storage_state is persisted in Postgres and reused by every later
+    capture run."""
+    from cartelera.ig import archive as ig_archive
+    from cartelera.ig.capture import login_interactively
+
+    proxy_url = config("IG_PROXY_URL", default=None)
+    print("Opening a browser window on instagram.com.")
+    print("Log in manually as the scrape account (checkpoints/2FA included).")
+    if proxy_url:
+        print("Traffic goes through IG_PROXY_URL.")
+    print("The window closes by itself once the session cookie appears.")
+    try:
+        state = login_interactively(proxy_url)
+    except TimeoutError as exc:
+        print(f"[FAIL] {exc}", file=sys.stderr)
+        return 1
+
+    if ensure_database_exists():
+        print("created database")
+    engine = make_engine()
+    apply_migrations(engine)
+    session = make_session_factory()()
+    try:
+        ig_archive.set_session_state(session, state)
+        session.commit()
+    finally:
+        session.close()
+    print("saved Instagram session state")
+    return 0
+
+
 def main() -> int:
     args = sys.argv[1:]
     cmd = args[0] if args else "help"
 
-    if cmd not in {"migrate", "seed", "run", "dry-run"}:
+    if cmd not in {"migrate", "seed", "run", "dry-run", "ig-login"}:
         print(
             "usage: cartelera [migrate|seed|"
             "run [all|<slug>[,<slug>...]|:<city_slug>|-c <category_slug>]|"
-            "dry-run <module_name>]",
+            "dry-run <module_name>|ig-login]",
             file=sys.stderr,
         )
         return 1
+
+    if cmd == "ig-login":
+        return _ig_login()
 
     # dry-run is DB-free by design: run a scraper standalone without seed/upsert.
     if cmd == "dry-run":
