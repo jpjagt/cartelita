@@ -181,3 +181,45 @@ DM intake (separate future design), stories, a human review queue, automatic
 re-extraction on prompt bumps, machine translation, serving flyer images from
 our archive, and any IG interaction beyond reading profiles (no likes,
 follows, or comments from the scrape account by the poller).
+
+## As built (deviations)
+
+Recorded during the final-review fix wave, ahead of go-live (see
+`docs/ig-ops.md` for the operational runbook this produced).
+
+- **`ig-login` is entirely human-driven; there is no automated
+  `IG_USERNAME`/`IG_PASSWORD` login path.** §2 sketched login credentials as a
+  fallback the capture driver could run itself when the session goes invalid;
+  as built, `capture_new_posts` never attempts a login of any kind — an
+  invalid session raises `IgSessionInvalid` and stops the source (the existing
+  staleness machinery), full stop. The only way to mint or refresh a session is
+  `cartelera ig-login`, which opens a *headed* browser and waits for a human to
+  complete the login (checkpoints and 2FA included). This is deliberate, not a
+  gap: checkpoints and 2FA are exactly what an automated login trips over, and
+  a human clears them in seconds.
+- **Re-extraction has no CLI flag.** §4's "a manual/dev flag can force it for
+  selected posts" did not ship as a flag. The escape hatch for a
+  permanently-unparseable post is a documented manual SQL statement (see
+  `docs/ig-ops.md`), not a `cartelera` subcommand.
+- **No live smoke test behind an env flag.** §9 mentions "one optional live
+  smoke test behind an env flag"; it was not built. Live verification instead
+  happened once, by hand, per the writing-a-scraper skill's live-verification
+  step (`SOURCE.md` files for cinema-house and mezzo).
+- **The 6-month publish window also bounds explicitly-stated years**, not just
+  inferred ones — stricter than §4's wording ("year inferred as nearest-future
+  within 6 months") suggests. `gate_events` applies the same
+  `[today, today + 6 months]` window check to every resolved date regardless
+  of whether the year came from the post or from inference; a flyer that
+  states a date more than 6 months out is dropped exactly like an inferred one
+  would be.
+- **`ig_post_image` stores each image's CDN `url`, not just its bytes.** §3
+  listed `ig_post_image` without a URL column; it was added because §5's
+  `image_url = the post's first image (served via IG's CDN URL captured at
+  scrape time)` requires it — `source.py` reads `post.images[0].url` to fill
+  `ScrapedEvent.image_url`.
+- **Canonical content language is per-source config (`IgSourceConfig.canonical_lang`),
+  not a lookup against "the city's default locale"** as §5 phrased it. City
+  default locale is UI config that lives web-side (`web/src/lib/cities.ts`,
+  per `AGENTS.md`), not in Postgres or the scraper's reach, so each IG source
+  states its own canonical language explicitly instead (both first-wave
+  sources: `"hy"`).
