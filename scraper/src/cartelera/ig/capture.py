@@ -225,6 +225,20 @@ def select_new_posts(
     return [p for p in window if p.shortcode not in known_shortcodes]
 
 
+def drop_download_failures(posts: list[CapturedPost]) -> list[CapturedPost]:
+    """Exclude a post whose image downloads all failed.
+
+    A post with `image_urls` but zero surviving `images` would otherwise be
+    archived caption-only and stay that way forever — capture is
+    append-only, so a post that made it into the archive never gets a second
+    chance at its images. Skipping it here means it is simply not yet
+    archived, so it reappears in tomorrow's timeline window and gets a clean
+    retry. A partial carousel (some images downloaded, some lost) is real
+    signal and is kept as-is; only a *total* failure drops the post. A post
+    with no images to begin with (`image_urls` empty) is never affected."""
+    return [p for p in posts if not p.image_urls or p.images]
+
+
 def proxy_settings(proxy_url: str | None) -> dict | None:
     """Playwright's `proxy` option from a `scheme://user:pass@host:port` URL.
 
@@ -351,7 +365,14 @@ def _capture_profile(
     logger.info("%s: %d timeline posts, %d new", handle, len(posts), len(new_posts))
     for post in new_posts:
         post.images = _download_images(context, post.image_urls)
-    return new_posts
+    captured = drop_download_failures(new_posts)
+    if len(captured) != len(new_posts):
+        logger.warning(
+            "%s: dropped %d post(s) whose images all failed to download; "
+            "not archived, so they retry next run",
+            handle, len(new_posts) - len(captured),
+        )
+    return captured
 
 
 def _load_profile(page, handle: str, reload: bool = False) -> list[str]:

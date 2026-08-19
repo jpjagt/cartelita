@@ -5,11 +5,13 @@ from cartelera.ig.capture import (
     TIMELINE_CONNECTION_KEY,
     parse_timeline,
     select_new_posts,
+    drop_download_failures,
     proxy_settings,
     is_session_invalid,
     timeline_bodies,
     timeline_payloads,
 )
+from cartelera.ig.types import RawImage
 
 
 # --- fixture builders: mirror the real timeline-connection shape -------------
@@ -190,6 +192,48 @@ def test_select_new_posts_handles_empty_input():
 
 def test_select_new_posts_with_a_zero_limit_looks_at_nothing():
     assert select_new_posts([_cap("a")], set(), 0) == []
+
+
+# --- drop_download_failures (exclude a post whose images all failed) --------
+
+def _img(url="https://cdn.example.com/x.jpg"):
+    return RawImage(url=url, content_type="image/jpeg", data=b"\xff\xd8jpeg")
+
+
+def _cap_with(shortcode, image_urls, images):
+    from cartelera.ig.types import CapturedPost
+    return CapturedPost(shortcode=shortcode, handle="h", caption=None,
+                        posted_at=None, image_urls=image_urls, images=images)
+
+
+def test_drop_download_failures_excludes_a_post_whose_every_image_failed():
+    post = _cap_with("a", ["u1", "u2"], [])
+    assert drop_download_failures([post]) == []
+
+
+def test_drop_download_failures_keeps_a_partial_carousel():
+    post = _cap_with("a", ["u1", "u2"], [_img("u1")])
+    assert drop_download_failures([post]) == [post]
+
+
+def test_drop_download_failures_keeps_a_fully_successful_post():
+    post = _cap_with("a", ["u1"], [_img("u1")])
+    assert drop_download_failures([post]) == [post]
+
+
+def test_drop_download_failures_keeps_a_post_with_no_images_to_begin_with():
+    post = _cap_with("a", [], [])
+    assert drop_download_failures([post]) == [post]
+
+
+def test_drop_download_failures_handles_empty_input():
+    assert drop_download_failures([]) == []
+
+
+def test_drop_download_failures_only_drops_the_failed_post_among_several():
+    ok = _cap_with("ok", ["u1"], [_img("u1")])
+    failed = _cap_with("failed", ["u1", "u2"], [])
+    assert drop_download_failures([ok, failed]) == [ok]
 
 
 # --- timeline_bodies / timeline_payloads (response selection) ---------------
