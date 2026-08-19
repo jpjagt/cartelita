@@ -5,6 +5,7 @@ from types import SimpleNamespace
 
 import litellm
 import pytest
+from pydantic import ValidationError
 
 from cartelera.ig.types import RosterVenue
 from cartelera.ig.extract import (
@@ -242,6 +243,31 @@ def test_extract_post_retries_once_on_schema_violation(monkeypatch):
     assert len(calls) == 2
 
 
+def test_extract_post_retries_when_confidence_is_on_a_percent_scale(monkeypatch):
+    calls = _fake_completion(
+        monkeypatch,
+        {"events": [_event(confidence=95)]},
+        {"events": [_event(confidence=0.95)]},
+    )
+    result = extract_post(_post(), ROSTER, "m")
+    assert len(calls) == 2
+    assert result["events"][0]["confidence"] == 0.95
+    assert "confidence" in calls[1]["messages"][-1]["content"]
+
+
+def test_extract_post_raises_when_a_percent_scale_confidence_persists(monkeypatch):
+    calls = _fake_completion(monkeypatch, {"events": [_event(confidence=95)]})
+    with pytest.raises(ExtractionError):
+        extract_post(_post(), ROSTER, "m")
+    assert len(calls) == 2
+
+
+def test_extract_post_retries_on_a_negative_confidence(monkeypatch):
+    calls = _fake_completion(monkeypatch, {"events": [_event(confidence=-0.1)]}, {"events": []})
+    extract_post(_post(), ROSTER, "m")
+    assert len(calls) == 2
+
+
 def test_extract_post_raises_after_exactly_one_retry(monkeypatch):
     calls = _fake_completion(monkeypatch, "nope", "still nope", {"events": []})
     with pytest.raises(ExtractionError):
@@ -263,11 +289,35 @@ def test_extract_post_falls_back_to_json_mode_when_the_provider_rejects_the_sche
     assert result["events"][0]["day"] == 12
 
 
+def test_extract_post_falls_back_on_unsupported_params_too(monkeypatch):
+    calls = _fake_completion(
+        monkeypatch,
+        litellm.exceptions.UnsupportedParamsError(status_code=400, message="response_format"),
+        {"events": []},
+    )
+    assert extract_post(_post(), ROSTER, "m") == {"events": []}
+    assert calls[1]["response_format"] == {"type": "json_object"}
+
+
 def test_extract_post_reraises_when_json_mode_also_fails(monkeypatch):
     boom = litellm.exceptions.BadRequestError(message="no key", model="m", llm_provider="x")
     _fake_completion(monkeypatch, boom, boom)
     with pytest.raises(litellm.exceptions.BadRequestError):
         extract_post(_post(), ROSTER, "m")
+
+
+@pytest.mark.parametrize("error", [
+    litellm.exceptions.RateLimitError(message="slow down", model="m", llm_provider="x"),
+    litellm.exceptions.AuthenticationError(message="bad key", model="m", llm_provider="x"),
+    litellm.exceptions.Timeout(message="took too long", model="m", llm_provider="x"),
+])
+def test_extract_post_does_not_re_upload_the_images_on_a_transport_error(monkeypatch, error):
+    # Only a *parameter* rejection warrants a second full multimodal call; a
+    # rate limit / auth failure / timeout must propagate untouched.
+    calls = _fake_completion(monkeypatch, error, {"events": []})
+    with pytest.raises(type(error)):
+        extract_post(_post(), ROSTER, "m")
+    assert len(calls) == 1
 
 
 def test_extract_post_tolerates_a_json_fenced_response(monkeypatch):
@@ -284,8 +334,28 @@ def test_prompt_version_is_an_int():
 # --------------------------------------------------------------------------
 
 def test_extracted_event_requires_at_least_one_content():
-    with pytest.raises(Exception):
+    with pytest.raises(ValidationError):
         ExtractedEvent(category="jazz", contents=[], confidence=0.9)
+
+
+@pytest.mark.parametrize("bad", [95, 1.01, -0.01, 100])
+def test_extracted_event_rejects_a_confidence_outside_zero_to_one(bad):
+    with pytest.raises(ValidationError):
+        ExtractedEvent(
+            category="jazz",
+            contents=[ExtractedContent(lang="en", title="X")],
+            confidence=bad,
+        )
+
+
+@pytest.mark.parametrize("ok", [0, 0.5, 1])
+def test_extracted_event_accepts_the_confidence_bounds(ok):
+    e = ExtractedEvent(
+        category="jazz",
+        contents=[ExtractedContent(lang="en", title="X")],
+        confidence=ok,
+    )
+    assert e.confidence == float(ok)
 
 
 def test_extracted_event_defaults_every_optional_field_to_none():
@@ -476,6 +546,13 @@ def test_gate_keeps_the_event_but_drops_an_unparseable_time():
 
 def test_gate_drops_an_event_that_does_not_match_the_schema():
     assert _gate([{"category": "jazz"}]) == []
+
+
+def test_gate_drops_a_percent_scale_confidence_stored_before_the_bound_existed():
+    # Belt and braces: the gate re-validates every stored event, so an
+    # extraction written by an older prompt can't clear the threshold by
+    # answering 95 instead of 0.95.
+    assert _gate([_event(confidence=95)]) == []
 
 
 # --- logging ---

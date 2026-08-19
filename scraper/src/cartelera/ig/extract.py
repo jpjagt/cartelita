@@ -80,7 +80,10 @@ class ExtractedEvent(BaseModel):
     time: str | None = None  # "HH:MM", 24h
     price: str | None = None  # display string, free text ("free", "5000֏")
     language: str | None = None  # PERFORMANCE language, display-only, unrelated to contents[].lang
-    confidence: float  # 0..1, the model's certainty this is a real, correctly-read event
+    # The model's certainty this is a real, correctly-read event. Bounded so a
+    # percent-scale answer (95) fails validation and takes the retry path
+    # instead of silently clearing every threshold.
+    confidence: float = Field(ge=0, le=1)
 
 
 class IgExtraction(BaseModel):
@@ -195,17 +198,18 @@ def _completion(model: str, messages: list[dict]):
     one retry in plain JSON mode — the reply is validated against the schema
     either way, so the only thing lost is the provider-side guarantee.
 
-    The catch is deliberately broad rather than provider-conditional: a
-    schema rejection surfaces as a different exception per provider, and
-    sniffing for each is exactly the per-provider matrix litellm exists to
-    spare us. A failure that had nothing to do with the schema (no API key,
-    no network) simply fails the same way twice, and the retry's traceback
-    still chains the original."""
+    Only a *parameter* rejection triggers the fallback. litellm normalises
+    every provider's errors into one taxonomy precisely so we don't have to
+    catch blindly: rate limits, auth failures and timeouts propagate rather
+    than provoking a second full multimodal call with every image re-uploaded
+    and no backoff. `UnsupportedParamsError` is a `BadRequestError` subclass;
+    both are named because the pair is the contract, not an accident."""
     import litellm  # heavy import; only the call half needs it
 
+    schema_rejected = (litellm.exceptions.BadRequestError, litellm.exceptions.UnsupportedParamsError)
     try:
         return litellm.completion(model=model, messages=messages, response_format=IgExtraction)
-    except Exception as err:
+    except schema_rejected as err:
         logger.warning(
             "%s failed with a schema response_format (%s); retrying in JSON mode", model, err
         )
