@@ -1,0 +1,50 @@
+{
+  "result": {
+    "eventOccurrenceIds": ["occ-1"],
+    "pagination": {
+      "page": 1,
+      "limit": 100,
+      "total": 1,
+      "totalPages": 1
+    }
+  },
+  "entities": {
+    "events": {
+      "ev-1": {
+        "eventId": "ev-1",
+        "title": "Pierrot's Dream",
+        "description": "A silent pantomime piece.",
+        "i18n": {
+          "title": {
+            "hy": {"origin": "source", "content": "Պիերոյի երազը"},
+            "en": {"origin": "translation", "content": "Pierrot's Dream"},
+            "ru": {"origin": "translation", "content": "Сон Пьеро"}
+          },
+          "description": {
+            "hy": {"origin": "source", "content": "Համր պանտոմիմ ներկայացում։"},
+            "en": {"origin": "translation", "content": "A silent pantomime piece."},
+            "ru": {"origin": "translation", "content": "Немой пантомимный спектакль."}
+          }
+        },
+        "category": "theater",
+        "tags": ["pantomime"],
+        "media": [
+          {"type": "image", "isDisabled": false, "localFileName": "pierrot.jpg"}
+        ],
+        "disabledAt": null
+      }
+    },
+    "eventOccurrences": {
+      "occ-1": {
+        "eventOccurrenceId": "occ-1",
+        "startDate": "2026-09-15",
+        "startTime": "19:00:00",
+        "endDate": null,
+        "endTime": null,
+        "price": "3000 AMD",
+        "eventId": "ev-1",
+        "disabledAt": null
+      }
+    }
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "result": {
+    "eventOccurrenceIds": ["occ-1"],
+    "pagination": {
+      "page": 1,
+      "limit": 100,
+      "total": 1,
+      "totalPages": 1
+    }
+  },
+  "entities": {
+    "events": {
+      "ev-1": {
+        "eventId": "ev-1",
+        "title": "Roots",
+        "description": "A contemporary dance piece.",
+        "i18n": {
+          "title": {
+            "hy": {"origin": "source", "content": "Արմատներ"},
+            "en": {"origin": "translation", "content": "Roots"},
+            "ru": {"origin": "translation", "content": "Корни"}
+          },
+          "description": {
+            "hy": {"origin": "source", "content": "Ժամանակակից պարային ներկայացում։"},
+            "en": {"origin": "translation", "content": "A contemporary dance piece."},
+            "ru": {"origin": "translation", "content": "Спектакль современного танца."}
+          }
+        },
+        "category": "dance",
+        "tags": ["contemporary-dance"],
+        "media": [
+          {"type": "image", "isDisabled": false, "localFileName": "roots.jpg"}
+        ],
+        "disabledAt": null
+      }
+    },
+    "eventOccurrences": {
+      "occ-1": {
+        "eventOccurrenceId": "occ-1",
+        "startDate": "2026-09-20",
+        "startTime": "20:00:00",
+        "endDate": null,
+        "endTime": null,
+        "price": "5000 AMD",
+        "eventId": "ev-1",
+        "disabledAt": null
+      }
+    }
+  }
+}
