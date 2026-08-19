@@ -11,7 +11,7 @@ REGISTRY: dict[str, tuple[Scraper, SourceDefinition]] = {}
 
 # Modules in this package that are not venue scrapers and should not be imported
 # for registration.
-_NON_SCRAPER_MODULES = {"base", "price"}
+_NON_SCRAPER_MODULES = {"base", "price", "esora"}
 
 
 def register(scraper: Scraper, venue: VenueDefinition) -> None:

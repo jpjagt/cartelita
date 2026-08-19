@@ -1,0 +1,181 @@
+{
+  "result": {
+    "eventOccurrenceIds": [
+      "occ-normal",
+      "occ-past",
+      "occ-disabled-occ",
+      "occ-disabled-event",
+      "occ-dup-a",
+      "occ-dup-b",
+      "occ-multi-1",
+      "occ-multi-2"
+    ],
+    "pagination": {
+      "page": 1,
+      "limit": 100,
+      "total": 8,
+      "totalPages": 1
+    }
+  },
+  "entities": {
+    "events": {
+      "ev-normal": {
+        "eventId": "ev-normal",
+        "title": "Normal Show",
+        "description": "A normal show.",
+        "i18n": {
+          "title": {
+            "hy": {"origin": "source", "content": "Սովորական ներկայացում"},
+            "en": {"origin": "translation", "content": "Normal Show"},
+            "ru": {"origin": "translation", "content": "Обычное шоу"}
+          },
+          "description": {
+            "hy": {"origin": "source", "content": "Սովորական ներկայացում։"},
+            "en": {"origin": "translation", "content": "A normal show."},
+            "ru": {"origin": "translation", "content": "Обычное шоу."}
+          }
+        },
+        "category": "standard",
+        "tags": ["excluded-tag", "genre-a"],
+        "media": [
+          {"type": "image", "isDisabled": false, "localFileName": "normal.jpg"}
+        ],
+        "disabledAt": null
+      },
+      "ev-disabled": {
+        "eventId": "ev-disabled",
+        "title": "Disabled Show",
+        "description": "Should never appear.",
+        "i18n": {
+          "title": {"hy": {"origin": "source", "content": "Disabled Show"}},
+          "description": {}
+        },
+        "category": "standard",
+        "tags": ["excluded-tag"],
+        "media": [],
+        "disabledAt": "2026-08-01T00:00:00.000Z"
+      },
+      "ev-dup-a": {
+        "eventId": "ev-dup-a",
+        "title": "Dup Show A (unpriced copy)",
+        "description": "First ingested copy, no price.",
+        "i18n": {
+          "title": {"hy": {"origin": "source", "content": "Dup Show A (unpriced copy)"}},
+          "description": {}
+        },
+        "category": "standard",
+        "tags": [],
+        "media": [],
+        "disabledAt": null
+      },
+      "ev-dup-b": {
+        "eventId": "ev-dup-b",
+        "title": "Dup Show B (priced copy)",
+        "description": "Second ingested copy, with price.",
+        "i18n": {
+          "title": {"hy": {"origin": "source", "content": "Dup Show B (priced copy)"}},
+          "description": {}
+        },
+        "category": "standard",
+        "tags": [],
+        "media": [],
+        "disabledAt": null
+      },
+      "ev-multi": {
+        "eventId": "ev-multi",
+        "title": "Multi Time Show",
+        "description": "Early and late session.",
+        "i18n": {
+          "title": {"hy": {"origin": "source", "content": "Multi Time Show"}},
+          "description": {}
+        },
+        "category": "standard",
+        "tags": [],
+        "media": [],
+        "disabledAt": null
+      }
+    },
+    "eventOccurrences": {
+      "occ-normal": {
+        "eventOccurrenceId": "occ-normal",
+        "startDate": "2026-08-26",
+        "startTime": "20:00:00",
+        "endDate": null,
+        "endTime": null,
+        "price": "5000 AMD",
+        "eventId": "ev-normal",
+        "disabledAt": null
+      },
+      "occ-past": {
+        "eventOccurrenceId": "occ-past",
+        "startDate": "2026-08-20",
+        "startTime": "19:00:00",
+        "endDate": null,
+        "endTime": null,
+        "price": null,
+        "eventId": "ev-normal",
+        "disabledAt": null
+      },
+      "occ-disabled-occ": {
+        "eventOccurrenceId": "occ-disabled-occ",
+        "startDate": "2026-08-27",
+        "startTime": "20:00:00",
+        "endDate": null,
+        "endTime": null,
+        "price": null,
+        "eventId": "ev-normal",
+        "disabledAt": "2026-08-01T00:00:00.000Z"
+      },
+      "occ-disabled-event": {
+        "eventOccurrenceId": "occ-disabled-event",
+        "startDate": "2026-08-28",
+        "startTime": "20:00:00",
+        "endDate": null,
+        "endTime": null,
+        "price": null,
+        "eventId": "ev-disabled",
+        "disabledAt": null
+      },
+      "occ-dup-a": {
+        "eventOccurrenceId": "occ-dup-a",
+        "startDate": "2026-08-29",
+        "startTime": "21:30:00",
+        "endDate": null,
+        "endTime": null,
+        "price": null,
+        "eventId": "ev-dup-a",
+        "disabledAt": null
+      },
+      "occ-dup-b": {
+        "eventOccurrenceId": "occ-dup-b",
+        "startDate": "2026-08-29",
+        "startTime": "21:30:00",
+        "endDate": null,
+        "endTime": null,
+        "price": "3000 AMD",
+        "eventId": "ev-dup-b",
+        "disabledAt": null
+      },
+      "occ-multi-1": {
+        "eventOccurrenceId": "occ-multi-1",
+        "startDate": "2026-08-30",
+        "startTime": "19:00:00",
+        "endDate": null,
+        "endTime": null,
+        "price": null,
+        "eventId": "ev-multi",
+        "disabledAt": null
+      },
+      "occ-multi-2": {
+        "eventOccurrenceId": "occ-multi-2",
+        "startDate": "2026-08-30",
+        "startTime": "21:00:00",
+        "endDate": null,
+        "endTime": null,
+        "price": null,
+        "eventId": "ev-multi",
+        "disabledAt": null
+      }
+    }
+  }
+}
