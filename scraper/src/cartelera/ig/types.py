@@ -36,3 +36,15 @@ class CapturedPost:
     # Filled once each image is downloaded; each image's url matches an entry
     # of image_urls. Empty until download runs.
     images: list[RawImage] = field(default_factory=list)
+
+
+@dataclass
+class CaptureResult:
+    """What one `capture_new_posts` call produced.
+
+    `storage_state` is the session as it stood when the browser closed — IG
+    rotates session cookies over the course of a run, so the caller should
+    re-persist it after a successful capture rather than let the stored
+    session drift out of sync with what was actually used."""
+    posts: dict[str, list[CapturedPost]]
+    storage_state: dict

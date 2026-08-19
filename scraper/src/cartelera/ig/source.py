@@ -41,6 +41,7 @@ from cartelera.ig.archive import (
     get_session_state,
     posts_missing_extraction,
     save_extraction,
+    set_session_state,
     upsert_posts,
 )
 from cartelera.ig.capture import capture_new_posts
@@ -146,7 +147,12 @@ class IgProfileScraper:
             session.close()
 
     def _capture(self, session: Session) -> None:
-        """Archive the handle's new posts. Never swallows a failure."""
+        """Archive the handle's new posts. Never swallows a failure.
+
+        Also re-persists `storage_state`: IG rotates session cookies over the
+        course of a run, and `capture_new_posts` only returns at all when the
+        whole call succeeded (no `IgSessionInvalid`), so reaching this point
+        is exactly the "successful run" condition for saving the refresh."""
         state = get_session_state(session)
         if state is None:
             raise RuntimeError(
@@ -154,14 +160,15 @@ class IgProfileScraper:
                 "run `cartelera ig-login` once to mint one"
             )
         known = archived_shortcodes(session, self.config.handle)
-        captured = capture_new_posts(
+        result = capture_new_posts(
             [(self.config.handle, known)],
             state,
             _proxy_url(),
             limit_per_profile=self.config.limit_per_profile,
         )
-        posts = captured.get(self.config.handle, [])
+        posts = result.posts.get(self.config.handle, [])
         inserted = upsert_posts(session, self._slug, posts)
+        set_session_state(session, result.storage_state)
         session.commit()
         logger.info("%s: captured %d post(s), %d newly archived", self._slug, len(posts), inserted)
 
@@ -227,7 +234,8 @@ class IgProfileScraper:
 
         source_url = POST_URL.format(shortcode=post.shortcode)
         canonical, translations = self._split_contents(gate, source_url)
-        if not canonical.title.strip():
+        title = canonical.title.strip()
+        if not title:
             # The schema demands a title but cannot demand a non-empty one; an
             # untitled event is a blank card on the site, so drop it here.
             logger.info(
@@ -236,7 +244,7 @@ class IgProfileScraper:
             )
             return None
         return ScrapedEvent(
-            title=canonical.title,
+            title=title,
             description=canonical.description,
             start_date=gate.date,
             start_time=gate.time,
@@ -298,7 +306,7 @@ class IgProfileScraper:
             seen.add(content.lang)
             translations.append(ScrapedTranslation(
                 lang=content.lang,
-                title=content.title,
+                title=content.title.strip(),
                 description=content.description,
                 source_url=source_url,
             ))

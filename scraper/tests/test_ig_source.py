@@ -14,7 +14,7 @@ from sqlalchemy.orm import sessionmaker
 from cartelera.ig import archive
 from cartelera.ig import source as ig_source
 from cartelera.ig.source import IgProfileScraper, IgSourceConfig
-from cartelera.ig.types import CapturedPost, RawImage
+from cartelera.ig.types import CapturedPost, CaptureResult, RawImage
 from cartelera.models import IgPost
 from cartelera.types import SourceDefinition, VenueDefinition
 
@@ -91,11 +91,17 @@ def _extraction(*events):
 
 
 class FakeCapture:
-    """Stands in for capture.capture_new_posts; serves one batch per call."""
+    """Stands in for capture.capture_new_posts; serves one batch per call.
 
-    def __init__(self, *batches):
+    Echoes back the storage_state it was given unless `next_state` overrides
+    it, so tests that don't care about session refresh see a stable round
+    trip while a test that does can assert the source saves what capture
+    handed back."""
+
+    def __init__(self, *batches, next_state=None):
         self.batches = [list(b) for b in batches]
         self.calls = []
+        self.next_state = next_state
 
     def __call__(self, handles_with_known, storage_state, proxy_url, limit_per_profile=12):
         self.calls.append({
@@ -105,7 +111,11 @@ class FakeCapture:
             "limit_per_profile": limit_per_profile,
         })
         batch = self.batches.pop(0) if self.batches else []
-        return {handle: batch for handle, _known in handles_with_known}
+        posts = {handle: batch for handle, _known in handles_with_known}
+        return CaptureResult(
+            posts=posts,
+            storage_state=self.next_state if self.next_state is not None else storage_state,
+        )
 
 
 class FakeExtract:
@@ -321,6 +331,38 @@ def test_every_extraction_failing_fails_the_source(monkeypatch, session, factory
         IgProfileScraper(_config(), session_factory=factory).scrape()
 
 
+def test_a_successful_capture_repersists_the_refreshed_session_state(
+    monkeypatch, session, factory
+):
+    _store_session_state(session)
+    refreshed = {"cookies": [{"name": "sessionid", "value": "rotated"}]}
+    capture = FakeCapture([_post("AAA")], next_state=refreshed)
+    extract = FakeExtract({"AAA": _extraction(_event())})
+    _install(monkeypatch, capture, extract)
+    IgProfileScraper(_config(), session_factory=factory).scrape()
+
+    session.expire_all()
+    assert archive.get_session_state(session) == refreshed
+
+
+def test_a_session_invalid_capture_failure_does_not_touch_the_stored_session(
+    monkeypatch, session, factory
+):
+    from cartelera.ig.capture import IgSessionInvalid
+
+    _store_session_state(session)
+
+    def boom(*args, **kwargs):
+        raise IgSessionInvalid("login wall")
+
+    _install(monkeypatch, boom, FakeExtract({}))
+    with pytest.raises(IgSessionInvalid):
+        IgProfileScraper(_config(), session_factory=factory).scrape()
+
+    session.expire_all()
+    assert archive.get_session_state(session) == STATE
+
+
 def test_capture_failures_propagate(monkeypatch, session, factory):
     _store_session_state(session)
 
@@ -402,6 +444,18 @@ def test_the_first_content_is_canonical_when_the_configured_language_is_absent(
     events = _run_one_post(monkeypatch, session, factory, extraction)
     assert events[0].title == "Джаз"
     assert [t.lang for t in events[0].translations] == ["en"]
+
+
+def test_canonical_and_translation_titles_are_trimmed_of_whitespace(
+    monkeypatch, session, factory
+):
+    extraction = _extraction(_event(contents=[
+        {"lang": "hy", "title": "  Ջազ երեկո  ", "description": None},
+        {"lang": "en", "title": "  Jazz night  ", "description": None},
+    ]))
+    events = _run_one_post(monkeypatch, session, factory, extraction)
+    assert events[0].title == "Ջազ երեկո"
+    assert events[0].translations[0].title == "Jazz night"
 
 
 def test_an_untitled_event_is_dropped_and_logged(monkeypatch, session, factory, caplog):

@@ -24,7 +24,7 @@ import time
 from typing import Any
 from urllib.parse import unquote, urlsplit
 
-from cartelera.ig.types import CapturedPost, RawImage
+from cartelera.ig.types import CapturedPost, CaptureResult, RawImage
 
 logger = logging.getLogger(__name__)
 
@@ -301,15 +301,19 @@ def capture_new_posts(
     storage_state: dict,
     proxy_url: str | None,
     limit_per_profile: int = DEFAULT_LIMIT_PER_PROFILE,
-) -> dict[str, list[CapturedPost]]:
+) -> CaptureResult:
     """Capture the new posts of each handle in one browser session.
 
     One Chromium launch for the whole call, profiles visited sequentially with
-    a human-shaped pause in between. Returns `{handle: [CapturedPost, ...]}`
-    with images already downloaded. Raises `IgSessionInvalid` as soon as any
+    a human-shaped pause in between. Returns a `CaptureResult` bundling
+    `{handle: [CapturedPost, ...]}` (images already downloaded) with the
+    session's `storage_state` as it stood when the browser closed — IG
+    rotates session cookies over a run, so the caller should re-persist this
+    after a successful capture. Raises `IgSessionInvalid` as soon as any
     profile shows a login/challenge wall — the session is shared, so the rest
-    of the run would fail the same way. We never attempt an automated login
-    here; that is `cartelera ig-login`'s human-driven job."""
+    of the run would fail the same way, and nothing is returned (there is no
+    refreshed state worth saving from a dead session). We never attempt an
+    automated login here; that is `cartelera ig-login`'s human-driven job."""
     from playwright.sync_api import sync_playwright
 
     results: dict[str, list[CapturedPost]] = {}
@@ -325,9 +329,10 @@ def capture_new_posts(
                     time.sleep(random.uniform(*PROFILE_JITTER_S))
                 posts = _capture_profile(context, page, handle, known, limit_per_profile)
                 results[handle] = posts
+            final_state = context.storage_state()
         finally:
             browser.close()
-    return results
+    return CaptureResult(posts=results, storage_state=final_state)
 
 
 def _new_context(browser, storage_state: dict | None):
