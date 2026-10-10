@@ -12,6 +12,7 @@ export const CITIES: Record<string, CityConfig> = {
     locales: ["ca", "es", "en"],
     defaultLocale: "ca",
     defaultList: "jazz",
+    timezone: "Europe/Madrid",
   },
   yerevan: {
     slug: "yerevan",
@@ -19,6 +20,7 @@ export const CITIES: Record<string, CityConfig> = {
     locales: ["hy", "ru", "en"],
     defaultLocale: "hy",
     defaultList: "jazz",
+    timezone: "Asia/Yerevan",
   },
   amsterdam: {
     slug: "amsterdam",
@@ -26,6 +28,7 @@ export const CITIES: Record<string, CityConfig> = {
     locales: ["nl", "en"],
     defaultLocale: "nl",
     defaultList: "jazz",
+    timezone: "Europe/Amsterdam",
   },
 };
 

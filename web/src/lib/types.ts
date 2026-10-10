@@ -8,6 +8,8 @@ export interface CityConfig {
   locales: Locale[];
   defaultLocale: Locale;
   defaultList: string;
+  /** IANA time zone the city's wall-clock event times are in (calendar export). */
+  timezone: string;
 }
 
 /** One option in a GridRadioButtons control. */
@@ -111,4 +113,24 @@ export interface FilmDayLayout {
   rows3: number;       // total cell rows consumed by the 3-column packing
   rows2: number;       // total cell rows consumed by the 2-column packing
   rows1: number;       // total cell rows consumed by the single-column stack
+}
+
+/** The fields of one event row the share menu needs (read off the row's DOM /
+    data-* attributes on the client; see lib/share.ts and lib/ics.ts). */
+export interface ShareEvent {
+  id: string;            // event id, for the calendar UID
+  title: string;
+  date: string;          // REAL calendar date, ISO yyyy-mm-dd (not the agenda's logical day)
+  time: string | null;   // 'HH:MM' or null (timeless)
+  venue: string;
+  price: string;         // localized display price ("13€", "Sold out"), "" when none
+  url: string;
+}
+
+/** Page-level localized bits for the share text (one set per page). */
+export interface ShareStrings {
+  /** BCP-47 tag for date formatting (localeTag). */
+  localeTag: string;
+  /** "{title} — {when} at {venue}"; " ({price})" is appended when there is one. */
+  template: string;
 }

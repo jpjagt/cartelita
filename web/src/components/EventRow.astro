@@ -18,12 +18,17 @@ const displayPrice = event.price
   : ""
 ---
 {/* One event = one row of the content band: time · title(grows) · place · price,
-   plus a favourite star in the margin column left of the band (shown on row
-   hover). The wrapper carries data-time for the day/row visibility script and
-   data-venue for the My list filter; it sits on the grid via
-   `display: contents` so its children place directly. */}
+   plus a favourite star in the margin column left of the band and a share
+   trigger in the one right of it (both shown on row hover). The wrapper carries
+   data-time for the day/row visibility script, data-venue for the My list
+   filter, and data-id/data-date (the REAL calendar date — the section's date is
+   the agenda's logical day, which differs for post-midnight shows) for the
+   share menu, which reads the rest off the cells (ShareMenu.astro). It sits on
+   the grid via `display: contents` so its children place directly. */}
 <div
   data-event-row
+  data-id={event.id}
+  data-date={event.startDate}
   data-time={event.startTime ?? ""}
   data-venue={event.venueSlug}
   data-genre={genre}
@@ -70,4 +75,88 @@ const displayPrice = event.price
   <div
     class="cell cell-truncate cell-right gc-price text-muted-foreground"
   ><span class="cell-text">{displayPrice}</span></div>
+
+  {/* Opens the share menu (ShareMenu.astro). Margin column right of the band
+      on hover; where there's no margin, the last cell of the title, always
+      visible (see .gc-share). The ↗ glyph is drawn in CSS to keep the markup
+      lean on 5,000-row pages. */}
+  <button
+    type="button"
+    data-share-trigger
+    aria-haspopup="menu"
+    aria-expanded="false"
+    aria-label={strings.share}
+    class="cell share-trigger gc-share"
+  ></button>
 </div>
+
+<script>
+  // Fit the price column to its text, in whole cells (see lib/price-fit.ts).
+  //  Desktop: one width per PAGE — the widest price, clamped to [3, 5] cells —
+  //  published as --price-cells on <html>; global.css shifts the place column
+  //  and the title's end by it, so the title absorbs the slack.
+  //  Mobile (≤640px): each row sizes its own price span (--pc on the row
+  //  wrapper, [2, 6] cells); the place cell on row B takes the rest.
+  // Text is measured with canvas measureText in the price cell's font, once
+  // per distinct string, so a 5,000-row page costs no layout reads per row.
+  import { cellSpan, PRICE_CELLS_DESKTOP, PRICE_CELLS_MOBILE } from "@/lib/price-fit"
+
+  const ctx = document.createElement("canvas").getContext("2d")
+  const widths = new Map<string, number>()
+
+  function textWidth(text: string, font: string): number {
+    const key = `${font}\u0000${text}`
+    let w = widths.get(key)
+    if (w === undefined) {
+      ctx!.font = font
+      w = text ? ctx!.measureText(text).width : 0
+      widths.set(key, w)
+    }
+    return w
+  }
+
+  function fitPrices() {
+    const first = document.querySelector<HTMLElement>(".gc-price > .cell-text")
+    if (!first || !ctx) return
+    const cs = getComputedStyle(first)
+    const font = `${cs.fontStyle} ${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`
+    const priceOf = (row: Element) =>
+      row.querySelector(".gc-price > .cell-text")?.textContent?.trim() ?? ""
+    // --cell is written inline on each section by syncGrid; reading the
+    // inline value avoids a style recalc per section. A hidden section has
+    // --cell 0 (no width) and is refit when its view is shown (syncGrid →
+    // gridsync).
+    const cellOf = (el: HTMLElement) => parseFloat(el.style.getPropertyValue("--cell")) || 0
+    const sections = [...document.querySelectorAll<HTMLElement>("section.gridpaper")]
+
+    if (!window.matchMedia("(max-width: 640px)").matches) {
+      // Desktop cells are a fixed size; take it from any laid-out section.
+      const cell = Math.max(0, ...sections.map(cellOf))
+      let widest = 0
+      for (const text of new Set([...document.querySelectorAll("[data-event-row]")].map(priceOf))) {
+        widest = Math.max(widest, textWidth(text, font))
+      }
+      document.documentElement.style.setProperty(
+        "--price-cells",
+        String(cellSpan(widest, cell, PRICE_CELLS_DESKTOP)),
+      )
+      return
+    }
+    for (const section of sections) {
+      const cell = cellOf(section)
+      section.querySelectorAll<HTMLElement>("[data-event-row]").forEach((row) => {
+        const pc = String(cellSpan(textWidth(priceOf(row), font), cell, PRICE_CELLS_MOBILE))
+        if (row.style.getPropertyValue("--pc") !== pc) row.style.setProperty("--pc", pc)
+      })
+    }
+  }
+
+  fitPrices()
+  // syncGrid dispatches gridsync on resize/load and when a hidden view is
+  // shown, after --cell is settled.
+  window.addEventListener("gridsync", fitPrices)
+  document.fonts?.ready.then(() => {
+    widths.clear()
+    fitPrices()
+  })
+</script>

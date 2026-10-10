@@ -8,6 +8,7 @@ import { t, categoryName } from "@/i18n"
 import Layout from "@/components/Layout.astro"
 import Navbar from "@/components/Navbar.astro"
 import AgendaDay from "@/components/AgendaDay.astro"
+import ShareMenu from "@/components/ShareMenu.astro"
 import VenueDirectory from "@/components/VenueDirectory.astro"
 import OptionsPanel from "@/components/OptionsPanel.astro"
 import GridRadioButtons from "@/components/ui/GridRadioButtons.astro"
@@ -81,6 +82,8 @@ const agendaViews = [
       </div>
     </div>
   </main>
+  {/* One share menu per page, shared by every event row. */}
+  <ShareMenu city={city} locale={locale} />
 
   <script>
     import { initViewSwitch } from "@/lib/view-switch"

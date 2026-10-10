@@ -87,9 +87,14 @@ const ogImageUrl = ogImage ? new URL(ogImage, Astro.site).href : undefined
           grid.style.setProperty("--grid-cols", String(gridCols));
           grid.style.setProperty("--band-cells", String(bandCells));
           grid.style.setProperty("--col-start", String(colStart));
-          // No margin column left of the band (mobile / narrow windows): the
-          // favourite star column has nowhere to sit, so CSS hides it.
-          grid.toggleAttribute("data-no-margin", colStart <= 1);
+          // No margin column left or right of the band (mobile / narrow
+          // windows; centering can leave one side without a whole column):
+          // the favourite star and share trigger columns have nowhere to sit,
+          // so CSS moves them into the row instead.
+          grid.toggleAttribute(
+            "data-no-margin",
+            colStart <= 1 || colStart - 1 + bandCells >= gridCols,
+          );
 
           // Film masonry columns, chosen LOGICALLY from how many whole cells
           // the band actually has — not a guessed pixel breakpoint (a CSS

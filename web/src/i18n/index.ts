@@ -13,6 +13,12 @@ interface Strings {
   viewVenues: string
   favouriteVenue: string   // star button label (aria)
   pickVenues: string       // venue directory heading on My list
+  share: string            // event share menu: share action + trigger label
+  addToCalendar: string    // event share menu: .ics export
+  copied: string           // share fallback: text copied to the clipboard
+  // Share text: {title}, {when} (date[, time]) and {venue}; " (price)" is
+  // appended when there is one (lib/share.ts).
+  shareTemplate: string
   // category names keyed by category slug
   categories: Record<string, string>
   prices: Record<string, string>
@@ -32,6 +38,10 @@ const DICT: Record<Locale, Strings> = {
     viewVenues: "Espais",
     favouriteVenue: "Espai preferit",
     pickVenues: "Marca els teus espais preferits",
+    share: "Comparteix",
+    addToCalendar: "Afegeix al calendari",
+    copied: "Copiat",
+    shareTemplate: "{title} — {when} a {venue}",
     categories: {
       film: "Cinema",
       jazz: "Jazz",
@@ -61,6 +71,10 @@ const DICT: Record<Locale, Strings> = {
     viewVenues: "Salas",
     favouriteVenue: "Sala favorita",
     pickVenues: "Marca tus salas favoritas",
+    share: "Compartir",
+    addToCalendar: "Añadir al calendario",
+    copied: "Copiado",
+    shareTemplate: "{title} — {when} en {venue}",
     categories: {
       film: "Cine",
       jazz: "Jazz",
@@ -90,6 +104,10 @@ const DICT: Record<Locale, Strings> = {
     viewVenues: "Venues",
     favouriteVenue: "Favourite venue",
     pickVenues: "Star your favourite venues",
+    share: "Share",
+    addToCalendar: "Add to calendar",
+    copied: "Copied",
+    shareTemplate: "{title} — {when} at {venue}",
     categories: {
       film: "Film",
       jazz: "Jazz",
@@ -119,6 +137,10 @@ const DICT: Record<Locale, Strings> = {
     viewVenues: "Վայրեր",
     favouriteVenue: "Սիրելի վայր",
     pickVenues: "Նշեք ձեր սիրելի վայրերը",
+    share: "Կիսվել",
+    addToCalendar: "Ավելացնել օրացույցին",
+    copied: "Պատճենված է",
+    shareTemplate: "{title} — {when}, {venue}",
     categories: {
       film: "Կինո",
       jazz: "Ջազ",
@@ -148,6 +170,10 @@ const DICT: Record<Locale, Strings> = {
     viewVenues: "Площадки",
     favouriteVenue: "Любимая площадка",
     pickVenues: "Отметьте любимые площадки",
+    share: "Поделиться",
+    addToCalendar: "Добавить в календарь",
+    copied: "Скопировано",
+    shareTemplate: "{title} — {when}, {venue}",
     categories: {
       film: "Кино",
       jazz: "Джаз",
@@ -177,6 +203,10 @@ const DICT: Record<Locale, Strings> = {
     viewVenues: "Locaties",
     favouriteVenue: "Favoriete locatie",
     pickVenues: "Markeer je favoriete locaties",
+    share: "Delen",
+    addToCalendar: "Toevoegen aan agenda",
+    copied: "Gekopieerd",
+    shareTemplate: "{title} — {when} in {venue}",
     categories: {
       film: "Film",
       jazz: "Jazz",
