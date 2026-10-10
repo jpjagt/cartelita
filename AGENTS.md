@@ -70,7 +70,7 @@ single file. For *what Cartelera is and why*, read `MANIFESTO.md`. For dev setup
   `(venue_id, external_id)` → `(venue_id, source_url)` → `(venue_id, title, start_date)`.
   Tiers 2/3 are best-effort; a scraper should supply a stable `external_id` or a
   per-event `source_url`.
-- **`City` is a scoping layer** — Barcelona and Yerevan exist; all queries
+- **`City` is a scoping layer** — Barcelona, Yerevan and Amsterdam exist; all queries
   (web + `queries.py`) are city-scoped. Yerevan's design doc:
   `docs/superpowers/specs/2026-08-18-multi-city-yerevan-design.md`; its
   venue/genre research: `docs/yerevan.md`.
@@ -93,19 +93,57 @@ worked example (note: parse the venue's **list/`llista` view DOM**, not just
 JSON-LD; the genre tags are too granular for top-level category — derive category
 from a real discriminator and put genres in `annotations`).
 
-## Current state (as of 2026-06-01)
+## Current state (as of 2026-10-10)
 
-- **Live: one venue (Jamboree), two categories (jazz + club).** The full pipeline
-  works end-to-end: `cartelera migrate && seed && run jamboree` → ~247 events in
-  Postgres → `pnpm build` → trilingual static pages. Both test suites green
-  (`cd scraper && uv run pytest`; `cd web && pnpm test`).
-- **Not yet done:** the work is on a feature branch, **not merged or deployed.**
-  The Coolify deploy + nightly cron + frontend build-hook are *designed in the
-  spec but not built*. There is no standalone API (frontend reads Postgres at
-  build time). No favorites/accounts/social.
-- **Adding venues is the expected next work** and needs no architecture change —
-  it's a scraper module + `SOURCE.md` + seed rows (venue, its categories, its list
-  memberships with whitelists). Follow the skill.
+- **Live at https://cartelita.july.dev**, deployed from `main` on Coolify.
+  Three cities: Barcelona (45 per-venue scrapers), Yerevan (per-venue +
+  the `tomsarkgh` aggregator) and Amsterdam (one multi-calendar source,
+  `jazzin_amsterdam`, ~160 venues). Both test suites:
+  `cd scraper && uv run pytest`; `cd web && pnpm test`.
+- **Favourites are browser-only** (localStorage, `web/src/lib/favourites.ts`):
+  star a venue from the margin next to any event row (hover) or from the
+  My list venue directory; `/:city/:locale/my-list` ships the city's whole
+  curated agenda and filters it client-side (`data-filtered` rows, handled by
+  `syncAgenda`). No accounts/social — see `docs/future-features.md`.
+- **Adding venues needs no architecture change** — a scraper module +
+  `SOURCE.md` + its venue definitions (categories, list memberships with
+  whitelists). Follow the skill.
+
+## Deploy & prod access
+
+Read `docs/deploy.md` for the full setup. The short version:
+
+- **Pushing `main` deploys.** Coolify rebuilds the `cartelita-scraper`
+  (Dockerfile, `scraper/`) and `cartelita-web` (Nixpacks static site, `web/`)
+  apps on push; the web build reads the prod DB at build time, so a web deploy
+  is how new data gets published.
+- **Nightly:** a Coolify scheduled task on the scraper runs
+  `cartelera migrate && cartelera run all` at 02:00 (`run` seeds first, so new
+  cities/venues/lists appear on their first scrape); the `cartelita-redeploy`
+  container (`deploy/redeploy-cron/`) redeploys the web app at 05:00.
+- **Shell into prod containers** over SSH (key-restricted agent account):
+
+  ```
+  ssh coolify-agent list                  # "<uuid>-<deploy-id>  <stack>" per container
+  ssh coolify-agent <uuid> "<cmd>"        # run <cmd> in that container
+  ```
+
+  Pass the **bare uuid** (the part before the last `-<digits>`), e.g.
+  `ssh coolify-agent <scraper-uuid> "cartelera run jazzin-amsterdam"`. The full
+  name printed by `list` is rejected (`invalid target`). Right after a deploy
+  the old and new containers briefly coexist and the bare uuid answers
+  `ambiguous` — wait for the old one to stop.
+- **Publish fresh data now** (instead of waiting for 05:00): run the scrape in
+  the scraper container, then trigger a web redeploy through the redeploy
+  container's own credentials:
+
+  ```
+  ssh coolify-agent <redeploy-uuid> 'curl -fsS -X POST -H "Authorization: Bearer $COOLIFY_TOKEN" "https://$COOLIFY_SERVER/api/v1/deploy?uuid=$WEB_APP_UUID&force=true"'
+  ```
+
+  A web deploy that overlaps a running scrape builds from half-written data;
+  redeploy again once the scrape finishes.
+- Prod Postgres is the `cartelita-postgresql` target (internal network only).
 
 ## Gotchas
 
