@@ -27,6 +27,7 @@ CATEGORIES = [
     ("pop", "Pop"),
     ("folk", "Folk"),
     ("rock", "Rock"),
+    ("alternative", "Alternative"),
 ]
 
 

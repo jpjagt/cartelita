@@ -14,7 +14,8 @@ from cartelera.types import (
 )
 
 # jazzin.amsterdam — curated Amsterdam culture calendars (jazz, classical,
-# theater, pop, club, film; ~5,300 upcoming events across ~160 venues) with a
+# theater, pop, club, film, alternative; ~6,200 upcoming events across ~190
+# venues) with a
 # public JSON API. MULTI-VENUE source: the VENUES table below is the editorial
 # whitelist, the name-normalization map, and each venue's category lists (see
 # jazzin_amsterdam_SOURCE.md). The API returns at most PAGE_SIZE events per
@@ -27,8 +28,9 @@ CITY_SLUG = "amsterdam"
 FALLBACK_URL = "https://jazzin.amsterdam/"
 
 # jazzin calendar id → our category slug; the calendar IS the discriminator.
-# Not used: `alternativeAmsterdam` (a grab-bag: yoga, lunches, workshops) and
-# `movieAmsterdam` (Pathé multiplexes, ~200 screenings/day, 3 days ahead).
+# `alternativeAmsterdam` (the site's "independent" tab: squats and DIY spaces —
+# gigs, vokus, workshops, assemblies) → alternative. Not used: `movieAmsterdam`
+# (Pathé multiplexes, ~200 screenings/day, 3 days ahead).
 CALENDARS: dict[str, str] = {
     "jazzAmsterdam": "jazz",
     "classicalAmsterdam": "classical",
@@ -36,6 +38,7 @@ CALENDARS: dict[str, str] = {
     "popAmsterdam": "pop",
     "clubAmsterdam": "club",
     "filmAmsterdam": "film",
+    "alternativeAmsterdam": "alternative",
 }
 
 logger = logging.getLogger(__name__)
@@ -48,8 +51,14 @@ logger = logging.getLogger(__name__)
 # appears in: each becomes a whitelisted list membership. Addresses are
 # jazzin's; the ones it gives only as "Amsterdam" are hand-filled or None.
 # Deliberately absent: Comedytrain's halls (the upstream `toomler` feed has
-# junk titles like "20:30 uur") and the few venues in other cities (Leiden,
-# Utrecht, Woerden, Laren, Hillegom).
+# junk titles like "20:30 uur"); the few venues in other cities (Leiden,
+# Utrecht, Woerden, Laren, Hillegom); and, from the alternative calendar,
+# Filmhuis Cavia + its one-off Nassaukerk screening (own scraper:
+# filmhuis_cavia.py), Bar Bario (closed; its feed re-dates past events into
+# next year), and non-venues: the bare city "Amsterdam", the street corners of
+# the weekly "Vlaggen voor Palestina" vigils (Buikslotermeerplein, Op de brug,
+# Jan van Galenstraat A10 snelweg) and the organisation Fossil Free Culture NL
+# (street-only address).
 VENUES: list[tuple[str, str, str | None, list[str], list[str]]] = [
     ('concertgebouw', 'Het Concertgebouw', 'Concertgebouwplein 10, 1071 LN Amsterdam',
      ['Het Concertgebouw', 'Concertgebouw'], ['jazz', 'classical']),
@@ -88,7 +97,7 @@ VENUES: list[tuple[str, str, str | None, list[str], list[str]]] = [
     ('theater-bellevue', 'Theater Bellevue', 'Leidsekade 90, 1017 PN Amsterdam',
      ['Theater Bellevue'], ['theater']),
     ('studio-k', 'Studio/K', 'Timorplein 62, 1094 CC Amsterdam',
-     ['Studio/K'], ['film']),
+     ['Studio/K'], ['film', 'alternative']),
     ('meervaart', 'Meervaart', 'Meer en Vaart 300, 1068 LE Amsterdam',
      ['Meervaart Theater'], ['jazz', 'theater']),
     ('kriterion', 'Kriterion', 'Roetersstraat 170, 1018 WE, Amsterdam',
@@ -148,7 +157,7 @@ VENUES: list[tuple[str, str, str | None, list[str], list[str]]] = [
     ('van-houtenkerk', 'Van Houtenkerk (Weesp)', None,
      ['Van Houtenkerk'], ['classical']),
     ('tolhuistuin', 'Tolhuistuin', 'IJpromenade 2, 1031 KT Amsterdam',
-     ['Tolhuistuin'], ['jazz', 'theater', 'pop']),
+     ['Tolhuistuin'], ['jazz', 'theater', 'pop', 'alternative']),
     ('posthoornkerk', 'Posthoornkerk', 'Haarlemmerstraat 124, 1013 EX Amsterdam',
      ['Posthoornkerk'], ['jazz', 'classical']),
     ('de-filmhallen', 'De FilmHallen', 'Hannie Dankbaarpassage 12, 1053 RT Amsterdam',
@@ -172,7 +181,7 @@ VENUES: list[tuple[str, str, str | None, list[str], list[str]]] = [
     ('club-up', 'Club Up', 'Korte Leidsedwarsstraat 26-1, Amsterdam, Nederland',
      ['Club Up'], ['club']),
     ('zaal-100', 'Zaal 100', 'De Wittenstraat 100, 1052 BA Amsterdam',
-     ['Zaal 100'], ['jazz']),
+     ['Zaal 100'], ['jazz', 'alternative']),
     ('kompaszaal', 'Kompaszaal', 'KNSM-Laan 311, 1019 LE Amsterdam',
      ['Kompaszaal'], ['jazz']),
     ('the-waterhole', 'The Waterhole', 'Korte Leidsedwarsstraat 49, 1017 PW Amsterdam',
@@ -230,7 +239,7 @@ VENUES: list[tuple[str, str, str | None, list[str], list[str]]] = [
     ('seinwezen', 'Seinwezen', None,
      ['Seinwezen'], ['classical']),
     ('midwest', 'Midwest', 'Cabralstraat 1, 1057 CD Amsterdam',
-     ['Midwest'], ['theater', 'pop']),
+     ['Midwest'], ['theater', 'pop', 'alternative']),
     ('bitterzoet', 'Bitterzoet', 'Spuistraat 2, 1012 TS Amsterdam',
      ['Bitterzoet'], ['pop', 'club']),
     ('toekomstmuziek', 'Toekomstmuziek', 'Danzigerbocht 29, 1013 AM, Amsterdam',
@@ -254,17 +263,17 @@ VENUES: list[tuple[str, str, str | None, list[str], list[str]]] = [
     ('warehouse-elementenstraat', 'Warehouse Elementenstraat', 'Elementenstraat 25, 1014 AR, Amsterdam',
      ['Warehouse Elementenstraat'], ['club']),
     ('de-nieuwe-anita', 'De Nieuwe Anita', 'Frederik Hendrikstraat 111, 1052 HN Amsterdam',
-     ['De Nieuwe Anita'], ['jazz']),
+     ['De Nieuwe Anita'], ['jazz', 'alternative']),
     ('salon-de-ijzerstaven', 'Salon de IJzerstaven', 'Bickersgracht 10, 1013 LE Amsterdam',
      ['Salon de IJzerstaven'], ['jazz', 'classical']),
     ('de-roode-remise', 'De Roode Remise', 'Haarlemmerplein 11, 1013 HP Amsterdam',
-     ['De Roode Remise'], ['jazz', 'classical']),
+     ['De Roode Remise'], ['jazz', 'classical', 'alternative']),
     ('de-ceuvel', 'De Ceuvel', 'Korte Papaverweg 2, 1032 KB Amsterdam',
-     ['De Ceuvel'], ['pop']),
+     ['De Ceuvel'], ['pop', 'alternative']),
     ('panama', 'Panama', 'Oostelijke Handelskade 4, 1019 BM Amsterdam',
      ['Panama'], ['club']),
     ('occii', 'OCCII', 'Amstelveenseweg 134, 1075 XL Amsterdam',
-     ['OCCII'], ['jazz']),
+     ['OCCII'], ['jazz', 'alternative']),
     ('pinksterkerk', 'Pinksterkerk', None,
      ['Pinksterkerk'], ['classical', 'theater']),
     ('rozengracht-55h', 'Rozengracht 55H', 'Rozengracht 55H, Amsterdam',
@@ -312,7 +321,7 @@ VENUES: list[tuple[str, str, str | None, list[str], list[str]]] = [
     ('de-boule-de-boule', 'De Boule De Boule', 'Waterlooplein 6A, 1011 PG Amsterdam',
      ['De Boule De Boule'], ['jazz']),
     ('volkshotel', 'Volkshotel', 'Wibautstraat 150, 1091 GR Amsterdam',
-     ['Volkshotel'], ['jazz']),
+     ['Volkshotel'], ['jazz', 'alternative']),
     ('societeit-ramses-shaffy-huis', 'Sociëteit Ramses Shaffy Huis', 'Piet Heinkade 231, 1019 HM Amsterdam',
      ['Sociëteit Ramses Shaffy Huis'], ['jazz']),
     ('het-molenpad', 'Het Molenpad', 'Prinsengracht 653',
@@ -340,7 +349,7 @@ VENUES: list[tuple[str, str, str | None, list[str], list[str]]] = [
     ('vreugdehof', 'Vreugdehof', 'De Klencke 111, 1083 HH Amsterdam Buitenveldert',
      ['Vreugdehof, Amsterdam'], ['jazz']),
     ('a-lab', 'A Lab', 'Overhoeksplein 2, 1031KS',
-     ['A Lab'], ['jazz']),
+     ['A Lab'], ['jazz', 'alternative']),
     ('elthetokerk', 'Elthetokerk', 'Javastraat 118, 1094 HP, Amsterdam',
      ['Elthethokerk'], ['jazz']),
     ('gamelanhuis', 'Gamelanhuis', 'Veemkade 578, 1019 BL Amsterdam',
@@ -367,6 +376,75 @@ VENUES: list[tuple[str, str, str | None, list[str], list[str]]] = [
      ['Cinetol'], ['pop']),
     ('dick-dick', 'Dick & Dick', 'Gedempt Hamerkanaal 36',
      ['Dick & Dick'], ['club']),
+    # --- alternative calendar only (squats, DIY spaces) ---
+    ('nieuwland', 'NieuwLand', 'Pieter Nieuwlandstraat 93, Amsterdam',
+     ['NieuwLand'], ['alternative']),
+    ('ot301', 'OT301', 'Overtoom 301, Amsterdam',
+     ['OT301'], ['alternative']),
+    ('joes-garage', "Joe's Garage", 'Pretoriusstraat 43, Amsterdam',
+     ["Joe's Garage"], ['alternative']),
+    # LAG (an anarchist group) meets at Bollox: same address.
+    ('infokafee-bollox', 'Infokafee Bollox', 'Eerste Schinkelstraat 14-16, Amsterdam',
+     ['Infokafee Bollox', 'LAG'], ['alternative']),
+    ('mkz', 'MKZ', 'Eerste Schinkelstraat 16, Amsterdam',
+     ['MKZ'], ['alternative']),
+    ('vrankrijk', 'Vrankrijk', 'Spuistraat 216, Amsterdam',
+     ['Vrankrijk'], ['alternative']),
+    ('rapenburg-51', 'Rapenburg 51', 'Rapenburg 51, Amsterdam',
+     ['Rapenburg 51'], ['alternative']),
+    ('ruigoord', 'Ruigoord', 'Ruigoord 76, 1047 HH Amsterdam',
+     ['Ruigoord'], ['alternative']),
+    ('molli-chaoot', 'Molli Chaoot', 'Van Ostadestraat 55hs, Amsterdam',
+     ['Molli Chaoot'], ['alternative']),
+    # Het Groene Veld has two sites; Stichting Malak and Het Sociaal Centrum
+    # are tenants at the Scheurleerweg one.
+    ('het-groene-veld', 'Het Groene Veld', 'G.J. Scheurleerweg 212c, Amsterdam',
+     ['Het Groene Veld', 'Stichting Malak', 'Het Sociaal Centrum'], ['alternative']),
+    ('het-groene-veld-machinegebouw', 'Het Groene Veld (Machinegebouw)', 'Buikslotermeerdijk 95, Amsterdam',
+     ['Het Groene Veld (Machinegebouw)', 'Het Groene Veld / ADM Noord'], ['alternative']),
+    ('droog', 'Droog', 'Staalstraat 7B, Amsterdam',
+     ['Droog'], ['alternative']),
+    ('mediamatic', 'Mediamatic Biotoop', 'Dijksgracht 6, 1019 BS Amsterdam',
+     ['Mediamatic Biotoop'], ['alternative']),
+    ('vondelbunker', 'Vondelbunker', 'Vondelpark 8a, Amsterdam',
+     ['Vondelbunker'], ['alternative']),
+    ('de-verdieping', 'De Verdieping (bij Kaboem)', 'Anna Spenglerstraat 83, Amsterdam',
+     ['De Verdieping (bij Kaboem)'], ['alternative']),
+    ('kaskantine', 'Kaskantine', 'Handbalstraat 1, 1062 XA Amsterdam',
+     ['Kaskantine'], ['alternative']),
+    ('spuistraat-5', 'Spuistraat 5', 'Spuistraat 5, Amsterdam',
+     ['Spuistraat 5'], ['alternative']),
+    ('huis-vrederiks', 'Huis Vrederiks', 'Frederiksplein 52, Amsterdam',
+     ['Huis Vrederiks'], ['alternative']),
+    ('technologia-incognita', 'Technologia Incognita', 'Louwesweg, Amsterdam',
+     ['Technologia Incognita'], ['alternative']),
+    ('einde-van-de-wereld', 'Einde van de Wereld', 'Javakade 61, 1019 BK Amsterdam',
+     ['Einde van de Wereld'], ['alternative']),
+    # One complex, listed by squatradar and Plantage Dok's own feed.
+    ('plantage-dok', 'Plantage Dok', 'Plantage Doklaan 8-12, 1018 CM Amsterdam',
+     ['Plantage Dok', 'Dokhuis Galerie', 'Dokhuis', 'Plantage Doklaan 8-12'], ['alternative']),
+    ('fc-kraak', 'FC Kraak', 'Radioweg 96, Amsterdam',
+     ['FC Kraak'], ['alternative']),
+    ('w139', 'W139', 'Warmoesstraat 139, 1012 JB Amsterdam',
+     ['W139'], ['alternative']),
+    ('parknest', 'Parknest', 'Flevopark 15, Amsterdam',
+     ['Parknest'], ['alternative']),
+    ('rozenstraat', 'Rozenstraat', 'Rozenstraat 59, 1016 NN Amsterdam',
+     ['Rozenstraat'], ['alternative']),
+    ('budapest', 'Budapest', 'Pesthuislaan, Amsterdam',
+     ['Budapest'], ['alternative']),
+    ('takland', 'Takland', 'Taksteeg 6, Amsterdam',
+     ['Takland'], ['alternative']),
+    ('grond', 'GROND', 'Bijdorpstraat 1, 1096 AP Amsterdam',
+     ['GROND'], ['alternative']),
+    ('framer-framed', 'Framer Framed', 'Oranje-Vrijstaatkade 71, 1093 KS Amsterdam',
+     ['Framer Framed'], ['alternative']),
+    ('nieuw-en-meer', 'Nieuw en Meer', 'Oude Haagseweg 53A1, 1066 BV Amsterdam',
+     ['Nieuw en Meer'], ['alternative']),
+    ('astarotheatro', 'AstaroTheatro', 'Sint Jansstraat 37, Amsterdam',
+     ['AstaroTheatro'], ['alternative']),
+    ('treehouse-ndsm', 'Treehouse NDSM', 'T.T. Neveritaweg 55-57, 1033 WB Amsterdam',
+     ['Treehouse NDSM'], ['alternative']),
 ]
 
 
@@ -386,6 +464,7 @@ VENUE_CATEGORIES: dict[str, set[str]] = {slug: set(cats) for slug, *_rest, cats 
 
 # An amount with optional decimals: "12", "12.5", "12,50", "15.00".
 _AMOUNT_RE = re.compile(r"\d+(?:[.,]\d+)?")
+_CURRENCY_PREFIX_RE = re.compile(r"^(?:€|EUR\b)\s*", re.IGNORECASE)
 _FREE = {"free", "gratis", "0", "€0", "€ 0"}
 _SOLD_OUT = {"s.o.", "sold out", "uitverkocht"}
 
@@ -401,7 +480,8 @@ def parse_price(raw: str) -> str | None:
     "" / bare "€" → None; "free" / "0" → "free"; "s.o." → "sold-out"; amounts
     ("€13", "EUR 15.00", "€12.5–€25", "6 / 12.5") → "13€" etc., with the shared
     2× rule: a range only when the high price is at least twice the low, else
-    the highest. Text with no amount ("donatie") passes through as-is."""
+    the highest. Text with no amount ("donatie") passes through, minus a leading
+    "€"/"EUR" marker."""
     text = raw.strip()
     low = text.casefold()
     if not text or text == "€":
@@ -412,7 +492,10 @@ def parse_price(raw: str) -> str | None:
         return "sold-out"
     amounts = [float(a.replace(",", ".")) for a in _AMOUNT_RE.findall(text)]
     if not amounts:
-        return text
+        # Some feeds prefix free text with a currency marker ("€Sliding scale
+        # donation", a bare "EUR "): drop it.
+        text = _CURRENCY_PREFIX_RE.sub("", text).strip()
+        return text or None
     lo, hi = min(amounts), max(amounts)
     if hi <= 0:
         return "free"
@@ -480,7 +563,8 @@ def parse_events(
             title=title,
             start_date=start_date,
             start_time=start_time,
-            source_url=(item.get("site") or "").strip() or FALLBACK_URL,
+            # strip("'") — the w139 feed leaves a stray trailing quote.
+            source_url=(item.get("site") or "").strip().strip("'\"") or FALLBACK_URL,
             category_slugs=[category],
             price="sold-out" if sold_out else parse_price(item.get("price") or ""),
             external_id=str(item["id"]),

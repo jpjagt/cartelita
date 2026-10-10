@@ -35,7 +35,7 @@ describe("i18n", () => {
     // Mirror of scraper seed.CATEGORIES — a category a scraper can emit must
     // have a display name in every locale's chrome.
     const slugs = ["film", "jazz", "classical", "theater", "club", "flamenco",
-                   "dance", "kids", "pop", "folk", "rock"];
+                   "dance", "kids", "pop", "folk", "rock", "alternative"];
     for (const locale of locales) {
       for (const slug of slugs) {
         expect(categoryName(locale, slug), `${locale}/${slug}`).not.toBe(slug);

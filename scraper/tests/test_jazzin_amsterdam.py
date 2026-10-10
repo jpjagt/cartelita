@@ -29,7 +29,11 @@ EVENTS, UNKNOWN = parse_events(PAIRS)
 EXCLUDED = {"Grote Zaal", "Kleine Zaal", "Comedytrain - Westergas - Grote Zaal",
             "Comedytrain - Westergas - Kleine Zaal", "Stadsgehoorzaal Leiden",
             "TivoliVredenburg", "De Kulturele Raad", "Papagenohuis",
-            "Theater Het Klooster Woerden"}
+            "Theater Het Klooster Woerden",
+            # alternative calendar: own scraper / closed venue / non-venues
+            "Filmhuis Cavia", "Nassaukerk", "Bar Bario", "Amsterdam",
+            "Buikslotermeerplein", "Op de brug", "Jan van Galenstraat A10 snelweg",
+            "Fossil Free Culture NL"}
 
 
 def test_fixture_covers_every_calendar():
@@ -37,8 +41,8 @@ def test_fixture_covers_every_calendar():
 
 
 def test_parses_most_of_the_feed():
-    # ~5,700 raw items; duplicates and the excluded venues drop out.
-    assert len(EVENTS) > 4500
+    # ~6,700 raw items; duplicates and the excluded venues drop out.
+    assert len(EVENTS) > 5300
 
 
 def test_only_deliberately_excluded_venues_are_dropped():
@@ -60,6 +64,7 @@ def test_every_category_is_well_represented():
     counts = Counter(c for ev in EVENTS for c in ev.category_slugs)
     for cat in CALENDARS.values():
         assert counts[cat] > 300, cat
+    assert counts["alternative"] > 700
 
 
 def test_venue_categories_cover_the_fixture():
@@ -91,6 +96,29 @@ def test_duplicate_listings_collapse_to_one_occurrence():
     assert len(raw) > len({(i["date"], i["time"]) for i in raw})
 
 
+def test_alternative_calendar_spans_diy_venues():
+    alt = [ev for ev in EVENTS if "alternative" in ev.category_slugs]
+    venues = {ev.venue_slug for ev in alt}
+    assert {"ot301", "nieuwland", "occii", "tolhuistuin", "de-nieuwe-anita", "volkshotel"} <= venues
+    assert len(venues) > 35
+
+
+def test_same_address_aliases_merge_across_feeds():
+    # Plantage Dok's own feed and squatradar ("Dokhuis Galerie") list the same
+    # weekly DOK Night; it merges to one occurrence at one venue.
+    raw = [i for i in BY_CATEGORY["alternative"]
+           if "plantage doklaan 8" in i["address"].casefold()]
+    assert len({i["venue"] for i in raw}) > 1
+    ids = {str(i["id"]) for i in raw}
+    kept = [ev for ev in EVENTS if ev.external_id in ids]
+    assert {ev.venue_slug for ev in kept} == {"plantage-dok"}
+    assert len(kept) < len(raw)
+
+
+def test_source_urls_have_no_stray_quotes():
+    assert not [ev.source_url for ev in EVENTS if ev.source_url.endswith(("'", '"'))]
+
+
 def test_venue_name_variants_merge():
     zojazz = [i for i in ITEMS if "bijlmerplein 888" in i["address"].casefold()]
     assert len({i["venue"] for i in zojazz}) > 1  # several spellings upstream
@@ -99,7 +127,7 @@ def test_venue_name_variants_merge():
 
 
 def test_price_coverage_matches_the_source():
-    # jazzin leaves many prices blank (all film ones); every non-blank price
+    # jazzin leaves many prices blank (all film ones, a bare "€"/"EUR"); every non-blank price
     # on a kept event must survive.
     jazz = BY_CATEGORY["jazz"]
     with_price = sum(1 for i in jazz if (i["price"] or "").strip() not in ("", "€"))
@@ -107,7 +135,7 @@ def test_price_coverage_matches_the_source():
     kept = {e.external_id for e in EVENTS}
     priced = {ev.external_id for ev in EVENTS if ev.price}
     for i in ITEMS:
-        if (i["price"] or "").strip() not in ("", "€") and str(i["id"]) in kept:
+        if (i["price"] or "").strip() not in ("", "€", "EUR") and str(i["id"]) in kept:
             assert str(i["id"]) in priced
 
 
@@ -144,6 +172,10 @@ def test_unknown_venues_are_dropped_and_reported():
         ("€12.5–€25", "12,50–25€"),   # ≥ 2× spread: range
         ("6 / 12.5", "6–12,50€"),
         ("donatie", "donatie"),
+        ("tips", "tips"),
+        ("EUR ", None),
+        ("€Sliding scale donation", "Sliding scale donation"),
+        ("€Donation 5-40", "5–40€"),
     ],
 )
 def test_parse_price(raw, expected):
