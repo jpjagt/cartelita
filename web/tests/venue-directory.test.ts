@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { layoutVenueDirectory } from "@/lib/venue-directory";
+import { layoutVenueDirectory, directoryHeights, parseCollapsed } from "@/lib/venue-directory";
 import { packCards } from "@/lib/masonry";
 
 const venues = (n: number) =>
@@ -32,5 +32,30 @@ describe("layoutVenueDirectory", () => {
     expect(layout.groups.map((g) => g.group.listSlug)).toEqual(["jazz", "film"]);
     expect(layout.rows3).toBe(5); // the film card: 1 title + 4 venues
     expect(layout.groups[1].row1).toBe(4); // jazz card (3 rows) + 1 gutter
+  });
+});
+
+describe("directory collapse helpers", () => {
+  it("sizes collapsed cards as their title row only", () => {
+    expect(directoryHeights([2, 4, 1], [false, true, false])).toEqual([3, 1, 2]);
+  });
+
+  it("repacks gap-free when a card collapses", () => {
+    // [3, 5, 2] expanded vs. the middle card collapsed to 1.
+    const layout = packCards(directoryHeights([2, 4, 1], [false, true, false]));
+    expect(layout.placements.map((p) => [p.col3, p.row3])).toEqual([
+      [0, 0], [1, 0], [2, 0],
+    ]);
+    expect(layout.rows3).toBe(3);
+    expect(layout.placements.map((p) => p.row1)).toEqual([0, 4, 6]);
+    expect(layout.rows1).toBe(3 + 1 + 1 + 1 + 2);
+  });
+
+  it("parses stored slugs, ignoring malformed data", () => {
+    expect(parseCollapsed('["jazz","club"]')).toEqual(new Set(["jazz", "club"]));
+    expect(parseCollapsed('["jazz",3]')).toEqual(new Set(["jazz"]));
+    expect(parseCollapsed("{")).toEqual(new Set());
+    expect(parseCollapsed('{"a":1}')).toEqual(new Set());
+    expect(parseCollapsed(null)).toEqual(new Set());
   });
 });
