@@ -88,6 +88,8 @@ const ssrPos = options.map((opt) => {
       const gcs = getComputedStyle(grid)
       const cell = parseFloat(gcs.getPropertyValue("--cell")) || 32
       const colStart = parseInt(gcs.getPropertyValue("--col-start")) || 1
+      const bandCells = parseInt(gcs.getPropertyValue("--band-cells")) || 40
+      const bandEnd = colStart + bandCells // exclusive end line
       const cs = getComputedStyle(group)
       // The host (e.g. OptionsPanel) publishes placement via CSS vars:
       //   --gr-vertical  1 = stack each option on its own row; 0 = flow inline
@@ -106,7 +108,15 @@ const ssrPos = options.map((opt) => {
       group.querySelectorAll<HTMLElement>("[data-grid-radio-option]").forEach((opt) => {
         const ind = opt.querySelector<HTMLElement>(".grid-radio-indicator")!
         const lbl = opt.querySelector<HTMLElement>(".grid-radio-label")!
-        const labelSpan = spanCells(lbl, cell)
+        let labelSpan = spanCells(lbl, cell)
+        // Horizontal flow wraps to the next row when an option would cross the
+        // band's right edge (long labels in some locales, narrow phones), like
+        // the navbar does. Only a label wider than the whole band truncates.
+        if (!vertical && col > startCol && col + 1 + labelSpan > bandEnd) {
+          row += 1
+          col = startCol
+        }
+        labelSpan = Math.max(1, Math.min(labelSpan, bandEnd - col - 1))
         ind.style.gridColumn = `${col} / span 1`
         ind.style.gridRow = `${row}`
         lbl.style.gridColumn = `${col + 1} / span ${labelSpan}`
