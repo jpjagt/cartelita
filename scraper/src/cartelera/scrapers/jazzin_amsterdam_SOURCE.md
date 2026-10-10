@@ -1,17 +1,22 @@
 # jazzin.amsterdam — source map
 
-Multi-venue source feeding every Amsterdam venue (city `amsterdam`, list `jazz`).
-jazzin.amsterdam is a hand-curated Amsterdam jazz calendar (Next.js on Vercel);
-its own pages render from the public JSON API we use.
+Multi-venue source feeding every Amsterdam venue (city `amsterdam`).
+jazzin.amsterdam is a set of hand-curated Amsterdam culture calendars (Next.js
+on Vercel); its own pages render from the public JSON API we use.
 
-- **API:** `GET https://jazzin.amsterdam/api?calendar=jazzAmsterdam&archive=false&offset=N`
-  → JSON array of events, at most 600 per call. `page` is ignored; page with
-  `offset` (0, 600, …) until a short page. ~640 upcoming events (Oct 2026), a
-  year ahead. Calling the bare `/api` returns usage + the maintainer's contact
+- **API:** `GET https://jazzin.amsterdam/api?calendar=<id>&archive=false&offset=N`
+  → JSON array of upcoming events (already-started ones drop out), at most 600
+  per call. `page` is ignored; page with `offset` (0, 600, …) until a short
+  page. Calling the bare `/api` returns usage + the maintainer's contact
   (jazzinmokum@gmail.com) asking to be told if you use it.
-- **Other calendars** on the same API: `classicalAmsterdam`, `theaterAmsterdam`,
-  `alternativeAmsterdam`, `popAmsterdam`, `clubAmsterdam`, `filmAmsterdam`
-  (arthouse), `movieAmsterdam` (Pathé). Not used yet.
+- **Calendars → category** (the calendar is the discriminator): `jazzAmsterdam`
+  → jazz, `classicalAmsterdam` → classical, `theaterAmsterdam` → theater,
+  `popAmsterdam` → pop, `clubAmsterdam` → club, `filmAmsterdam` (arthouse
+  cinemas) → film. ~5,300 raw events (Oct 2026), up to a year+ ahead (film:
+  ~5 months).
+- **Not used:** `alternativeAmsterdam` (the site's "independent": a grab-bag of
+  yoga, lunches, workshops and gigs) and `movieAmsterdam` (Pathé multiplexes,
+  ~200 screenings/day, only 3 days ahead).
 
 ## Field map (event object → ScrapedEvent)
 
@@ -26,14 +31,25 @@ its own pages render from the public JSON API we use.
 | `venue` | `venue_slug` | via the `VENUES` alias table (case/whitespace-insensitive) |
 | `address`, `source`, `calendar`, `reviewed` | — | `source` is jazzin's own scraper id |
 
-No description, image, or genre tags. Category is always `jazz` (the calendar
-is the discriminator).
+No description, image, or genre tags. Film events never carry a price.
 
 ## Quirks
 
-- **Duplicate listings:** some sources repeat an occurrence under several ids
-  (Muziekgebouw: the same concert 5×). De-duplicated on
-  (venue, date, time, casefolded title), keeping the lowest id.
+- **Duplicate listings:** occurrences repeat under several ids, within a
+  calendar (Muziekgebouw: the same concert 5×) and across calendars (a
+  Concertgebouw gig in jazz and classical). Merged on (venue, date, time,
+  casefolded title), keeping the lowest id and the union of categories.
+- **Venue categories:** `VENUES` lists, per venue, the calendars it appears
+  in; each becomes a list membership whitelisted to that category (multi-
+  category venues like Melkweg = jazz/pop/club split correctly). A venue
+  turning up in a new calendar is logged (`venues with events in categories
+  they aren't listed for`) — add the category to its row.
+- **Title status markers:** `(sold out)` / `(uitverkocht)` → price
+  `sold-out`, marker stripped; `[CANCELED]` (and Dutch variants) → skipped.
+- **Excluded venues:** Comedytrain's Westergas halls (`Grote Zaal`, `Kleine
+  Zaal`, `Comedytrain - …`; jazzin's `toomler` feed gives junk titles like
+  `20:30 uur`), and venues in other cities (Leiden, Utrecht, Woerden, Laren,
+  Hillegom).
 - **Venue name spellings vary** per upstream source: `ZOJazz Stage` /
   `ZOjazz Stage` / `ZOJazzstage ` / `Concertzaal` (same building), `CvA` /
   `Amsterdam Blue Dock, CvA`, `Greene Room` with two addresses. All mapped in
@@ -41,11 +57,16 @@ is the discriminator).
 - **Whitelist:** events at venues not in `VENUES` are dropped and logged as a
   warning (`dropped events at venues not in VENUES: …`). jazzin accepts
   user-submitted gigs at one-off venues, so new names appear over time; add
-  them to `VENUES` deliberately. Out-of-town venues (Aalsmeer, Ankeveen,
-  Diemen, Weesp) are included on purpose.
+  them to `VENUES` deliberately. Nearby towns (Aalsmeer, Amstelveen, Ankeveen,
+  Diemen, Duivendrecht, Weesp, Zaandam) are included on purpose.
 - Some addresses come as just `Amsterdam`; those were filled in by hand.
 
-Last verified: 2026-10-10 via HTTP cross-check. The first 25 events on the
-rendered homepage (`https://jazzin.amsterdam/`, parsed independently) all
-matched the scraper on title, time, venue and price. Live run: 640 raw → 557
-events, 0 unknown venues, 100% times, 71% prices (the rest are blank upstream).
+Last verified: 2026-10-10 via HTTP cross-check. The first 15 rows of each
+calendar's rendered page (`https://jazzin.amsterdam/<calendar>`, parsed
+independently) vs the scraper: jazz, classical, pop 15/15; theater 13/15 and
+club 14/15, the misses being the excluded Comedytrain rows and a
+`[CANCELED]` gig; film 11/15, the misses being screenings that had just
+started (the cached page still showed them, the API had dropped them).
+Jazz homepage price check: 25/25. Live run: 5,336 raw → 4,687 events
+(jazz 557, classical 993, theater 1,324, pop 395, club 437, film 1,109), 158
+venues, 100% times.

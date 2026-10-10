@@ -4,7 +4,7 @@ import { groupEventsByDay } from "@/lib/agenda"
 import { layoutVenueDirectory } from "@/lib/venue-directory"
 import { CITIES, MY_LIST } from "@/lib/cities"
 import type { Locale, GridRadioOption } from "@/lib/types"
-import { t } from "@/i18n"
+import { t, categoryName } from "@/i18n"
 import Layout from "@/components/Layout.astro"
 import Navbar from "@/components/Navbar.astro"
 import AgendaDay from "@/components/AgendaDay.astro"
@@ -40,7 +40,7 @@ const directory = layoutVenueDirectory(await getVenueDirectory(city))
 // Only offer the event/film views the city actually has (Amsterdam: no film).
 const options: GridRadioOption[] = [
   ...(eventDays.length ? [{ value: "events", label: strings.viewEvents }] : []),
-  ...(filmDays.length ? [{ value: "films", label: strings.viewFilms }] : []),
+  ...(filmDays.length ? [{ value: "films", label: categoryName(locale, "film") }] : []),
   { value: "venues", label: strings.viewVenues },
 ]
 const agendaViews = [

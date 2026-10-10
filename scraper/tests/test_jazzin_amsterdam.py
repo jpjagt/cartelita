@@ -12,35 +12,66 @@ import pytest
 
 from cartelera.scrapers import REGISTRY, load_all
 from cartelera.scrapers.jazzin_amsterdam import (
+    CALENDARS,
     SOURCE_SLUG,
     VENUES,
     parse_events,
     parse_price,
+    unlisted_categories,
 )
 
 FIXTURES = Path(__file__).parent / "fixtures"
-ITEMS = json.loads((FIXTURES / "jazzin_amsterdam_api.json").read_text())
-EVENTS, UNKNOWN = parse_events(ITEMS)
+# {category slug: [API event objects]}, every page of each used calendar.
+BY_CATEGORY = json.loads((FIXTURES / "jazzin_amsterdam_api.json").read_text())
+PAIRS = [(cat, item) for cat, items in BY_CATEGORY.items() for item in items]
+ITEMS = [item for _cat, item in PAIRS]
+EVENTS, UNKNOWN = parse_events(PAIRS)
+EXCLUDED = {"Grote Zaal", "Kleine Zaal", "Comedytrain - Westergas - Grote Zaal",
+            "Comedytrain - Westergas - Kleine Zaal", "Stadsgehoorzaal Leiden",
+            "TivoliVredenburg", "De Kulturele Raad", "Papagenohuis",
+            "Theater Het Klooster Woerden"}
+
+
+def test_fixture_covers_every_calendar():
+    assert set(BY_CATEGORY) == set(CALENDARS.values())
 
 
 def test_parses_most_of_the_feed():
-    # ~600 raw items; the Muziekgebouw duplicates collapse, nothing else drops.
-    assert len(EVENTS) > 450
+    # ~5,700 raw items; duplicates and the excluded venues drop out.
+    assert len(EVENTS) > 4500
 
 
-def test_every_fixture_venue_is_whitelisted():
-    assert UNKNOWN == set()
+def test_only_deliberately_excluded_venues_are_dropped():
+    assert UNKNOWN == EXCLUDED
 
 
-def test_every_event_is_complete_jazz_with_a_known_venue():
+def test_every_event_is_complete_with_a_known_venue():
     slugs = {slug for slug, *_ in VENUES}
     for ev in EVENTS:
         assert ev.title
         assert isinstance(ev.start_date, dt.date)
         assert ev.source_url.startswith("http")
-        assert ev.category_slugs == ["jazz"]
+        assert set(ev.category_slugs) <= set(CALENDARS.values())
         assert ev.venue_slug in slugs
         assert ev.external_id
+
+
+def test_every_category_is_well_represented():
+    counts = Counter(c for ev in EVENTS for c in ev.category_slugs)
+    for cat in CALENDARS.values():
+        assert counts[cat] > 300, cat
+
+
+def test_venue_categories_cover_the_fixture():
+    assert unlisted_categories(EVENTS) == set()
+
+
+def test_cross_calendar_duplicates_merge_categories():
+    # A Muziekgebouw/Concertgebouw concert listed in both jazz and classical
+    # becomes one event carrying both categories.
+    multi = [ev for ev in EVENTS if len(ev.category_slugs) > 1]
+    assert len(multi) > 50
+    assert any(set(ev.category_slugs) == {"jazz", "classical"} for ev in multi)
 
 
 def test_times_are_parsed():
@@ -56,7 +87,7 @@ def test_duplicate_listings_collapse_to_one_occurrence():
     keys = Counter((ev.venue_slug, ev.start_date, ev.start_time, ev.title.casefold()) for ev in EVENTS)
     assert max(keys.values()) == 1
     # The fixture lists one Muziekgebouw SANAM concert 5× under distinct ids.
-    raw = [i for i in ITEMS if i["venue"] == "Muziekgebouw" and i["title"] == "SANAM"]
+    raw = [i for i in BY_CATEGORY["jazz"] if i["venue"] == "Muziekgebouw" and i["title"] == "SANAM"]
     assert len(raw) > len({(i["date"], i["time"]) for i in raw})
 
 
@@ -68,18 +99,30 @@ def test_venue_name_variants_merge():
 
 
 def test_price_coverage_matches_the_source():
-    # jazzin leaves ~1/3 of prices blank; every non-blank price must survive.
-    with_price = sum(1 for i in ITEMS if (i["price"] or "").strip() not in ("", "€"))
-    assert with_price / len(ITEMS) > 0.5
+    # jazzin leaves many prices blank (all film ones); every non-blank price
+    # on a kept event must survive.
+    jazz = BY_CATEGORY["jazz"]
+    with_price = sum(1 for i in jazz if (i["price"] or "").strip() not in ("", "€"))
+    assert with_price / len(jazz) > 0.5
+    kept = {e.external_id for e in EVENTS}
     priced = {ev.external_id for ev in EVENTS if ev.price}
     for i in ITEMS:
-        if (i["price"] or "").strip() not in ("", "€") and str(i["id"]) in {e.external_id for e in EVENTS}:
+        if (i["price"] or "").strip() not in ("", "€") and str(i["id"]) in kept:
             assert str(i["id"]) in priced
+
+
+def test_status_markers_in_titles():
+    base = dict(ITEMS[0], venue="Bimhuis", price="€13")
+    events, _ = parse_events([
+        ("jazz", dict(base, id=1, title="Joan As Police Woman (sold out)")),
+        ("jazz", dict(base, id=2, title="Babs [CANCELED]", time="21:00:00")),
+    ])
+    assert [(ev.title, ev.price) for ev in events] == [("Joan As Police Woman", "sold-out")]
 
 
 def test_unknown_venues_are_dropped_and_reported():
     item = dict(ITEMS[0], venue="Some New Café", id=1)
-    events, unknown = parse_events([item])
+    events, unknown = parse_events([("jazz", item)])
     assert events == []
     assert unknown == {"Some New Café"}
 
@@ -107,10 +150,13 @@ def test_parse_price(raw, expected):
     assert parse_price(raw) == expected
 
 
-def test_registered_as_amsterdam_jazz_source():
+def test_registered_as_amsterdam_source_with_whitelisted_lists():
     load_all()
     _scraper, source = REGISTRY[SOURCE_SLUG]
     assert len(source.venues) == len(VENUES)
     for v in source.venues:
         assert v.city_slug == "amsterdam"
-        assert [m.list_slug for m in v.list_memberships] == ["jazz"]
+        assert v.list_memberships
+        for m in v.list_memberships:
+            assert m.whitelist_category_slug == m.list_slug
+            assert m.list_slug in v.category_slugs

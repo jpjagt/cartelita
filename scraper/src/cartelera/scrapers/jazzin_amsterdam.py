@@ -13,101 +13,360 @@ from cartelera.types import (
     SourceDefinition,
 )
 
-# jazzin.amsterdam — a curated Amsterdam jazz calendar (~640 upcoming gigs
-# across ~60 venues) with a public JSON API. MULTI-VENUE source: the VENUES
-# table below is the editorial whitelist and the name-normalization map (see
+# jazzin.amsterdam — curated Amsterdam culture calendars (jazz, classical,
+# theater, pop, club, film; ~5,300 upcoming events across ~160 venues) with a
+# public JSON API. MULTI-VENUE source: the VENUES table below is the editorial
+# whitelist, the name-normalization map, and each venue's category lists (see
 # jazzin_amsterdam_SOURCE.md). The API returns at most PAGE_SIZE events per
 # call; `offset` pages (its `page` param is ignored).
 API_URL = "https://jazzin.amsterdam/api"
-API_PARAMS = {"calendar": "jazzAmsterdam", "archive": "false"}
 PAGE_SIZE = 600
-MAX_PAGES = 10  # safety stop against a misbehaving offset
+MAX_PAGES = 20  # safety stop against a misbehaving offset
 SOURCE_SLUG = "jazzin-amsterdam"
 CITY_SLUG = "amsterdam"
 FALLBACK_URL = "https://jazzin.amsterdam/"
 
+# jazzin calendar id → our category slug; the calendar IS the discriminator.
+# Not used: `alternativeAmsterdam` (a grab-bag: yoga, lunches, workshops) and
+# `movieAmsterdam` (Pathé multiplexes, ~200 screenings/day, 3 days ahead).
+CALENDARS: dict[str, str] = {
+    "jazzAmsterdam": "jazz",
+    "classicalAmsterdam": "classical",
+    "theaterAmsterdam": "theater",
+    "popAmsterdam": "pop",
+    "clubAmsterdam": "club",
+    "filmAmsterdam": "film",
+}
+
 logger = logging.getLogger(__name__)
 
-# (venue slug, display name, address, jazzin venue-name aliases). jazzin's
-# `venue` field is free text typed per source, so one venue arrives under
-# several spellings ("ZOJazz Stage", "ZOjazz Stage", "ZOJazzstage "); aliases
-# are matched after _venue_key normalization (case/whitespace-insensitive).
-# Addresses are jazzin's, cleaned up; the few it gives only as "Amsterdam" are
-# filled in by hand.
-VENUES: list[tuple[str, str, str, list[str]]] = [
-    ("bimhuis", "Bimhuis", "Piet Heinkade 3, 1019 BR Amsterdam", ["Bimhuis"]),
-    ("muziekgebouw", "Muziekgebouw aan 't IJ", "Piet Heinkade 1, 1019 BR Amsterdam", ["Muziekgebouw"]),
-    ("cafe-de-pianist", "Café de Pianist", "Groen van Prinstererstraat 41, 1051 EH Amsterdam", ["Café de Pianist"]),
-    # "Concertzaal" is the ZOJazz hall in the same building (Bijlmerplein 888).
-    ("zojazz-stage", "ZOJazz Stage", "Bijlmerplein 888, 1102 MG Amsterdam-Zuidoost",
-     ["ZOJazz Stage", "ZOJazzstage", "Concertzaal"]),
-    ("cafe-de-engelbewaarder", "Café de Engelbewaarder", "Kloveniersburgwal 59HS, 1011 JZ Amsterdam",
-     ["Café de Engelbewaarder"]),
-    ("carre", "Koninklijk Theater Carré", "Amstel 115-125, 1018 EM Amsterdam", ["Carré"]),
-    ("contra", "Contra", "Oudezijds Achterburgwal 235, 1012 DL Amsterdam", ["Contra"]),
-    ("concertgebouw", "Het Concertgebouw", "Concertgebouwplein 10, 1071 LN Amsterdam", ["Het Concertgebouw"]),
-    ("zaal-100", "Zaal 100", "De Wittenstraat 100, 1052 BA Amsterdam", ["Zaal 100"]),
-    ("kompaszaal", "Kompaszaal", "KNSM-Laan 311, 1019 LE Amsterdam", ["Kompaszaal"]),
-    ("splendor", "Splendor", "Nieuwe Uilenburgerstraat 116, 1011 LX Amsterdam", ["Splendor"]),
-    ("melkweg", "Melkweg", "Lijnbaansgracht 234A, 1017 PH Amsterdam", ["Melkweg"]),
-    ("cafe-czaar", "Café Czaar", "Czaar Peterstraat 281, 1018 PL Amsterdam", ["Café Czaar"]),
-    ("theater-mascini", "Theater Mascini", "Zeedijk 24a, 1012 AZ Amsterdam", ["Theater Mascini"]),
-    ("cafe-parisius", "Café Parisius", "Borneostraat 112, Amsterdam", ["Café Parisius"]),
-    ("de-roode-bioscoop", "De Roode Bioscoop", "Haarlemmerplein 7, 1013 HP Amsterdam", ["De Roode Bioscoop"]),
-    ("de-roode-remise", "De Roode Remise", "Haarlemmerplein 11, 1013 HP Amsterdam", ["De Roode Remise"]),
-    ("theater-de-dillewijn", "Theater De Dillewijn (Ankeveen)", "Stichts End 57, 1244 PL Ankeveen",
-     ["Theater De Dillewijn (Ankeveen)"]),
-    ("de-nieuwe-anita", "De Nieuwe Anita", "Frederik Hendrikstraat 111, 1052 HN Amsterdam", ["De Nieuwe Anita"]),
-    ("tolhuistuin", "Tolhuistuin", "IJpromenade 2, 1031 KT Amsterdam", ["Tolhuistuin"]),
-    ("occii", "OCCII", "Amstelveenseweg 134, 1075 XL Amsterdam", ["OCCII"]),
-    ("plofhuis7", "Plofhuis7 (Weesp)", "Uitermeer 3, 1381 HP Weesp", ["Plofhuis7 (Weesp)"]),
-    ("crea", "CREA", "Nieuwe Achtergracht 170, 1018 WV Amsterdam", ["CREA"]),
-    ("walhalla", "Walhalla Brouwerij & Proeflokaal", "Asterweg 2, 1031 HN Amsterdam",
-     ["Walhalla Brouwerij & Proeflokaal"]),
-    ("de-khl", "De KHL", "Oostelijke Handelskade 44, 1019 BM Amsterdam", ["De KHL"]),
-    ("de-duif", "De Duif", "Prinsengracht 756, 1017 LD Amsterdam", ["De Duif"]),
-    ("salon-de-ijzerstaven", "Salon de IJzerstaven", "Bickersgracht 10, 1013 LE Amsterdam", ["Salon de IJzerstaven"]),
-    ("cultureel-cafe-bacchus", "Cultureel Café Bacchus (Aalsmeer)", "Gerberastraat 4, 1431 SG Aalsmeer",
-     ["Cultureel Café Bacchus"]),
-    ("van-puffelen", "Van Puffelen", "Prinsengracht 375, Amsterdam", ["Van Puffelen"]),
-    ("paradiso", "Paradiso", "Weteringschans 6-8, 1017 SG Amsterdam", ["Paradiso"]),
-    ("elsas-cafe", "Elsa's Café", "Middenweg 73, 1098 AE Amsterdam", ["Elsa's Café"]),
-    ("oedipus-brewing", "Oedipus Brewing", "Schaafstraat 21, 1021 KD Amsterdam", ["Oedipus Brewing"]),
-    ("societeit-de-kring", "Sociëteit de Kring", "Kleine-Gartmanplantsoen 7-9, 1017 RP Amsterdam",
-     ["Sociëteit de Kring"]),
-    ("pianola-museum", "Pianola Museum", "Westerstraat 106, 1015 MN Amsterdam", ["Pianola Museum"]),
-    ("greene-room", "Greene Room", "Elementenstraat 16, Amsterdam Westpoort", ["Greene Room"]),
-    ("laurierstraat-72", "Laurierstraat 72", "Laurierstraat 72, Amsterdam", ["Laurierstraat 72"]),
-    ("theater-de-griffioen", "Theater de Griffioen", "De Boelelaan 1111, 1081 HV Amsterdam",
-     ["Theater de Griffioen"]),
-    ("theater-de-omval", "Theater de Omval (Diemen)", "Ouddiemerlaan 104, 1111 HL Diemen", ["Theater de Omval"]),
-    ("de-boule-de-boule", "De Boule De Boule", "Waterlooplein 6A, 1011 PG Amsterdam", ["De Boule De Boule"]),
-    ("huis-de-pinto", "Huis de Pinto", "St. Antoniesbreestraat 69, 1011 HB Amsterdam", ["Huis de Pinto"]),
-    ("volkshotel", "Volkshotel", "Wibautstraat 150, 1091 GR Amsterdam", ["Volkshotel"]),
-    ("ramses-shaffy-huis", "Sociëteit Ramses Shaffy Huis", "Piet Heinkade 231, 1019 HM Amsterdam",
-     ["Sociëteit Ramses Shaffy Huis"]),
-    ("het-molenpad", "Het Molenpad", "Prinsengracht 653, Amsterdam", ["Het Molenpad"]),
-    # The Conservatorium van Amsterdam lists its Blue Dock hall separately.
-    ("conservatorium-van-amsterdam", "Conservatorium van Amsterdam", "Oosterdokskade 151, 1011 DL Amsterdam",
-     ["CvA", "Amsterdam Blue Dock, CvA"]),
-    ("a-beautiful-mess", "A Beautiful Mess", "Oosterdokskade 227, 1011 DL Amsterdam", ["A Beautiful Mess"]),
-    ("podium-genieten", "Podium Genieten", "Oranje Vrijstaatplein 2, 1093 NG Amsterdam", ["Podium Genieten"]),
-    ("posthoornkerk", "Posthoornkerk", "Haarlemmerstraat 124, 1013 EX Amsterdam", ["Posthoornkerk"]),
-    ("breugem-meeting-point", "Breugem Meeting Point", "Nieuwe Hemweg 2, 1013 BG Amsterdam",
-     ["Breugem Meeting Point"]),
-    ("theater-de-richel", "Theater De Richel", "Nieuwezijds Voorburgwal 282, 1012 RT Amsterdam",
-     ["Theater De Richel"]),
-    ("oba-javaplein", "OBA Javaplein", "Javaplein 2, 1094 HW Amsterdam", ["OBA Javaplein"]),
-    ("t-zonnehuis", "'t Zonnehuis", "Zonneplein 30, 1033 EK Amsterdam", ["'t Zonnehuis"]),
-    ("hans-brinker-bar", "Hans Brinker Bar", "Kerkstraat 136, Amsterdam", ["Hans Brinker Bar"]),
-    ("jazzcafe-nieuwemeer", "Jazzcafé NieuweMeer (Aalsmeer)", "Stommeerweg 2, Aalsmeer",
-     ["Jazzcafé NieuweMeer Aalsmeer"]),
-    ("vreugdehof", "Vreugdehof", "De Klencke 111, 1083 HH Amsterdam", ["Vreugdehof, Amsterdam"]),
-    ("theater-vrijburcht", "Theater Vrijburcht", "Jan Olphert Vaillantlaan 143, 1086 XZ Amsterdam",
-     ["Theater Vrijburcht"]),
-    ("meervaart", "Meervaart", "Meer en Vaart 300, 1068 LE Amsterdam", ["Meervaart Theater"]),
-    ("a-lab", "A Lab", "Overhoeksplein 2, 1031 KS Amsterdam", ["A Lab"]),
-    ("elthetokerk", "Elthetokerk", "Javastraat 118, 1094 HP Amsterdam", ["Elthethokerk", "Elthetokerk"]),
+# (venue slug, display name, address, jazzin venue-name aliases, categories).
+# jazzin's `venue` field is free text typed per upstream source, so one venue
+# arrives under several spellings ("ZOJazz Stage", "ZOjazz Stage",
+# "ZOJazzstage "); aliases are matched after _venue_key normalization
+# (case/whitespace-insensitive). `categories` are the calendars the venue
+# appears in: each becomes a whitelisted list membership. Addresses are
+# jazzin's; the ones it gives only as "Amsterdam" are hand-filled or None.
+# Deliberately absent: Comedytrain's halls (the upstream `toomler` feed has
+# junk titles like "20:30 uur") and the few venues in other cities (Leiden,
+# Utrecht, Woerden, Laren, Hillegom).
+VENUES: list[tuple[str, str, str | None, list[str], list[str]]] = [
+    ('concertgebouw', 'Het Concertgebouw', 'Concertgebouwplein 10, 1071 LN Amsterdam',
+     ['Het Concertgebouw', 'Concertgebouw'], ['jazz', 'classical']),
+    ('lab111', 'LAB111', 'Arie Biemondstraat 111, 1054 PD Amsterdam',
+     ['LAB111'], ['film']),
+    ('melkweg', 'Melkweg', 'Lijnbaansgracht 234A, 1017 PH Amsterdam',
+     ['Melkweg'], ['jazz', 'pop', 'club']),
+    ('eye-filmmuseum', 'Eye Filmmuseum', 'IJpromenade 1, 1031 KT Amsterdam',
+     ['Eye Filmmuseum'], ['film']),
+    ('muziekgebouw', "Muziekgebouw aan 't IJ", 'Piet Heinkade 1, 1019 BR Amsterdam',
+     ['Muziekgebouw', "Muziekgebouw aan 't IJ"], ['jazz', 'classical']),
+    ('carre', 'Koninklijk Theater Carré', 'Amstel 115-125, 1018 EM Amsterdam',
+     ['Carré'], ['jazz', 'theater']),
+    ('mezrab', 'Mezrab', 'Veemkade 576, 1019 BL Amsterdam',
+     ['Mezrab'], ['theater']),
+    ('de-kleine-komedie', 'De Kleine Komedie', 'Amstel 56-58, 1017AC Amsterdam',
+     ['De Kleine Komedie'], ['theater']),
+    ('theater-de-landing', 'Theater De Landing', 'Uilenstede 106, 1183 AM Amstelveen',
+     ['Theater De Landing'], ['theater']),
+    ('bimhuis', 'Bimhuis', 'Piet Heinkade 3, 1019 BR Amsterdam',
+     ['Bimhuis'], ['jazz']),
+    ('cinema-the-pulse', 'Cinema The Pulse', 'Hildegard von Bingenstraat 4, 1081 LH Amsterdam',
+     ['Cinema The Pulse'], ['film']),
+    ('theater-mascini', 'Theater Mascini', 'Zeedijk 24a, 1012 AZ Amsterdam',
+     ['Theater Mascini'], ['jazz', 'theater']),
+    ('splendor', 'Splendor', 'Nieuwe Uilenburgerstraat 116, 1011 LX Amsterdam',
+     ['Splendor'], ['jazz', 'classical']),
+    ('theater-de-griffioen', 'Theater de Griffioen', 'De Boelelaan 1111, 1081 HV Amsterdam',
+     ['Theater de Griffioen'], ['jazz', 'theater']),
+    ('podium-mozaiek', 'Podium Mozaïek', 'Bos en Lommerweg 191, 1055 DT Amsterdam',
+     ['Podium Mozaïek'], ['classical', 'theater']),
+    ('theater-de-omval', 'Theater de Omval (Diemen)', 'Ouddiemerlaan 104, 1111 HL Diemen',
+     ['Theater de Omval'], ['jazz', 'theater']),
+    ('t-zonnehuis', "'t Zonnehuis", 'Zonneplein 30, 1033 EK Amsterdam',
+     ["'t Zonnehuis", 'Zonnehuis'], ['jazz', 'classical', 'theater', 'pop']),
+    ('theater-bellevue', 'Theater Bellevue', 'Leidsekade 90, 1017 PN Amsterdam',
+     ['Theater Bellevue'], ['theater']),
+    ('studio-k', 'Studio/K', 'Timorplein 62, 1094 CC Amsterdam',
+     ['Studio/K'], ['film']),
+    ('meervaart', 'Meervaart', 'Meer en Vaart 300, 1068 LE Amsterdam',
+     ['Meervaart Theater'], ['jazz', 'theater']),
+    ('kriterion', 'Kriterion', 'Roetersstraat 170, 1018 WE, Amsterdam',
+     ['Kriterion'], ['film']),
+    ('delamar', 'DeLaMar Theater', 'Marnixstraat 402, Amsterdam',
+     ['DeLaMar Theater', 'Café DeLaMar'], ['theater']),
+    ('de-uitkijk', 'De Uitkijk', 'Prinsengracht 452, 1017 KE Amsterdam',
+     ['De Uitkijk'], ['film']),
+    ('escape', 'Escape', 'Rembrandtplein 11, 1017 CT Amsterdam',
+     ['Escape'], ['club']),
+    ('cinema-de-vlugt', 'Cinema de Vlugt', 'Burgemeester de Vlugtlaan 125, 1063 BJ Amsterdam',
+     ['Cinema de Vlugt'], ['film']),
+    ('polanentheater', 'Polanentheater', 'Polanenstraat 174, 1013 WC, Amsterdam',
+     ['Polanentheater'], ['theater']),
+    ('ziggo-dome', 'Ziggo Dome', 'De Passage 100, 1101 AX Amsterdam',
+     ['Ziggo Dome'], ['pop']),
+    ('john-doe', 'John Doe', 'Rembrandtplein 31, 1017 CT Amsterdam, Netherlands',
+     ['John Doe'], ['club']),
+    ('de-roode-bioscoop', 'De Roode Bioscoop', 'Haarlemmerplein 7, 1013 HP Amsterdam',
+     ['De Roode Bioscoop'], ['jazz', 'classical', 'theater']),
+    ('theater-vrijburcht', 'Theater Vrijburcht', 'Jan Olphert Vaillantlaan 143, 1086 XZ Amsterdam',
+     ['Theater Vrijburcht'], ['jazz', 'theater']),
+    ('black-cat-theatre', 'Black Cat Theatre', 'Schakelstraat 2, 1014 AW Amsterdam',
+     ['Black Cat Theatre'], ['theater']),
+    ('cafe-de-pianist', 'Café de Pianist', 'Groen van Prinstererstraat 41, 1051 EH Amsterdam',
+     ['Café de Pianist'], ['jazz']),
+    ('de-duif', 'De Duif', 'Prinsengracht 756, 1017 LD Amsterdam',
+     ['De Duif'], ['jazz', 'classical', 'pop']),
+    ('zojazz-stage', 'ZOJazz Stage', 'Bijlmerplein 888, 1102 MG Amsterdam-Zuidoost',
+     ['ZOJazz Stage', 'ZOJazzstage', 'Concertzaal'], ['jazz']),
+    ('plein-theater', 'Plein Theater', 'Sajetplein 39, 1091 DB Amsterdam',
+     ['Plein Theater'], ['theater']),
+    ('de-waalse-kerk', 'De Waalse Kerk', 'Walenpleintje 157-159, 1012 JZ Amsterdam',
+     ['De Waalse Kerk'], ['classical']),
+    ('oosterkerk', 'Oosterkerk', 'Kleine Wittenburgerstraat 3, 1018 LS Amsterdam',
+     ['Oosterkerk'], ['classical', 'theater']),
+    ('conservatorium-van-amsterdam', 'Conservatorium van Amsterdam', 'Oosterdokskade 151, 1011 DL Amsterdam',
+     ['CvA', 'Amsterdam Blue Dock, CvA', 'Bernard Haitinkzaal, CvA', 'Sweelinckzaal, CvA'], ['jazz', 'classical', 'pop']),
+    ('cafe-de-engelbewaarder', 'Café de Engelbewaarder', 'Kloveniersburgwal 59HS, 1011 JZ Amsterdam',
+     ['Café de Engelbewaarder'], ['jazz']),
+    ('theater-de-krakeling', 'Theater De Krakeling', 'Pazzanistraat 15, 1014 DB Amsterdam',
+     ['Theater De Krakeling'], ['theater']),
+    ('orgelpark', 'Orgelpark', 'Gerard Brandtstraat 28, 1054 JK Amsterdam',
+     ['Orgelpark'], ['classical']),
+    ('theater-de-richel', 'Theater De Richel', 'Nieuwezijds Voorburgwal 282, 1012 RT Amsterdam',
+     ['Theater De Richel'], ['jazz', 'theater']),
+    ('english-reformed-church', 'English Reformed Church', 'Begijnhof 48, 1012 WV Amsterdam',
+     ['English Reformed Church'], ['classical']),
+    ('westweelde', 'WestWeelde', 'Klönneplein 4, 1014 DD Amsterdam',
+     ['WestWeelde'], ['club']),
+    ('amstelkerk', 'Amstelkerk', 'Amstelveld 10, 1017 JD Amsterdam',
+     ['Amstelkerk'], ['classical']),
+    ('skatecafe-karin-yvonne', 'Skatecafe Karin & Yvonne', 'Gedempt Hamerkanaal 42, 1021 KM, Amsterdam',
+     ['Skatecafe Karin & Yvonne'], ['club']),
+    ('chicago-social-club', 'Chicago Social Club', 'Leidseplein 12, 1017 PT Amsterdam',
+     ['Chicago Social Club'], ['club']),
+    ('van-houtenkerk', 'Van Houtenkerk (Weesp)', None,
+     ['Van Houtenkerk'], ['classical']),
+    ('tolhuistuin', 'Tolhuistuin', 'IJpromenade 2, 1031 KT Amsterdam',
+     ['Tolhuistuin'], ['jazz', 'theater', 'pop']),
+    ('posthoornkerk', 'Posthoornkerk', 'Haarlemmerstraat 124, 1013 EX Amsterdam',
+     ['Posthoornkerk'], ['jazz', 'classical']),
+    ('de-filmhallen', 'De FilmHallen', 'Hannie Dankbaarpassage 12, 1053 RT Amsterdam',
+     ['De FilmHallen'], ['film']),
+    ('de-khl', 'De KHL', 'Oostelijke Handelskade 44, 1019 BM Amsterdam',
+     ['De KHL'], ['jazz', 'theater']),
+    ('q-factory', 'Q-Factory', 'Atlantisplein 1, 1093 NE, Amsterdam',
+     ['Q-Factory'], ['pop']),
+    ('thuishaven', 'Thuishaven', 'Contactweg 68, 1014 BW, Amsterdam',
+     ['Thuishaven'], ['club']),
+    ('contra', 'Contra', 'Oudezijds Achterburgwal 235, 1012 DL Amsterdam',
+     ['Contra'], ['jazz']),
+    ('paradiso', 'Paradiso', 'Weteringschans 6-8, 1017 SG Amsterdam',
+     ['Paradiso'], ['jazz', 'pop']),
+    ('dominicuskerk', 'Dominicuskerk', 'Spuistraat 12A, 1012 TS Amsterdam',
+     ['Dominicuskerk'], ['classical']),
+    ('de-sloot', 'De Sloot', 'Rhoneweg 6-10, 1043 AH Amsterdam',
+     ['De Sloot'], ['theater']),
+    ('schouwburg-amstelveen', 'Schouwburg Amstelveen', 'Uilenstede 106, 1183 AM Amstelveen',
+     ['Schouwburg Amstelveen'], ['theater']),
+    ('club-up', 'Club Up', 'Korte Leidsedwarsstraat 26-1, Amsterdam, Nederland',
+     ['Club Up'], ['club']),
+    ('zaal-100', 'Zaal 100', 'De Wittenstraat 100, 1052 BA Amsterdam',
+     ['Zaal 100'], ['jazz']),
+    ('kompaszaal', 'Kompaszaal', 'KNSM-Laan 311, 1019 LE Amsterdam',
+     ['Kompaszaal'], ['jazz']),
+    ('the-waterhole', 'The Waterhole', 'Korte Leidsedwarsstraat 49, 1017 PW Amsterdam',
+     ['The Waterhole'], ['pop']),
+    ('lofi', 'Lofi', 'Basisweg 63, 1043 AN, Amsterdam',
+     ['Lofi'], ['club']),
+    ('het-ketelhuis', 'Het Ketelhuis', 'Westergas, Pazzanistraat 4, Amsterdam',
+     ['Het Ketelhuis'], ['film']),
+    ('maloe-melo', 'Maloe Melo', 'Lijnbaansgracht 163, Amsterdam, Noordholland, Nederland',
+     ['Maloe Melo'], ['pop']),
+    ('chin-chin-club', 'Chin Chin Club', 'Rozengracht 133, 1016 LV, Amsterdam',
+     ['Chin Chin Club'], ['club']),
+    ('bret', 'BRET', 'Orlyplein 76, 1043 DP, Amsterdam',
+     ['BRET'], ['club']),
+    ('radio-radio', 'Radio Radio', 'Pazzanistraat 3, 1014 DB Amsterdam',
+     ['Radio Radio'], ['club']),
+    ('nachbar', 'nachbar', 'Nieuwezijds Voorburgwal 169a',
+     ['nachbar'], ['club']),
+    ('club-dauphine', 'Club Dauphine', 'Prins Bernhardplein 175, 1097 BL Amsterdam',
+     ['Club Dauphine'], ['pop']),
+    ('cafe-czaar', 'Café Czaar', 'Czaar Peterstraat 281, 1018 PL Amsterdam',
+     ['Café Czaar'], ['jazz']),
+    ('pianola-museum', 'Pianola Museum', 'Westerstraat 106, 1015 MN Amsterdam',
+     ['Pianola Museum'], ['jazz', 'classical']),
+    ('de-kleine-kerk', 'De Kleine Kerk (Duivendrecht)', 'Rijksstraatweg 129, Duivendrecht, Netherlands',
+     ['De Kleine Kerk'], ['classical']),
+    ('tillatec', 'TILLATEC', 'Doctor Jan van Breemenstraat 1; 1056 AB Amsterdam',
+     ['TILLATEC'], ['club']),
+    ('buiksloterkerk', 'Buiksloterkerk', 'Buiksloterkerkpad 10, 1034 VZ Amsterdam',
+     ['Buiksloterkerk'], ['classical']),
+    ('nedpho-koepel', 'NedPhO-Koepel', 'Batjanstraat 3, 1094 RB Amsterdam',
+     ['NedPhO-Koepel'], ['classical']),
+    ('perdu', 'Perdu', 'Kloveniersburgwal 86, 1012 CZ Amsterdam',
+     ['Perdu'], ['theater']),
+    ('garage-noord', 'Garage Noord', 'Gedempt Hamerkanaal 40 1021KM, Amsterdam',
+     ['Garage Noord'], ['club']),
+    ('crea', 'CREA', 'Nieuwe Achtergracht 170, 1018 WV Amsterdam',
+     ['CREA'], ['jazz']),
+    ('cafe-parisius', 'Café Parisius', 'Borneostraat 112, Amsterdam',
+     ['Café Parisius'], ['jazz']),
+    ('kamermuziek-in-de-koningszaal', 'Kamermuziek in de Koningszaal', 'Plantage Middenlaan 41-A, 1018 DC  Amsterdam',
+     ['Kamermuziek in de Koningszaal'], ['classical']),
+    ('schuilkerk-de-hoop', 'Schuilkerk De Hoop', None,
+     ['Schuilkerk De Hoop'], ['classical', 'theater']),
+    ('pianobar-maxim', 'Pianobar Maxim', 'Leidsekruisstraat 33, 1017 RG Amsterdam',
+     ['Pianobar Maxim'], ['pop']),
+    ('doka', 'Doka', 'Wibautstraat 150, 1091 GR Amsterdam',
+     ['Doka'], ['club']),
+    ('parallel', 'Parallel', 'Buiksloterweg 5C, 1031 CC Amsterdam',
+     ['Parallel'], ['club']),
+    ('the-movies', 'The Movies', 'Haarlemmerdijk 161, Amsterdam',
+     ['The Movies'], ['film']),
+    ('plofhuis7', 'Plofhuis7 (Weesp)', 'Uitermeer 3, 1381 HP Weesp',
+     ['Plofhuis7 (Weesp)'], ['jazz', 'classical']),
+    ('seinwezen', 'Seinwezen', None,
+     ['Seinwezen'], ['classical']),
+    ('midwest', 'Midwest', 'Cabralstraat 1, 1057 CD Amsterdam',
+     ['Midwest'], ['theater', 'pop']),
+    ('bitterzoet', 'Bitterzoet', 'Spuistraat 2, 1012 TS Amsterdam',
+     ['Bitterzoet'], ['pop', 'club']),
+    ('toekomstmuziek', 'Toekomstmuziek', 'Danzigerbocht 29, 1013 AM, Amsterdam',
+     ['Toekomstmuziek'], ['club']),
+    ('murmur', 'murmur', 'Asterweg 6, 1031 HN, Amsterdam',
+     ['murmur'], ['club']),
+    ('huis-de-pinto', 'Huis de Pinto', 'St. Antoniesbreestraat 69, 1011 HB Amsterdam',
+     ['Huis de Pinto'], ['jazz', 'classical']),
+    ('theater-de-dillewijn', 'Theater De Dillewijn (Ankeveen)', 'Stichts End 57, 1244 PL Ankeveen',
+     ['Theater De Dillewijn (Ankeveen)'], ['jazz']),
+    ('torpedo-theater', 'Torpedo Theater', 'Sint Pieterspoortsteeg 33, 1012 HM Amsterdam',
+     ['Torpedo Theater'], ['classical', 'theater']),
+    ('tobacco-theater', 'TOBACCO Theater', 'Nes 75-87, 1012 KD Amsterdam',
+     ['TOBACCO Theater'], ['theater']),
+    ('apollofirst-theater', 'Apollofirst theater', 'Apollolaan 123, 1077 AP, Amsterdam',
+     ['Apollofirst theater'], ['theater']),
+    ('the-cave', 'The Cave', 'Prinsengracht 472 sous, 1017 KG  Amsterdam',
+     ['The Cave'], ['pop']),
+    ('akhnaton', 'Akhnaton', 'Nieuwezijds Kolk 25, 1012 PV Amsterdam',
+     ['Akhnaton'], ['club']),
+    ('warehouse-elementenstraat', 'Warehouse Elementenstraat', 'Elementenstraat 25, 1014 AR, Amsterdam',
+     ['Warehouse Elementenstraat'], ['club']),
+    ('de-nieuwe-anita', 'De Nieuwe Anita', 'Frederik Hendrikstraat 111, 1052 HN Amsterdam',
+     ['De Nieuwe Anita'], ['jazz']),
+    ('salon-de-ijzerstaven', 'Salon de IJzerstaven', 'Bickersgracht 10, 1013 LE Amsterdam',
+     ['Salon de IJzerstaven'], ['jazz', 'classical']),
+    ('de-roode-remise', 'De Roode Remise', 'Haarlemmerplein 11, 1013 HP Amsterdam',
+     ['De Roode Remise'], ['jazz', 'classical']),
+    ('de-ceuvel', 'De Ceuvel', 'Korte Papaverweg 2, 1032 KB Amsterdam',
+     ['De Ceuvel'], ['pop']),
+    ('panama', 'Panama', 'Oostelijke Handelskade 4, 1019 BM Amsterdam',
+     ['Panama'], ['club']),
+    ('occii', 'OCCII', 'Amstelveenseweg 134, 1075 XL Amsterdam',
+     ['OCCII'], ['jazz']),
+    ('pinksterkerk', 'Pinksterkerk', None,
+     ['Pinksterkerk'], ['classical', 'theater']),
+    ('rozengracht-55h', 'Rozengracht 55H', 'Rozengracht 55H, Amsterdam',
+     ['Rozengracht 55H'], ['classical']),
+    ('de-thomas', 'De Thomas', 'Prinses Irenestraat 36, 1077 WX Amsterdam',
+     ['De Thomas'], ['classical']),
+    ('borisov', 'Borisov', 'Rigakade 10 1013 BC Amsterdam, Netherlands',
+     ['Borisov'], ['club']),
+    ('walhalla-brouwerij-proeflokaal', 'Walhalla Brouwerij & Proeflokaal', 'Asterweg 2, 1031 HN Amsterdam',
+     ['Walhalla Brouwerij & Proeflokaal'], ['jazz']),
+    ('greene-room', 'Greene Room', 'Elementenstraat 16, Amsterdam Westpoort',
+     ['Greene Room'], ['jazz']),
+    ('sloterkerk', 'Sloterkerk', 'Osdorperweg 28, Amsterdam, Nederland',
+     ['Sloterkerk'], ['classical']),
+    ('likeminds', 'Likeminds', 'Gedempt Hamerkanaal 203, 1021 KP Amsterdam',
+     ['Likeminds'], ['theater']),
+    ('brakke-grond', 'Brakke Grond', 'Nes 45, 1012 KD Amsterdam',
+     ['Brakke Grond'], ['theater']),
+    ('schellingwouderkerk', 'Schellingwouderkerk', None,
+     ['Schellingwouderkerk'], ['theater']),
+    ('levenslang', 'Levenslang', 'H.J.E. Wenckebachweg 48, 1096AN, Amsterdam',
+     ['Levenslang'], ['club']),
+    ('cultureel-cafe-bacchus', 'Cultureel Café Bacchus (Aalsmeer)', 'Gerberastraat 4, 1431 SG Aalsmeer',
+     ['Cultureel Café Bacchus'], ['jazz']),
+    ('van-puffelen', 'Van Puffelen', 'Prinsengracht 375',
+     ['Van Puffelen'], ['jazz']),
+    ('elsas-cafe', "Elsa's Café", 'Middenweg 73, 1098 AE Amsterdam',
+     ["Elsa's Café"], ['jazz']),
+    ('oedipus-brewing', 'Oedipus Brewing', 'Schaafstraat 21, 1021 KD Amsterdam',
+     ['Oedipus Brewing'], ['jazz']),
+    ('societeit-de-kring', 'Sociëteit de Kring', 'Kleine-Gartmanplantsoen 7-9, 1017 RP Amsterdam',
+     ['Sociëteit de Kring'], ['jazz']),
+    ('laurierstraat-72', 'Laurierstraat 72', 'Laurierstraat 72',
+     ['Laurierstraat 72'], ['jazz']),
+    ('zuiderkerk', 'Zuiderkerk', 'Zuiderkerkhof 72, 1011 WB Amsterdam',
+     ['Zuiderkerk'], ['classical']),
+    ('concertgemaal', 'Concertgemaal', 'Landsmeerderdijk 213, 1035 PV Amsterdam',
+     ['Concertgemaal'], ['classical']),
+    ('vermaning', 'Vermaning (Zaandam)', 'Westzijde 80, Zaandam',
+     ['Vermaning'], ['classical']),
+    ('singelkerk', 'Singelkerk', 'Singel 452, Amsterdam, Noord-Holland, 1017 AW, Nederland',
+     ['Singelkerk'], ['classical']),
+    ('phono-lake', 'Phono Lake', 'Christoffel Plantijngracht 4, 1065 DA Amsterdam, The Netherlands',
+     ['Phono Lake'], ['club']),
+    ('de-boule-de-boule', 'De Boule De Boule', 'Waterlooplein 6A, 1011 PG Amsterdam',
+     ['De Boule De Boule'], ['jazz']),
+    ('volkshotel', 'Volkshotel', 'Wibautstraat 150, 1091 GR Amsterdam',
+     ['Volkshotel'], ['jazz']),
+    ('societeit-ramses-shaffy-huis', 'Sociëteit Ramses Shaffy Huis', 'Piet Heinkade 231, 1019 HM Amsterdam',
+     ['Sociëteit Ramses Shaffy Huis'], ['jazz']),
+    ('het-molenpad', 'Het Molenpad', 'Prinsengracht 653',
+     ['Het Molenpad'], ['jazz']),
+    ('podium-genieten', 'Podium Genieten', 'Oranje Vrijstaatplein 2, 1093 NG Amsterdam',
+     ['Podium Genieten'], ['jazz']),
+    ('breugem-meeting-point', 'Breugem Meeting Point', 'Nieuwe Hemweg 2, 1013 BG Amsterdam',
+     ['Breugem Meeting Point'], ['jazz']),
+    ('portugese-synagoge', 'Portugese Synagoge', 'Mr. Visserplein 3, 1011 RD Amsterdam',
+     ['Portugese Synagoge'], ['classical']),
+    ('het-badhuistheater', 'Het Badhuistheater', 'Boerhaaveplein 28, 1091 AT Amsterdam',
+     ['Het Badhuistheater'], ['theater']),
+    ('de-cameleon', 'De Cameleon', 'Derde Kostverlorenkade 35, 1054 TS Amsterdam',
+     ['De Cameleon'], ['theater']),
+    ('san-francisco', 'San Francisco', 'Zeedijk 40, Amsterdam, Netherlands 1012 AZ',
+     ['San Francisco'], ['club']),
+    ('oba-javaplein', 'OBA Javaplein', 'Javaplein 2, 1094 HW, Amsterdam',
+     ['OBA Javaplein'], ['jazz']),
+    ('hans-brinker-bar', 'Hans Brinker Bar', 'Kerkstraat 136',
+     ['Hans Brinker Bar'], ['jazz']),
+    ('jazzcafe-nieuwemeer', 'Jazzcafé NieuweMeer (Aalsmeer)', 'Stommeerweg 2, Aalsmeer',
+     ['Jazzcafé NieuweMeer Aalsmeer'], ['jazz']),
+    ('a-beautiful-mess', 'A Beautiful Mess', 'Oosterdokskade 227, 1011 DL Amsterdam',
+     ['A Beautiful Mess'], ['jazz']),
+    ('vreugdehof', 'Vreugdehof', 'De Klencke 111, 1083 HH Amsterdam Buitenveldert',
+     ['Vreugdehof, Amsterdam'], ['jazz']),
+    ('a-lab', 'A Lab', 'Overhoeksplein 2, 1031KS',
+     ['A Lab'], ['jazz']),
+    ('elthetokerk', 'Elthetokerk', 'Javastraat 118, 1094 HP, Amsterdam',
+     ['Elthethokerk'], ['jazz']),
+    ('gamelanhuis', 'Gamelanhuis', 'Veemkade 578, 1019 BL Amsterdam',
+     ['Gamelanhuis'], ['classical']),
+    ('huis-van-de-wijk-buitenveldert', 'Huis van de Wijk Buitenveldert', 'A.J. Ernststraat 112 , 1082 LP Amsterdam',
+     ['Huis van de Wijk Buitenveldert'], ['classical']),
+    ('plein-van-siena', 'Plein van Siena', 'Rijnstraat 109hs, 1079 HA Amsterdam',
+     ['Plein van Siena'], ['classical']),
+    ('embassy-of-the-free-mind', 'Embassy of the Free Mind', 'Keizersgracht 123, 1015 CJ Amsterdam',
+     ['Embassy of the Free Mind'], ['classical']),
+    ('uilenburgersjoel', 'Uilenburgersjoel', 'Nieuwe Uilenburgerstraat 91, 1011 LM Amsterdam',
+     ['Uilenburgersjoel'], ['classical']),
+    ('openbare-bibliotheek-amsterdam', 'Openbare Bibliotheek Amsterdam', 'Oosterdokskade 143, 1011 DK Amsterdam',
+     ['Openbare Bibliotheek Amsterdam'], ['classical']),
+    ('oba-de-hallen', 'OBA de Hallen', 'Hannie Dankbaarpassage 10, 1053 RT Amsterdam',
+     ['OBA de Hallen'], ['classical']),
+    ('ec-o', 'EC-O', 'Windroosplein 75, 1018 ZZ Amsterdam',
+     ['EC-O'], ['classical']),
+    ('cafe-checkpoint-charlie', 'Cafe Checkpoint Charlie', 'Nassaukade 48, 1052 CM Amsterdam',
+     ['Cafe Checkpoint Charlie'], ['theater']),
+    ('bijlmer-parktheater', 'Bijlmer Parktheater', 'Anton de Komplein 240, 1102 DR Amsterdam',
+     ['Bijlmer Parktheater'], ['theater']),
+    ('cinetol', 'Cinetol', 'Cinetol Tolstraat 182 1074 VM Amsterdam',
+     ['Cinetol'], ['pop']),
+    ('dick-dick', 'Dick & Dick', 'Gedempt Hamerkanaal 36',
+     ['Dick & Dick'], ['club']),
 ]
 
 
@@ -118,8 +377,9 @@ def _venue_key(name: str) -> str:
 
 
 VENUE_BY_KEY: dict[str, str] = {
-    _venue_key(alias): slug for slug, _name, _addr, aliases in VENUES for alias in aliases
+    _venue_key(alias): slug for slug, _name, _addr, aliases, _cats in VENUES for alias in aliases
 }
+VENUE_CATEGORIES: dict[str, set[str]] = {slug: set(cats) for slug, *_rest, cats in VENUES}
 
 
 # --- price -----------------------------------------------------------------
@@ -172,27 +432,38 @@ def _parse_time(raw: str | None) -> dt.time | None:
         return None
 
 
-def parse_events(items: list[dict]) -> tuple[list[ScrapedEvent], set[str]]:
-    """Map the API's event objects to ScrapedEvents. Pure: JSON in, events out.
+# Status markers some upstream feeds put in the title.
+_SOLD_OUT_MARK = re.compile(r"\s*[\[(](?:sold ?out|uitverkocht)[\])]", re.IGNORECASE)
+_CANCELED_MARK = re.compile(r"[\[(](?:canceled|cancelled|afgelast|geannuleerd)[\])]", re.IGNORECASE)
+
+
+def parse_events(
+    items: list[tuple[str, dict]],
+) -> tuple[list[ScrapedEvent], set[str]]:
+    """Map (category slug, API event object) pairs to ScrapedEvents. Pure:
+    JSON in, events out.
 
     Returns the events plus the set of venue names not in VENUES (dropped —
     the whitelist; logged so new venues get added deliberately).
 
-    jazzin repeats some events under several ids (Muziekgebouw lists a concert
-    up to 5×), so occurrences are de-duplicated on (venue, date, time, title),
-    keeping the lowest id."""
-    events: list[ScrapedEvent] = []
+    jazzin repeats occurrences under several ids — within a calendar
+    (Muziekgebouw lists a concert up to 5×) and across calendars (a
+    Muziekgebouw gig in both jazz and classical). Occurrences are merged on
+    (venue, date, time, title), keeping the lowest id and the union of the
+    calendars' categories."""
+    by_key: dict[tuple, ScrapedEvent] = {}
     unknown: set[str] = set()
-    seen: set[tuple] = set()
-    for item in sorted(items, key=lambda i: i.get("id") or 0):
+    for category, item in sorted(items, key=lambda ci: ci[1].get("id") or 0):
         venue_name = (item.get("venue") or "").strip()
         venue_slug = VENUE_BY_KEY.get(_venue_key(venue_name))
         if venue_slug is None:
             unknown.add(venue_name)
             continue
         title = (item.get("title") or "").strip()
-        if not title or not item.get("date"):
+        if not title or not item.get("date") or _CANCELED_MARK.search(title):
             continue
+        sold_out = bool(_SOLD_OUT_MARK.search(title))
+        title = _SOLD_OUT_MARK.sub("", title).strip()
         try:
             start_date = dt.date.fromisoformat(item["date"])
         except ValueError:
@@ -200,36 +471,52 @@ def parse_events(items: list[dict]) -> tuple[list[ScrapedEvent], set[str]]:
         start_time = _parse_time(item.get("time"))
 
         key = (venue_slug, start_date, start_time, title.casefold())
-        if key in seen:
+        if key in by_key:
+            ev = by_key[key]
+            if category not in ev.category_slugs:
+                ev.category_slugs.append(category)
             continue
-        seen.add(key)
-
-        events.append(
-            ScrapedEvent(
-                title=title,
-                start_date=start_date,
-                start_time=start_time,
-                source_url=(item.get("site") or "").strip() or FALLBACK_URL,
-                category_slugs=["jazz"],
-                price=parse_price(item.get("price") or ""),
-                external_id=str(item["id"]),
-                venue_slug=venue_slug,
-            )
+        by_key[key] = ScrapedEvent(
+            title=title,
+            start_date=start_date,
+            start_time=start_time,
+            source_url=(item.get("site") or "").strip() or FALLBACK_URL,
+            category_slugs=[category],
+            price="sold-out" if sold_out else parse_price(item.get("price") or ""),
+            external_id=str(item["id"]),
+            venue_slug=venue_slug,
         )
-    return events, unknown
+    return list(by_key.values()), unknown
 
 
-def fetch_items() -> list[dict]:
-    """Every upcoming event, paging by offset until a short page."""
-    items: list[dict] = []
-    with httpx.Client(timeout=30, follow_redirects=True) as client:
-        for page in range(MAX_PAGES):
-            resp = client.get(API_URL, params={**API_PARAMS, "offset": page * PAGE_SIZE})
-            resp.raise_for_status()
-            batch = resp.json()
-            items.extend(batch)
-            if len(batch) < PAGE_SIZE:
-                break
+def unlisted_categories(events: list[ScrapedEvent]) -> set[tuple[str, str]]:
+    """(venue, category) pairs the feed now has but VENUES doesn't list — those
+    events are stored but no list shows them until the venue's categories are
+    updated."""
+    return {
+        (ev.venue_slug, c)
+        for ev in events
+        for c in ev.category_slugs
+        if c not in VENUE_CATEGORIES[ev.venue_slug]
+    }
+
+
+def fetch_items() -> list[tuple[str, dict]]:
+    """Every upcoming event of every calendar, paging by offset until a short
+    page."""
+    items: list[tuple[str, dict]] = []
+    with httpx.Client(timeout=60, follow_redirects=True) as client:
+        for calendar, category in CALENDARS.items():
+            for page in range(MAX_PAGES):
+                resp = client.get(
+                    API_URL,
+                    params={"calendar": calendar, "archive": "false", "offset": page * PAGE_SIZE},
+                )
+                resp.raise_for_status()
+                batch = resp.json()
+                items.extend((category, item) for item in batch)
+                if len(batch) < PAGE_SIZE:
+                    break
     return items
 
 
@@ -240,6 +527,11 @@ class JazzinAmsterdamScraper:
             logger.warning(
                 "jazzin-amsterdam: dropped events at venues not in VENUES: %s",
                 ", ".join(sorted(unknown)),
+            )
+        if missing := unlisted_categories(events):
+            logger.warning(
+                "jazzin-amsterdam: venues with events in categories they aren't listed for: %s",
+                ", ".join(f"{v}/{c}" for v, c in sorted(missing)),
             )
         return events
 
@@ -255,10 +547,12 @@ register_source(
                 name=name,
                 city_slug=CITY_SLUG,
                 address=address,
-                category_slugs=["jazz"],
-                list_memberships=[ListMembership(list_slug="jazz")],
+                category_slugs=cats,
+                list_memberships=[
+                    ListMembership(list_slug=c, whitelist_category_slug=c) for c in cats
+                ],
             )
-            for slug, name, address, _aliases in VENUES
+            for slug, name, address, _aliases, cats in VENUES
         ],
     ),
 )
