@@ -488,7 +488,8 @@ def parse_price(raw: str) -> str | None:
         return None
     if low in _FREE:
         return "free"
-    if low in _SOLD_OUT:
+    # Exact markers, plus compound statuses like "uitverkocht/nietbeschikbaar".
+    if low in _SOLD_OUT or low.startswith(("uitverkocht", "sold out")):
         return "sold-out"
     amounts = [float(a.replace(",", ".")) for a in _AMOUNT_RE.findall(text)]
     if not amounts:

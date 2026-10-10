@@ -164,6 +164,7 @@ def test_unknown_venues_are_dropped_and_reported():
         ("0", "free"),
         ("€0", "free"),
         ("s.o.", "sold-out"),
+        ("uitverkocht/nietbeschikbaar", "sold-out"),
         ("€13", "13€"),
         ("€19.5", "19,50€"),
         ("EUR 15.00", "15€"),
