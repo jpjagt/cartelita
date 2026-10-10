@@ -1,0 +1,127 @@
+---
+import { getCityEvents, getVenueDirectory } from "@/lib/queries"
+import { groupEventsByDay } from "@/lib/agenda"
+import { layoutVenueDirectory } from "@/lib/venue-directory"
+import { CITIES, MY_LIST } from "@/lib/cities"
+import type { Locale, GridRadioOption } from "@/lib/types"
+import { t } from "@/i18n"
+import Layout from "@/components/Layout.astro"
+import Navbar from "@/components/Navbar.astro"
+import AgendaDay from "@/components/AgendaDay.astro"
+import VenueDirectory from "@/components/VenueDirectory.astro"
+import OptionsPanel from "@/components/OptionsPanel.astro"
+import GridRadioButtons from "@/components/ui/GridRadioButtons.astro"
+
+export function getStaticPaths() {
+  return Object.values(CITIES).flatMap((city) =>
+    city.locales.map((locale) => ({ params: { city: city.slug, locale } })),
+  )
+}
+
+const city = Astro.params.city as string
+const locale = Astro.params.locale as Locale
+const strings = t(locale)
+
+// Favourites live in the visitor's browser, so the page ships every curated
+// event in the city and a client script hides rows from venues that aren't
+// starred (data-filtered; see syncAgenda in Layout.astro). Films get their own
+// view so screenings don't drown out the rest.
+const events = await getCityEvents(city, locale)
+// Same coarse build-time cut as ListView: drop days before today.
+const todayAbsolute = new Date().toISOString().slice(0, 10)
+const daysOf = (isFilm: boolean) =>
+  groupEventsByDay(events.filter((e) => e.isFilm === isFilm)).filter(
+    (d) => d.date >= todayAbsolute,
+  )
+const eventDays = daysOf(false)
+const filmDays = daysOf(true)
+const directory = layoutVenueDirectory(await getVenueDirectory(city))
+
+// Only offer the event/film views the city actually has (Amsterdam: no film).
+const options: GridRadioOption[] = [
+  ...(eventDays.length ? [{ value: "events", label: strings.viewEvents }] : []),
+  ...(filmDays.length ? [{ value: "films", label: strings.viewFilms }] : []),
+  { value: "venues", label: strings.viewVenues },
+]
+const agendaViews = [
+  { value: "events", days: eventDays },
+  { value: "films", days: filmDays },
+].filter((v) => v.days.length)
+---
+<Layout
+  locale={locale}
+  title={`${strings.myList} — ${strings.siteTitle}`}
+  canonical={`/${city}/${locale}/${MY_LIST}`}
+  genre={MY_LIST}
+>
+  <Navbar city={city} locale={locale} activeList={MY_LIST} />
+  <main>
+    {/* SSR shows the venue directory (the right first paint for a visitor
+        with no favourites yet); the script below filters the agenda views and
+        switches to the stored view once it knows there are favourites. */}
+    <div data-view-root="my-list" data-active-view="venues">
+      <OptionsPanel colspan={4}>
+        <GridRadioButtons name="my-list" value="venues" options={options} />
+      </OptionsPanel>
+
+      {agendaViews.map((v) => (
+        <div data-view={v.value} hidden>
+          {/* Shown by the script when the favourites have nothing upcoming in
+              this view. */}
+          <div data-view-empty hidden class="gridpaper">
+            <p style="grid-row: 1" class="cell cell-truncate gc-full text-muted-foreground">
+              <span class="cell-text">{strings.noEvents}</span>
+            </p>
+          </div>
+          {v.days.map((d) => <AgendaDay day={d} locale={locale} genre={MY_LIST} />)}
+        </div>
+      ))}
+      <div data-view="venues">
+        <VenueDirectory layout={directory} locale={locale} />
+      </div>
+    </div>
+  </main>
+
+  <script>
+    import { initViewSwitch } from "@/lib/view-switch"
+    import {
+      browserStore,
+      readFavourites,
+      FAVOURITES_EVENT,
+    } from "@/lib/favourites"
+
+    const root = document.querySelector<HTMLElement>('[data-view-root="my-list"]')
+
+    // Mark rows from non-favourite venues; syncAgenda hides them, packs the
+    // survivors and hides days left empty.
+    function applyFilter(favs: Set<string>) {
+      root
+        ?.querySelectorAll<HTMLElement>("[data-event-row]")
+        .forEach((row) =>
+          row.toggleAttribute("data-filtered", !favs.has(row.dataset.venue ?? "")),
+        )
+      window.syncAgenda?.()
+      updateEmpty()
+    }
+
+    // A view whose days are all hidden shows the "no upcoming events" line.
+    function updateEmpty() {
+      root?.querySelectorAll<HTMLElement>("[data-view]").forEach((view) => {
+        const empty = view.querySelector<HTMLElement>("[data-view-empty]")
+        if (!empty) return
+        empty.hidden = view.querySelector("section[data-date]:not([hidden])") !== null
+      })
+      window.syncGrid?.()
+    }
+
+    const views = initViewSwitch("my-list", "my-list-view", "events", updateEmpty)
+    const favs = readFavourites(browserStore())
+    applyFilter(favs)
+    // No favourites yet: open on the venue directory (without persisting it).
+    views?.show(favs.size ? views.stored() : "venues")
+
+    window.addEventListener(FAVOURITES_EVENT, (e) =>
+      applyFilter((e as CustomEvent<Set<string>>).detail),
+    )
+  </script>
+</Layout>

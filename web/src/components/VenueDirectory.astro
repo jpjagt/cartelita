@@ -1,0 +1,40 @@
+---
+import type { VenueDirectoryLayout, Locale } from "@/lib/types"
+import { t, categoryName } from "@/i18n"
+import FavouriteStar from "@/components/FavouriteStar.astro"
+interface Props { layout: VenueDirectoryLayout; locale: Locale }
+const { layout, locale } = Astro.props
+const strings = t(locale)
+---
+{/* My list venue directory: one card per category list with a star per venue,
+    on the same masonry card grid as the film "by film" view (.gc-film-card
+    geometry, packing from lib/venue-directory.ts). Stars here are always
+    visible (no hover reveal). */}
+<section class="gridpaper">
+  <h2
+    style="grid-row: 1"
+    class="cell cell-truncate cell-lined gc-full bg-muted font-medium"
+  ><span class="cell-text">{strings.pickVenues}</span></h2>
+
+  {layout.groups.map((p) => (
+    <div
+      data-genre={p.group.listSlug}
+      class="gc-film-card contents"
+      style={`--fcol: ${p.col3}; --frow: ${p.row3}; --fcol2: ${p.col2}; --frow2: ${p.row2}; --frow1: ${p.row1}`}
+    >
+      <h3 class="cell cell-truncate gc-film-title text-foreground font-medium cell-outline-foreground cell-underlined"
+        ><span class="cell-text">{categoryName(locale, p.group.listSlug)}</span></h3>
+      {p.group.venues.map((v, sr) => (
+        <div style={`--sr: ${sr}`} class="gc-film-showtime gc-venue-row">
+          <FavouriteStar venueSlug={v.slug} venueName={v.name} label={strings.favouriteVenue} />
+          <span class="cell cell-truncate text-foreground"><span class="cell-text">{v.name}</span></span>
+        </div>
+      ))}
+    </div>
+  ))}
+
+  <div
+    style={`--fmax: ${layout.rows3}; --fmax2: ${layout.rows2}; --fmax1: ${layout.rows1}`}
+    class="cell gc-full gc-film-spacer"
+  />
+</section>

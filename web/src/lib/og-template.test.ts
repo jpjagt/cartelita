@@ -64,7 +64,7 @@ describe("renderOgHtml", () => {
       events: [
         {
           id: 1, title: "Martin Harley", startDate: "2026-06-07",
-          startTime: "19:00", venueName: "Jamboree", price: "16€",
+          startTime: "19:00", venueSlug: "jamboree", venueName: "Jamboree", price: "16€",
           sourceUrl: "https://x", recurrenceHint: null,
         },
       ],

@@ -173,6 +173,44 @@
 .gc-full {
   grid-column: var(--c-time) / var(--c-end);
 }
+/* Favourite star: one cell in the margin column just left of the band, on the
+     event's row. Hidden until the row is hovered (or the star is focused), so
+     the table reads clean; the My list venue directory shows its stars always
+     (.fav-star-always). No margin column (mobile, narrow windows) → no star;
+     those visitors favourite from the My list directory instead. */
+.gc-fav {
+  grid-column: calc(var(--c-time) - 1) / span 1;
+  grid-row: calc(2 + var(--ev));
+  visibility: hidden;
+}
+[data-event-row]:hover .gc-fav,
+.gc-fav:focus-visible {
+  visibility: visible;
+}
+.gridpaper[data-no-margin] .gc-fav {
+  display: none;
+}
+.fav-star {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+  justify-content: center;
+  color: var(--muted-foreground);
+}
+.fav-star:hover {
+  color: var(--foreground);
+}
+.fav-star > .cell-text::before {
+  content: "\2606"; /* ☆ */
+}
+.fav-star[aria-pressed="true"] {
+  color: var(--genre-primary);
+}
+.fav-star[aria-pressed="true"] > .cell-text::before {
+  content: "\2605"; /* ★ */
+}
 /* Blank spacer beneath a day's events; --ev = event count. Desktop = 1 row
      per event, so it sits at 2 + count. */
 .gc-spacer {
@@ -218,6 +256,9 @@
   }
   .gc-spacer {
     grid-row: calc(2 + var(--ev) * 2);
+  }
+  .gc-fav {
+    display: none;
   }
   .gc-early-toggle {
     grid-row: calc(2 + var(--ev) * 2);
@@ -284,6 +325,11 @@
 .gc-st-place {
   justify-content: flex-start;
   text-align: left;
+}
+/* Venue directory row (My list): star cell · venue name, on the showtime row
+     geometry. */
+.gc-venue-row {
+  grid-template-columns: var(--cell) 1fr;
 }
 /* The film spacer sits one row below the tallest column. --fmax = total cell
      rows consumed by the day's packing (computed in the component). */
@@ -397,19 +443,14 @@
   border-color: var(--muted-foreground);
 }
 
-/* Film view toggle: hide whichever tree isn't active. */
-#film-view-root[data-active-view="films"] [data-film-view="time"],
-#film-view-root[data-active-view="time"] [data-film-view="films"] {
-  display: none;
-}
 
-/* Film page: two empty cell rows of breathing space above each day header, in
+/* Pages with a view switcher (film, My list): two empty cell rows of breathing space above each day header, in
    both view modes. Use padding (not margin) so the section's own .gridpaper
    background keeps drawing its gridlines through the gap — the lines stay
    continuous instead of leaving a blank band. background-position is nudged by
    the same 2 cells so the texture still lands on whole-cell boundaries (the
    grid tracks begin below the padding). Each section is its own .gridpaper. */
-#film-view-root section[data-date] {
+[data-view-root] section[data-date] {
   padding-top: calc(var(--cell) * 2);
   background-position: 0 calc(var(--cell) * 2);
 }
@@ -417,7 +458,7 @@
    needs no extra gap above it. The first day is marked at runtime by syncAgenda
    (data-first-day) because past days are hidden, not removed — a CSS
    :first-of-type would wrongly match a hidden past section. */
-#film-view-root section[data-date][data-first-day] {
+[data-view-root] section[data-date][data-first-day] {
   padding-top: 0;
   background-position: 0 0;
 }

@@ -76,7 +76,9 @@ const ssrPos = options.map((opt) => {
   // on `gridsync` (after Layout settles --cell/--col-start), and on resize.
   function spanCells(el: HTMLElement, cell: number): number {
     const text = el.querySelector<HTMLElement>(".cell-text") ?? el
-    return Math.max(1, Math.ceil((text.scrollWidth + 6) / cell))
+    // +6 = the cell's horizontal padding; +1 because scrollWidth rounds the
+    // text width, and a sub-pixel overflow would still ellipsize ("Venu…").
+    return Math.max(1, Math.ceil((text.scrollWidth + 7) / cell))
   }
 
   function layoutGridRadios() {

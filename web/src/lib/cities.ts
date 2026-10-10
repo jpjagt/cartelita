@@ -22,6 +22,10 @@ export const CITIES: Record<string, CityConfig> = {
   },
 };
 
+// Slug of the per-visitor favourites page, /:city/:locale/my-list. Lives beside
+// the category list routes, so no cartelera list may use this slug.
+export const MY_LIST = "my-list";
+
 export const CITY_SLUGS = Object.keys(CITIES);
 
 export function cityConfig(slug: string): CityConfig {

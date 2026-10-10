@@ -1,6 +1,6 @@
 ---
 import { getCategoryLists } from "@/lib/queries"
-import { cityConfig } from "@/lib/cities"
+import { cityConfig, MY_LIST } from "@/lib/cities"
 import { type Locale } from "@/lib/types"
 import { t, categoryName } from "@/i18n"
 
@@ -15,6 +15,11 @@ const strings = t(locale)
 const cityCfg = cityConfig(city)
 const LOCALES = cityCfg.locales // the locale switcher offers the CITY's locales
 const lists = await getCategoryLists(city)
+// Category tabs, then the visitor's own My list (favourite venues) at the end.
+const navItems = [
+  ...lists.map((l) => ({ slug: l.slug, label: categoryName(locale, l.slug), primary: l.primary })),
+  { slug: MY_LIST, label: strings.myList, primary: true },
+]
 
 // SSR placement for the genre links so they don't pile up one-per-cell in the
 // top-left corner before the nav script runs. We flow them left-to-right on
@@ -26,8 +31,8 @@ const lists = await getCategoryLists(city)
 // is where the desktop layout lands them anyway.
 const NAV_START_COL = 16 // col-start(5) + 11-col wordmark
 let ssrCol = NAV_START_COL
-const navSSR = lists.map((l) => {
-  const chars = categoryName(locale, l.slug).length
+const navSSR = navItems.map((l) => {
+  const chars = l.label.length
   const span = Math.max(2, 2 + Math.floor((chars - 4) / 3))
   const startCol = ssrCol
   ssrCol += span
@@ -47,7 +52,7 @@ const ssrPos = (slug: string) =>
 
   {/* Category nav: JS places links on row 3, flowing right from col 12 (after
       the 11-col wordmark). Wraps up to row 2/1 before the locale zone (last 3 cols). */}
-  {lists.map((l) => (
+  {navItems.map((l) => (
     <a
       data-genre={l.slug}
       data-navlink
@@ -55,7 +60,7 @@ const ssrPos = (slug: string) =>
       aria-current={l.slug === activeList ? "page" : undefined}
       style={`grid-column: ${ssrPos(l.slug).startCol} / span ${ssrPos(l.slug).span}; grid-row: 3`}
       class={`cell cell-truncate cell-genre-hover whitespace-nowrap no-underline ${l.primary ? "text-foreground" : "text-muted-foreground"}${l.slug === activeList ? " cell-genre" : ""}`}
-    ><span class="cell-text">{categoryName(locale, l.slug)}</span></a>
+    ><span class="cell-text">{l.label}</span></a>
   ))}
 
   {/* Locale switcher. Desktop: one cell per locale, top-right row 1,

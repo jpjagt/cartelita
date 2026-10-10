@@ -1,6 +1,7 @@
 ---
 import type { AgendaEvent, Locale } from "@/lib/types"
 import { t } from "@/i18n"
+import FavouriteStar from "@/components/FavouriteStar.astro"
 interface Props {
   event: AgendaEvent
   locale: Locale
@@ -8,16 +9,33 @@ interface Props {
   /** 0-based index of this event within its day; drives grid-row via --ev. */
   index: number
 }
-const { event, locale, genre, index } = Astro.props
+const { event, locale, index } = Astro.props
+// Mixed-category pages (My list) tint each row by its own genre.
+const genre = event.genre ?? Astro.props.genre
 const strings = t(locale)
 const displayPrice = event.price
   ? (strings.prices[event.price] ?? event.price)
   : ""
 ---
-{/* One event = one row of the content band: time · title(grows) · place · price.
-   The wrapper carries data-time for the day/row visibility script; it sits
-   on the grid via `display: contents` so its children place directly. */}
-<div data-time={event.startTime ?? ""} data-genre={genre} style={`--ev: ${index}`} class="contents">
+{/* One event = one row of the content band: time · title(grows) · place · price,
+   plus a favourite star in the margin column left of the band (shown on row
+   hover). The wrapper carries data-time for the day/row visibility script and
+   data-venue for the My list filter; it sits on the grid via
+   `display: contents` so its children place directly. */}
+<div
+  data-event-row
+  data-time={event.startTime ?? ""}
+  data-venue={event.venueSlug}
+  data-genre={genre}
+  style={`--ev: ${index}`}
+  class="contents"
+>
+  <FavouriteStar
+    venueSlug={event.venueSlug}
+    venueName={event.venueName}
+    label={strings.favouriteVenue}
+    class="gc-fav"
+  />
   <time
     class="cell cell-truncate gc-time text-muted-foreground"
   ><span class="cell-text">{event.startTime ?? ""}</span></time>

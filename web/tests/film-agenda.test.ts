@@ -12,6 +12,7 @@ const ev = (
   title,
   startDate: "2026-06-08",
   startTime,
+  venueSlug: venue.toLowerCase(),
   venueName: venue,
   price: "8,50€",
   sourceUrl: `https://x/${id}`,

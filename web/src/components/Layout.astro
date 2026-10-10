@@ -87,6 +87,9 @@ const ogImageUrl = ogImage ? new URL(ogImage, Astro.site).href : undefined
           grid.style.setProperty("--grid-cols", String(gridCols));
           grid.style.setProperty("--band-cells", String(bandCells));
           grid.style.setProperty("--col-start", String(colStart));
+          // No margin column left of the band (mobile / narrow windows): the
+          // favourite star column has nowhere to sit, so CSS hides it.
+          grid.toggleAttribute("data-no-margin", colStart <= 1);
 
           // Film masonry columns, chosen LOGICALLY from how many whole cells
           // the band actually has — not a guessed pixel breakpoint (a CSS
@@ -172,14 +175,21 @@ const ogImageUrl = ogImage ? new URL(ogImage, Astro.site).href : undefined
         document.querySelectorAll<HTMLElement>("section[data-date]").forEach((section) => {
           const date = section.dataset.date ?? "";
           section.hidden = false;
+          // Rows a page filter marked data-filtered (My list: non-favourite
+          // venues) stay hidden and are treated as absent below.
           section.querySelectorAll<HTMLElement>("[data-time]").forEach((row) => {
-            row.hidden = false;
+            row.hidden = row.hasAttribute("data-filtered");
           });
           // Drop any prior early-screenings toggle; renumbering below recreates it.
           section.querySelector(".gc-early-toggle")?.remove();
 
           if (date < nowLogicalDate) {
             // Fully past logical days hidden (also heals a stale build).
+            section.hidden = true;
+            return;
+          }
+          if (!section.querySelector("[data-film-card]") && !packRows(section)) {
+            // Every row filtered out: the day has nothing to show.
             section.hidden = true;
             return;
           }
@@ -212,13 +222,27 @@ const ogImageUrl = ogImage ? new URL(ogImage, Astro.site).href : undefined
           .querySelectorAll<HTMLElement>("[data-first-day]")
           .forEach((el) => el.removeAttribute("data-first-day"));
         document
-          .querySelectorAll<HTMLElement>("[data-film-view]")
+          .querySelectorAll<HTMLElement>("[data-view]")
           .forEach((view) => {
             const first = [...view.querySelectorAll<HTMLElement>("section[data-date]")].find(
               (s) => !s.hidden,
             );
             first?.setAttribute("data-first-day", "");
           });
+      }
+
+      // Number the section's unfiltered rows (and its spacer) gap-free: the grid
+      // places rows at explicit lines via --ev, so filtered-out rows must not
+      // leave holes. Returns how many rows remain.
+      function packRows(section: HTMLElement): number {
+        const rows = [...section.querySelectorAll<HTMLElement>(
+          ".contents[data-time]:not([data-filtered])",
+        )];
+        rows.forEach((row, i) => row.style.setProperty("--ev", String(i)));
+        section
+          .querySelector<HTMLElement>(".gc-spacer")
+          ?.style.setProperty("--ev", String(rows.length));
+        return rows.length;
       }
 
       // Collapse the leading run of screenings that started >2h ago (cutoffKey)
@@ -229,7 +253,9 @@ const ogImageUrl = ogImage ? new URL(ogImage, Astro.site).href : undefined
       // The toggle occupies the top visible row; clicking it sets data-show-early
       // and re-runs syncAgenda, which then shows everything.
       function applyEarlyHide(section: HTMLElement, root: HTMLElement, cutoffKey: string) {
-        const rows = [...section.querySelectorAll<HTMLElement>(".contents[data-time]")];
+        const rows = [...section.querySelectorAll<HTMLElement>(
+          ".contents[data-time]:not([data-filtered])",
+        )];
         if (rows.length === 0) return;
 
         const expanded = section.hasAttribute("data-show-early");
@@ -346,7 +372,7 @@ const ogImageUrl = ogImage ? new URL(ogImage, Astro.site).href : undefined
         // last event in both the desktop (1 row/event) and mobile (2
         // rows/event) layouts — so we never duplicate that row math here.
         const anchor = target
-          ? target.querySelector<HTMLElement>(".cell")
+          ? target.querySelector<HTMLElement>(".gc-time")
           : section.querySelector<HTMLElement>(".gc-spacer");
         if (!anchor) return;
         const gridRowStart = getComputedStyle(anchor).gridRowStart;

@@ -1,4 +1,4 @@
-export type Locale = "ca" | "es" | "en" | "hy" | "ru";
+export type Locale = "ca" | "es" | "en" | "hy" | "ru" | "nl";
 
 /** A city Cartelita runs in; which locales it serves and its landing list.
     The config values live in cities.ts. */
@@ -27,11 +27,61 @@ export interface AgendaEvent {
   title: string;       // resolved for the active locale (translation ?? canonical)
   startDate: string;   // ISO yyyy-mm-dd
   startTime: string | null; // 'HH:MM' or null
+  venueSlug: string;   // stable venue key; favourites are stored by it
   venueName: string;
   price: string | null;
   sourceUrl: string;   // resolved for the active locale
   recurrenceHint: string | null;
   language: string | null; // display-only performance/source language ("VOSE", "hy")
+  /** Per-event genre for hover tinting, on pages mixing categories (My list).
+      Category pages leave it unset and tint by the page's own list. */
+  genre?: string;
+}
+
+/** A city-wide agenda event for the My list page, split into the Events and
+    Films views by isFilm. */
+export interface CityAgendaEvent extends AgendaEvent {
+  isFilm: boolean;
+}
+
+export interface VenueRef {
+  slug: string;
+  name: string;
+}
+
+/** One category list's venues, for the My list venue directory. */
+export interface VenueGroup {
+  listSlug: string;
+  venues: VenueRef[];
+}
+
+/** Where one card lands in each masonry packing (see lib/masonry.ts). */
+export interface CardPlacement {
+  col3: number;       // 0-based column index in the 3-column packing
+  row3: number;       // 0-based row offset in the 3-column packing
+  col2: number;       // 0-based column index in the 2-column packing
+  row2: number;       // 0-based row offset in the 2-column packing
+  row1: number;       // 0-based row offset in the single-column stack
+}
+
+/** Card placements plus the total cell rows each packing consumes. */
+export interface MasonryLayout {
+  placements: CardPlacement[];
+  rows3: number;
+  rows2: number;
+  rows1: number;
+}
+
+/** A venue-directory card placed on the grid (same packing as film cards). */
+export interface PackedVenueGroup extends CardPlacement {
+  group: VenueGroup;
+}
+
+export interface VenueDirectoryLayout {
+  groups: PackedVenueGroup[];
+  rows3: number;
+  rows2: number;
+  rows1: number;
 }
 
 export interface AgendaDay {
@@ -50,15 +100,9 @@ export interface FilmGroup {
 /** A film card placed onto the shared cell grid at a given column + row offset.
     Both the 3-column and 2-column masonry packings are precomputed at build
     time; CSS media queries pick which (col/row) pair applies. */
-export interface PackedFilm {
+export interface PackedFilm extends CardPlacement {
   film: FilmGroup;
   height: number;     // card height in cells = 1 (title) + showtimes.length
-  col3: number;       // 0-based column index in the 3-column packing
-  row3: number;       // 0-based row offset within the day in the 3-column packing
-  col2: number;       // 0-based column index in the 2-column packing
-  row2: number;       // 0-based row offset within the day in the 2-column packing
-  row1: number;       // 0-based row offset in the single-column (mobile) stack,
-                      // where each showtime occupies 2 rows
 }
 
 export interface FilmDayLayout {

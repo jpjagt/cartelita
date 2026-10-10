@@ -8,6 +8,11 @@ interface Strings {
   viewFilms: string
   viewByTime: string
   showEarlier: string
+  myList: string
+  viewEvents: string
+  viewVenues: string
+  favouriteVenue: string   // star button label (aria)
+  pickVenues: string       // venue directory heading on My list
   // category names keyed by category slug
   categories: Record<string, string>
   prices: Record<string, string>
@@ -22,6 +27,11 @@ const DICT: Record<Locale, Strings> = {
     viewFilms: "Per pel·li",
     viewByTime: "Per hora",
     showEarlier: "Mostra sessions anteriors",
+    myList: "La meva llista",
+    viewEvents: "Esdeveniments",
+    viewVenues: "Espais",
+    favouriteVenue: "Espai preferit",
+    pickVenues: "Marca els teus espais preferits",
     categories: {
       film: "Cinema",
       jazz: "Jazz",
@@ -45,6 +55,11 @@ const DICT: Record<Locale, Strings> = {
     viewFilms: "Por peli",
     viewByTime: "Por hora",
     showEarlier: "Mostrar sesiones anteriores",
+    myList: "Mi lista",
+    viewEvents: "Eventos",
+    viewVenues: "Salas",
+    favouriteVenue: "Sala favorita",
+    pickVenues: "Marca tus salas favoritas",
     categories: {
       film: "Cine",
       jazz: "Jazz",
@@ -68,6 +83,11 @@ const DICT: Record<Locale, Strings> = {
     viewFilms: "By film",
     viewByTime: "By time",
     showEarlier: "Show earlier screenings",
+    myList: "My list",
+    viewEvents: "Events",
+    viewVenues: "Venues",
+    favouriteVenue: "Favourite venue",
+    pickVenues: "Star your favourite venues",
     categories: {
       film: "Film",
       jazz: "Jazz",
@@ -91,6 +111,11 @@ const DICT: Record<Locale, Strings> = {
     viewFilms: "Ըստ ֆիլմի",
     viewByTime: "Ըստ ժամի",
     showEarlier: "Ցույց տալ ավելի վաղ սեանսները",
+    myList: "Իմ ցանկը",
+    viewEvents: "Միջոցառումներ",
+    viewVenues: "Վայրեր",
+    favouriteVenue: "Սիրելի վայր",
+    pickVenues: "Նշեք ձեր սիրելի վայրերը",
     categories: {
       film: "Կինո",
       jazz: "Ջազ",
@@ -114,6 +139,11 @@ const DICT: Record<Locale, Strings> = {
     viewFilms: "По фильмам",
     viewByTime: "По времени",
     showEarlier: "Показать более ранние сеансы",
+    myList: "Мой список",
+    viewEvents: "События",
+    viewVenues: "Площадки",
+    favouriteVenue: "Любимая площадка",
+    pickVenues: "Отметьте любимые площадки",
     categories: {
       film: "Кино",
       jazz: "Джаз",
@@ -129,6 +159,34 @@ const DICT: Record<Locale, Strings> = {
     },
     prices: { free: "Бесплатно", "sold-out": "Распродано" },
   },
+  nl: {
+    siteTitle: "Cartelita",
+    noEvents: "Geen komende evenementen.",
+    back: "Home",
+    andMore: "en meer",
+    viewFilms: "Per film",
+    viewByTime: "Op tijd",
+    showEarlier: "Toon eerdere voorstellingen",
+    myList: "Mijn lijst",
+    viewEvents: "Evenementen",
+    viewVenues: "Locaties",
+    favouriteVenue: "Favoriete locatie",
+    pickVenues: "Markeer je favoriete locaties",
+    categories: {
+      film: "Film",
+      jazz: "Jazz",
+      classical: "Klassiek",
+      theater: "Theater",
+      club: "Club",
+      flamenco: "Flamenco",
+      dance: "Dans",
+      kids: "Kinderen",
+      pop: "Pop",
+      folk: "Folk",
+      rock: "Rock",
+    },
+    prices: { free: "Gratis", "sold-out": "Uitverkocht" },
+  },
 }
 
 export function t(locale: Locale): Strings {
@@ -141,6 +199,6 @@ export function categoryName(locale: Locale, slug: string): string {
 
 /** BCP-47 tag for Intl/date formatting. */
 export function localeTag(locale: Locale): string {
-  const tags = { ca: "ca-ES", es: "es-ES", en: "en-GB", hy: "hy-AM", ru: "ru-RU" } as const
+  const tags = { ca: "ca-ES", es: "es-ES", en: "en-GB", hy: "hy-AM", ru: "ru-RU", nl: "nl-NL" } as const
   return tags[locale]
 }

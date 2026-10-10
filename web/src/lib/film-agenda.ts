@@ -1,5 +1,6 @@
 import type { AgendaEvent, FilmGroup, FilmDayLayout, PackedFilm } from "@/lib/types";
 import { timeSortKey } from "@/lib/agenda";
+import { packCards } from "@/lib/masonry";
 
 /** Drop a trailing bracketed suffix like " (VOSE)" or " [VOSE]" — version/format
     tags scrapers append to the title — so variants of the same film collapse. */
@@ -66,63 +67,21 @@ function cardHeight(film: FilmGroup): number {
   return 1 + film.showtimes.length;
 }
 
-/** Shortest-column masonry packing over `cols` columns, in the given film
-    order. Returns, per film, the chosen column and its starting row offset,
-    plus the total rows consumed (the tallest column). Ties pick the leftmost
-    column to preserve left-to-right reading order. */
-function pack(
-  films: FilmGroup[],
-  cols: number,
-): { placed: { col: number; row: number }[]; rows: number } {
-  const heights = new Array(cols).fill(0);
-  const placed = films.map((film) => {
-    let col = 0;
-    for (let c = 1; c < cols; c++) {
-      if (heights[c] < heights[col]) col = c;
-    }
-    const row = heights[col];
-    heights[col] += cardHeight(film) + 1; // + 1-cell gutter between cards
-    return { col, row };
-  });
-  // Each column ends with a trailing gutter; the consumed rows is the tallest
-  // column minus that final gutter (0 when there are no films).
-  const rows = Math.max(0, ...heights.map((h) => Math.max(0, h - 1)));
-  return { placed, rows };
-}
-
-/** Single-column (mobile) stack: cards in order, each showtime on one grid row
-    (same height as desktop). Returns the row offset per film and total rows. */
-function stackSingle(films: FilmGroup[]): { rows1: number[]; total: number } {
-  let acc = 0;
-  const rows1 = films.map((film) => {
-    const at = acc;
-    acc += cardHeight(film) + 1; // title + 1/showtime + gutter
-    return at;
-  });
-  return { rows1, total: Math.max(0, acc - 1) };
-}
-
 /** Build the film-day layout: grouped films plus both the 3-column and
     2-column masonry packings (CSS selects which applies per breakpoint). */
 export function groupFilmDay(date: string, events: AgendaEvent[]): FilmDayLayout {
   const films = groupFilms(events);
-  const p3 = pack(films, 3);
-  const p2 = pack(films, 2);
-  const single = stackSingle(films);
+  const layout = packCards(films.map(cardHeight));
   const packed: PackedFilm[] = films.map((film, i) => ({
     film,
     height: cardHeight(film),
-    col3: p3.placed[i].col,
-    row3: p3.placed[i].row,
-    col2: p2.placed[i].col,
-    row2: p2.placed[i].row,
-    row1: single.rows1[i],
+    ...layout.placements[i],
   }));
   return {
     date,
     films: packed,
-    rows3: p3.rows,
-    rows2: p2.rows,
-    rows1: single.total,
+    rows3: layout.rows3,
+    rows2: layout.rows2,
+    rows1: layout.rows1,
   };
 }
