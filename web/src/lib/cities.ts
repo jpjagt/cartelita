@@ -20,6 +20,13 @@ export const CITIES: Record<string, CityConfig> = {
     defaultLocale: "hy",
     defaultList: "jazz",
   },
+  amsterdam: {
+    slug: "amsterdam",
+    name: "Amsterdam",
+    locales: ["nl", "en"],
+    defaultLocale: "nl",
+    defaultList: "jazz",
+  },
 };
 
 // Slug of the per-visitor favourites page, /:city/:locale/my-list. Lives beside

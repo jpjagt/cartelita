@@ -9,6 +9,7 @@ from cartelera.types import VenueDefinition
 CITIES = [
     ("barcelona", "Barcelona"),
     ("yerevan", "Yerevan"),
+    ("amsterdam", "Amsterdam"),
 ]
 
 # Categories are global (shared across cities); lists are per-city, created

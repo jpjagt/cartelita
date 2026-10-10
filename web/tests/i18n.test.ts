@@ -17,6 +17,12 @@ describe("i18n", () => {
     expect(localeTag("ca")).toBe("ca-ES");
   });
 
+  it("serves the Amsterdam locale", () => {
+    expect(t("nl").myList).toBe("Mijn lijst");
+    expect(categoryName("nl", "classical")).toBe("Klassiek");
+    expect(localeTag("nl")).toBe("nl-NL");
+  });
+
   it("serves the Yerevan locales", () => {
     expect(categoryName("hy", "jazz")).toBe("Ջազ");
     expect(categoryName("ru", "film")).toBe("Кино");
@@ -25,7 +31,7 @@ describe("i18n", () => {
   });
 
   it("every locale translates every seeded category", () => {
-    const locales = ["ca", "es", "en", "hy", "ru"] as const;
+    const locales = ["ca", "es", "en", "hy", "ru", "nl"] as const;
     // Mirror of scraper seed.CATEGORIES — a category a scraper can emit must
     // have a display name in every locale's chrome.
     const slugs = ["film", "jazz", "classical", "theater", "club", "flamenco",
