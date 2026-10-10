@@ -6,8 +6,11 @@ interface Props {
   label: string
   /** Grid placement / visibility classes from the caller. */
   class?: string
+  /** Render inline in running text (after a venue name) instead of as its own
+      grid cell. */
+  inline?: boolean
 }
-const { venueSlug, venueName, label, class: className = "" } = Astro.props
+const { venueSlug, venueName, label, class: className = "", inline = false } = Astro.props
 ---
 {/* Toggles the venue in the browser's favourites (lib/favourites.ts). Every
     star for the same venue on the page flips together; aria-pressed carries the
@@ -19,7 +22,7 @@ const { venueSlug, venueName, label, class: className = "" } = Astro.props
   aria-pressed="false"
   aria-label={`${label}: ${venueName}`}
   title={label}
-  class={`fav-star cell ${className}`}
+  class={`fav-star ${inline ? "fav-star-inline" : "cell"} ${className}`}
 ><span class="cell-text" aria-hidden="true"></span></button>
 
 <script>

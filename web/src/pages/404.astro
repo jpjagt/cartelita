@@ -1,0 +1,10 @@
+---
+import Layout from "@/components/Layout.astro"
+import CityPicker from "@/components/CityPicker.astro"
+
+// Served by the static host for any missing path (nginx error_page 404 →
+// /404.html). No city context here, so it's the city selector with a note.
+---
+<Layout locale="en" title="Not found — Cartelita" canonical="/404" genre="">
+  <CityPicker message="404 — page not found" />
+</Layout>

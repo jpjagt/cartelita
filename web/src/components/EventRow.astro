@@ -55,9 +55,17 @@ const displayPrice = event.price
     </span>
   </a>
 
+  {/* Where there's no margin column (mobile, narrow windows) the star rides
+      inline after the venue name instead, always visible (see .fav-star-inline). */}
   <div
     class="cell cell-truncate cell-right gc-place"
-  ><span class="cell-text">{event.venueName}</span></div>
+  ><span class="cell-text">{event.venueName}</span><FavouriteStar
+      venueSlug={event.venueSlug}
+      venueName={event.venueName}
+      label={strings.favouriteVenue}
+      inline
+      class="mx-2"
+    /></div>
 
   <div
     class="cell cell-truncate cell-right gc-price text-muted-foreground"

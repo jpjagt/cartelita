@@ -196,7 +196,29 @@
   background: transparent;
   font: inherit;
   cursor: pointer;
+  color: var(--muted-foreground);
+}
+/* .cell (declared later) sets justify-content: flex-start; out-rank it so the
+     glyph sits centered in its square. */
+.cell.fav-star {
   justify-content: center;
+}
+/* Inline variant: after the venue name in the place cell, only where the
+     margin column is missing (mobile / narrow windows: the grid script sets
+     data-no-margin; the media query covers first paint). Always visible, and
+     always the muted text color, filled or outline. */
+.fav-star-inline {
+  display: none;
+  flex-shrink: 0;
+  padding: 0;
+  line-height: 1;
+}
+.gridpaper[data-no-margin] .fav-star-inline {
+  display: inline-flex;
+}
+.fav-star.fav-star-inline,
+.fav-star.fav-star-inline:hover,
+.fav-star.fav-star-inline[aria-pressed="true"] {
   color: var(--muted-foreground);
 }
 .fav-star:hover {
@@ -259,6 +281,9 @@
   }
   .gc-fav {
     display: none;
+  }
+  .fav-star-inline {
+    display: inline-flex;
   }
   .gc-early-toggle {
     grid-row: calc(2 + var(--ev) * 2);
