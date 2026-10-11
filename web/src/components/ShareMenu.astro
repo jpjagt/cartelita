@@ -42,6 +42,7 @@ const { timezone } = cityConfig(city)
 <script>
   import { eventOf, shareEvent, addToCalendar } from "@/lib/event-actions"
   import { NARROW_QUERY } from "@/lib/breakpoints"
+  import { liveGrid } from "@/lib/grid-client"
 
   const menu = document.querySelector<HTMLElement>("[data-share-menu]")
   const NARROW = window.matchMedia(NARROW_QUERY)
@@ -61,7 +62,7 @@ const { timezone } = cityConfig(city)
   function place(r: HTMLElement, t: HTMLElement) {
     const section = r.closest<HTMLElement>(".gridpaper")!
     section.appendChild(menu!)
-    const cell = parseFloat(getComputedStyle(section).getPropertyValue("--cell")) || 32
+    const cell = liveGrid().cell
     const box = section.getBoundingClientRect()
     const anchor = t.getBoundingClientRect()
     const price = r.querySelector(".gc-price")!.getBoundingClientRect()

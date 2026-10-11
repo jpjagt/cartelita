@@ -1,4 +1,5 @@
-import type { NavGeometry, NavPlacement } from "@/lib/types";
+import type { CssDecls, GridGeometry, LocalePlacement, NavGeometry, NavPlacement } from "@/lib/types";
+import { cellSpan, LABEL_CELLS } from "@/lib/price-fit";
 
 // Navbar link packing (Navbar.astro), pure so it can be tested for overlaps.
 // Links place onto the one page grid by column line, each spanning the whole
@@ -51,4 +52,51 @@ export function layoutNavLinks(spans: number[], g: NavGeometry): NavPlacement[] 
     col += span;
   }
   return beside;
+}
+
+/** Narrow wordmark width in cells (.navbar-wordmark, rows 1–2). */
+export const NARROW_WORDMARK_COLS = 9;
+
+/** Place the locale switcher cells.
+    Desktop: one cell each, right-aligned on row 1.
+    Narrow: packed into the top-right corner beside the 9-col wordmark, flush
+    against the band's right edge: right-to-left on row 1, overflow wrapping
+    onto row 2 (also right-flush). */
+export function layoutLocales(count: number, bandCells: number, narrow: boolean): LocalePlacement[] {
+  const out: LocalePlacement[] = [];
+  if (!narrow) {
+    for (let i = 0; i < count; i++) out.push({ offset: count - i, row: 1 });
+    return out;
+  }
+  const perRow = Math.max(1, bandCells - NARROW_WORDMARK_COLS);
+  for (let i = 0; i < count; i++) {
+    const row = Math.floor(i / perRow);
+    const inRow = i % perRow;
+    const rowCount = Math.min(perRow, count - row * perRow);
+    // Right-aligned: the row's last cell sits at the band's last column.
+    out.push({ offset: rowCount - inRow, row: 1 + row });
+  }
+  return out;
+}
+
+/** The navbar's placement as CSS custom properties on the header, for labels
+    `ems` wide (advance at font-size 1px) and a grid of `g`'s geometry. Link i
+    reads --n{i}c (columns after --col-start), --n{i}s (span), --n{i}r (row);
+    locale i reads --l{i}o (cells before --c-end) and --l{i}r. Shared by the
+    build-time step table (Navbar.astro) and the client correction, so both
+    produce identical values. */
+export function navVars(ems: number[], localeCount: number, g: GridGeometry, narrow: boolean): CssDecls {
+  const spans = ems.map((em) => cellSpan(em * g.fontSize, g.cell, LABEL_CELLS));
+  const links = layoutNavLinks(spans, { colStart: 1, bandEnd: 1 + g.bandCells, localeCount, narrow });
+  const out: CssDecls = {};
+  links.forEach((p, i) => {
+    out[`--n${i}c`] = String(p.col - 1);
+    out[`--n${i}s`] = String(p.span);
+    out[`--n${i}r`] = String(p.row);
+  });
+  layoutLocales(localeCount, g.bandCells, narrow).forEach((p, i) => {
+    out[`--l${i}o`] = String(p.offset);
+    out[`--l${i}r`] = String(p.row);
+  });
+  return out;
 }

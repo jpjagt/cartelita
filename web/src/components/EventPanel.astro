@@ -59,6 +59,7 @@ const descriptionsJson = JSON.stringify(descriptions).replace(/</g, "\\u003c")
   import { panelRows } from "@/lib/event-panel"
   import { NARROW_QUERY } from "@/lib/breakpoints"
   import { FAVOURITES_EVENT } from "@/lib/favourites"
+  import { liveGrid } from "@/lib/grid-client"
 
   const template = document.querySelector<HTMLTemplateElement>("[data-event-panel-template]")
   const NARROW = window.matchMedia(NARROW_QUERY)
@@ -98,8 +99,7 @@ const descriptionsJson = JSON.stringify(descriptions).replace(/</g, "\\u003c")
   function measure(r: HTMLElement): boolean {
     const panel = r.querySelector<HTMLElement>("[data-event-panel]")
     if (!panel) return false
-    const section = sectionOf(r)
-    const cell = section ? parseFloat(section.style.getPropertyValue("--cell")) || 24 : 24
+    const cell = liveGrid().cell
     const desc = panel.querySelector<HTMLElement>("[data-panel-desc]")
     // scrollHeight is the full text's height (one cell per line) even while
     // clamped; the grid won't size a clamped box itself, so its height is set

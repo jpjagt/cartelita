@@ -2,13 +2,20 @@
 import type { AgendaDay, Locale } from "@/lib/types";
 import { localeTag } from "@/i18n";
 import EventRow from "@/components/EventRow.astro";
-interface Props { day: AgendaDay; locale: Locale; genre: string }
-const { day, locale, genre } = Astro.props;
+interface Props {
+  day: AgendaDay
+  locale: Locale
+  genre: string
+  /** First day of a switchable view: no breathing rows above it. syncAgenda
+      re-marks it at runtime (a stale build's first day may be past). */
+  first?: boolean
+}
+const { day, locale, genre, first = false } = Astro.props;
 const heading = new Date(day.date + "T00:00:00").toLocaleDateString(localeTag(locale), {
   weekday: "long", day: "numeric", month: "long",
 });
 ---
-<section data-date={day.date} class="gridpaper">
+<section data-date={day.date} data-first-day={first ? "" : undefined} class="gridpaper">
   {/* Day heading spans the full content band on its own row.
       To draw the internal vertical grid lines through this shaded header,
       add `cell-lined-cols` to the class list below (and `cell-lined-rows`

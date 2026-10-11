@@ -168,3 +168,70 @@ export interface NavPlacement {
   span: number;
   row: number;
 }
+
+/** One locale switcher cell's placement (lib/nav-layout.ts): `offset` cells
+    left of the band's end line (--c-end), on `row`. */
+export interface LocalePlacement {
+  offset: number;
+  row: number;
+}
+
+/** One GridRadioButtons option's placement (lib/radio-layout.ts): the
+    indicator cell at `col`, its label in the `span` cells right of it. */
+export interface RadioPlacement {
+  col: number;
+  span: number;
+  row: number;
+}
+
+/** Where a GridRadioButtons group packs its options (lib/radio-layout.ts). */
+export interface RadioGeometry {
+  startCol: number;   // column the first indicator sits on
+  bandEnd: number;    // exclusive end line of the band
+  baseRow: number;    // first row
+  vertical: boolean;  // one option per row (every other row) vs inline flow
+}
+
+/** The page grid at one container width (lib/grid-geometry.ts). */
+export interface GridGeometry {
+  fontSize: number;   // px; the grid's text size in this layout mode
+  cell: number;       // px; square cell side (fractional when narrow)
+  gridCols: number;   // whole columns that fit
+  bandCells: number;  // content band width, in cells
+  colStart: number;   // 1-based first column of the band
+  filmCols: number;   // film masonry columns (1–3)
+  filmWidth: number;  // film card width, in cells
+}
+
+/** CSS custom property declarations, name → value. */
+export type CssDecls = Record<string, string>;
+
+/** A layout value as a function of the container width (lib/step-table.ts). */
+export type StepFn = (width: number, narrow: boolean) => CssDecls;
+
+/** One layout mode's sweep: the value at the range start, then each change. */
+export interface StepSweep {
+  base: CssDecls;
+  steps: { minWidth: number; decls: CssDecls }[];
+}
+
+/** A step function swept over both layout modes (lib/step-table.ts). */
+export interface StepTable {
+  narrow: StepSweep;
+  wide: StepSweep;
+}
+
+/** A label's advance width at font-size 1px (lib/text-metrics.ts), and whether
+    the bundled font has every glyph (else the width is an estimate and the
+    client re-measures it in whatever font the browser picked). */
+export interface TextMeasure {
+  em: number;
+  covered: boolean;
+}
+
+/** A page's build-time price column fit (lib/price-css.ts). */
+export interface PricePageFit {
+  priceCells: number; // desktop --price-cells
+  coveredEm: number;  // widest price the bundled font fully covers, in em
+  css: string;        // narrow per-width --pw<key> step table
+}

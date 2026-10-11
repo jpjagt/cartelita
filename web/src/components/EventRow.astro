@@ -3,6 +3,7 @@ import type { AgendaEvent, Locale } from "@/lib/types"
 import { t } from "@/i18n"
 import FavouriteToggle from "@/components/FavouriteToggle.astro"
 import CellIcon from "@/components/ui/CellIcon.astro"
+import { displayPrice as priceLabel, priceRowVars } from "@/lib/price-css"
 interface Props {
   event: AgendaEvent
   locale: Locale
@@ -14,9 +15,11 @@ const { event, locale, index } = Astro.props
 // Mixed-category pages (My list) tint each row by its own genre.
 const genre = event.genre ?? Astro.props.genre
 const strings = t(locale)
-const displayPrice = event.price
-  ? (strings.prices[event.price] ?? event.price)
-  : ""
+const displayPrice = priceLabel(event.price, locale)
+// Narrow price span: a per-page, per-text-width var set by the page's price
+// step table (lib/price-css.ts); data-measure flags text the bundled font
+// can't measure, which the script below re-measures.
+const price = priceRowVars(displayPrice)
 ---
 {/* One event = one row of the content band:
    time · gap · title(grows) · share · place · heart · price.
@@ -37,7 +40,8 @@ const displayPrice = event.price
   data-time={event.startTime ?? ""}
   data-venue={event.venueSlug}
   data-genre={genre}
-  style={`--ev: ${index}`}
+  data-measure={price.measure ? "" : undefined}
+  style={`--ev: ${index}; --pc: ${price.pc}`}
   class="contents"
 >
   <time
@@ -82,73 +86,45 @@ const displayPrice = event.price
 </div>
 
 <script>
-  // Fit the price column to its text, in whole cells (see lib/price-fit.ts).
-  //  Desktop: one width per PAGE — the widest price, clamped to [3, 5] cells —
-  //  published as --price-cells on <html>; global.css shifts the place column
-  //  and the title's end by it, so the title absorbs the slack.
-  //  Narrow (<760px): each row sizes its own price span (--pc on the row
-  //  wrapper, [2, 6] cells); the place cell on row B takes the rest.
-  // Text is measured with canvas measureText in the price cell's font, once
-  // per distinct string, so a 5,000-row page costs no layout reads per row.
+  // Price column widths are measured at BUILD time (lib/price-css.ts):
+  //  Desktop: one width per page — the widest price, clamped to [3, 5] cells —
+  //  as --price-cells on <html>; global.css shifts the place column and the
+  //  title's end by it, so the title absorbs the slack.
+  //  Narrow (<760px): each row spans its own price (--pc on the row wrapper,
+  //  [2, 6] cells) from a per-width step table.
+  // This script only corrects prices the bundled font lacks glyphs for (row
+  // data-measure: Cyrillic / Armenian), measuring them with canvas
+  // measureText in the font the browser actually picked. Latin pages skip it.
   import { cellSpan, PRICE_CELLS_DESKTOP, PRICE_CELLS_MOBILE } from "@/lib/price-fit"
-  import { NARROW_QUERY } from "@/lib/breakpoints"
+  import { isNarrow, liveGrid, measureEm } from "@/lib/grid-client"
 
-  const ctx = document.createElement("canvas").getContext("2d")
-  const widths = new Map<string, number>()
-
-  function textWidth(text: string, font: string): number {
-    const key = `${font}\u0000${text}`
-    let w = widths.get(key)
-    if (w === undefined) {
-      ctx!.font = font
-      w = text ? ctx!.measureText(text).width : 0
-      widths.set(key, w)
-    }
-    return w
+  const rows = [...document.querySelectorAll<HTMLElement>("[data-event-row][data-measure]")]
+  const emOf = (row: HTMLElement) => {
+    const text = row.querySelector<HTMLElement>(".gc-price > .cell-text")
+    return text ? measureEm(text) : 0
   }
 
   function fitPrices() {
-    const first = document.querySelector<HTMLElement>(".gc-price > .cell-text")
-    if (!first || !ctx) return
-    const cs = getComputedStyle(first)
-    const font = `${cs.fontStyle} ${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`
-    const priceOf = (row: Element) =>
-      row.querySelector(".gc-price > .cell-text")?.textContent?.trim() ?? ""
-    // --cell is written inline on each section by syncGrid; reading the
-    // inline value avoids a style recalc per section. A hidden section has
-    // --cell 0 (no width) and is refit when its view is shown (syncGrid →
-    // gridsync).
-    const cellOf = (el: HTMLElement) => parseFloat(el.style.getPropertyValue("--cell")) || 0
-    const sections = [...document.querySelectorAll<HTMLElement>("section.gridpaper")]
-
-    if (!window.matchMedia(NARROW_QUERY).matches) {
-      // Desktop cells are a fixed size; take it from any laid-out section.
-      const cell = Math.max(0, ...sections.map(cellOf))
-      let widest = 0
-      for (const text of new Set([...document.querySelectorAll("[data-event-row]")].map(priceOf))) {
-        widest = Math.max(widest, textWidth(text, font))
-      }
+    const g = liveGrid()
+    if (!isNarrow()) {
+      // The widest of the build-time-measured prices, and the re-measured ones.
+      let widest = Number(document.documentElement.dataset.priceEm) || 0
+      for (const row of rows) widest = Math.max(widest, emOf(row))
       document.documentElement.style.setProperty(
         "--price-cells",
-        String(cellSpan(widest, cell, PRICE_CELLS_DESKTOP)),
+        String(cellSpan(widest * g.fontSize, g.cell, PRICE_CELLS_DESKTOP)),
       )
       return
     }
-    for (const section of sections) {
-      const cell = cellOf(section)
-      section.querySelectorAll<HTMLElement>("[data-event-row]").forEach((row) => {
-        const pc = String(cellSpan(textWidth(priceOf(row), font), cell, PRICE_CELLS_MOBILE))
-        if (row.style.getPropertyValue("--pc") !== pc) row.style.setProperty("--pc", pc)
-      })
+    for (const row of rows) {
+      const pc = String(cellSpan(emOf(row) * g.fontSize, g.cell, PRICE_CELLS_MOBILE))
+      if (row.style.getPropertyValue("--pc") !== pc) row.style.setProperty("--pc", pc)
     }
   }
 
-  fitPrices()
-  // syncGrid dispatches gridsync on resize/load and when a hidden view is
-  // shown, after --cell is settled.
-  window.addEventListener("gridsync", fitPrices)
-  document.fonts?.ready.then(() => {
-    widths.clear()
+  if (rows.length) {
     fitPrices()
-  })
+    window.addEventListener("gridsync", fitPrices)
+    document.fonts?.ready.then(fitPrices)
+  }
 </script>

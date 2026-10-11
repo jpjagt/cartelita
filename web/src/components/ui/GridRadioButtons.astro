@@ -1,5 +1,9 @@
 ---
 import type { GridRadioOption } from "@/lib/types"
+import { measureText } from "@/lib/text-metrics"
+import { radioVars } from "@/lib/radio-layout"
+import { gridGeometry } from "@/lib/grid-geometry"
+import { renderStepCss, stepTable } from "@/lib/step-table"
 interface Props {
   /** Group id; emitted as data-grid-radio so a page script can find this
       control and listen for its `gridradiochange` events. */
@@ -15,19 +19,22 @@ interface Props {
 }
 const { name, options, value, orientation = "horizontal" } = Astro.props
 
-// SSR placement so the cells don't flash auto-placed (top-left) before the
-// layout script runs. Mirrors layoutGridRadios' horizontal flow: each option is
-// indicator(1) + label(span) + a 1-cell gap, starting at the band's left edge
-// (--col-start) on the inline row (--gr-row defaults to 2). Label span estimates
-// from char count (2 cells up to 6 chars, +1 per ~3 after) — same rule as the
-// navbar. The script remeasures exact widths on load and overrides these.
-let ssrOffset = 0
-const ssrPos = options.map((opt) => {
-  const span = Math.max(2, 2 + Math.floor((opt.label.length - 4) / 3))
-  const indicatorCol = ssrOffset
-  ssrOffset += 1 + span + 1 // indicator + label + one-cell gap
-  return { indicatorCol, labelCol: indicatorCol + 1, span }
-})
+// Build-time placement: each label measured in the page font
+// (lib/text-metrics.ts), the packing (lib/radio-layout.ts) swept over every
+// container width into a step table on the group, so the first paint is
+// already final. Assumes the OptionsPanel host: starting at --col-start, on
+// row 2, inline unless `orientation` says vertical. Option i reads --r{i}c
+// (indicator columns after the start), --r{i}s (label span), --r{i}r (row).
+// The script below corrects other hosts and labels the font can't measure.
+const SSR_ROW = 2
+const vertical = orientation === "vertical"
+const ems = options.map((o) => measureText(o.label))
+const radioCss = renderStepCss(
+  `[data-grid-radio="${name}"]`,
+  stepTable((width, narrow) =>
+    radioVars(ems.map((m) => m.em), { baseRow: SSR_ROW, vertical }, gridGeometry(width, narrow)),
+  ),
+)
 ---
 {/* A radio group placed directly onto the parent .gridpaper grid. Each option
    is one square indicator cell + a label cell spanning whole cells. The wrapper
@@ -40,6 +47,7 @@ const ssrPos = options.map((opt) => {
   role="radiogroup"
   class="grid-radio contents"
 >
+  <style is:inline set:html={radioCss} />
   {options.map((opt, i) => (
     <label
       data-grid-radio-option
@@ -57,11 +65,13 @@ const ssrPos = options.map((opt) => {
       <span
         class="grid-radio-indicator cell"
         aria-hidden="true"
-        style={`grid-column: calc(var(--col-start) + ${ssrPos[i].indicatorCol}) / span 1; grid-row: 2`}
+        style={`grid-column: calc(var(--gr-start-col, var(--col-start)) + var(--r${i}c)) / span 1; grid-row: var(--r${i}r)`}
       />
       <span
         class="grid-radio-label cell cell-truncate text-foreground"
-        style={`grid-column: calc(var(--col-start) + ${ssrPos[i].labelCol}) / span ${ssrPos[i].span}; grid-row: 2`}
+        data-em={String(ems[i].em)}
+        data-measure={ems[i].covered ? undefined : ""}
+        style={`grid-column: calc(var(--gr-start-col, var(--col-start)) + var(--r${i}c) + 1) / span var(--r${i}s); grid-row: var(--r${i}r)`}
       >
         <span class="cell-text">{opt.label}</span>
       </span>
@@ -70,71 +80,40 @@ const ssrPos = options.map((opt) => {
 </div>
 
 <script>
-  // Pack each radio group onto its parent .gridpaper by column line, the same
-  // way the navbar packs its links: measure each label's whole-cell width and
-  // lay indicator + label pairs out from the band's start column. Runs on load,
-  // on `gridsync` (after Layout settles --cell/--col-start), and on resize.
-  function spanCells(el: HTMLElement, cell: number): number {
-    const text = el.querySelector<HTMLElement>(".cell-text") ?? el
-    // +6 = the cell's horizontal padding; +1 because scrollWidth rounds the
-    // text width, and a sub-pixel overflow would still ellipsize ("Venu…").
-    return Math.max(1, Math.ceil((text.scrollWidth + 7) / cell))
-  }
+  import { radioVars } from "@/lib/radio-layout"
+  import { correctVars, liveGrid, measureEm } from "@/lib/grid-client"
 
+  // The build-time step table already packs every group for every width
+  // (assuming the OptionsPanel host). This only CORRECTS it, writing inline
+  // on the group just the vars that differ: a host that places the control
+  // elsewhere (--gr-start-col / --gr-row / --gr-vertical), labels the bundled
+  // font can't cover (data-measure, re-measured in the font the browser
+  // picked), widths beyond the table. Usually it writes nothing.
   function layoutGridRadios() {
+    const g = liveGrid()
     document.querySelectorAll<HTMLElement>("[data-grid-radio]").forEach((group) => {
       const grid = group.closest<HTMLElement>(".gridpaper")
       if (!grid) return
-      const gcs = getComputedStyle(grid)
-      const cell = parseFloat(gcs.getPropertyValue("--cell")) || 32
-      const colStart = parseInt(gcs.getPropertyValue("--col-start")) || 1
-      const bandCells = parseInt(gcs.getPropertyValue("--band-cells")) || 40
-      const bandEnd = colStart + bandCells // exclusive end line
       const cs = getComputedStyle(group)
-      // The host (e.g. OptionsPanel) publishes placement via CSS vars:
-      //   --gr-vertical  1 = stack each option on its own row; 0 = flow inline
-      //   --gr-start-col column the control starts at
-      //   --gr-row       first row (host may reserve an empty row above)
-      // Each falls back sensibly so the component works standalone too.
       const cssVertical = cs.getPropertyValue("--gr-vertical").trim()
       const vertical =
         cssVertical !== "" ? cssVertical === "1" : group.dataset.orientation === "vertical"
-      const startCol =
-        parseInt(cs.getPropertyValue("--gr-start-col")) || colStart
+      const startCol = parseInt(cs.getPropertyValue("--gr-start-col")) || g.colStart
       const baseRow = parseInt(cs.getPropertyValue("--gr-row")) || 1
-
-      let col = startCol
-      let row = baseRow
-      group.querySelectorAll<HTMLElement>("[data-grid-radio-option]").forEach((opt) => {
-        const ind = opt.querySelector<HTMLElement>(".grid-radio-indicator")!
-        const lbl = opt.querySelector<HTMLElement>(".grid-radio-label")!
-        let labelSpan = spanCells(lbl, cell)
-        // Horizontal flow wraps to the next row when an option would cross the
-        // band's right edge (long labels in some locales, narrow phones), like
-        // the navbar does. Only a label wider than the whole band truncates.
-        if (!vertical && col > startCol && col + 1 + labelSpan > bandEnd) {
-          row += 1
-          col = startCol
-        }
-        labelSpan = Math.max(1, Math.min(labelSpan, bandEnd - col - 1))
-        ind.style.gridColumn = `${col} / span 1`
-        ind.style.gridRow = `${row}`
-        lbl.style.gridColumn = `${col + 1} / span ${labelSpan}`
-        lbl.style.gridRow = `${row}`
-        if (vertical) {
-          row += 2 // one empty cell row between stacked options
-        } else {
-          col += 1 + labelSpan + 1 // indicator + label + one-cell gap
-        }
-      })
+      const ems = [...group.querySelectorAll<HTMLElement>(".grid-radio-label")].map((lbl) =>
+        lbl.hasAttribute("data-measure")
+          ? measureEm(lbl.querySelector<HTMLElement>(".cell-text") ?? lbl)
+          : Number(lbl.dataset.em) || 0,
+      )
+      correctVars(group, radioVars(ems, { baseRow, vertical, startOffset: startCol - g.colStart }, g))
     })
   }
 
   layoutGridRadios()
   window.addEventListener("gridsync", layoutGridRadios)
-  window.addEventListener("optionspanel", layoutGridRadios)
-  window.addEventListener("resize", layoutGridRadios)
-  window.addEventListener("load", layoutGridRadios)
+  if (document.querySelector(".grid-radio-label[data-measure]")) {
+    document.fonts?.ready.then(layoutGridRadios)
+  }
 
   // Wire selection: clicking an option moves data-active and emits a
   // `gridradiochange` CustomEvent (detail = value). Stateless beyond the DOM.

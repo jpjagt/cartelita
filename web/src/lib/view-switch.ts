@@ -54,9 +54,9 @@ export function initViewSwitch(
           ? opt.setAttribute("data-active", "")
           : opt.removeAttribute("data-active"),
       );
-    // The just-revealed tree may have been hidden at first paint, so its
-    // .gridpaper sections still carry --cell:0px (clientWidth was 0). Re-sync
-    // the grid first, then re-place the now-markers.
+    // Announce gridsync for the just-revealed tree (its grid geometry comes
+    // from CSS, but dependents re-place against it), then re-place the
+    // now-markers.
     window.syncGrid?.();
     window.syncAgenda?.();
     onChange?.(view);

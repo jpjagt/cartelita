@@ -71,18 +71,24 @@
 
 /* ── Square graph-paper grid ──────────────────────────────────────────
    ONE full-bleed CSS grid is the whole system. Its own gridlines ARE the
-   graph paper — there is no separate background image and no per-pixel JS
-   sync. Cells are square (font-size × 1.8) and the grid fills the viewport
-   with `repeat(auto-fill, var(--cell))`, leaving at most a sub-cell sliver
-   on the right.
+   graph paper. Cells are square and the grid fills the viewport with
+   `repeat(auto-fill, var(--cell))`.
 
    Content does NOT use a second grid. It places into THIS grid by column
-   line number. JS computes just two integers per resize:
+   line number, reading a few numbers per container width:
+   --cell        the square cell side (32px desktop; narrow: the width / N,
+                 so N whole cells fill it exactly)
    --grid-cols   total whole columns that fit
    --band-cells  width of the centered content band (≈ 1300px / cell)
    --col-start   1-based column where the band begins, snapped so the band
-   is centered to the nearest whole cell (so it always lands
-   exactly on gridlines — texture stays continuous behind).
+                 is centered to the nearest whole cell (so it always lands
+                 exactly on gridlines — texture stays continuous behind)
+   --font-size, --film-width and the --fc3/--fc2/--fc1 film packing
+   flags ride along.
+   They are NOT declared here: a container-query step table generated at
+   build time from lib/grid-geometry.ts (lib/grid-css.ts, inlined by
+   Layout.astro) sets them for every width, so the first paint is already
+   right. syncGrid (Layout.astro) only backs it up beyond the table's range.
 
    Border model: every cell draws a real right + bottom border (= the grid
    lines). The grid draws its own top + left edge. Each line is therefore
@@ -92,16 +98,13 @@
    Per-cell extrusion: set --wall-top / --wall-left for a faux-isometric
    hover (translates toward bottom-right, revealing walls).
  */
+/* The query container the step tables measure: every .gridpaper is
+   full-bleed, so the body's width is each grid's width. */
+body {
+  container-type: inline-size;
+}
 .gridpaper {
-  --font-size: 18px;
-  --cell-multiplier: 1.8;
-  --cell: calc(var(--font-size) * var(--cell-multiplier)); /* ≈ 32px square */
   --grid-line: var(--muted);
-
-  /* JS overrides these on resize; sane SSR fallbacks below. */
-  --grid-cols: 50;
-  --band-cells: 40;
-  --col-start: 5;
 
   position: relative;
   display: grid;
@@ -124,20 +127,14 @@
   background-position: 0 0;
 }
 
-@media (max-width: 759.98px) {
-  .gridpaper {
-    --font-size: 16px;
-    --cell-multiplier: 1.5;
-  }
-}
-
 /* The content band is a sub-range of columns inside the one grid. We define
      per-field column lines relative to --col-start so children can place by
      name. Row layout (whole-cell fields, title absorbs slack):
      time(2) · gap(1) · title(rest) · share(1) · place(6) · heart(1) · price(P)
      — the share trigger and favourite heart live in the gap cells.
-     P = --price-cells, the page's widest price in whole cells ([3, 5]); set
-     on <html> by EventRow's price-fit script, 3 until it runs. It's read (not
+     P = --price-cells, the page's widest price in whole cells ([3, 5]),
+     measured at build time and set on <html> (Layout.astro; EventRow's
+     price-fit script only corrects it for scripts the font lacks). It's read (not
      declared) here so the root value inherits into every section. */
 .gridpaper {
   --c-time: var(--col-start);
@@ -516,9 +513,9 @@
   .gc-share.share-trigger {
     display: none;
   }
-  /* Row B: the price spans its own text (--pc on the row wrapper, set per row
-     by EventRow's price-fit script; 3 before it runs); the place takes the
-     rest. */
+  /* Row B: the price spans its own text (--pc on the row wrapper: a
+     per-page step table measured at build time, lib/price-css.ts); the place
+     takes the rest. */
   .gc-place {
     grid-column: calc(var(--c-time) + 2) / calc(var(--c-end) - var(--pc, 3));
     grid-row: calc(3 + var(--ev) * 2 + var(--po, 0));
@@ -575,13 +572,14 @@
      Each card occupies a column band on the shared cell grid; its title spans
      the band, with showtime rows beneath. Packing (which column, which row
      offset) is computed at build time and emitted as CSS vars on each card:
-       --fcol / --frow  : 3-column packing (desktop)
-       --fcol2 / --frow2: 2-column packing (≤768px)
-     Band = 40 cells. Desktop: 3 cols × 12 + 2 gutters × 2. The card's left
-     edge column = col-start + --fcol * 14 (12 card + 2 gutter stride).
-     Card-internal row: header is grid-row 1, so card top = 2 + --frow.
-     Showtime rows carry --sr (0-based index within the card); the title is
-     the card's first row. */
+       --fcol / --frow  : 3-column packing
+       --fcol2 / --frow2: 2-column packing
+       --frow1          : single column
+     The card's left edge column = col-start + column × (card width + the
+     2-cell gutter, FILM_GUTTER in lib/grid-geometry.ts). Card-internal row:
+     header is grid-row 1, so card top = 2 + the row offset. Showtime rows
+     carry --sr (0-based index within the card); the title is the card's
+     first row. */
 /* --film-left (start column) and --film-top (start row) are resolved ON THE
      CARD from the card's own --fcol/--frow inline vars, NOT indirected through
      .gridpaper — a var() is substituted at the element that declares it, so a
@@ -590,24 +588,23 @@
      Declaring here, where --fcol IS set, fixes that. The title and showtime
      children read the already-numeric --film-left/--film-top/--film-width,
      which inherit cleanly through the card's `display: contents`. */
-/* --film-width / --film-stride are set on the SECTION by the grid sync script
-     (scaled so `cols` cards fill the band exactly) and inherit down to the card.
-     --film-left/-top are resolved HERE because the packing vars (--fcol/--frow)
-     are inline on the card; a var() resolves at the element that declares it.
-     Defaults are the 3-column packing; data-film-cols="2"/"1" swap the packing
-     var below. SSR fallbacks for --film-width/-stride cover first paint before
-     the script runs. */
-/* SSR / first-paint default: 3-column geometry on the section, inherited by
-     cards. The script overwrites --film-width/-stride (scaled to the band) and
-     sets data-film-cols once it runs. Declared on .gridpaper so the card can
-     INHERIT it (declaring on the card would shadow the script's section value). */
-.gridpaper {
-  --film-width: 12;
-  --film-stride: 14;
-}
+/* --film-width (card width, scaled so the chosen number of columns fills
+     the band) and the packing flags --fc3 /
+     --fc2 / --fc1 (exactly one is 1) are set on the SECTION by the geometry
+     step table and inherit down to the cards. The column count is chosen
+     LOGICALLY from the band's whole cells (lib/grid-geometry.ts), not a pixel
+     breakpoint. CSS can't branch on a number, but it can multiply by a 0/1
+     flag: each card's column and row offset is the sum of its three packings
+     (build-time --fcol/--frow, --fcol2/--frow2, --frow1) weighted by the
+     flags, so only the active packing counts. In one column --film-width is
+     the whole band and every card starts at --col-start. */
 .gc-film-card {
-  --film-left: calc(var(--col-start) + var(--fcol) * var(--film-stride));
-  --film-top: calc(2 + var(--frow));
+  --film-left: calc(
+    var(--col-start) + (var(--fcol) * var(--fc3) + var(--fcol2) * var(--fc2)) * (var(--film-width) + 2)
+  );
+  --film-top: calc(
+    2 + var(--frow) * var(--fc3) + var(--frow2) * var(--fc2) + var(--frow1) * var(--fc1)
+  );
 }
 .gc-film-title {
   grid-column: var(--film-left) / span var(--film-width);
@@ -636,81 +633,12 @@
 .gc-venue-row {
   grid-template-columns: var(--cell) 1fr;
 }
-/* The film spacer sits one row below the tallest column. --fmax = total cell
-     rows consumed by the day's packing (computed in the component). */
+/* The film spacer sits one row below the tallest column. --fmax* = total cell
+     rows consumed by each packing (computed in the component). */
 .gc-film-spacer {
-  grid-row: calc(2 + var(--fmax));
-}
-
-/* Column count is chosen LOGICALLY from the band's cell width, not a pixel
-     breakpoint: the grid sync script (Layout.astro) sets data-film-cols (3/2/1)
-     and the scaled --film-width/-stride on each .gridpaper section so `cols`
-     cards fill the band exactly at any width. The default rules above are the
-     3-column case (packing vars --fcol/--frow); the overrides below only swap
-     the packing var per column count — width/stride are inherited from the
-     section, never redeclared on the card (that would shadow the script value).
-     The SSR media-query fallbacks at the end cover first paint before the
-     script runs (no data-film-cols yet). */
-.gridpaper[data-film-cols="2"] .gc-film-card {
-  --film-left: calc(var(--col-start) + var(--fcol2) * var(--film-stride));
-  --film-top: calc(2 + var(--frow2));
-}
-.gridpaper[data-film-cols="2"] .gc-film-spacer {
-  grid-row: calc(2 + var(--fmax2));
-}
-
-/* 1 column: each card spans the full band; cards stack in earliest-first source
-     order using the single-column offset (--frow1). Each showtime stays one row
-     (time · place · price), reusing the inner template widened to the band. */
-.gridpaper[data-film-cols="1"] .gc-film-card {
-  --film-left: var(--col-start);
-  --film-top: calc(2 + var(--frow1));
-}
-.gridpaper[data-film-cols="1"] .gc-film-title {
-  grid-column: var(--film-left) / var(--c-end);
-  grid-row: var(--film-top);
-}
-.gridpaper[data-film-cols="1"] .gc-film-showtime {
-  grid-column: var(--film-left) / var(--c-end);
-  grid-row: calc(var(--film-top) + 1 + var(--sr));
-}
-.gridpaper[data-film-cols="1"] .gc-film-spacer {
-  grid-row: calc(2 + var(--fmax1));
-}
-
-/* First-paint fallback (before the script sets data-film-cols): approximate the
-     old pixel breakpoints so SSR isn't stuck on the 3-col layout. Once the
-     script runs, the data-film-cols selectors above take over (the attribute +
-     descendant give higher specificity). These set width/stride too, since the
-     script hasn't set the section value yet. */
-@media (max-width: 768px) {
-  .gridpaper:not([data-film-cols]) .gc-film-card {
-    --film-width: 19;
-    --film-stride: 21;
-    --film-left: calc(var(--col-start) + var(--fcol2) * var(--film-stride));
-    --film-top: calc(2 + var(--frow2));
-  }
-  .gridpaper:not([data-film-cols]) .gc-film-spacer {
-    grid-row: calc(2 + var(--fmax2));
-  }
-}
-@media (max-width: 759.98px) {
-  .gridpaper:not([data-film-cols]) .gc-film-card {
-    --film-width: var(--band-cells);
-    --film-left: var(--col-start);
-    --film-top: calc(2 + var(--frow1));
-  }
-  .gridpaper:not([data-film-cols]) .gc-film-title {
-    grid-column: var(--film-left) / var(--c-end);
-    grid-row: var(--film-top);
-  }
-  .gridpaper:not([data-film-cols]) .gc-film-showtime {
-    grid-column: var(--film-left) / var(--c-end);
-    grid-row: calc(var(--film-top) + 1 + var(--sr));
-  }
-  .gridpaper:not([data-film-cols]) .gc-film-spacer {
-    grid-row: calc(2 + var(--fmax1));
-  }
+  grid-row: calc(
+    2 + var(--fmax) * var(--fc3) + var(--fmax2) * var(--fc2) + var(--fmax1) * var(--fc1)
+  );
 }
 
 .cell-underlined {

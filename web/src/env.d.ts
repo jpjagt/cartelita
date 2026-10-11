@@ -1,8 +1,8 @@
 /// <reference types="astro/client" />
 
 interface Window {
-  /** Recompute grid cell sizing for every .gridpaper (Layout.astro). Exposed so
-      the film view toggle can re-sync a tree that was display:none at paint. */
+  /** Re-run the grid backstop and announce `gridsync` (Layout.astro), so
+      dependents re-place against a tree that was just revealed. */
   syncGrid?: () => void
   /** Re-run the time-aware agenda pass (row packing, now-dots/lines;
       Layout.astro) — for every day, or just `section`. */

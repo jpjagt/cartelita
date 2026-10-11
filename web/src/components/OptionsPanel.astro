@@ -11,10 +11,10 @@ const { colspan } = Astro.props
     inline as a band above the first day with one empty cell row breathing under
     the navbar (--gr-row: 2).
 
-    The placement vars are set inline as SSR defaults (no layout flash on first
-    paint); the script below only keeps --gr-start-col synced to --col-start as
-    the grid resizes. Controls (e.g. GridRadioButtons) read --gr-start-col /
-    --gr-row / --gr-vertical to place themselves onto this grid. */}
+    The placement vars are set inline; --gr-start-col follows the band's
+    start column (--col-start, from the grid step table) at every width with
+    no script. Controls (e.g. GridRadioButtons) read --gr-start-col / --gr-row
+    / --gr-vertical to place themselves onto this grid. */}
 <div
   class="options-panel gridpaper"
   data-options-panel
@@ -23,24 +23,3 @@ const { colspan } = Astro.props
 >
   <slot />
 </div>
-
-<script>
-  // Keep --gr-start-col aligned to the band's start column after the grid
-  // settles. Inline SSR defaults already place the panel correctly on first
-  // paint; this just re-syncs the start column on grid changes/resize.
-  function layoutOptionsPanels() {
-    document
-      .querySelectorAll<HTMLElement>("[data-options-panel]")
-      .forEach((panel) => {
-        const cs = getComputedStyle(panel)
-        const colStart = parseInt(cs.getPropertyValue("--col-start")) || 1
-        panel.style.setProperty("--gr-start-col", String(colStart))
-        // Let the controls re-place onto the (possibly changed) start column.
-        window.dispatchEvent(new Event("optionspanel"))
-      })
-  }
-  layoutOptionsPanels()
-  window.addEventListener("gridsync", layoutOptionsPanels)
-  window.addEventListener("resize", layoutOptionsPanels)
-  window.addEventListener("load", layoutOptionsPanels)
-</script>

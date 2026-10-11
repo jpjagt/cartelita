@@ -13,6 +13,7 @@ import EventPanel from "@/components/EventPanel.astro"
 import VenueDirectory from "@/components/VenueDirectory.astro"
 import OptionsPanel from "@/components/OptionsPanel.astro"
 import GridRadioButtons from "@/components/ui/GridRadioButtons.astro"
+import { displayPrice, pricePageFit } from "@/lib/price-css"
 
 export function getStaticPaths() {
   return Object.values(CITIES).flatMap((city) =>
@@ -49,12 +50,18 @@ const agendaViews = [
   { value: "events", days: eventDays },
   { value: "films", days: filmDays },
 ].filter((v) => v.days.length)
+// Every event row's price, measured at build time (the client fit used to
+// measure all rows too, favourites filter or not).
+const priceFit = pricePageFit(
+  agendaViews.flatMap((v) => v.days.flatMap((d) => d.events.map((e) => displayPrice(e.price, locale)))),
+)
 ---
 <Layout
   locale={locale}
   title={`${strings.myList} — ${strings.siteTitle}`}
   canonical={`/${city}/${locale}/${MY_LIST}`}
   genre={MY_LIST}
+  priceFit={priceFit}
 >
   <Navbar city={city} locale={locale} activeList={MY_LIST} />
   <main>
@@ -75,7 +82,7 @@ const agendaViews = [
               <span class="cell-text">{strings.noEvents}</span>
             </p>
           </div>
-          {v.days.map((d) => <AgendaDay day={d} locale={locale} genre={MY_LIST} />)}
+          {v.days.map((d, i) => <AgendaDay day={d} locale={locale} genre={MY_LIST} first={i === 0} />)}
         </div>
       ))}
       <div data-view="venues">

@@ -3,6 +3,10 @@ import { getCategoryLists } from "@/lib/queries"
 import { cityConfig, MY_LIST } from "@/lib/cities"
 import { type Locale } from "@/lib/types"
 import { t, categoryName } from "@/i18n"
+import { measureText } from "@/lib/text-metrics"
+import { navVars } from "@/lib/nav-layout"
+import { gridGeometry } from "@/lib/grid-geometry"
+import { renderStepCss, stepTable } from "@/lib/step-table"
 
 interface Props {
   city: string
@@ -21,27 +25,24 @@ const navItems = [
   { slug: MY_LIST, label: strings.myList, primary: true },
 ]
 
-// SSR placement for the genre links so they don't pile up one-per-cell in the
-// top-left corner before the nav script runs. We flow them left-to-right on
-// row 3 from col 12 (after the 11-col wordmark), estimating each link's
-// cell-span from its label length: 2 cells up to 6 chars, then +1 cell per ~3
-// chars (7–9 → 3, 10–12 → 4, 13–15 → 5, …). The nav script remeasures exact
-// widths on gridsync/load and overrides these; this is just a close-enough
-// first paint. Wrapping is left to JS — we only seed start cols on row 3, which
-// is where the desktop layout lands them anyway.
-const NAV_START_COL = 16 // col-start(5) + 11-col wordmark
-let ssrCol = NAV_START_COL
-const navSSR = navItems.map((l) => {
-  const chars = l.label.length
-  const span = Math.max(2, 2 + Math.floor((chars - 4) / 3))
-  const startCol = ssrCol
-  ssrCol += span
-  return { slug: l.slug, startCol, span }
-})
-const ssrPos = (slug: string) =>
-  navSSR.find((n) => n.slug === slug) ?? { startCol: NAV_START_COL, span: 4 }
+// Build-time placement. Each label is measured in the page font
+// (lib/text-metrics.ts), and the whole navbar layout — link spans, wrapping,
+// the locale cells — is swept over every container width into a step table
+// on the header (lib/nav-layout.ts navVars → lib/step-table.ts), emitted with
+// only the rules where a placement changes. Columns are offsets from
+// --col-start (or --c-end for locales), never absolute lines, so they follow
+// the grid geometry table. The nav script below only corrects labels the
+// bundled font can't measure (data-measure: Cyrillic, Armenian).
+const ems = navItems.map((l) => measureText(l.label))
+const navCss = renderStepCss(
+  "[data-navbar]",
+  stepTable((width, narrow) =>
+    navVars(ems.map((m) => m.em), LOCALES.length, gridGeometry(width, narrow), narrow),
+  ),
+)
 ---
-<header class="gridpaper">
+<header class="gridpaper" data-navbar>
+  <style is:inline set:html={navCss} />
   {/* Wordmark. Desktop: 11 cols × 3 rows, font 2.6× the cell. Mobile: 9 cols
       × 2 rows, font 2× (see .navbar-wordmark in global.css). Placement lives
       in CSS so the media query can override it (inline styles can't be). */}
@@ -50,30 +51,32 @@ const ssrPos = (slug: string) =>
     class="cell cell-truncate font-semibold no-underline text-foreground navbar-wordmark"
   ><span class="cell-text">Ca<span class="mr-0.5">r</span>telita</span></a>
 
-  {/* Category nav: JS places links on row 3, flowing right from col 12 (after
-      the 11-col wordmark). Wraps up to row 2/1 before the locale zone, or flows
-      below the wordmark when that's full (lib/nav-layout.ts). */}
-  {navItems.map((l) => (
+  {/* Category nav: links flow on row 3 right of the 11-col wordmark, wrapping
+      up to row 2/1 before the locale zone, or below the wordmark when that's
+      full (lib/nav-layout.ts); placed by the step table above. */}
+  {navItems.map((l, i) => (
     <a
       data-genre={l.slug}
       data-navlink
+      data-em={String(ems[i].em)}
+      data-measure={ems[i].covered ? undefined : ""}
       href={`/${city}/${locale}/${l.slug}`}
       aria-current={l.slug === activeList ? "page" : undefined}
-      style={`grid-column: ${ssrPos(l.slug).startCol} / span ${ssrPos(l.slug).span}; grid-row: 3`}
+      style={`grid-column: calc(var(--col-start) + var(--n${i}c)) / span var(--n${i}s); grid-row: var(--n${i}r)`}
       class={`cell cell-truncate cell-genre-hover whitespace-nowrap no-underline ${l.primary ? "text-foreground" : "text-muted-foreground"}${l.slug === activeList ? " cell-genre" : ""}`}
     ><span class="cell-text">{l.label}</span></a>
   ))}
 
   {/* Locale switcher. Desktop: one cell per locale, top-right row 1,
-      right-aligned (inline style below). Mobile: the nav script restacks them
-      into the 2 columns right of the 9-col wordmark, across rows 1–2. */}
+      right-aligned. Mobile: restacked into the columns right of the 9-col
+      wordmark, across rows 1–2 (lib/nav-layout.ts layoutLocales). */}
   {LOCALES.map((lc, i) => (
     <a
       data-locale
       data-locale-index={i}
       href={`/${city}/${lc}/${activeList}`}
       aria-current={lc === locale ? "page" : undefined}
-      style={`grid-column: calc(var(--c-end) - ${LOCALES.length - i}) / span 1; grid-row: 1`}
+      style={`grid-column: calc(var(--c-end) - var(--l${i}o)) / span 1; grid-row: var(--l${i}r)`}
       class="cell justify-end text-muted-foreground no-underline hover:text-foreground aria-[current=page]:font-medium aria-[current=page]:text-foreground text-xs min-[760px]:text-base"
     >
       <span class="cell-text">{lc.toUpperCase()}</span>
@@ -81,73 +84,33 @@ const ssrPos = (slug: string) =>
   ))}
 
   <script>
-    import { layoutNavLinks } from "@/lib/nav-layout";
-    import { NARROW_QUERY } from "@/lib/breakpoints";
+    import { navVars } from "@/lib/nav-layout";
+    import { correctVars, isNarrow, liveGrid, measureEm } from "@/lib/grid-client";
 
-    // The navbar packs links into the one grid by column line. Two layouts:
-    //
-    //  Desktop (≥760px): wordmark 11 cols × rows 1–3. Locales sit top-right on
-    //  row 1 (one cell each). Genres flow right from col 12 on row 3, wrapping
-    //  UP (3 → 2 → 1) before the locale zone — or, when three rows beside the
-    //  wordmark can't hold them, below it from row 4 (lib/nav-layout.ts).
-    //
-    //  Narrow (<760px): wordmark 9 cols × rows 1–2 (set in CSS). Locales
-    //  restack into the cols right of the wordmark across rows 1–2. Genres
-    //  flow from the band start on row 3, wrapping DOWN (3 → 4 → 5 …).
-    const NARROW = window.matchMedia(NARROW_QUERY);
+    // The build-time step table already places every link and locale cell
+    // for every width. This only CORRECTS it, writing (inline, on the header)
+    // just the vars that differ from the table: labels the bundled font can't
+    // cover (data-measure) are re-measured in the font the browser actually
+    // picked, and beyond the table's width range the layout is recomputed
+    // from the same function (lib/nav-layout.ts navVars). On Latin pages it
+    // writes nothing.
     function layoutNav() {
-      const header = document.querySelector<HTMLElement>("header.gridpaper");
+      const header = document.querySelector<HTMLElement>("header[data-navbar]");
       if (!header) return;
-      const cs = getComputedStyle(header);
-      const cell = parseFloat(cs.getPropertyValue("--cell")) || 32;
-      const colStart = parseInt(cs.getPropertyValue("--col-start")) || 1;
-      const bandCells = parseInt(cs.getPropertyValue("--band-cells")) || 40;
-      const bandEnd = colStart + bandCells; // exclusive end line
-      const narrow = NARROW.matches;
-
-      const locales = header.querySelectorAll<HTMLElement>("a[data-locale]");
       const links = [...header.querySelectorAll<HTMLElement>("a[data-navlink]")];
-      const spanOf = (a: HTMLElement) => {
-        const text = a.querySelector<HTMLElement>(".cell-text") ?? a;
-        return Math.max(1, Math.ceil((text.scrollWidth + 6) / cell));
-      };
-
-      if (narrow) {
-        // Locales: packed into the top-right corner, flush against the band's
-        // right edge. Fill right-to-left on row 1; if they don't all fit beside
-        // the 9-col wordmark, the overflow wraps onto row 2 (also right-flush).
-        const wmEnd = colStart + 9; // first col after the wordmark
-        const perRow = Math.max(1, bandEnd - wmEnd); // cols available beside wordmark
-        locales.forEach((a, i) => {
-          const row = Math.floor(i / perRow);
-          const inRow = i % perRow;
-          const rowCount = Math.min(perRow, locales.length - row * perRow);
-          // Right-align this row: rightmost item sits at bandEnd-1.
-          a.style.gridColumn = `${bandEnd - rowCount + inRow} / span 1`;
-          a.style.gridRow = `${1 + row}`;
-        });
-      } else {
-        // Restore the per-cell locale placement (a prior narrow pass may have
-        // moved them).
-        locales.forEach((a, i) => {
-          a.style.gridColumn = `${bandEnd - (locales.length - i)} / span 1`;
-          a.style.gridRow = "1";
-        });
-      }
-      const placed = layoutNavLinks(links.map(spanOf), {
-        colStart,
-        bandEnd,
-        localeCount: locales.length,
-        narrow,
-      });
-      links.forEach((a, i) => {
-        a.style.gridColumn = `${placed[i].col} / span ${placed[i].span}`;
-        a.style.gridRow = `${placed[i].row}`;
-      });
+      const ems = links.map((a) =>
+        a.hasAttribute("data-measure")
+          ? measureEm(a.querySelector<HTMLElement>(".cell-text") ?? a)
+          : Number(a.dataset.em) || 0,
+      );
+      const localeCount = header.querySelectorAll("a[data-locale]").length;
+      correctVars(header, navVars(ems, localeCount, liveGrid(), isNarrow()));
     }
     layoutNav();
     window.addEventListener("gridsync", layoutNav);
-    window.addEventListener("resize", layoutNav);
-    window.addEventListener("load", layoutNav);
+    // A measured label's width changes when its font arrives.
+    if (document.querySelector("a[data-navlink][data-measure]")) {
+      document.fonts?.ready.then(layoutNav);
+    }
   </script>
 </header>

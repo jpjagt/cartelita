@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { layoutNavLinks, WORDMARK_COLS } from "@/lib/nav-layout";
+import { layoutLocales, layoutNavLinks, navVars, WORDMARK_COLS } from "@/lib/nav-layout";
+import { gridGeometry } from "@/lib/grid-geometry";
 import type { NavPlacement } from "@/lib/types";
 
 // Two placements overlap when they share a row and their column ranges meet.
@@ -55,5 +56,55 @@ describe("layoutNavLinks", () => {
     expect(ps[0]).toEqual({ col: 1, span: 3, row: 3 });
     expect(ps.every((p) => p.col + p.span <= 17)).toBe(true);
     expect(overlaps(ps)).toBe(false);
+  });
+});
+
+describe("layoutLocales", () => {
+  it("desktop: one cell each, right-aligned on row 1", () => {
+    expect(layoutLocales(3, 41, false)).toEqual([
+      { offset: 3, row: 1 },
+      { offset: 2, row: 1 },
+      { offset: 1, row: 1 },
+    ]);
+  });
+
+  it("narrow: right-flush beside the wordmark, overflow onto row 2", () => {
+    // 16 cells: 7 beside the 9-col wordmark — all three on row 1.
+    expect(layoutLocales(3, 16, true)).toEqual([
+      { offset: 3, row: 1 },
+      { offset: 2, row: 1 },
+      { offset: 1, row: 1 },
+    ]);
+    // 11 cells: 2 per row.
+    expect(layoutLocales(3, 11, true)).toEqual([
+      { offset: 2, row: 1 },
+      { offset: 1, row: 1 },
+      { offset: 1, row: 2 },
+    ]);
+  });
+});
+
+describe("navVars", () => {
+  // "Jazz" 2.056em, "My list" ≈ 2.828em.
+  const ems = [2.056, 2.828];
+
+  it("places links relative to --col-start, never on absolute lines", () => {
+    const wide = navVars(ems, 3, gridGeometry(1400, false), false);
+    // 1400px: --col-start 2, but offsets are band-relative.
+    expect(wide).toMatchObject({ "--n0c": String(WORDMARK_COLS), "--n0s": "2", "--n0r": "3" });
+    expect(wide["--n1c"]).toBe(String(WORDMARK_COLS + 2));
+    expect(navVars(ems, 3, gridGeometry(2000, false), false)).toEqual(wide);
+  });
+
+  it("spans whole cells of the narrow cell at the exact width", () => {
+    // 16px "My list" ≈ 45.2px + 7 → 3 cells of 24px …
+    expect(navVars(ems, 2, gridGeometry(384, true), true)["--n1s"]).toBe("3");
+    // … but 2 cells once the cell grows past 26.1px (e.g. 8 cells over 210px).
+    expect(navVars(ems, 2, gridGeometry(215, true), true)["--n1s"]).toBe("2");
+  });
+
+  it("publishes the locale cells", () => {
+    const v = navVars(ems, 2, gridGeometry(1000, false), false);
+    expect(v).toMatchObject({ "--l0o": "2", "--l0r": "1", "--l1o": "1", "--l1r": "1" });
   });
 });

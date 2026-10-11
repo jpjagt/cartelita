@@ -1,7 +1,8 @@
 ---
-import type { Locale } from "@/lib/types"
+import type { Locale, PricePageFit } from "@/lib/types"
 import "@/styles/global.css"
 import CellIconSprite from "@/components/ui/CellIconSprite.astro"
+import { gridGeometryCss } from "@/lib/grid-css"
 
 interface Props {
   locale: Locale
@@ -11,13 +12,23 @@ interface Props {
   /** Active genre slug; sets data-genre on <body> so --genre-primary resolves
       page-wide (the now-line and any other genre-tinted chrome read it). */
   genre: string
+  /** The page's build-time price column fit (pages with event rows). */
+  priceFit?: PricePageFit
 }
 
-const { locale, title, canonical, ogImage, genre } = Astro.props
+const { locale, title, canonical, ogImage, genre, priceFit } = Astro.props
 const canonicalUrl = new URL(canonical, Astro.site)
 const ogImageUrl = ogImage ? new URL(ogImage, Astro.site).href : undefined
+// The grid geometry for every container width, as a container-query step
+// table generated from lib/grid-geometry.ts — so the first paint is already
+// laid out for the visitor's viewport, before any script runs.
+const gridCss = gridGeometryCss()
 ---
-<html lang={locale}>
+<html
+  lang={locale}
+  style={priceFit ? `--price-cells: ${priceFit.priceCells}` : undefined}
+  data-price-em={priceFit?.coveredEm}
+>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -43,88 +54,44 @@ const ogImageUrl = ogImage ? new URL(ogImage, Astro.site).href : undefined
         document.documentElement.classList.toggle("dark", e.matches);
       });
     </script>
+    <style is:inline set:html={gridCss} />
+    {priceFit?.css && <style is:inline set:html={priceFit.css} />}
     <script defer src="https://umm.july.dev/script.js" data-website-id="8caba607-9ee5-4b3a-aba8-7d4f7a06b75e"></script>
   </head>
   <body data-genre={genre} class="font-sans bg-background text-foreground">
     <CellIconSprite />
     <slot />
     <script>
-      import { NARROW_QUERY } from "@/lib/breakpoints";
-      const NARROW = window.matchMedia(NARROW_QUERY);
-      // One full-bleed grid. JS computes only integers: how many whole
-      // columns fit, the content band width in cells (≈1300px), and the
-      // band's start column snapped so it's centered to the nearest cell
-      // (so the band always lands exactly on gridlines).
-      const BAND_PX = 1300;
+      import { geometryVars, gridGeometry, inGridTable } from "@/lib/grid-geometry";
+      import { containerWidth, isNarrow, SUPPORTS_CQ } from "@/lib/grid-client";
+      // The grid geometry (--cell, --grid-cols, --band-cells, --col-start, film
+      // columns …) comes from the build-time container-query step table in
+      // <head>, so it's right on the first paint and on every resize without
+      // any script. syncGrid is only the BACKSTOP: beyond the table's width
+      // range, or without container-query support, it writes the same values
+      // (same function, lib/grid-geometry.ts) inline. Either way it then
+      // announces `gridsync` so dependents (event panel, share menu …) can
+      // re-measure after a resize.
+      const PROPS = Object.keys(geometryVars(gridGeometry(1000, false)));
+      let inline = false;
       function syncGrid() {
-        document.querySelectorAll<HTMLElement>(".gridpaper").forEach((grid) => {
-          // Round the cell to a whole pixel so grid tracks and the
-          // background-image lines sit on identical integer boundaries and
-          // can't drift apart across many columns (sub-pixel track widths
-          // were the source of the misalignment).
-          const base = parseFloat(getComputedStyle(grid).getPropertyValue("--font-size")) || 16;
-          const width = grid.clientWidth;
-          const cellMultiplier = parseFloat(getComputedStyle(grid).getPropertyValue("--cell-multiplier")) || 1.8
-          const target = Math.round(base * cellMultiplier);
-
-          // Narrow (<760px, NARROW_QUERY — the same media query the CSS
-          // uses, so both always agree on the layout): no centered band — the
-          // content fills the full width. Pick the whole number of cells that
-          // fits at the ~24px target, then grow the cell so gridCols × cell ===
-          // width exactly. The grid tracks and the background-image lines both
-          // read this same --cell, so they stay aligned by construction and no
-          // sub-cell sliver is left on the right. (cell is fractional here,
-          // which is fine: track width and line spacing are identical, so they
-          // can't drift apart.)
-          let cell, gridCols, bandCells, colStart;
-          if (NARROW.matches) {
-            gridCols = Math.max(1, Math.floor(width / target));
-            cell = width / gridCols;
-            bandCells = gridCols;
-            colStart = 1;
-          } else {
-            // Desktop: fixed square cell, centered band snapped to gridlines.
-            cell = target;
-            gridCols = Math.max(1, Math.floor(width / cell));
-            bandCells = Math.min(gridCols, Math.max(20, Math.round(BAND_PX / cell)));
-            colStart = Math.max(1, Math.round((gridCols - bandCells) / 2) + 1);
-          }
-          grid.style.setProperty("--cell", `${cell}px`);
-          grid.style.setProperty("--grid-cols", String(gridCols));
-          grid.style.setProperty("--band-cells", String(bandCells));
-          grid.style.setProperty("--col-start", String(colStart));
-          // Film masonry columns, chosen LOGICALLY from how many whole cells
-          // the band actually has — not a guessed pixel breakpoint (a CSS
-          // @media query can't read --band-cells). Cards SCALE to fill the band:
-          // with `cols` columns and a 2-cell gutter between them, each card is
-          // floor((bandCells − 2·(cols−1)) / cols) cells wide. Pick the most
-          // columns that keep a card ≥ MIN_CARD cells, so a narrower band drops
-          // to 2 (then 1) columns instead of overflowing. data-film-cols selects
-          // which build-time packing (col3/col2/col1) the CSS reads; --film-width
-          // / --film-stride feed the scaled geometry to the cards.
-          const MIN_CARD = 10;
-          const GUTTER = 2;
-          let filmCols = 1;
-          let cardW = bandCells;
-          for (const c of [3, 2]) {
-            const w = Math.floor((bandCells - GUTTER * (c - 1)) / c);
-            if (w >= MIN_CARD) {
-              filmCols = c;
-              cardW = w;
-              break;
+        const width = containerWidth();
+        const narrow = isNarrow();
+        const backstop = !SUPPORTS_CQ || !inGridTable(width, narrow);
+        if (backstop || inline) {
+          const vars = backstop ? geometryVars(gridGeometry(width, narrow)) : null;
+          document.querySelectorAll<HTMLElement>(".gridpaper").forEach((grid) => {
+            for (const k of PROPS) {
+              if (vars) grid.style.setProperty(k, vars[k]);
+              else grid.style.removeProperty(k);
             }
-          }
-          grid.dataset.filmCols = String(filmCols);
-          grid.style.setProperty("--film-width", String(cardW));
-          grid.style.setProperty("--film-stride", String(cardW + GUTTER));
-        });
-        // Let dependents (e.g. the navbar's cell-snapping) recompute once the
-        // grid's --cell/--col-start are settled for this pass.
+          });
+          inline = backstop;
+        }
         window.dispatchEvent(new Event("gridsync"));
       }
-      // Exposed so the film view toggle can re-sync a tree that was display:none
-      // at first paint (a hidden .gridpaper has clientWidth 0, so it would keep
-      // --cell:0px and render invisible until the next resize).
+      // Exposed so scripts that reveal or add grids (view switches, My list)
+      // can re-announce gridsync.
       (window as any).syncGrid = syncGrid;
       syncGrid();
       window.addEventListener("resize", syncGrid);

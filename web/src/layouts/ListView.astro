@@ -12,6 +12,7 @@ import EventPanel from "@/components/EventPanel.astro"
 import FilmDay from "@/components/FilmDay.astro"
 import OptionsPanel from "@/components/OptionsPanel.astro"
 import GridRadioButtons from "@/components/ui/GridRadioButtons.astro"
+import { displayPrice, pricePageFit } from "@/lib/price-css"
 
 // The film category groups each day's events by film (masonry of cards) rather
 // than rendering one row per showtime — see FilmDay/FilmCard.
@@ -36,6 +37,8 @@ const todayAbsolute = new Date().toISOString().slice(0, 10)
 const days = allDays.filter((d) => d.date >= todayAbsolute)
 const isFilm = list === FILM_LIST
 const filmDays = isFilm ? days.map((d) => groupFilmDay(d.date, d.events)) : []
+// Every event row's price (the film time view included), measured at build time.
+const priceFit = pricePageFit(days.flatMap((d) => d.events.map((e) => displayPrice(e.price, locale))))
 ---
 <Layout
   locale={locale}
@@ -43,6 +46,7 @@ const filmDays = isFilm ? days.map((d) => groupFilmDay(d.date, d.events)) : []
   canonical={`/${city}/${locale}/${list}`}
   ogImage={`/og/${city}-${locale}-${list}.png`}
   genre={list}
+  priceFit={priceFit}
 >
   <Navbar city={city} locale={locale} activeList={list} />
   <main>
@@ -74,14 +78,14 @@ const filmDays = isFilm ? days.map((d) => groupFilmDay(d.date, d.events)) : []
         </OptionsPanel>
 
         <div data-view="films">
-          {filmDays.map((d) => <FilmDay day={d} locale={locale} genre={list} />)}
+          {filmDays.map((d, i) => <FilmDay day={d} locale={locale} genre={list} first={i === 0} />)}
         </div>
         {/* The film time-view hides screenings that started >2h ago and offers a
             row to reveal them (see syncAgenda). data-early-hide turns the
             behavior on for this subtree only; the label rides along for the
             client script (strings aren't otherwise reachable there). */}
         <div data-view="time" hidden data-early-hide data-show-earlier-label={strings.showEarlier}>
-          {days.map((d) => <AgendaDay day={d} locale={locale} genre={list} />)}
+          {days.map((d, i) => <AgendaDay day={d} locale={locale} genre={list} first={i === 0} />)}
         </div>
       </div>
     )}

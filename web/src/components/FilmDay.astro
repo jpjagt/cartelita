@@ -2,13 +2,20 @@
 import type { FilmDayLayout, Locale } from "@/lib/types"
 import { localeTag } from "@/i18n"
 import FilmCard from "@/components/FilmCard.astro"
-interface Props { day: FilmDayLayout; locale: Locale; genre: string }
-const { day, locale, genre } = Astro.props
+interface Props {
+  day: FilmDayLayout
+  locale: Locale
+  genre: string
+  /** First day of a switchable view: no breathing rows above it. syncAgenda
+      re-marks it at runtime (a stale build's first day may be past). */
+  first?: boolean
+}
+const { day, locale, genre, first = false } = Astro.props
 const heading = new Date(day.date + "T00:00:00").toLocaleDateString(localeTag(locale), {
   weekday: "long", day: "numeric", month: "long",
 })
 ---
-<section data-date={day.date} class="gridpaper">
+<section data-date={day.date} data-first-day={first ? "" : undefined} class="gridpaper">
   {/* Day heading spans the full content band, same as the row layout. */}
   <h2
     style="grid-row: 1"
