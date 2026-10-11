@@ -1,5 +1,6 @@
 from __future__ import annotations
 import datetime as dt
+import hashlib
 import logging
 import re
 
@@ -521,6 +522,20 @@ _SOLD_OUT_MARK = re.compile(r"\s*[\[(](?:sold ?out|uitverkocht)[\])]", re.IGNORE
 _CANCELED_MARK = re.compile(r"[\[(](?:canceled|cancelled|afgelast|geannuleerd)[\])]", re.IGNORECASE)
 
 
+def _norm_title(title: str) -> str:
+    return re.sub(r"\s+", " ", title).strip().casefold()
+
+
+def occurrence_key(start_date: dt.date, start_time: dt.time | None, title: str) -> str:
+    """Content-derived external_id: jazzin's maintainer re-scrapes everything
+    nightly, so its numeric ids are not stable across runs. Date + start time
+    + normalized title is (the occurrence merge below makes it unique per
+    venue within a batch)."""
+    hhmm = start_time.strftime("%H%M") if start_time else "none"
+    raw = f"{start_date.isoformat()}T{hhmm}|{_norm_title(title)}"
+    return hashlib.sha1(raw.encode()).hexdigest()[:16]
+
+
 def parse_events(
     items: list[tuple[str, dict]],
 ) -> tuple[list[ScrapedEvent], set[str]]:
@@ -533,8 +548,9 @@ def parse_events(
     jazzin repeats occurrences under several ids — within a calendar
     (Muziekgebouw lists a concert up to 5×) and across calendars (a
     Muziekgebouw gig in both jazz and classical). Occurrences are merged on
-    (venue, date, time, title), keeping the lowest id and the union of the
-    calendars' categories."""
+    (venue, date, time, normalized title) — the content-derived external_id,
+    see occurrence_key — keeping the first-listed (lowest id) item's fields
+    and the union of the calendars' categories."""
     by_key: dict[tuple, ScrapedEvent] = {}
     unknown: set[str] = set()
     for category, item in sorted(items, key=lambda ci: ci[1].get("id") or 0):
@@ -554,7 +570,8 @@ def parse_events(
             continue
         start_time = _parse_time(item.get("time"))
 
-        key = (venue_slug, start_date, start_time, title.casefold())
+        external_id = occurrence_key(start_date, start_time, title)
+        key = (venue_slug, external_id)
         if key in by_key:
             ev = by_key[key]
             if category not in ev.category_slugs:
@@ -568,7 +585,7 @@ def parse_events(
             source_url=(item.get("site") or "").strip().strip("'\"") or FALLBACK_URL,
             category_slugs=[category],
             price="sold-out" if sold_out else parse_price(item.get("price") or ""),
-            external_id=str(item["id"]),
+            external_id=external_id,
             venue_slug=venue_slug,
         )
     return list(by_key.values()), unknown

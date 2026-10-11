@@ -15,6 +15,9 @@ from cartelera.scrapers.jazzin_amsterdam import (
     CALENDARS,
     SOURCE_SLUG,
     VENUES,
+    VENUE_BY_KEY,
+    _venue_key,
+    occurrence_key,
     parse_events,
     parse_price,
     unlisted_categories,
@@ -26,6 +29,13 @@ BY_CATEGORY = json.loads((FIXTURES / "jazzin_amsterdam_api.json").read_text())
 PAIRS = [(cat, item) for cat, items in BY_CATEGORY.items() for item in items]
 ITEMS = [item for _cat, item in PAIRS]
 EVENTS, UNKNOWN = parse_events(PAIRS)
+
+
+def ext_id(item: dict) -> str | None:
+    """The external_id the scraper derives for one raw API item (None when
+    the item is dropped)."""
+    evs, _ = parse_events([("jazz", item)])
+    return evs[0].external_id if evs else None
 EXCLUDED = {"Grote Zaal", "Kleine Zaal", "Comedytrain - Westergas - Grote Zaal",
             "Comedytrain - Westergas - Kleine Zaal", "Stadsgehoorzaal Leiden",
             "TivoliVredenburg", "De Kulturele Raad", "Papagenohuis",
@@ -83,8 +93,10 @@ def test_times_are_parsed():
     assert sum(ev.start_time is not None for ev in EVENTS) / len(EVENTS) > 0.95
 
 
-def test_external_ids_are_unique():
-    counts = Counter(ev.external_id for ev in EVENTS)
+def test_external_ids_are_unique_per_venue():
+    # The upsert dedups on (venue, external_id); content keys may repeat
+    # across venues (one touring title at the same time in two places).
+    counts = Counter((ev.venue_slug, ev.external_id) for ev in EVENTS)
     assert [k for k, n in counts.items() if n > 1] == []
 
 
@@ -109,9 +121,9 @@ def test_same_address_aliases_merge_across_feeds():
     raw = [i for i in BY_CATEGORY["alternative"]
            if "plantage doklaan 8" in i["address"].casefold()]
     assert len({i["venue"] for i in raw}) > 1
-    ids = {str(i["id"]) for i in raw}
-    kept = [ev for ev in EVENTS if ev.external_id in ids]
-    assert {ev.venue_slug for ev in kept} == {"plantage-dok"}
+    ids = {ext_id(i) for i in raw}
+    kept = [ev for ev in EVENTS if ev.external_id in ids and ev.venue_slug == "plantage-dok"]
+    assert {VENUE_BY_KEY[_venue_key(i["venue"])] for i in raw} == {"plantage-dok"}
     assert len(kept) < len(raw)
 
 
@@ -122,8 +134,9 @@ def test_source_urls_have_no_stray_quotes():
 def test_venue_name_variants_merge():
     zojazz = [i for i in ITEMS if "bijlmerplein 888" in i["address"].casefold()]
     assert len({i["venue"] for i in zojazz}) > 1  # several spellings upstream
-    ids = {str(i["id"]) for i in zojazz}
-    assert {ev.venue_slug for ev in EVENTS if ev.external_id in ids} == {"zojazz-stage"}
+    assert {VENUE_BY_KEY[_venue_key(i["venue"])] for i in zojazz} == {"zojazz-stage"}
+    ids = {ext_id(i) for i in zojazz}
+    assert any(ev.venue_slug == "zojazz-stage" for ev in EVENTS if ev.external_id in ids)
 
 
 def test_price_coverage_matches_the_source():
@@ -132,11 +145,18 @@ def test_price_coverage_matches_the_source():
     jazz = BY_CATEGORY["jazz"]
     with_price = sum(1 for i in jazz if (i["price"] or "").strip() not in ("", "€"))
     assert with_price / len(jazz) > 0.5
-    kept = {e.external_id for e in EVENTS}
-    priced = {ev.external_id for ev in EVENTS if ev.price}
-    for i in ITEMS:
-        if (i["price"] or "").strip() not in ("", "€", "EUR") and str(i["id"]) in kept:
-            assert str(i["id"]) in priced
+    # Duplicate listings merge into the first-listed (lowest id) item's event,
+    # whose price must survive.
+    priced = {(ev.venue_slug, ev.external_id) for ev in EVENTS if ev.price}
+    first: dict[tuple, dict] = {}
+    for i in sorted(ITEMS, key=lambda i: i["id"]):
+        slug = VENUE_BY_KEY.get(_venue_key((i["venue"] or "").strip()))
+        key = (slug, ext_id(i))
+        if slug and key[1]:
+            first.setdefault(key, i)
+    for key, i in first.items():
+        if (i["price"] or "").strip() not in ("", "€", "EUR"):
+            assert key in priced
 
 
 def test_status_markers_in_titles():
@@ -193,3 +213,27 @@ def test_registered_as_amsterdam_source_with_whitelisted_lists():
         for m in v.list_memberships:
             assert m.whitelist_category_slug == m.list_slug
             assert m.list_slug in v.category_slugs
+
+
+def test_external_id_is_content_derived_and_stable_across_relisted_ids():
+    # jazzin re-scrapes nightly and hands out new numeric ids; the same
+    # occurrence must keep its key regardless.
+    base = dict(ITEMS[0], venue="Bimhuis", title="Joan  As Police Woman ",
+                date="2026-11-03", time="20:30:00")
+    a, _ = parse_events([("jazz", dict(base, id=111))])
+    b, _ = parse_events([("jazz", dict(base, id=999, title="joan as police woman"))])
+    assert a[0].external_id == b[0].external_id
+    assert a[0].external_id == occurrence_key(
+        dt.date(2026, 11, 3), dt.time(20, 30), "Joan As Police Woman")
+    assert len(a[0].external_id) == 16 and not a[0].external_id.isdigit()
+    # a sold-out marker added later doesn't change it either
+    c, _ = parse_events([("jazz", dict(base, id=5, title="Joan As Police Woman (sold out)"))])
+    assert c[0].external_id == a[0].external_id
+    # a different date or time is a different occurrence
+    d, _ = parse_events([("jazz", dict(base, id=6, time="22:00:00"))])
+    assert d[0].external_id != a[0].external_id
+
+
+def test_occurrence_key_without_time():
+    assert occurrence_key(dt.date(2026, 1, 2), None, "X") != occurrence_key(
+        dt.date(2026, 1, 2), dt.time(0, 0), "X")

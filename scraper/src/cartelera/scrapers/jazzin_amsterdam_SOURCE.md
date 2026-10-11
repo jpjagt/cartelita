@@ -25,7 +25,8 @@ on Vercel); its own pages render from the public JSON API we use.
 
 | API field | ScrapedEvent | notes |
 |---|---|---|
-| `id` | `external_id` | per occurrence, stable |
+| `id` | — | **not stable**: the maintainer re-scrapes everything nightly and ids change; used only to order duplicates |
+| (`date`, `time`, `title`) | `external_id` | content-derived: `sha1("YYYY-MM-DDTHHMM\|<whitespace-collapsed casefolded title>")[:16]` (`none` for a missing time), title after status-marker stripping; unique per venue per batch via the occurrence merge (`occurrence_key`) |
 | `title` | `title` | |
 | `date` (`YYYY-MM-DD`) | `start_date` | |
 | `time` (`HH:MM:SS`) | `start_time` | always present |
@@ -40,8 +41,14 @@ No description, image, or genre tags. Film events never carry a price.
 
 - **Duplicate listings:** occurrences repeat under several ids, within a
   calendar (Muziekgebouw: the same concert 5×) and across calendars (a
-  Concertgebouw gig in jazz and classical). Merged on (venue, date, time,
-  casefolded title), keeping the lowest id and the union of categories.
+  Concertgebouw gig in jazz and classical). Merged on (venue, content key) —
+  i.e. venue, date, time, normalized title — keeping the lowest id's fields
+  and the union of categories.
+- **Key change (2026-10-12):** external_id switched from jazzin's numeric `id`
+  to the content key. Rows still on a numeric id are legacy; after deploy,
+  `cartelera health rekey jazzin-amsterdam --apply` hides the upcoming ones
+  (see `docs/deploy.md` § 6). A retitled event now becomes a new row and the
+  old one is hidden after 3 healthy runs.
 - **Venue categories:** `VENUES` lists, per venue, the calendars it appears
   in; each becomes a list membership whitelisted to that category (multi-
   category venues like Melkweg = jazz/pop/club split correctly). A venue
