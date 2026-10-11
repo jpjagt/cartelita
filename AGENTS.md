@@ -70,6 +70,12 @@ single file. For *what Cartelera is and why*, read `MANIFESTO.md`. For dev setup
   `(venue_id, external_id)` → `(venue_id, source_url)` → `(venue_id, title, start_date)`.
   Tiers 2/3 are best-effort; a scraper should supply a stable `external_id` or a
   per-event `source_url`.
+- **Nothing is deleted; cancelled events are hidden.** After a *healthy* run,
+  a venue's upcoming events the run didn't return count `missed_runs`; at 3
+  they get `hidden_at` (un-hidden if they reappear). Every event query must
+  filter `hidden_at IS NULL`. **Null guard:** an upsert never overwrites a
+  stored value with `None`/empty (prices, times, description, image, language,
+  annotations, translations…) — a run can change a value, never blank it.
 - **`City` is a scoping layer** — Barcelona, Yerevan and Amsterdam exist; all queries
   (web + `queries.py`) are city-scoped. Yerevan's design doc:
   `docs/superpowers/specs/2026-08-18-multi-city-yerevan-design.md`; its
@@ -144,6 +150,18 @@ Read `docs/deploy.md` for the full setup. The short version:
   A web deploy that overlaps a running scrape builds from half-written data;
   redeploy again once the scrape finishes.
 - Prod Postgres is the `cartelita-postgresql` target (internal network only).
+
+## Scraper health
+
+Each `cartelera run` classifies every source (healthy / degraded / broken /
+site_down), records a `scrape_run`, and opens/closes a GitHub issue per bad
+source — the repair queue. Design and thresholds:
+`docs/superpowers/specs/2026-10-12-scraper-health-design.md`; code in
+`scraper/src/cartelera/health.py` (pure: constants, rules, state machine) and
+`health_ops.py`. CLI: `cartelera health`, `cartelera health ack <source>`
+(legit change, e.g. season break). If you're repairing a scraper from a health
+issue: follow the `writing-a-scraper` skill, and note a degraded verdict often
+means a *partial* break (pagination stopping early, a dead field selector).
 
 ## Gotchas
 

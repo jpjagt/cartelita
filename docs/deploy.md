@@ -19,6 +19,8 @@ Postgres stays on Coolify's internal Docker network — never published publicly
    (So the build context is `scraper/`, matching the Dockerfile's COPY paths.)
 3. Environment variables:
    - `DATABASE_URL=postgresql://<user>:<password>@<internal-host>:5432/cartelera`
+   - `GITHUB_TOKEN=<fine-grained PAT>` and `GITHUB_REPOSITORY=jpjagt/cartelita` —
+     scraper-health issues (see § 6). Without them, issue actions are only logged.
 4. This app has no web port — it's a worker driven by a scheduled task (below).
    Disable any health check / port mapping.
 
@@ -44,8 +46,10 @@ scraper app:
 |-----------------|---------|------------------------------------------|
 | `0 2 * * *`     | scraper | `cartelera migrate && cartelera run all` |
 
-- Runs `migrate` (idempotent) then `run all`. Exit code is non-zero if any venue
-  failed — check the task logs for `[ok] <venue>: N events` lines.
+- Runs `migrate` (idempotent) then `run all`. Each source gets a verdict
+  (`[ok]`, `[DEGRADED]`, `[FAIL]`, `[SITE DOWN]` lines). Exit code is non-zero
+  when any source is broken or site_down (its data was not written); degraded
+  alone exits 0 — its data was written and its GitHub issue is the alert.
 
 **Web redeploy (05:00).** The web app is a **static site**: Coolify serves the
 prebuilt `dist/` from the deploy-time image via its proxy. There is no live web
@@ -72,6 +76,64 @@ web app's `WEB_APP_UUID` in its env vars.
    events should render.
 3. Confirm Postgres has **no** public port mapping (`ss -tlnp` on the host shows
    it only on the internal Docker network, not on a public interface).
+
+## 6. Scraper health (verdicts, hiding, GitHub issues)
+
+Design: `docs/superpowers/specs/2026-10-12-scraper-health-design.md`. Every
+`cartelera run` records a `scrape_run` per source with a verdict (healthy /
+degraded / broken / site_down), hides upcoming events missing from 3 healthy
+runs (reversible: `event.hidden_at`, nothing deleted), and opens / comments on /
+closes one GitHub issue per bad source (labels `scraper-health`, `kind:<kind>`).
+Commands: `cartelera health` (state of every source), `cartelera health ack
+<source>` (accept a legitimate change: the latest run becomes baseline, the
+issue closes).
+
+### Owner setup (one-off)
+
+1. **Labels** on `jpjagt/cartelita`: create `scraper-health`, `kind:broken`,
+   `kind:degraded`, `kind:site-down` (a token with only Issues access may not
+   be able to auto-create labels).
+2. **Issue token:** a fine-grained personal access token, repository access
+   *only* `jpjagt/cartelita`, permission **Issues: Read and write** (nothing
+   else). Set `GITHUB_TOKEN=<token>` and `GITHUB_REPOSITORY=jpjagt/cartelita` on
+   the **scraper app** in Coolify (they're read at run time, so the scheduled
+   task picks them up). Calendar-remind yourself of its expiry.
+3. **Notifications:** watch the repo (at least Issues) so new issues email/push you.
+4. **Claude repair agent** (`.github/workflows/claude.yml`, runs
+   `anthropics/claude-code-action` when a comment mentions `@claude`):
+   - install the Claude GitHub app on the repo: <https://github.com/apps/claude>
+     (or run `/install-github-app` in Claude Code, which does this and the secret);
+   - add the repository secret `ANTHROPIC_API_KEY` (Settings → Secrets and
+     variables → Actions). To use a Claude subscription instead, set
+     `CLAUDE_CODE_OAUTH_TOKEN` (from `claude setup-token`) and swap the
+     `anthropic_api_key` input for `claude_code_oauth_token` in the workflow.
+   - Then on a health issue comment `@claude fix this`: it opens a PR; you
+     review and merge; the normal deploy follows.
+
+### Rollout of this feature (prod, once)
+
+The jazzin.amsterdam scraper switches to a content-derived `external_id`, so
+its first run re-keys every jazzin event; the old numeric-id rows must be
+retired with `health rekey` (dry-run first).
+
+1. Merge + deploy the scraper app (Coolify redeploys from `main`).
+2. In the scraper app's terminal (or as a one-off task):
+   ```sh
+   cartelera migrate                                  # applies 0005_scraper_health.sql
+   cartelera run jazzin-amsterdam                     # new keys; expect [DEGRADED] (coverage)
+   cartelera health rekey jazzin-amsterdam            # dry-run: "would hide N ..."
+   cartelera health rekey jazzin-amsterdam --apply    # hides legacy rows, acks the run
+   cartelera health                                   # jazzin-amsterdam: degraded* (* = acked), streak 0
+   ```
+   If the 02:00 task already ran the new scraper, skip the `run`: `rekey` works
+   off the latest jazzin run as long as it wrote content-keyed events.
+3. Redeploy the web app (its queries now filter `hidden_at IS NULL`). Until
+   `rekey --apply` has run, the DB holds old and new jazzin rows side by side,
+   so do steps 2–3 together, before the next 05:00 web redeploy.
+
+Other sources need nothing: their first runs compute metrics against the
+existing data (coverage applies from run one; the baseline rules from the
+third healthy run on).
 
 ## Notes
 
