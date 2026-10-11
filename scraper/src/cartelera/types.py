@@ -54,11 +54,15 @@ class ScrapedEvent:
 
 @dataclass
 class ScrapeResult:
-    """Outcome of running one source's scraper."""
+    """Outcome of running one source's scraper. `ok` is False when the run's
+    data was not written (verdict broken / site_down); see cartelera.health."""
     source_slug: str
     ok: bool
     events: list[ScrapedEvent] = field(default_factory=list)
     error: str | None = None
+    verdict: str | None = None           # healthy | degraded | broken | site_down
+    fired: list[str] = field(default_factory=list)   # degraded rules, human-readable
+    hidden: int = 0                      # events newly hidden by this run
 
 
 class ListMembership(BaseModel):

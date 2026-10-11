@@ -8,9 +8,9 @@ from cartelera.models import City, List, ListVenue, Event, event_category
 def events_for_list(
     session: Session, city_slug: str, list_slug: str, on_or_after: dt.date
 ) -> list[Event]:
-    """Events from a list's venues, applying each venue's optional category
-    whitelist, from `on_or_after` onward, chronological. List slugs are unique
-    per city, so the list is addressed as (city, slug)."""
+    """Visible (not hidden) events from a list's venues, applying each venue's
+    optional category whitelist, from `on_or_after` onward, chronological. List
+    slugs are unique per city, so the list is addressed as (city, slug)."""
     lst = session.scalars(
         select(List).join(City, City.id == List.city_id)
         .where(City.slug == city_slug, List.slug == list_slug)
@@ -19,7 +19,8 @@ def events_for_list(
 
     results: dict[int, Event] = {}
     for m in memberships:
-        q = select(Event).where(Event.venue_id == m.venue_id, Event.start_date >= on_or_after)
+        q = select(Event).where(Event.venue_id == m.venue_id, Event.start_date >= on_or_after,
+                                Event.hidden_at.is_(None))
         if m.whitelist_category_id is not None:
             q = q.join(event_category, event_category.c.event_id == Event.id).where(
                 event_category.c.category_id == m.whitelist_category_id)

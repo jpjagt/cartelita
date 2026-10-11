@@ -1,9 +1,11 @@
 from __future__ import annotations
 import datetime as dt
+from typing import Any
 from sqlalchemy import (
     Text, Date, Time, DateTime, ForeignKey, Table, Column, UniqueConstraint, func,
+    Integer, Boolean,
 )
-from sqlalchemy.dialects.postgresql import ARRAY
+from sqlalchemy.dialects.postgresql import ARRAY, JSONB
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 
@@ -73,6 +75,12 @@ class Event(Base):
     language: Mapped[str | None] = mapped_column(Text)
     annotations: Mapped[list[str]] = mapped_column(ARRAY(Text), server_default="{}")
     scraped_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    # Liveness (scraper health): stamped by every upsert; after a healthy run,
+    # upcoming events the run missed count up and are hidden (never deleted) at
+    # health.HIDE_AFTER_MISSES. Web queries filter `hidden_at IS NULL`.
+    last_seen_at: Mapped[dt.datetime | None] = mapped_column(DateTime(timezone=True))
+    missed_runs: Mapped[int] = mapped_column(Integer, server_default="0", default=0)
+    hidden_at: Mapped[dt.datetime | None] = mapped_column(DateTime(timezone=True))
     venue: Mapped[Venue] = relationship(back_populates="events")
     categories: Mapped[list[Category]] = relationship(secondary=event_category)
     translations: Mapped[list["EventTranslation"]] = relationship(
@@ -110,3 +118,31 @@ class ListVenue(Base):
     whitelist_category_id: Mapped[int | None] = mapped_column(
         ForeignKey("category.id", ondelete="CASCADE")
     )
+
+
+class ScrapeRun(Base):
+    """One row per source per `cartelera run` (see cartelera.health)."""
+    __tablename__ = "scrape_run"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    source_slug: Mapped[str] = mapped_column(Text)
+    started_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True))
+    finished_at: Mapped[dt.datetime | None] = mapped_column(DateTime(timezone=True))
+    verdict: Mapped[str] = mapped_column(Text)  # healthy | degraded | broken | site_down
+    error_kind: Mapped[str | None] = mapped_column(Text)
+    error_message: Mapped[str | None] = mapped_column(Text)
+    # {"source": {...}, "venues": {slug: {...}}, "fired": [{...}]}; NULL when
+    # the scrape raised (no metrics to record).
+    metrics: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
+    acked: Mapped[bool] = mapped_column(Boolean, server_default="false", default=False)
+
+
+class SourceHealth(Base):
+    """Per-source GitHub issue bookkeeping (one open issue per source)."""
+    __tablename__ = "source_health"
+    source_slug: Mapped[str] = mapped_column(Text, primary_key=True)
+    issue_number: Mapped[int | None] = mapped_column(Integer)
+    issue_kind: Mapped[str | None] = mapped_column(Text)
+    last_comment_at: Mapped[dt.datetime | None] = mapped_column(DateTime(timezone=True))
+    last_signature: Mapped[str | None] = mapped_column(Text)
+    updated_at: Mapped[dt.datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now())

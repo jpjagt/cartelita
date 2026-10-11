@@ -30,3 +30,10 @@ def session(engine):
         yield s
     finally:
         s.close()
+
+
+@pytest.fixture(autouse=True)
+def _no_real_github(monkeypatch):
+    """Never let a test reach GitHub, even if the dev env has a token."""
+    monkeypatch.setenv("GITHUB_TOKEN", "")
+    monkeypatch.setenv("GITHUB_REPOSITORY", "")

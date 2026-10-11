@@ -158,8 +158,13 @@ def test_language_round_trip(session):
     session.commit()
     row = session.query(Event).filter_by(external_id="vo1").one()
     assert row.language == "VOSE"
-    # re-scrape without language clears it (mirror of the price convention)
+    # null guard: a re-scrape without language keeps the known value...
     ev.language = None
     upsert_venue_events(session, "jamboree", [ev])
     session.commit()
-    assert session.query(Event).filter_by(external_id="vo1").one().language is None
+    assert session.query(Event).filter_by(external_id="vo1").one().language == "VOSE"
+    # ...but a different value replaces it
+    ev.language = "VO"
+    upsert_venue_events(session, "jamboree", [ev])
+    session.commit()
+    assert session.query(Event).filter_by(external_id="vo1").one().language == "VO"

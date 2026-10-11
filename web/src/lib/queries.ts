@@ -64,8 +64,10 @@ export async function getEventsForList(
   locale: Locale,
 ): Promise<AgendaEvent[]> {
   // Events from the list's venues, applying each membership's optional category
-  // whitelist, from today onward, chronological. Content is resolved per locale:
-  // the matching event_translation if present, else the canonical event fields.
+  // whitelist, from today onward, chronological. Hidden events (presumed
+  // cancelled by scraper health; never deleted) are excluded everywhere.
+  // Content is resolved per locale: the matching event_translation if present,
+  // else the canonical event fields.
   // Lists are addressed as (city, slug): slugs are only unique per city.
   const rows = await sql<EventRow[]>`
     SELECT DISTINCT e.id, e.start_date, e.start_time, e.start_times, e.recurrence_hint,
@@ -77,7 +79,7 @@ export async function getEventsForList(
     JOIN city c ON c.id = l.city_id
     JOIN list_venue lv ON lv.list_id = l.id
     JOIN venue v ON v.id = lv.venue_id
-    JOIN event e ON e.venue_id = v.id AND e.start_date >= CURRENT_DATE - INTERVAL '1 day'
+    JOIN event e ON e.venue_id = v.id AND e.start_date >= CURRENT_DATE - INTERVAL '1 day' AND e.hidden_at IS NULL
     LEFT JOIN event_translation t ON t.event_id = e.id AND t.lang = ${locale}
     WHERE c.slug = ${citySlug}
       AND l.slug = ${listSlug}
@@ -159,7 +161,7 @@ export async function getCityEvents(
     JOIN city c ON c.id = l.city_id
     JOIN list_venue lv ON lv.list_id = l.id
     JOIN venue v ON v.id = lv.venue_id
-    JOIN event e ON e.venue_id = v.id AND e.start_date >= CURRENT_DATE - INTERVAL '1 day'
+    JOIN event e ON e.venue_id = v.id AND e.start_date >= CURRENT_DATE - INTERVAL '1 day' AND e.hidden_at IS NULL
     LEFT JOIN event_translation t ON t.event_id = e.id AND t.lang = ${locale}
     WHERE c.slug = ${citySlug}
       AND l.author = 'cartelera'

@@ -1,12 +1,21 @@
 from __future__ import annotations
+import datetime as dt
 import importlib
 import logging
 import sys
+from sqlalchemy import select, or_
 from sqlalchemy.orm import Session
+from cartelera import health
+from cartelera.github import IssueTracker, make_tracker
+from cartelera import health_ops
+from cartelera.health_ops import sync_issue
+from cartelera.models import ScrapeRun, Venue
 from cartelera.db import make_engine, make_session_factory, ensure_database_exists
 from cartelera.migrate import apply_migrations
 from cartelera.seed import seed as seed_db
-from cartelera.upsert import upsert_venue_events
+from cartelera.upsert import (
+    upsert_venue_events, known_upcoming_snapshot, count_reseen, count_misses,
+)
 from cartelera.types import ScrapeResult, ScrapedEvent, SourceDefinition
 from cartelera.scrapers import REGISTRY, load_all
 
@@ -40,24 +49,133 @@ def _group_events_by_venue(
     return by_venue
 
 
-def run_one(session: Session, source_slug: str) -> ScrapeResult:
-    """Scrape + upsert a single source in its own transaction.
-    On any failure, roll back so the source's existing rows are left untouched."""
+def _now() -> dt.datetime:
+    return dt.datetime.now(dt.timezone.utc)
+
+
+def _write_source(
+    session: Session, source: SourceDefinition, events: list[ScrapedEvent], today: dt.date
+) -> tuple[str, list[health.FiredRule], dict, int]:
+    """Classify a successful scrape and write it. Metrics are taken from a
+    pre-write snapshot; then upsert (healthy + degraded) and, only when
+    healthy, count misses / hide. Returns (verdict, fired, metrics_json,
+    newly_hidden). Raises on any write-side failure (caller rolls back)."""
+    by_venue = _group_events_by_venue(source, events)
+    slugs = [v.slug for v in source.venues]
+    venues = {v.slug: v for v in session.scalars(select(Venue).where(Venue.slug.in_(slugs)))}
+
+    # 1. pre-write snapshot → metrics
+    venue_metrics: dict[str, health.ScopeMetrics] = {}
+    for slug in slugs:
+        evs = by_venue.get(slug, [])
+        venue = venues.get(slug)
+        if venue is None:
+            if evs:  # let the upsert raise its usual error
+                upsert_venue_events(session, slug, evs)
+            continue
+        idx = known_upcoming_snapshot(session, venue.id, today)
+        venue_metrics[slug] = health.compute_metrics(
+            evs, len(idx.ids), count_reseen(idx, evs), today)
+    metrics = health.RunMetrics(
+        source=health.aggregate_metrics(venue_metrics.values()), venues=venue_metrics)
+
+    # 2. baseline + rules → verdict
+    source_hist, venue_hist = _baseline_history(session, source.slug)
+    fired = health.evaluate_run(metrics, source_hist, venue_hist)
+    verdict = health.verdict_for(fired)
+
+    # 3. write; 4. hide (healthy only)
+    seen: set[int] = set()
+    for slug, evs in by_venue.items():
+        upsert_venue_events(session, slug, evs, seen_ids=seen)
+    hidden = 0
+    if verdict == health.HEALTHY:
+        for venue in venues.values():
+            hidden += count_misses(session, venue.id, seen, today)[1]
+    return verdict, fired, metrics.to_json(fired), hidden
+
+
+def _baseline_history(
+    session: Session, source_slug: str
+) -> tuple[list[health.ScopeMetrics], dict[str, list[health.ScopeMetrics]]]:
+    """Metrics of the source's last BASELINE_WINDOW healthy-or-acked runs,
+    newest first: source-level, and per venue."""
+    rows = session.scalars(
+        select(ScrapeRun)
+        .where(ScrapeRun.source_slug == source_slug,
+               ScrapeRun.metrics.is_not(None),
+               or_(ScrapeRun.verdict == health.HEALTHY, ScrapeRun.acked.is_(True)))
+        .order_by(ScrapeRun.started_at.desc(), ScrapeRun.id.desc())
+        .limit(health.BASELINE_WINDOW)
+    ).all()
+    source_hist = [health.ScopeMetrics.from_json(r.metrics["source"]) for r in rows
+                   if r.metrics.get("source")]
+    venue_hist: dict[str, list[health.ScopeMetrics]] = {}
+    for r in rows:
+        for slug, vm in (r.metrics.get("venues") or {}).items():
+            venue_hist.setdefault(slug, []).append(health.ScopeMetrics.from_json(vm))
+    return source_hist, venue_hist
+
+
+def run_one(
+    session: Session,
+    source_slug: str,
+    *,
+    tracker: IssueTracker | None = None,
+    today: dt.date | None = None,
+) -> ScrapeResult:
+    """Scrape one source, classify the run, write/hide accordingly, record a
+    scrape_run, and update its GitHub issue (see cartelera.health).
+
+    The source's writes run in their own transaction: broken (any exception,
+    including on write) and site_down runs roll back, keeping the last good
+    data; degraded runs upsert but never count misses or hide."""
     scraper, source = REGISTRY[source_slug]
+    today = today or dt.date.today()
+    started = _now()
+    events: list[ScrapedEvent] = []
+    fired: list[health.FiredRule] = []
+    metrics_json: dict | None = None
+    error_kind = error_message = None
+    hidden = 0
     try:
         events = scraper.scrape()
-        for venue_slug, venue_events in _group_events_by_venue(source, events).items():
-            upsert_venue_events(session, venue_slug, venue_events)
+        verdict, fired, metrics_json, hidden = _write_source(session, source, events, today)
         session.commit()
-        return ScrapeResult(source_slug=source_slug, ok=True, events=events)
     except Exception as exc:  # noqa: BLE001 - we want all failures isolated per source
         session.rollback()
         logger.exception("scrape failed for source %r", source_slug)
-        return ScrapeResult(source_slug=source_slug, ok=False, error=f"{type(exc).__name__}: {exc}")
+        verdict, error_kind = health.classify_exception(exc)
+        error_message = health.error_tail(exc)
+        error = f"{type(exc).__name__}: {exc}"
+    else:
+        error = None
+
+    run = ScrapeRun(
+        source_slug=source_slug, started_at=started, finished_at=_now(), verdict=verdict,
+        error_kind=error_kind, error_message=error_message, metrics=metrics_json, acked=False)
+    session.add(run)
+    session.commit()
+
+    try:
+        sync_issue(session, source_slug, tracker or make_tracker())
+    except Exception:  # noqa: BLE001 - GitHub trouble must never fail the scrape
+        session.rollback()
+        logger.exception("updating the health issue failed for source %r", source_slug)
+
+    return ScrapeResult(
+        source_slug=source_slug,
+        ok=verdict not in health.FAILED_VERDICTS,
+        events=events,
+        error=error,
+        verdict=verdict,
+        fired=[r.detail if r.scope == "source" else f"{r.scope}: {r.detail}" for r in fired],
+        hidden=hidden,
+    )
 
 
-def run_all(session: Session) -> list[ScrapeResult]:
-    return [run_one(session, slug) for slug in REGISTRY]
+def run_all(session: Session, tracker: IssueTracker | None = None) -> list[ScrapeResult]:
+    return [run_one(session, slug, tracker=tracker) for slug in REGISTRY]
 
 
 def _sources_in_category(category_slug: str) -> list[str]:
@@ -129,10 +247,15 @@ def _resolve_run_targets(run_args: list[str]) -> list[str] | None:
 
 def _report(results: list[ScrapeResult]) -> None:
     for r in results:
-        if r.ok:
-            print(f"[ok]   {r.source_slug}: {len(r.events)} events")
+        if r.verdict == health.HEALTHY:
+            extra = f", {r.hidden} hidden" if r.hidden else ""
+            print(f"[ok]   {r.source_slug}: {len(r.events)} events{extra}")
+        elif r.verdict == health.DEGRADED:
+            print(f"[DEGRADED] {r.source_slug}: {len(r.events)} events written, nothing hidden; "
+                  + "; ".join(r.fired), file=sys.stderr)
         else:
-            print(f"[FAIL] {r.source_slug}: {r.error}", file=sys.stderr)
+            label = "SITE DOWN" if r.verdict == health.SITE_DOWN else "FAIL"
+            print(f"[{label}] {r.source_slug}: {r.error}", file=sys.stderr)
 
 
 def _dry_run(module_name: str) -> int:
@@ -202,11 +325,12 @@ def main() -> int:
     args = sys.argv[1:]
     cmd = args[0] if args else "help"
 
-    if cmd not in {"migrate", "seed", "run", "dry-run"}:
+    if cmd not in {"migrate", "seed", "run", "dry-run", "health"}:
         print(
             "usage: cartelera [migrate|seed|"
             "run [all|<slug>[,<slug>...]|:<city_slug>|-c <category_slug>]|"
-            "dry-run <module_name>]",
+            "dry-run <module_name>|"
+            "health [ack <source>|rekey <source> [--apply]]]",
             file=sys.stderr,
         )
         return 1
@@ -242,13 +366,20 @@ def main() -> int:
             seed_db(session)
             print("seeded")
             return 0
+        if cmd == "health":
+            load_all()
+            return health_ops.main(session, args[1:], make_tracker())
         # cmd == "run"
         seed_db(session)
         slugs = _resolve_run_targets(args[1:])
         if slugs is None:
             return 1
-        results = [run_one(session, slug) for slug in slugs]
+        tracker = make_tracker()
+        results = [run_one(session, slug, tracker=tracker) for slug in slugs]
         _report(results)
+        # Non-zero when any source's data could not be written (broken /
+        # site_down). Degraded alone exits 0: its data was written and its
+        # GitHub issue is the alert.
         return 0 if all(r.ok for r in results) else 1
     finally:
         session.close()
