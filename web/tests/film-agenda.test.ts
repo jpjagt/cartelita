@@ -18,6 +18,7 @@ const ev = (
   sourceUrl: `https://x/${id}`,
   recurrenceHint: null,
   language: null,
+  description: null,
 });
 
 describe("groupFilmDay", () => {

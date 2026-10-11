@@ -35,6 +35,9 @@ export interface AgendaEvent {
   sourceUrl: string;   // resolved for the active locale
   recurrenceHint: string | null;
   language: string | null; // display-only performance/source language ("VOSE", "hy")
+  /** Short excerpt of the description (translation ?? canonical), resolved
+      per locale and cut at build (lib/description.ts); null when none. */
+  description: string | null;
   /** Per-event genre for hover tinting, on pages mixing categories (My list).
       Category pages leave it unset and tint by the page's own list. */
   genre?: string;
@@ -133,4 +136,35 @@ export interface ShareStrings {
   localeTag: string;
   /** "{title} — {when} at {venue}"; " ({price})" is appended when there is one. */
   template: string;
+}
+
+/** Icons drawn by CellIcon.astro (one <symbol> each in CellIconSprite.astro). */
+export type CellIconName =
+  | "share"
+  | "heart"
+  | "heart-filled"
+  | "calendar"
+  | "eye"
+  | "chevron";
+
+/** Where one agenda row lands (lib/event-panel.ts): its 0-based index (--ev)
+    and the extra grid rows open event panels push in above it (--po). */
+export interface RowNumbering {
+  ev: number;
+  po: number;
+}
+
+/** The navbar's band geometry, in grid column lines (lib/nav-layout.ts). */
+export interface NavGeometry {
+  colStart: number;     // first column of the content band
+  bandEnd: number;      // exclusive end line of the band
+  localeCount: number;  // locale switcher cells at the right of row 1
+  narrow: boolean;      // the narrow (<760px) stacked layout
+}
+
+/** One navbar link's grid placement. */
+export interface NavPlacement {
+  col: number;
+  span: number;
+  row: number;
 }

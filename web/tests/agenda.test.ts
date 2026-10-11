@@ -6,6 +6,7 @@ const ev = (id: number, date: string): AgendaEvent => ({
   id, title: `E${id}`, startDate: date, startTime: null,
   venueSlug: "jamboree", venueName: "Jamboree", price: null, sourceUrl: "https://x", recurrenceHint: null,
   language: null,
+  description: null,
 });
 
 describe("groupEventsByDay", () => {

@@ -1,4 +1,5 @@
 import { sql } from "@/lib/db"
+import { excerpt } from "@/lib/description"
 import type {
   CategoryList,
   AgendaEvent,
@@ -18,6 +19,7 @@ interface EventRow {
   price: string | null
   language: string | null
   title: string
+  description: string | null
   source_url: string
 }
 
@@ -68,8 +70,9 @@ export async function getEventsForList(
   const rows = await sql<EventRow[]>`
     SELECT DISTINCT e.id, e.start_date, e.start_time, e.start_times, e.recurrence_hint,
                     v.slug AS venue_slug, v.name AS venue_name, e.price, e.language,
-                    COALESCE(t.title, e.title)            AS title,
-                    COALESCE(t.source_url, e.source_url)  AS source_url
+                    COALESCE(t.title, e.title)              AS title,
+                    COALESCE(t.description, e.description)  AS description,
+                    COALESCE(t.source_url, e.source_url)    AS source_url
     FROM list l
     JOIN city c ON c.id = l.city_id
     JOIN list_venue lv ON lv.list_id = l.id
@@ -120,6 +123,7 @@ function expandShowtimes<R extends EventRow, T extends AgendaEvent>(
         sourceUrl: r.source_url,
         recurrenceHint: r.recurrence_hint,
         language: r.language,
+        description: excerpt(r.description),
       }),
     )
   })
@@ -147,9 +151,10 @@ export async function getCityEvents(
   const rows = await sql<CityEventRow[]>`
     SELECT e.id, e.start_date, e.start_time, e.start_times, e.recurrence_hint,
            v.slug AS venue_slug, v.name AS venue_name, e.price, e.language,
-           COALESCE(t.title, e.title)            AS title,
-           COALESCE(t.source_url, e.source_url)  AS source_url,
-           array_agg(DISTINCT l.slug)            AS list_slugs
+           COALESCE(t.title, e.title)              AS title,
+           COALESCE(t.description, e.description)  AS description,
+           COALESCE(t.source_url, e.source_url)    AS source_url,
+           array_agg(DISTINCT l.slug)              AS list_slugs
     FROM list l
     JOIN city c ON c.id = l.city_id
     JOIN list_venue lv ON lv.list_id = l.id
@@ -165,7 +170,7 @@ export async function getCityEvents(
           WHERE ec.event_id = e.id AND ec.category_id = lv.whitelist_category_id
         )
       )
-    GROUP BY e.id, v.slug, v.name, t.title, t.source_url
+    GROUP BY e.id, v.slug, v.name, t.title, t.description, t.source_url
     ORDER BY e.start_date, e.start_time NULLS FIRST, e.id`
 
   return expandShowtimes(rows, (r, base) => ({
