@@ -210,13 +210,21 @@ class MatchIndex:
 
 
 def known_upcoming_snapshot(
-    session: Session, venue_id: int, today: dt.date
+    session: Session, venue_id: int, today: dt.date, seen_since: dt.datetime | None
 ) -> MatchIndex:
-    """The venue's visible events with start_date >= today, before this run
-    writes anything."""
+    """The coverage denominator, before this run writes anything: the venue's
+    visible upcoming events that the source's previous trusted (healthy or
+    acked) run saw (last_seen_at >= its start). Rows nobody has re-seen since (stale rows
+    from before scraper health, long gone from the site) are excluded — they
+    age out through miss counting instead of pinning coverage low forever.
+    No previous trusted run (`seen_since` None) → empty: coverage is
+    skipped for this run."""
+    if seen_since is None:
+        return MatchIndex([])
     rows = session.execute(
         select(Event.id, Event.external_id, Event.source_url, Event.title, Event.start_date)
-        .where(Event.venue_id == venue_id, Event.start_date >= today, Event.hidden_at.is_(None))
+        .where(Event.venue_id == venue_id, Event.start_date >= today, Event.hidden_at.is_(None),
+               Event.last_seen_at >= seen_since)
     ).all()
     return MatchIndex([tuple(r) for r in rows])
 

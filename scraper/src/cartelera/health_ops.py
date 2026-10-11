@@ -113,16 +113,42 @@ def sync_issue(
 
 # --- cartelera health ... -------------------------------------------------------
 
-def ack(session: Session, source_slug: str, tracker: IssueTracker) -> str:
-    """Mark the latest run acked (it joins the baseline and ends the bad
-    streak) and close the source's issue."""
+def _source_venue_ids(session: Session, source_slug: str) -> list[int]:
+    entry = REGISTRY.get(source_slug)
+    if entry is None:
+        return []
+    return list(session.scalars(
+        select(Venue.id).where(Venue.slug.in_([v.slug for v in entry[1].venues]))))
+
+
+def ack(
+    session: Session, source_slug: str, tracker: IssueTracker, today: dt.date | None = None
+) -> str:
+    """Accept the latest run as correct: mark it acked (it joins the baseline
+    and ends the bad streak), hide the source's visible upcoming events that
+    run did not see (reversible: they un-hide if they reappear), and close the
+    source's issue. Only a data-writing run (healthy / degraded) can vouch for
+    what's gone; acking a broken / site_down run hides nothing."""
+    today = today or dt.date.today()
     runs = recent_runs(session, source_slug, limit=1)
     if not runs:
         raise ValueError(f"no recorded runs for source {source_slug!r}")
-    runs[0].acked = True
+    run = runs[0]
+    run.acked = True
+    hidden = 0
+    if run.verdict in (health.HEALTHY, health.DEGRADED):
+        venue_ids = _source_venue_ids(session, source_slug)
+        hidden = session.execute(
+            update(Event).where(
+                Event.venue_id.in_(venue_ids), Event.start_date >= today,
+                Event.hidden_at.is_(None),
+                or_(Event.last_seen_at.is_(None), Event.last_seen_at < run.started_at))
+            .values(hidden_at=_now()).execution_options(synchronize_session=False)
+        ).rowcount
     session.commit()
     sh, state = _load_state(session, source_slug)
-    msg = f"acked run #{runs[0].id} ({runs[0].verdict}, {runs[0].started_at:%Y-%m-%d %H:%M})"
+    msg = (f"acked run #{run.id} ({run.verdict}, {run.started_at:%Y-%m-%d %H:%M}); "
+           f"hid {hidden} upcoming events it did not see")
     if state.number is not None:
         tracker.comment(state.number, health.render_close_comment("acked", source_slug))
         tracker.close_issue(state.number)
@@ -164,14 +190,13 @@ def rekey(
 ) -> str:
     """One-off after the jazzin key change: once a run with the new keys has
     succeeded, hide the source's upcoming events still on a legacy (purely
-    numeric) external_id and ack that run so its coverage drop isn't flagged.
-    Dry-run unless `apply`."""
+    numeric) external_id at once (instead of after 3 healthy runs, with old
+    and new rows visible side by side meanwhile) and ack that run. Dry-run
+    unless `apply`."""
     if source_slug not in REKEYABLE:
         raise ValueError(f"rekey supports {sorted(REKEYABLE)}, not {source_slug!r}")
     today = today or dt.date.today()
-    _scraper, source = REGISTRY[source_slug]
-    venue_ids = list(session.scalars(
-        select(Venue.id).where(Venue.slug.in_([v.slug for v in source.venues]))))
+    venue_ids = _source_venue_ids(session, source_slug)
     runs = recent_runs(session, source_slug, limit=1)
     if not runs or runs[0].verdict not in (health.HEALTHY, health.DEGRADED):
         raise ValueError(
@@ -196,7 +221,8 @@ def rekey(
     session.execute(update(Event).where(*legacy).values(hidden_at=_now())
                     .execution_options(synchronize_session=False))
     session.commit()
-    return f"hid {n} upcoming legacy-keyed {source_slug} events; " + ack(session, source_slug, tracker)
+    return (f"hid {n} upcoming legacy-keyed {source_slug} events; "
+            + ack(session, source_slug, tracker, today=today))
 
 
 def main(session: Session, args: list[str], tracker: IssueTracker) -> int:

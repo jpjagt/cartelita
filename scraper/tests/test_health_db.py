@@ -354,12 +354,14 @@ def test_rekey_hides_legacy_numeric_rows_and_acks(session, monkeypatch):
     scraper.events = [_se(f"k{i:015d}", title=f"Show {1000 + i}", venue_slug="bimhuis")
                       for i in range(12)]
     r = run_one(session, "jazzin-amsterdam", tracker=gh, today=TODAY)
-    assert r.verdict == h.DEGRADED  # every legacy row "missing": coverage 0
+    # first run since the migration: no previous successful run, so coverage
+    # is skipped and the legacy rows don't flag it
+    assert r.verdict == h.HEALTHY
     out = health_ops.rekey(session, "jazzin-amsterdam", gh, apply=False, today=TODAY)
     assert "would hide 12" in out
     assert _events(session, hidden_at=None).keys() >= {"1000", "k000000000000000"}
     out = health_ops.rekey(session, "jazzin-amsterdam", gh, apply=True, today=TODAY)
-    assert "hid 12" in out
+    assert "hid 12" in out and "hid 0 upcoming events it did not see" in out
     evs = _events(session)
     assert all(evs[str(1000 + i)].hidden_at is not None for i in range(12))
     assert evs["999"].hidden_at is None  # past: untouched
@@ -380,3 +382,84 @@ def test_health_cli_dispatch(session, fake, capsys):
     assert health_ops.main(session, ["rekey", "jazzin-amsterdam", "--force"], gh) == 1
     assert "usage" in capsys.readouterr().err
     assert health_ops.main(session, ["bogus"], gh) == 1
+
+
+# --- coverage denominator / stale rows / ack hiding ------------------------------------
+
+def _make_stale(session, n):
+    """Rows from before scraper health: upcoming, visible, long gone from the
+    site (never re-seen)."""
+    upsert_venue_events(session, "jamboree", [_se(f"stale{i}", days=5 + i) for i in range(n)])
+    session.query(Event).filter(Event.external_id.like("stale%")).update(
+        {"last_seen_at": dt.datetime(2026, 1, 1, tzinfo=dt.UTC)}, synchronize_session=False)
+    session.commit()
+
+
+def test_stale_rows_do_not_deadlock_and_age_out(session, fake):
+    gh = FakeTracker()
+    _make_stale(session, 50)
+    fake.events = _full(10)
+    verdicts = [_run(session, gh).verdict for _ in range(3)]
+    assert verdicts == [h.HEALTHY] * 3
+    runs = session.query(ScrapeRun).order_by(ScrapeRun.id).all()
+    # run 1: no previous successful run → no denominator; then only what the
+    # previous run saw (the 10 real events), never the 50 stale rows
+    assert [r.metrics["source"]["known_upcoming"] for r in runs] == [0, 10, 10]
+    assert [r.metrics["source"]["coverage"] for r in runs] == [None, 1.0, 1.0]
+    evs = _events(session)
+    assert all(evs[f"stale{i}"].hidden_at is not None for i in range(50))
+    assert all(evs[f"e{i}"].hidden_at is None for i in range(10))
+    assert gh.issues == {}
+
+
+def test_coverage_denominator_is_previous_trusted_run(session, fake):
+    gh = FakeTracker()
+    _make_stale(session, 30)
+    fake.events = _full(20)
+    _run(session, gh)
+    # a broken run in between doesn't move the reference
+    fake.exc = RuntimeError("boom")
+    _run(session, gh)
+    fake.exc = None
+    fake.events = _full(20)[:8]  # truncated after a full run → degraded
+    for _ in range(4):  # ...and it stays degraded: degraded runs aren't a reference
+        assert _run(session, gh).verdict == h.DEGRADED
+        latest = session.query(ScrapeRun).order_by(ScrapeRun.id.desc()).first()
+        # denominator: the 20 seen by the healthy run, not the 30 stale rows
+        assert (latest.metrics["source"]["known_upcoming"],
+                latest.metrics["source"]["reseen"]) == (20, 8)
+    assert all(e.hidden_at is None for k, e in _events(session).items() if k.startswith("e"))
+    # fixed: healthy again
+    fake.events = _full(20)
+    assert _run(session, gh).verdict == h.HEALTHY
+
+
+def test_ack_hides_unseen_upcoming_events_reversibly(session, fake):
+    gh = FakeTracker()
+    fake.events = _full(20) + [_se("past", days=-2)]
+    _run(session, gh)
+    fake.events = _full(20)[:5]  # e.g. a season break: legit, but degraded
+    assert _run(session, gh).verdict == h.DEGRADED
+    assert _run(session, gh).verdict == h.DEGRADED
+    msg = health_ops.ack(session, "jamboree", gh, today=TODAY)
+    assert "hid 15 upcoming events it did not see" in msg and "closed issue #1" in msg
+    evs = _events(session)
+    assert [k for k, e in evs.items() if e.hidden_at is not None] == [f"e{i}" for i in range(5, 20)]
+    assert evs["past"].hidden_at is None
+    # next run: healthy against the acked run's view
+    assert _run(session, gh).verdict == h.HEALTHY
+    # a hidden event reappears → visible again
+    fake.events = _full(20)[:6]
+    _run(session, gh)
+    evs = _events(session)
+    assert evs["e5"].hidden_at is None and evs["e5"].missed_runs == 0
+
+
+def test_ack_of_a_broken_run_hides_nothing(session, fake):
+    gh = FakeTracker()
+    fake.events = _full(5)
+    _run(session, gh)
+    fake.exc = RuntimeError("boom")
+    _run(session, gh)
+    assert "hid 0" in health_ops.ack(session, "jamboree", gh, today=TODAY)
+    assert all(e.hidden_at is None for e in _events(session).values())

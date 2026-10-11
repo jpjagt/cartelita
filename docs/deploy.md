@@ -86,6 +86,7 @@ runs (reversible: `event.hidden_at`, nothing deleted), and opens / comments on /
 closes one GitHub issue per bad source (labels `scraper-health`, `kind:<kind>`).
 Commands: `cartelera health` (state of every source), `cartelera health ack
 <source>` (accept a legitimate change: the latest run becomes baseline, the
+upcoming events it didn't see are hidden right away — reversibly — and the
 issue closes).
 
 ### Owner setup (one-off)
@@ -120,10 +121,10 @@ retired with `health rekey` (dry-run first).
 2. In the scraper app's terminal (or as a one-off task):
    ```sh
    cartelera migrate                                  # applies 0005_scraper_health.sql
-   cartelera run jazzin-amsterdam                     # new keys; expect [DEGRADED] (coverage)
+   cartelera run jazzin-amsterdam                     # new keys; expect [ok] (first run: coverage skipped)
    cartelera health rekey jazzin-amsterdam            # dry-run: "would hide N ..."
    cartelera health rekey jazzin-amsterdam --apply    # hides legacy rows, acks the run
-   cartelera health                                   # jazzin-amsterdam: degraded* (* = acked), streak 0
+   cartelera health                                   # jazzin-amsterdam: healthy* (* = acked), streak 0
    ```
    If the 02:00 task already ran the new scraper, skip the `run`: `rekey` works
    off the latest jazzin run as long as it wrote content-keyed events.
@@ -131,9 +132,11 @@ retired with `health rekey` (dry-run first).
    `rekey --apply` has run, the DB holds old and new jazzin rows side by side,
    so do steps 2–3 together, before the next 05:00 web redeploy.
 
-Other sources need nothing: their first runs compute metrics against the
-existing data (coverage applies from run one; the baseline rules from the
-third healthy run on).
+Other sources need nothing. Coverage is measured against what the previous
+healthy (or acked) run saw, so each source's first run after the migration
+skips it, and old rows that left the site long ago never count against
+coverage: they are missed by every healthy run and hidden after the third.
+The baseline rules apply from the third healthy run on.
 
 ## Notes
 

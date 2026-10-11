@@ -159,7 +159,8 @@ source — the repair queue. Design and thresholds:
 `docs/superpowers/specs/2026-10-12-scraper-health-design.md`; code in
 `scraper/src/cartelera/health.py` (pure: constants, rules, state machine) and
 `health_ops.py`. CLI: `cartelera health`, `cartelera health ack <source>`
-(legit change, e.g. season break). If you're repairing a scraper from a health
+(legit change, e.g. season break: also hides the upcoming events that run
+didn't see). Coverage counts only events the previous healthy/acked run saw. If you're repairing a scraper from a health
 issue: follow the `writing-a-scraper` skill, and note a degraded verdict often
 means a *partial* break (pagination stopping early, a dead field selector).
 

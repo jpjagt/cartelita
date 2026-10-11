@@ -64,7 +64,18 @@ def _write_source(
     slugs = [v.slug for v in source.venues]
     venues = {v.slug: v for v in session.scalars(select(Venue).where(Venue.slug.in_(slugs)))}
 
-    # 1. pre-write snapshot → metrics
+    # 1. pre-write snapshot → metrics. Coverage is measured against what the
+    # previous trusted run saw — healthy, or an acked data-writing run (the
+    # same runs the baseline uses); none yet → coverage skipped. Degraded runs
+    # don't move the reference: otherwise a persistently truncated scraper
+    # would be flagged once, then measured against its own truncated view,
+    # score healthy, and hide the real events through miss counting.
+    seen_since = session.scalar(
+        select(ScrapeRun.started_at)
+        .where(ScrapeRun.source_slug == source.slug,
+               or_(ScrapeRun.verdict == health.HEALTHY,
+                   ScrapeRun.acked.is_(True) & (ScrapeRun.verdict == health.DEGRADED)))
+        .order_by(ScrapeRun.started_at.desc()).limit(1))
     venue_metrics: dict[str, health.ScopeMetrics] = {}
     for slug in slugs:
         evs = by_venue.get(slug, [])
@@ -73,7 +84,7 @@ def _write_source(
             if evs:  # let the upsert raise its usual error
                 upsert_venue_events(session, slug, evs)
             continue
-        idx = known_upcoming_snapshot(session, venue.id, today)
+        idx = known_upcoming_snapshot(session, venue.id, today, seen_since)
         venue_metrics[slug] = health.compute_metrics(
             evs, len(idx.ids), count_reseen(idx, evs), today)
     metrics = health.RunMetrics(
