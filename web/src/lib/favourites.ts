@@ -1,6 +1,6 @@
 // Favourite venues, kept per browser in localStorage (no accounts). Stored as a
 // JSON array of venue slugs; slugs are globally unique, so one set serves every
-// city and locale. Every write fires FAVOURITES_EVENT on window so all stars on
+// city and locale. Every write fires FAVOURITES_EVENT on window so all hearts on
 // the page and the My list filter stay in sync.
 
 export const FAVOURITES_KEY = "favourite-venues";
@@ -39,7 +39,7 @@ export function toggleFavourite(store: KeyValueStore, slug: string): Set<string>
 
 let fallback: KeyValueStore | null = null;
 
-/** localStorage, or an in-memory stand-in when it is blocked so stars still
+/** localStorage, or an in-memory stand-in when it is blocked so hearts still
     toggle for the visit. Browser-only. */
 export function browserStore(): KeyValueStore {
   try {

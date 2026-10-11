@@ -1,0 +1,216 @@
+---
+import type { AgendaEvent, Locale } from "@/lib/types"
+import { t, localeTag } from "@/i18n"
+import { cityConfig } from "@/lib/cities"
+import CellIcon from "@/components/ui/CellIcon.astro"
+interface Props {
+  city: string
+  locale: Locale
+  /** The page's events; their description excerpts ship once, keyed by id. */
+  events: AgendaEvent[]
+}
+const { city, locale, events } = Astro.props
+const strings = t(locale)
+const { timezone } = cityConfig(city)
+// One entry per event (showtimes of one event share it), only where there is
+// a description. Escaped for embedding in a <script> element.
+const descriptions = Object.fromEntries(
+  events.filter((e) => e.description).map((e) => [e.id, e.description]),
+)
+const descriptionsJson = JSON.stringify(descriptions).replace(/</g, "\\u003c")
+---
+{/* The narrow layout's (<760px) event panel. Tapping an event row opens it
+    directly under that event's two rows, IN the grid flow: it takes whole
+    cell rows and pushes the rest of the day down (syncAgenda numbers rows
+    around it via data-panel-rows; lib/event-panel.ts). Tapping the row again
+    closes it; one is open at a time. Most rows are never opened, so the panel
+    DOM is cloned from this one template on tap and the descriptions ride once
+    per page as JSON. Contents, one cell apart inside a 1-cell margin: the
+    description excerpt (≤3 lines, when there is one), then View · Share · Add
+    to calendar buttons, each an icon cell + a label spanning the rest. While
+    open, the row's venue shows its favourite heart (FavouriteToggle). */}
+<template
+  data-event-panel-template
+  data-locale-tag={localeTag(locale)}
+  data-timezone={timezone}
+  data-template={strings.shareTemplate}
+  data-copied={strings.copied}
+>
+  <div data-event-panel class="event-panel">
+    <p class="event-panel-desc" data-panel-desc></p>
+    <a data-panel-view target="_blank" rel="noopener" class="panel-action">
+      <span class="cell panel-action-icon"><CellIcon icon="eye" /></span>
+      <span class="cell cell-truncate panel-action-label"><span class="cell-text">{strings.view}</span></span>
+    </a>
+    <button type="button" data-panel-action="share" class="panel-action">
+      <span class="cell panel-action-icon"><CellIcon icon="share" /></span>
+      <span class="cell cell-truncate panel-action-label"><span class="cell-text">{strings.share}</span></span>
+    </button>
+    <button type="button" data-panel-action="calendar" class="panel-action">
+      <span class="cell panel-action-icon"><CellIcon icon="calendar" /></span>
+      <span class="cell cell-truncate panel-action-label"><span class="cell-text">{strings.addToCalendar}</span></span>
+    </button>
+  </div>
+</template>
+<script type="application/json" data-event-descriptions set:html={descriptionsJson} />
+
+<script>
+  import { eventOf, shareEvent, addToCalendar } from "@/lib/event-actions"
+  import { panelRows } from "@/lib/event-panel"
+  import { NARROW_QUERY } from "@/lib/breakpoints"
+  import { FAVOURITES_EVENT } from "@/lib/favourites"
+
+  const template = document.querySelector<HTMLTemplateElement>("[data-event-panel-template]")
+  const NARROW = window.matchMedia(NARROW_QUERY)
+  const ACTIONS = 3
+  // Description lines shown at most (matches -webkit-line-clamp in global.css).
+  const DESC_LINES = 3
+
+  let descriptions: Record<string, string> | null = null
+  function descriptionOf(id: string): string {
+    if (!descriptions) {
+      try {
+        const el = document.querySelector("[data-event-descriptions]")
+        descriptions = JSON.parse(el?.textContent || "{}")
+      } catch {
+        descriptions = {}
+      }
+    }
+    return descriptions![id] ?? ""
+  }
+
+  // The open panel's row wrapper; null when closed.
+  let row: HTMLElement | null = null
+  let copiedTimer = 0
+
+  const sectionOf = (r: HTMLElement) => r.closest<HTMLElement>("section.gridpaper")
+  // Re-number the section's rows around the (changed) panel, and redraw its
+  // now-line.
+  const repack = (r: HTMLElement) => {
+    const section = sectionOf(r)
+    if (section) window.syncAgenda?.(section)
+  }
+
+  // Size the panel in whole cell rows from its description's rendered line
+  // count (it wraps differently at every width), and publish that on the row
+  // for the packing (data-panel-rows) and on the panel for its own span (--pr).
+  // Returns whether the height changed.
+  function measure(r: HTMLElement): boolean {
+    const panel = r.querySelector<HTMLElement>("[data-event-panel]")
+    if (!panel) return false
+    const section = sectionOf(r)
+    const cell = section ? parseFloat(section.style.getPropertyValue("--cell")) || 24 : 24
+    const desc = panel.querySelector<HTMLElement>("[data-panel-desc]")
+    // scrollHeight is the full text's height (one cell per line) even while
+    // clamped; the grid won't size a clamped box itself, so its height is set
+    // here too (--dl).
+    const lines = desc && !desc.hidden
+      ? Math.min(DESC_LINES, Math.max(1, Math.round(desc.scrollHeight / cell)))
+      : 0
+    desc?.style.setProperty("--dl", String(lines))
+    const rows = String(panelRows(lines, ACTIONS))
+    if (r.dataset.panelRows === rows) return false
+    r.dataset.panelRows = rows
+    panel.style.setProperty("--pr", rows)
+    return true
+  }
+
+  function open(r: HTMLElement) {
+    close()
+    const panel = template!.content.firstElementChild!.cloneNode(true) as HTMLElement
+    const desc = panel.querySelector<HTMLElement>("[data-panel-desc]")!
+    const text = descriptionOf(r.dataset.id ?? "")
+    if (text) desc.textContent = text
+    else desc.hidden = true
+    const link = r.querySelector<HTMLAnchorElement>(".gc-title")
+    panel.querySelector<HTMLAnchorElement>("[data-panel-view]")!.href = link?.href ?? ""
+    r.appendChild(panel)
+    r.setAttribute("data-expanded", "")
+    link?.setAttribute("aria-expanded", "true")
+    row = r
+    measure(r)
+    repack(r)
+    // Bring the panel into view if it opened below the fold (plain scroll; the
+    // page stays freely scrollable).
+    const box = panel.getBoundingClientRect()
+    if (box.bottom > window.innerHeight) {
+      window.scrollBy({ top: Math.min(box.bottom - window.innerHeight, box.top - 80), behavior: "smooth" })
+    }
+  }
+
+  function close() {
+    if (!row) return
+    const r = row
+    row = null
+    window.clearTimeout(copiedTimer)
+    r.querySelector("[data-event-panel]")?.remove()
+    r.removeAttribute("data-expanded")
+    delete r.dataset.panelRows
+    r.querySelector(".gc-title")?.setAttribute("aria-expanded", "false")
+    repack(r)
+  }
+
+  // Confirm a clipboard fallback by swapping the Share label to "Copied" for
+  // a moment.
+  function showCopied(panel: HTMLElement) {
+    const label = panel.querySelector<HTMLElement>("[data-panel-action=share] .cell-text")
+    if (!label) return
+    const prev = template!.content.querySelector("[data-panel-action=share] .cell-text")?.textContent ?? ""
+    label.textContent = template!.dataset.copied ?? ""
+    window.clearTimeout(copiedTimer)
+    copiedTimer = window.setTimeout(() => (label.textContent = prev), 1500)
+  }
+
+  if (template) {
+    document.addEventListener("click", async (e) => {
+      // Handled elsewhere: a favourite toggle (FavouriteToggle) claims its
+      // click with preventDefault.
+      if (!NARROW.matches || e.defaultPrevented) return
+      const target = e.target as Element | null
+      const panel = target?.closest<HTMLElement>("[data-event-panel]")
+      if (panel) {
+        // View is a plain link (new tab); the buttons act on the panel's row.
+        const action = target?.closest<HTMLElement>("[data-panel-action]")
+        const r = panel.closest<HTMLElement>("[data-event-row]")
+        if (!action || !r) return
+        const ev = eventOf(r)
+        if (action.dataset.panelAction === "share") {
+          const result = await shareEvent(ev, {
+            localeTag: template.dataset.localeTag ?? "en-GB",
+            template: template.dataset.template ?? "{title} — {when}, {venue}",
+          })
+          if (result === "copied") showCopied(panel)
+        } else {
+          addToCalendar(ev, template.dataset.timezone ?? "UTC")
+        }
+        return
+      }
+      const r = target?.closest<HTMLElement>("[data-event-row]")
+      if (!r) return
+      // The open row's heart favourites (FavouriteToggle) instead.
+      if (r === row && target?.closest(".fav-heart")) return
+      // Any other tap on the row — the title link included — toggles its
+      // panel rather than navigating (View does that).
+      e.preventDefault()
+      if (r === row) close()
+      else open(r)
+    })
+
+    // The grid re-flows on resize/rotation: the description may wrap to a
+    // different line count (re-size the panel), or the layout may have
+    // widened past the narrow breakpoint (no panels there: close).
+    window.addEventListener("gridsync", () => {
+      if (!row) return
+      if (!NARROW.matches) close()
+      else if (measure(row)) repack(row)
+    })
+
+    // My list: un-favouriting the open row's venue filters the row out; take
+    // its panel with it.
+    window.addEventListener(FAVOURITES_EVENT, () =>
+      queueMicrotask(() => {
+        if (row?.hasAttribute("data-filtered")) close()
+      }),
+    )
+  }
+</script>

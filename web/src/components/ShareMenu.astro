@@ -2,6 +2,7 @@
 import type { Locale } from "@/lib/types"
 import { t, localeTag } from "@/i18n"
 import { cityConfig } from "@/lib/cities"
+import CellIcon from "@/components/ui/CellIcon.astro"
 interface Props {
   city: string
   locale: Locale
@@ -10,12 +11,13 @@ const { city, locale } = Astro.props
 const strings = t(locale)
 const { timezone } = cityConfig(city)
 ---
-{/* The per-event share menu: ONE element per page, moved into the clicked
-    row's section and placed on its grid by the script below, so 5,000 rows
-    carry only a trigger button each (EventRow). Page-level data (locale, time
-    zone, localized strings) rides on the menu's data-* attributes; per-event
-    data is read off the row. Two actions, each one cell row:
-    icon · spacer · label. */}
+{/* The per-event share dropdown (desktop layout; below 760px the event panel
+    takes over, EventPanel.astro): ONE element per page, moved into the
+    clicked row's section and placed on its grid by the script below, so
+    5,000 rows carry only a trigger button each (EventRow). Page-level data
+    (locale, time zone, localized strings) rides on the menu's data-*
+    attributes; per-event data is read off the row. Two actions, each one cell
+    row: icon · spacer · label. */}
 <div
   data-share-menu
   data-locale-tag={localeTag(locale)}
@@ -28,101 +30,59 @@ const { timezone } = cityConfig(city)
   class="share-menu"
 >
   <button type="button" role="menuitem" data-share-action="share" class="share-item">
-    <span class="share-item-icon" aria-hidden="true">
-      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square">
-        <path d="M8 1.5v9M5 4.5l3-3 3 3M5.5 7H3.5v7.5h9V7h-2" />
-      </svg>
-    </span>
+    <span class="cell share-item-icon"><CellIcon icon="share" /></span>
     <span class="cell cell-truncate share-item-label"><span class="cell-text">{strings.share}</span></span>
   </button>
   <button type="button" role="menuitem" data-share-action="calendar" class="share-item">
-    <span class="share-item-icon" aria-hidden="true">
-      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square">
-        <path d="M2 3.5h12v11H2zM2 7h12M5 1.5v3.5M11 1.5v3.5" />
-      </svg>
-    </span>
+    <span class="cell share-item-icon"><CellIcon icon="calendar" /></span>
     <span class="cell cell-truncate share-item-label"><span class="cell-text">{strings.addToCalendar}</span></span>
   </button>
 </div>
-{/* Mobile only: catches the tap outside the open menu (closes it without
-    activating whatever was under the finger). */}
-<div data-share-scrim hidden class="share-scrim"></div>
 
 <script>
-  import { shareText } from "@/lib/share"
-  import { buildIcs } from "@/lib/ics"
-  import type { ShareEvent } from "@/lib/types"
+  import { eventOf, shareEvent, addToCalendar } from "@/lib/event-actions"
+  import { NARROW_QUERY } from "@/lib/breakpoints"
 
   const menu = document.querySelector<HTMLElement>("[data-share-menu]")
-  const scrim = document.querySelector<HTMLElement>("[data-share-scrim]")
-  const MOBILE = window.matchMedia("(max-width: 640px)")
+  const NARROW = window.matchMedia(NARROW_QUERY)
 
   // The open menu's row wrapper and trigger; null when closed.
   let row: HTMLElement | null = null
   let trigger: HTMLElement | null = null
-  // Whether it opened in the mobile (modal) layout.
-  let modal = false
   let copiedTimer = 0
 
-  // Per-event data, read off the row's cells (title link text without its
-  // language/recurrence suffix spans, venue, display price) and data-*.
-  function eventOf(r: HTMLElement): ShareEvent {
-    const link = r.querySelector<HTMLAnchorElement>(".gc-title")!
-    const title = link.querySelector(".cell-text")!.cloneNode(true) as HTMLElement
-    title.querySelectorAll("*").forEach((n) => n.remove())
-    const text = (sel: string) => r.querySelector(sel)?.textContent?.trim() ?? ""
-    return {
-      id: r.dataset.id ?? "",
-      title: (title.textContent ?? "").replace(/\s+/g, " ").trim(),
-      date: r.dataset.date ?? "",
-      time: r.dataset.time || null,
-      venue: text(".gc-place > .cell-text"),
-      price: text(".gc-price > .cell-text"),
-      url: link.href,
-    }
-  }
-
   // Place the menu on the row's section grid, in px that land on cell lines
-  // (every edge is measured from the event's own cells). Desktop: a dropdown
-  // under the event row, right-aligned to the band's right edge, as wide as
-  // icon + spacer + the longest label. Mobile: two band-wide rows under the
-  // event's two rows. Absolutely positioned, so it overlays the following rows
-  // without adding a grid row (no content shift).
-  function place(r: HTMLElement) {
+  // (every edge is measured from the event's own cells): a dropdown under the
+  // event row whose icon column sits right under the trigger (the gap cell
+  // right of the title), as wide as icon + spacer + the longest label —
+  // shifted left if that would cross the band's right edge. Absolutely
+  // positioned, so it overlays the following rows without adding a grid row
+  // (no content shift).
+  function place(r: HTMLElement, t: HTMLElement) {
     const section = r.closest<HTMLElement>(".gridpaper")!
     section.appendChild(menu!)
     const cell = parseFloat(getComputedStyle(section).getPropertyValue("--cell")) || 32
     const box = section.getBoundingClientRect()
-    const time = r.querySelector(".gc-time")!.getBoundingClientRect()
+    const anchor = t.getBoundingClientRect()
     const price = r.querySelector(".gc-price")!.getBoundingClientRect()
-    const mobile = MOBILE.matches
-    // The event's last row: price shares row B with the place on mobile, and
-    // the single row on desktop.
-    const top = price.top - box.top + cell
-    const bandLeft = time.left - box.left
+    const top = anchor.top - box.top + cell
     const bandRight = price.right - box.left
-    let cols: number
-    if (mobile) {
-      cols = Math.round((bandRight - bandLeft) / cell)
-    } else {
-      // Widest label (incl. the "Copied" swap, so the width never jumps).
-      const label = menu!.querySelector<HTMLElement>(".share-item-label .cell-text")!
-      const prev = label.textContent
-      let widest = 0
-      for (const l of [...menu!.querySelectorAll(".share-item-label .cell-text")].map((e) => e.textContent ?? "").concat(menu!.dataset.copied ?? "")) {
-        label.textContent = l
-        widest = Math.max(widest, label.scrollWidth)
-      }
-      label.textContent = prev
-      cols = 2 + Math.max(2, Math.ceil((widest + 7) / cell))
+    // Widest label (incl. the "Copied" swap, so the width never jumps).
+    const label = menu!.querySelector<HTMLElement>(".share-item-label .cell-text")!
+    const prev = label.textContent
+    let widest = 0
+    for (const l of [...menu!.querySelectorAll(".share-item-label .cell-text")].map((e) => e.textContent ?? "").concat(menu!.dataset.copied ?? "")) {
+      label.textContent = l
+      widest = Math.max(widest, label.scrollWidth)
     }
+    label.textContent = prev
+    const cols = 2 + Math.max(2, Math.ceil((widest + 7) / cell))
     const width = cols * cell
-    menu!.style.left = `${bandRight - width}px`
+    menu!.style.left = `${Math.min(anchor.left - box.left, bandRight - width)}px`
     menu!.style.top = `${top}px`
-    // +2px on desktop so the right/bottom border lands on the next gridline
-    // (lines are drawn on each cell's top/left edge). Mobile's band ends at
-    // the viewport edge, so its right border stays inside.
-    menu!.style.width = `${mobile ? width : width + 2}px`
+    // +2px so the right/bottom border lands on the next gridline (lines are
+    // drawn on each cell's top/left edge).
+    menu!.style.width = `${width + 2}px`
     menu!.style.height = `${2 * cell + 2}px`
   }
 
@@ -130,20 +90,9 @@ const { timezone } = cityConfig(city)
     close(false)
     row = r
     trigger = t
-    row.setAttribute("data-share-active", "")
     trigger.setAttribute("aria-expanded", "true")
     menu!.hidden = false
-    place(r)
-    modal = MOBILE.matches
-    if (modal) {
-      // Modal: dim the rest of the page (CSS), lock scroll, and let the scrim
-      // swallow the next outside tap.
-      menu!.scrollIntoView({ block: "nearest" })
-      document.body.setAttribute("data-share-modal", "")
-      document.documentElement.style.overflow = "hidden"
-      document.body.style.overflow = "hidden"
-      scrim!.hidden = false
-    }
+    place(r, t)
     menu!.querySelector<HTMLElement>("[role=menuitem]")?.focus({ preventScroll: true })
   }
 
@@ -151,13 +100,8 @@ const { timezone } = cityConfig(city)
     if (!row) return
     window.clearTimeout(copiedTimer)
     resetLabel()
-    row.removeAttribute("data-share-active")
     trigger?.setAttribute("aria-expanded", "false")
     menu!.hidden = true
-    scrim!.hidden = true
-    document.body.removeAttribute("data-share-modal")
-    document.documentElement.style.overflow = ""
-    document.body.style.overflow = ""
     if (restoreFocus) trigger?.focus({ preventScroll: true })
     row = null
     trigger = null
@@ -171,65 +115,16 @@ const { timezone } = cityConfig(city)
     shareLabelText = ""
   }
 
-  async function copy(text: string) {
-    try {
-      await navigator.clipboard.writeText(text)
-    } catch {
-      // Older/insecure contexts: the execCommand route.
-      const ta = document.createElement("textarea")
-      ta.value = text
-      ta.style.position = "fixed"
-      ta.style.opacity = "0"
-      document.body.appendChild(ta)
-      ta.select()
-      document.execCommand("copy")
-      ta.remove()
-    }
-    // Confirm by swapping the label to "Copied" for a moment.
+  // Confirm a clipboard fallback by swapping the label to "Copied" a moment.
+  function showCopied() {
     window.clearTimeout(copiedTimer)
     if (!shareLabelText) shareLabelText = shareLabel().textContent ?? ""
     shareLabel().textContent = menu!.dataset.copied ?? ""
     copiedTimer = window.setTimeout(resetLabel, 1500)
   }
 
-  async function share(ev: ShareEvent) {
-    const text = shareText(ev, {
-      localeTag: menu!.dataset.localeTag ?? "en-GB",
-      template: menu!.dataset.template ?? "{title} — {when}, {venue}",
-    })
-    if (navigator.share) {
-      // Called synchronously from the click, so the share sheet keeps the
-      // user activation it needs.
-      try {
-        await navigator.share({ title: ev.title, text, url: ev.url })
-        close()
-        return
-      } catch (err) {
-        // Dismissed the sheet: done. Anything else (e.g. not allowed): copy.
-        if ((err as DOMException).name === "AbortError") return close()
-      }
-    }
-    await copy(`${text} ${ev.url}`)
-  }
-
-  // Hand the OS a text/calendar file: iOS Safari offers "Add to Calendar",
-  // Android opens the calendar app, desktop downloads it. Built here rather
-  // than served statically (prod nginx has no text/calendar mime type).
-  function addToCalendar(ev: ShareEvent) {
-    const ics = buildIcs(ev, menu!.dataset.timezone ?? "UTC")
-    const url = URL.createObjectURL(new Blob([ics], { type: "text/calendar;charset=utf-8" }))
-    const a = document.createElement("a")
-    a.href = url
-    a.download = "event.ics"
-    document.body.appendChild(a)
-    a.click()
-    a.remove()
-    window.setTimeout(() => URL.revokeObjectURL(url), 10_000)
-    close()
-  }
-
-  if (menu && scrim) {
-    document.addEventListener("click", (e) => {
+  if (menu) {
+    document.addEventListener("click", async (e) => {
       const target = e.target as Element | null
       const t = target?.closest<HTMLElement>("[data-share-trigger]")
       if (t) {
@@ -242,26 +137,28 @@ const { timezone } = cityConfig(city)
       const action = target?.closest<HTMLElement>("[data-share-action]")
       if (action && row) {
         const ev = eventOf(row)
-        if (action.dataset.shareAction === "share") share(ev)
-        else addToCalendar(ev)
+        if (action.dataset.shareAction === "share") {
+          const result = await shareEvent(ev, {
+            localeTag: menu.dataset.localeTag ?? "en-GB",
+            template: menu.dataset.template ?? "{title} — {when}, {venue}",
+          })
+          if (result === "copied") showCopied()
+          else close()
+        } else {
+          addToCalendar(ev, menu.dataset.timezone ?? "UTC")
+          close()
+        }
       }
     })
 
-    // Desktop: a press anywhere outside the menu (and its trigger) closes it,
-    // and the press goes on to do whatever it does. Mobile: the scrim
-    // catches it instead, so the tap only closes.
+    // A press anywhere outside the menu (and its trigger) closes it, and the
+    // press goes on to do whatever it does.
     document.addEventListener("pointerdown", (e) => {
-      if (!row || MOBILE.matches) return
+      if (!row) return
       const target = e.target as Node
       if (menu.contains(target) || trigger?.contains(target)) return
       close(false)
     })
-    scrim.addEventListener("click", (e) => {
-      e.preventDefault()
-      close(false)
-    })
-    // Older iOS ignores overflow:hidden for touch scrolling.
-    scrim.addEventListener("touchmove", (e) => e.preventDefault(), { passive: false })
 
     menu.addEventListener("keydown", (e) => {
       const items = [...menu.querySelectorAll<HTMLElement>("[role=menuitem]")]
@@ -280,11 +177,11 @@ const { timezone } = cityConfig(city)
       if (e.key === "Escape" && row) close()
     })
     // The grid can re-flow under an open menu (resize, rotation): re-place
-    // it, or close it if the layout flipped between desktop and mobile.
+    // it, or close it if the layout switched to the narrow one (no trigger).
     window.addEventListener("gridsync", () => {
-      if (!row) return
-      if (MOBILE.matches !== modal) close(false)
-      else place(row)
+      if (!row || !trigger) return
+      if (NARROW.matches) close(false)
+      else place(row, trigger)
     })
   }
 </script>

@@ -1,6 +1,7 @@
 ---
 import type { Locale } from "@/lib/types"
 import "@/styles/global.css"
+import CellIconSprite from "@/components/ui/CellIconSprite.astro"
 
 interface Props {
   locale: Locale
@@ -45,8 +46,11 @@ const ogImageUrl = ogImage ? new URL(ogImage, Astro.site).href : undefined
     <script defer src="https://umm.july.dev/script.js" data-website-id="8caba607-9ee5-4b3a-aba8-7d4f7a06b75e"></script>
   </head>
   <body data-genre={genre} class="font-sans bg-background text-foreground">
+    <CellIconSprite />
     <slot />
     <script>
+      import { NARROW_QUERY } from "@/lib/breakpoints";
+      const NARROW = window.matchMedia(NARROW_QUERY);
       // One full-bleed grid. JS computes only integers: how many whole
       // columns fit, the content band width in cells (≈1300px), and the
       // band's start column snapped so it's centered to the nearest cell
@@ -63,15 +67,17 @@ const ogImageUrl = ogImage ? new URL(ogImage, Astro.site).href : undefined
           const cellMultiplier = parseFloat(getComputedStyle(grid).getPropertyValue("--cell-multiplier")) || 1.8
           const target = Math.round(base * cellMultiplier);
 
-          // Mobile (≤640px): no centered band — the content fills the full
-          // width. Pick the whole number of cells that fits at the ~32px target,
-          // then grow the cell so gridCols × cell === width exactly. The grid
-          // tracks and the background-image lines both read this same --cell, so
-          // they stay aligned by construction and no sub-cell sliver is left on
-          // the right. (cell is fractional here, which is fine: track width and
-          // line spacing are identical, so they can't drift apart.)
+          // Narrow (<760px, NARROW_QUERY — the same media query the CSS
+          // uses, so both always agree on the layout): no centered band — the
+          // content fills the full width. Pick the whole number of cells that
+          // fits at the ~24px target, then grow the cell so gridCols × cell ===
+          // width exactly. The grid tracks and the background-image lines both
+          // read this same --cell, so they stay aligned by construction and no
+          // sub-cell sliver is left on the right. (cell is fractional here,
+          // which is fine: track width and line spacing are identical, so they
+          // can't drift apart.)
           let cell, gridCols, bandCells, colStart;
-          if (width <= 640) {
+          if (NARROW.matches) {
             gridCols = Math.max(1, Math.floor(width / target));
             cell = width / gridCols;
             bandCells = gridCols;
@@ -87,15 +93,6 @@ const ogImageUrl = ogImage ? new URL(ogImage, Astro.site).href : undefined
           grid.style.setProperty("--grid-cols", String(gridCols));
           grid.style.setProperty("--band-cells", String(bandCells));
           grid.style.setProperty("--col-start", String(colStart));
-          // No margin column left or right of the band (mobile / narrow
-          // windows; centering can leave one side without a whole column):
-          // the favourite star and share trigger columns have nowhere to sit,
-          // so CSS moves them into the row instead.
-          grid.toggleAttribute(
-            "data-no-margin",
-            colStart <= 1 || colStart - 1 + bandCells >= gridCols,
-          );
-
           // Film masonry columns, chosen LOGICALLY from how many whole cells
           // the band actually has — not a guessed pixel breakpoint (a CSS
           // @media query can't read --band-cells). Cards SCALE to fill the band:
@@ -134,6 +131,7 @@ const ogImageUrl = ogImage ? new URL(ogImage, Astro.site).href : undefined
       window.addEventListener("load", syncGrid);
     </script>
     <script>
+      import { numberRows } from "@/lib/event-panel";
       // Time-aware agenda. Runs on load and whenever the tab is refocused, so a
       // page left open overnight self-corrects. Reasons in the same "logical
       // day" frame as src/lib/agenda.ts: the 05:00 boundary means events at
@@ -157,7 +155,9 @@ const ogImageUrl = ogImage ? new URL(ogImage, Astro.site).href : undefined
         return `${y}-${m}-${day}`;
       }
 
-      function syncAgenda() {
+      // `only` limits the pass to one day section (an event panel opened or
+      // closed there); listeners call it with no section, for every day.
+      function syncAgenda(only?: HTMLElement) {
         const now = new Date();
         const hhmm = now.toTimeString().slice(0, 5);
         const isPostMidnight = hhmm < "05:00";
@@ -167,7 +167,8 @@ const ogImageUrl = ogImage ? new URL(ogImage, Astro.site).href : undefined
         );
         const nowKey = timeSortKey(hhmm);
 
-        document.querySelectorAll<HTMLElement>(".now-line").forEach((el) => el.remove());
+        const scope: ParentNode = only ?? document;
+        scope.querySelectorAll<HTMLElement>(".now-line").forEach((el) => el.remove());
 
         // Sort key for "2 hours ago" on the wall clock. Subtracting on the Date
         // wraps midnight correctly; timeSortKey then maps it into the same
@@ -177,7 +178,10 @@ const ogImageUrl = ogImage ? new URL(ogImage, Astro.site).href : undefined
         const cutoff = new Date(now.getTime() - 2 * 60 * 60 * 1000);
         const cutoffKey = timeSortKey(cutoff.toTimeString().slice(0, 5));
 
-        document.querySelectorAll<HTMLElement>("section[data-date]").forEach((section) => {
+        const sections = only
+          ? [only]
+          : [...document.querySelectorAll<HTMLElement>("section[data-date]")];
+        sections.forEach((section) => {
           const date = section.dataset.date ?? "";
           section.hidden = false;
           // Rows a page filter marked data-filtered (My list: non-favourite
@@ -243,11 +247,23 @@ const ogImageUrl = ogImage ? new URL(ogImage, Astro.site).href : undefined
         const rows = [...section.querySelectorAll<HTMLElement>(
           ".contents[data-time]:not([data-filtered])",
         )];
-        rows.forEach((row, i) => row.style.setProperty("--ev", String(i)));
-        section
-          .querySelector<HTMLElement>(".gc-spacer")
-          ?.style.setProperty("--ev", String(rows.length));
+        numberSection(section, rows, 0);
         return rows.length;
+      }
+
+      // Write --ev (row index from `first`) and --po (grid rows pushed in by
+      // open event panels above; EventPanel.astro sets data-panel-rows on its
+      // row) onto `rows` and the section's spacer. See lib/event-panel.ts.
+      function numberSection(section: HTMLElement, rows: HTMLElement[], first: number) {
+        const nums = numberRows(rows.map((r) => Number(r.dataset.panelRows) || 0), first);
+        const write = (el: HTMLElement, { ev, po }: { ev: number; po: number }) => {
+          el.style.setProperty("--ev", String(ev));
+          // --po is almost always 0 (its CSS default): skip the write.
+          if (po || el.style.getPropertyValue("--po")) el.style.setProperty("--po", String(po));
+        };
+        rows.forEach((row, i) => write(row, nums[i]));
+        const spacer = section.querySelector<HTMLElement>(".gc-spacer");
+        if (spacer) write(spacer, nums[rows.length]);
       }
 
       // Collapse the leading run of screenings that started >2h ago (cutoffKey)
@@ -274,22 +290,15 @@ const ogImageUrl = ogImage ? new URL(ogImage, Astro.site).href : undefined
         // Nothing early, or everything is early (don't hide a whole day — there'd
         // be only the toggle left): show all, plain numbering.
         if (nEarly === 0 || nEarly === rows.length || expanded) {
-          rows.forEach((row, i) => row.style.setProperty("--ev", String(i)));
-          const spacerAll = section.querySelector<HTMLElement>(".gc-spacer");
-          spacerAll?.style.setProperty("--ev", String(rows.length));
+          numberSection(section, rows, 0);
           return;
         }
 
         // Collapsed: hide the early rows, drop a toggle on the top row, and pack
-        // the survivors below it.
-        rows.forEach((row, i) => {
-          if (i < nEarly) {
-            row.hidden = true;
-          } else {
-            // +1 for the toggle row above the first visible screening.
-            row.style.setProperty("--ev", String(i - nEarly + 1));
-          }
-        });
+        // the survivors below it (+1: the toggle row above the first visible
+        // screening).
+        rows.slice(0, nEarly).forEach((row) => (row.hidden = true));
+        numberSection(section, rows.slice(nEarly), 1);
 
         const toggle = document.createElement("button");
         toggle.type = "button";
@@ -305,9 +314,6 @@ const ogImageUrl = ogImage ? new URL(ogImage, Astro.site).href : undefined
         // Insert before the first row so it's first in source order (placement is
         // by --ev, but keeping source order tidy helps AT/tab order).
         section.insertBefore(toggle, rows[0]);
-
-        const spacer = section.querySelector<HTMLElement>(".gc-spacer");
-        spacer?.style.setProperty("--ev", String(rows.length - nEarly + 1));
       }
 
       // Film layout: a small "now" dot per card, at the card's first still-
@@ -395,9 +401,10 @@ const ogImageUrl = ogImage ? new URL(ogImage, Astro.site).href : undefined
       document.addEventListener("visibilitychange", () => {
         if (!document.hidden) syncAgenda();
       });
+      const syncAll = () => syncAgenda();
       // Recompute the now-line position after the grid settles on resize
       // (desktop/mobile row formulas differ).
-      window.addEventListener("resize", syncAgenda);
+      window.addEventListener("resize", syncAll);
       // The dots read each cell's resolved grid row/column via getComputedStyle.
       // Those are only correct once Layout's grid script has set --cell /
       // --col-start / the packing-derived tracks. On first paint syncAgenda can
@@ -405,7 +412,7 @@ const ogImageUrl = ogImage ? new URL(ogImage, Astro.site).href : undefined
       // "auto" and the browser auto-places the dot at the end of the grid (it
       // appears at the bottom of the day until a later relayout). Re-running on
       // the grid's own `gridsync` event places them against settled tracks.
-      window.addEventListener("gridsync", syncAgenda);
+      window.addEventListener("gridsync", syncAll);
     </script>
   </body>
 </html>

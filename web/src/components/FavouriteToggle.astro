@@ -1,0 +1,99 @@
+---
+import CellIcon from "@/components/ui/CellIcon.astro"
+interface Props {
+  venueSlug: string
+  venueName: string
+  /** Localized "Favourite venue" label (aria). */
+  label: string
+  /** "place": an event row's venue cell (EventRow) — the venue name, with the
+      heart in the gap cell right of it (desktop) or the empty cell left of it
+      (narrow layout, row B). "directory": a My list venue line — heart cell ·
+      name, the whole line one button. */
+  variant: "place" | "directory"
+}
+const { venueSlug, venueName, label, variant } = Astro.props
+---
+{/* Toggles the venue in the browser's favourites (lib/favourites.ts). Every
+    toggle for the same venue on the page flips together; aria-pressed carries
+    the state and CSS draws the heart outline/filled from it (.fav-heart). */}
+{variant === "place" ? (
+  <button
+    type="button"
+    data-fav-toggle
+    data-fav-place
+    data-venue={venueSlug}
+    aria-pressed="false"
+    aria-label={`${label}: ${venueName}`}
+    class="cell cell-truncate cell-right gc-place fav-place"
+  ><span class="cell-text">{venueName}</span><span class="fav-heart"><CellIcon icon="heart" /></span></button>
+) : (
+  <button
+    type="button"
+    data-fav-toggle
+    data-venue={venueSlug}
+    aria-pressed="false"
+    aria-label={`${label}: ${venueName}`}
+    class="gc-film-showtime gc-venue-row fav-row"
+  >
+    <span class="cell fav-heart"><CellIcon icon="heart" /></span>
+    <span class="cell cell-truncate fav-row-name text-foreground"><span class="cell-text">{venueName}</span></span>
+  </button>
+)}
+
+<script>
+  import {
+    browserStore,
+    readFavourites,
+    toggleFavourite,
+    FAVOURITES_EVENT,
+  } from "@/lib/favourites"
+  import { NARROW_QUERY } from "@/lib/breakpoints"
+
+  const store = browserStore()
+  const NARROW = window.matchMedia(NARROW_QUERY)
+
+  function paint(favs: Set<string>) {
+    document
+      .querySelectorAll<HTMLElement>("[data-fav-toggle]")
+      .forEach((btn) =>
+        btn.setAttribute(
+          "aria-pressed",
+          String(favs.has(btn.dataset.venue ?? "")),
+        ),
+      )
+  }
+
+  paint(readFavourites(store))
+
+  // One delegated listener covers every toggle, including ones in views that
+  // were hidden at load.
+  document.addEventListener("click", (e) => {
+    const target = e.target as Element | null
+    const btn = target?.closest<HTMLElement>("[data-fav-toggle]")
+    if (!btn?.dataset.venue) return
+    // Narrow layout: tapping an event row opens/closes its panel
+    // (EventPanel.astro); only the heart, shown beside the venue while the
+    // panel is open, favourites.
+    if (
+      btn.hasAttribute("data-fav-place") &&
+      NARROW.matches &&
+      !(target?.closest(".fav-heart") && btn.closest("[data-expanded]"))
+    ) {
+      return
+    }
+    // Claimed: the narrow layout's row-tap handler (EventPanel) skips
+    // handled clicks, even if this one filtered its row away (My list).
+    e.preventDefault()
+    const favs = toggleFavourite(store, btn.dataset.venue)
+    paint(favs)
+    window.dispatchEvent(new CustomEvent(FAVOURITES_EVENT, { detail: favs }))
+  })
+
+  // Another tab changed the favourites: repaint, and let the My list filter
+  // re-run.
+  window.addEventListener("storage", () => {
+    const favs = readFavourites(store)
+    paint(favs)
+    window.dispatchEvent(new CustomEvent(FAVOURITES_EVENT, { detail: favs }))
+  })
+</script>

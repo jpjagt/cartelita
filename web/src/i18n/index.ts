@@ -11,11 +11,12 @@ interface Strings {
   myList: string
   viewEvents: string
   viewVenues: string
-  favouriteVenue: string   // star button label (aria)
+  favouriteVenue: string   // favourite (heart) toggle label (aria)
   pickVenues: string       // venue directory heading on My list
   share: string            // event share menu: share action + trigger label
   addToCalendar: string    // event share menu: .ics export
   copied: string           // share fallback: text copied to the clipboard
+  view: string             // event panel: open the event's own page
   // Share text: {title}, {when} (date[, time]) and {venue}; " (price)" is
   // appended when there is one (lib/share.ts).
   shareTemplate: string
@@ -41,6 +42,7 @@ const DICT: Record<Locale, Strings> = {
     share: "Comparteix",
     addToCalendar: "Afegeix al calendari",
     copied: "Copiat",
+    view: "Veure",
     shareTemplate: "{title} — {when} a {venue}",
     categories: {
       film: "Cinema",
@@ -74,6 +76,7 @@ const DICT: Record<Locale, Strings> = {
     share: "Compartir",
     addToCalendar: "Añadir al calendario",
     copied: "Copiado",
+    view: "Ver",
     shareTemplate: "{title} — {when} en {venue}",
     categories: {
       film: "Cine",
@@ -103,10 +106,11 @@ const DICT: Record<Locale, Strings> = {
     viewEvents: "Events",
     viewVenues: "Venues",
     favouriteVenue: "Favourite venue",
-    pickVenues: "Star your favourite venues",
+    pickVenues: "Mark your favourite venues",
     share: "Share",
     addToCalendar: "Add to calendar",
     copied: "Copied",
+    view: "View",
     shareTemplate: "{title} — {when} at {venue}",
     categories: {
       film: "Film",
@@ -140,6 +144,7 @@ const DICT: Record<Locale, Strings> = {
     share: "Կիսվել",
     addToCalendar: "Ավելացնել օրացույցին",
     copied: "Պատճենված է",
+    view: "Դիտել",
     shareTemplate: "{title} — {when}, {venue}",
     categories: {
       film: "Կինո",
@@ -173,6 +178,7 @@ const DICT: Record<Locale, Strings> = {
     share: "Поделиться",
     addToCalendar: "Добавить в календарь",
     copied: "Скопировано",
+    view: "Открыть",
     shareTemplate: "{title} — {when}, {venue}",
     categories: {
       film: "Кино",
@@ -206,6 +212,7 @@ const DICT: Record<Locale, Strings> = {
     share: "Delen",
     addToCalendar: "Toevoegen aan agenda",
     copied: "Gekopieerd",
+    view: "Bekijken",
     shareTemplate: "{title} — {when} in {venue}",
     categories: {
       film: "Film",

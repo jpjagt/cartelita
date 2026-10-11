@@ -124,7 +124,7 @@
   background-position: 0 0;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 759.98px) {
   .gridpaper {
     --font-size: 16px;
     --cell-multiplier: 1.5;
@@ -134,7 +134,8 @@
 /* The content band is a sub-range of columns inside the one grid. We define
      per-field column lines relative to --col-start so children can place by
      name. Row layout (whole-cell fields, title absorbs slack):
-     time(2) · gap(1) · title(rest) · gap(1) · place(6) · gap(1) · price(P)
+     time(2) · gap(1) · title(rest) · share(1) · place(6) · heart(1) · price(P)
+     — the share trigger and favourite heart live in the gap cells.
      P = --price-cells, the page's widest price in whole cells ([3, 5]); set
      on <html> by EventRow's price-fit script, 3 until it runs. It's read (not
      declared) here so the root value inherits into every section. */
@@ -151,7 +152,7 @@
      Desktop: one event = one row. row = 2 + --ev.
      time(2) · title(grows) · place(6) · price(--price-cells), all on the same row.
 
-     Mobile (≤640px): one event = TWO rows (see media query below). The narrow
+     Narrow (<760px): one event = TWO rows (see media query below). The narrow
      band can't fit all four fields side by side, so the row splits:
      row A: time(2) · title(rest)
      row B: place(grows, left) · price(3, right)
@@ -175,31 +176,11 @@
 .gc-full {
   grid-column: var(--c-time) / var(--c-end);
 }
-/* Favourite star: one cell in the margin column just left of the band, on the
-     event's row. Hidden until the row is hovered (or the star is focused), so
-     the table reads clean; the My list venue directory shows its stars always
-     (.fav-star-always). No margin column (mobile, narrow windows) → no star;
-     those visitors favourite from the My list directory instead. */
-.gc-fav {
-  grid-column: calc(var(--c-time) - 1) / span 1;
-  grid-row: calc(2 + var(--ev));
-  visibility: hidden;
-}
-[data-event-row]:hover .gc-fav,
-.gc-fav:focus-visible {
-  visibility: visible;
-}
-.gridpaper[data-no-margin] .gc-fav {
-  display: none;
-}
-/* Share trigger (ShareMenu.astro): the mirror of the star — one cell in the
-     margin column just right of the band, on the event's row, shown on row
-     hover, focus, or while its menu is open. No margin column → it takes the
-     title's last cell instead (the title keeps truncating before it), always
-     visible; the mobile layout puts it at the end of row A (media query
-     below, which also covers first paint before the grid script runs). */
+/* Share trigger (ShareMenu.astro): the gap cell right of the title, shown on
+     row hover, focus, or while its menu is open. Devices without hover show
+     it always (muted). The narrow layout hides it (the event panel shares). */
 .gc-share {
-  grid-column: var(--c-end) / span 1;
+  grid-column: calc(var(--c-place) - 1) / span 1;
   grid-row: calc(2 + var(--ev));
   visibility: hidden;
 }
@@ -208,59 +189,11 @@
 .gc-share[aria-expanded="true"] {
   visibility: visible;
 }
-.gridpaper[data-no-margin] .gc-share {
-  grid-column: calc(var(--c-place) - 2) / span 1;
-  visibility: visible;
+@media (hover: none) {
+  .gc-share {
+    visibility: visible;
+  }
 }
-.gridpaper[data-no-margin] .gc-title {
-  grid-column: var(--c-title) / calc(var(--c-place) - 2);
-}
-.fav-star {
-  appearance: none;
-  border: 0;
-  background: transparent;
-  font: inherit;
-  cursor: pointer;
-  color: var(--muted-foreground);
-}
-/* .cell (declared later) sets justify-content: flex-start; out-rank it so the
-     glyph sits centered in its square. */
-.cell.fav-star {
-  justify-content: center;
-}
-/* Inline variant: after the venue name in the place cell, only where the
-     margin column is missing (mobile / narrow windows: the grid script sets
-     data-no-margin; the media query covers first paint). Always visible, and
-     always the muted text color, filled or outline. */
-.fav-star-inline {
-  display: none;
-  flex-shrink: 0;
-  padding: 0;
-  line-height: 1;
-}
-.gridpaper[data-no-margin] .fav-star-inline {
-  display: inline-flex;
-}
-.fav-star.fav-star-inline,
-.fav-star.fav-star-inline:hover,
-.fav-star.fav-star-inline[aria-pressed="true"] {
-  color: var(--muted-foreground);
-}
-.fav-star:hover {
-  color: var(--foreground);
-}
-.fav-star > .cell-text::before {
-  content: "\2606"; /* ☆ */
-}
-.fav-star[aria-pressed="true"] {
-  color: var(--genre-primary);
-}
-.fav-star[aria-pressed="true"] > .cell-text::before {
-  content: "\2605"; /* ★ */
-}
-/* Share trigger glyph: a ↗ arrow drawn as a CSS mask over currentColor, so it
-     renders the same on every font stack and costs no per-row markup. Muted at
-     rest like the star; full foreground on hover / while its menu is open. */
 .share-trigger {
   appearance: none;
   border: 0;
@@ -269,28 +202,153 @@
   cursor: pointer;
   color: var(--muted-foreground);
 }
-/* Centered horizontally in the square's visible area (its left 2px is
-     gridline); vertically it sits on the text baseline of the row, like a
-     glyph (cells bottom-align text 1px off the edge, descenders below). */
-.cell.share-trigger {
-  justify-content: center;
-  align-items: flex-end;
-  padding: 0 0 calc(1px + 0.2em) 2px;
-}
 .share-trigger:hover,
 .share-trigger[aria-expanded="true"] {
   color: var(--foreground);
 }
-.share-trigger::before {
-  content: "";
-  width: 0.6em;
-  height: 0.6em;
-  background-color: currentColor;
-  -webkit-mask: var(--share-arrow) center / contain no-repeat;
-  mask: var(--share-arrow) center / contain no-repeat;
+
+/* ── Cell icons (ui/CellIcon.astro) ───────────────────────────────────
+     An SVG centered in the visible square of its host cell (the host's left
+     and top 2px are gridline, hence the +1px), sized as a fraction of the
+     cell. Each icon's size/offset is hand-tuned below so they read at one
+     optical weight; strokes are a fixed px width (vector-effect). The host
+     must be positioned and exactly one cell square. */
+.cell-icon {
+  --ci-size: 0.5;
+  --ci-x: 0px;
+  --ci-y: 0px;
+  position: absolute;
+  left: calc(50% + 1px + var(--ci-x));
+  top: calc(50% + 1px + var(--ci-y));
+  width: calc(var(--cell) * var(--ci-size));
+  height: calc(var(--cell) * var(--ci-size));
+  translate: -50% -50%;
+  overflow: visible;
+  pointer-events: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.75px;
+  stroke-linecap: square;
+  stroke-linejoin: miter;
 }
-:root {
-  --share-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='2' stroke-linecap='square'%3E%3Cpath d='M3 13 13 3M5 3h8v8'/%3E%3C/svg%3E");
+.cell-icon[data-icon="share"] {
+  --ci-size: 0.62;
+  stroke-width: 2px;
+}
+.cell-icon[data-icon="heart"],
+.cell-icon[data-icon="heart-filled"] {
+  --ci-size: 0.6;
+  --ci-y: 0.5px;
+  stroke-linejoin: round;
+}
+.cell-icon[data-icon="calendar"] {
+  --ci-size: 0.58;
+}
+.cell-icon[data-icon="eye"] {
+  --ci-size: 0.62;
+  stroke-linejoin: round;
+}
+.cell-icon[data-icon="chevron"] {
+  --ci-size: 0.5;
+  stroke-width: 2px;
+}
+/* A toggle's heart fills when its venue is a favourite. */
+[aria-pressed="true"] .cell-icon[data-icon="heart"] {
+  fill: currentColor;
+}
+
+/* ── Favourite toggles (FavouriteToggle.astro) ────────────────────────
+     Event rows: the venue cell is the button; its heart rides in the gap
+     cell right of it (absolutely placed, so the row keeps one element). The
+     heart shows while the venue cell is hovered/focused — with a 2px
+     genre-colour frame on the gridlines round the venue cell AND the heart
+     cell — and always, filled, for a favourite. */
+.fav-place,
+.fav-row {
+  appearance: none;
+  border: 0;
+  margin: 0;
+  background: transparent;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+.fav-heart {
+  position: absolute;
+  top: 0;
+  left: 100%;
+  width: var(--cell);
+  height: 100%;
+  color: var(--foreground);
+  visibility: hidden;
+}
+.fav-place[aria-pressed="true"] .fav-heart {
+  visibility: visible;
+  color: var(--genre-primary);
+}
+/* The frame: a box from the cell's own top/left gridlines to the next cell's
+     (2px past its right and bottom edges), so it sits exactly on the lines. */
+.fav-place::after,
+.fav-heart::after,
+.fav-row-name::after {
+  content: "";
+  position: absolute;
+  inset: 0 -2px -2px 0;
+  border: 2px solid var(--genre-primary);
+  pointer-events: none;
+  z-index: 1;
+  visibility: hidden;
+}
+@media (min-width: 760px) {
+  .fav-place:hover .fav-heart,
+  .fav-place:focus-visible .fav-heart,
+  .fav-place:hover::after,
+  .fav-place:hover .fav-heart::after,
+  .fav-place:focus-visible::after,
+  .fav-place:focus-visible .fav-heart::after {
+    visibility: visible;
+  }
+  .fav-place:focus-visible {
+    outline: none;
+  }
+}
+/* My list venue directory (VenueDirectory.astro): one button per venue
+     line — heart cell · name — on the showtime row geometry. The heart always
+     shows; hover/focus frames both cells in the list's genre colour. */
+.fav-row {
+  text-align: left;
+  padding: 0;
+  /* Buttons don't stretch to their grid area by default. */
+  height: var(--cell);
+  grid-template-rows: var(--cell);
+  align-items: stretch;
+}
+.fav-row .fav-heart {
+  position: relative;
+  left: auto;
+  width: auto;
+  visibility: visible;
+  color: var(--muted-foreground);
+}
+.fav-row[aria-pressed="true"] .fav-heart {
+  color: var(--genre-primary);
+}
+.fav-row:hover .fav-heart,
+.fav-row:focus-visible .fav-heart {
+  color: var(--foreground);
+}
+.fav-row[aria-pressed="true"]:hover .fav-heart,
+.fav-row[aria-pressed="true"]:focus-visible .fav-heart {
+  color: var(--genre-primary);
+}
+.fav-row:hover .fav-heart::after,
+.fav-row:hover .fav-row-name::after,
+.fav-row:focus-visible .fav-heart::after,
+.fav-row:focus-visible .fav-row-name::after {
+  visibility: visible;
+}
+.fav-row:focus-visible {
+  outline: none;
 }
 
 /* Share menu (ShareMenu.astro): placed by its script in px that land on cell
@@ -337,16 +395,6 @@
   outline: 2px solid var(--genre-primary);
   outline-offset: -2px;
 }
-.share-item-icon {
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  padding: 0 0 calc(1px + 0.2em) 2px;
-}
-.share-item-icon svg {
-  width: 0.8em;
-  height: 0.8em;
-}
 .share-item-label {
   grid-column: 3;
 }
@@ -354,16 +402,80 @@
 .share-item:focus-visible .cell-text {
   text-decoration: underline;
 }
-/* Mobile: the menu is modal. Everything but the event's own cells and the
-     menu dims; the transparent scrim above the page takes the closing tap. */
-body[data-share-modal] .cell:not([data-share-active] > .cell, .share-menu .cell) {
-  opacity: 0.4;
-  transition: opacity 0.15s ease;
+
+/* ── Event panel (EventPanel.astro; narrow layout only) ───────────────
+     Opens under its event's two rows, spanning the band and --pr whole cell
+     rows (set by its script); --po pushes the rows after it down (syncAgenda).
+     Inside: a 1-cell margin, then its elements one cell apart, each starting
+     on a gridline (inner tracks are the same --cell as the section's). */
+.event-panel {
+  display: none;
 }
-.share-scrim {
-  position: fixed;
-  inset: 0;
-  z-index: 25;
+.event-panel-desc {
+  /* One text line per cell row; at most 3 lines. The relative nudge drops
+     each line onto the bottom of its cell, like single-line cells. */
+  margin: 0;
+  padding: 0 3px;
+  line-height: var(--cell);
+  height: calc(var(--cell) * var(--dl, 1));
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  position: relative;
+  top: calc(var(--cell) * 0.5 - 0.62em);
+  color: var(--foreground);
+}
+.event-panel-desc[hidden] {
+  display: none;
+}
+/* An action: the icon in one cell filled with the genre colour, the label in
+     the cells after it framed in the same colour. One click target. */
+.panel-action {
+  appearance: none;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  font: inherit;
+  color: var(--foreground);
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  display: grid;
+  grid-template-columns: var(--cell) minmax(0, 1fr);
+  grid-template-rows: var(--cell);
+  align-items: stretch;
+  min-width: 0;
+}
+.panel-action-icon {
+  color: var(--genre-text);
+  z-index: 0;
+}
+.panel-action-icon::before {
+  content: "";
+  position: absolute;
+  inset: 0 -2px -2px 0;
+  z-index: -1;
+  background: var(--genre-primary);
+}
+.panel-action-label::after {
+  content: "";
+  position: absolute;
+  inset: 0 -2px -2px 0;
+  border: 2px solid var(--genre-primary);
+  pointer-events: none;
+}
+.panel-action:hover .cell-text,
+.panel-action:focus-visible .cell-text {
+  text-decoration: underline;
+}
+.panel-action:focus-visible {
+  outline: none;
+}
+.panel-action:focus-visible .panel-action-label::after {
+  border-width: 3px;
 }
 
 /* Blank spacer beneath a day's events; --ev = event count. Desktop = 1 row
@@ -384,55 +496,77 @@ body[data-share-modal] .cell:not([data-share-active] > .cell, .share-menu .cell)
   cursor: pointer;
 }
 
-/* ── Mobile (≤640px): two rows per event ──────────────────────────────
-     The band is only ~11 cells wide here, so the four fields can't sit on one
-     row. Split each event across two rows; the title and place each absorb the
-     slack on their own row. firstRow = 2 + --ev*2, secondRow = firstRow + 1. */
-@media (max-width: 640px) {
+/* ── Narrow (<760px): two rows per event ─────────────────────────────
+     The band is too narrow for the four fields side by side, so each event
+     splits across two rows; the title and place each absorb the slack on
+     their own row. firstRow = 2 + --ev*2 + --po, secondRow = firstRow + 1,
+     where --po is the grid rows open event panels push in above the event
+     (syncAgenda; 0 when none). No share trigger here: tapping the row opens
+     its event panel below row B. */
+@media (max-width: 759.98px) {
   .gc-time {
     grid-column: var(--c-time) / span 2;
-    grid-row: calc(2 + var(--ev) * 2);
+    grid-row: calc(2 + var(--ev) * 2 + var(--po, 0));
   }
-  /* Row A: the title stops one cell short of the band end, where the share
-     trigger sits (the [data-no-margin] selectors out-rank the desktop
-     no-margin rules above, which also match here). */
-  .gc-title,
-  .gridpaper[data-no-margin] .gc-title {
-    grid-column: calc(var(--c-time) + 2) / calc(var(--c-end) - 1);
-    grid-row: calc(2 + var(--ev) * 2);
+  .gc-title {
+    grid-column: calc(var(--c-time) + 2) / var(--c-end);
+    grid-row: calc(2 + var(--ev) * 2 + var(--po, 0));
   }
-  .gc-share,
-  .gridpaper[data-no-margin] .gc-share {
-    grid-column: calc(var(--c-end) - 1) / span 1;
-    grid-row: calc(2 + var(--ev) * 2);
-    visibility: visible;
+  /* (Out-ranks .cell's display, declared later.) */
+  .gc-share.share-trigger {
+    display: none;
   }
   /* Row B: the price spans its own text (--pc on the row wrapper, set per row
      by EventRow's price-fit script; 3 before it runs); the place takes the
      rest. */
   .gc-place {
     grid-column: calc(var(--c-time) + 2) / calc(var(--c-end) - var(--pc, 3));
-    grid-row: calc(3 + var(--ev) * 2);
-    /* Left-align the place on mobile (overrides .cell-right). */
+    grid-row: calc(3 + var(--ev) * 2 + var(--po, 0));
+    /* Left-align the place (overrides .cell-right). */
     justify-content: flex-start !important;
     text-align: left !important;
     color: var(--muted-foreground);
   }
   .gc-price {
     grid-column: calc(var(--c-end) - var(--pc, 3)) / var(--c-end);
-    grid-row: calc(3 + var(--ev) * 2);
+    grid-row: calc(3 + var(--ev) * 2 + var(--po, 0));
   }
   .gc-spacer {
-    grid-row: calc(2 + var(--ev) * 2);
-  }
-  .gc-fav {
-    display: none;
-  }
-  .fav-star-inline {
-    display: inline-flex;
+    grid-row: calc(2 + var(--ev) * 2 + var(--po, 0));
   }
   .gc-early-toggle {
     grid-row: calc(2 + var(--ev) * 2);
+  }
+  /* The venue's heart sits in the empty cell LEFT of the venue name on row B
+     (the time column): a favourite's filled heart always, and while the
+     row's panel is open, the outline heart too — that's where narrow
+     visitors favourite. */
+  .fav-place {
+    cursor: inherit;
+  }
+  .fav-place .fav-heart {
+    left: auto;
+    right: 100%;
+  }
+  [data-expanded] .fav-place .fav-heart {
+    visibility: visible;
+    cursor: pointer;
+  }
+  /* The open event: its time picks up the genre colour. */
+  [data-expanded] > .gc-time {
+    color: var(--genre-primary);
+  }
+  .event-panel {
+    display: grid;
+    grid-column: var(--c-time) / var(--c-end);
+    grid-row: calc(4 + var(--ev) * 2 + var(--po, 0)) / span var(--pr, 9);
+    grid-template-columns: var(--cell) minmax(0, 1fr) var(--cell);
+    align-content: start;
+    row-gap: var(--cell);
+    padding: var(--cell) 0;
+  }
+  .event-panel > * {
+    grid-column: 2;
   }
 }
 
@@ -497,7 +631,7 @@ body[data-share-modal] .cell:not([data-share-active] > .cell, .share-menu .cell)
   justify-content: flex-start;
   text-align: left;
 }
-/* Venue directory row (My list): star cell · venue name, on the showtime row
+/* Venue directory row (My list): heart cell · venue name, on the showtime row
      geometry. */
 .gc-venue-row {
   grid-template-columns: var(--cell) 1fr;
@@ -560,7 +694,7 @@ body[data-share-modal] .cell:not([data-share-active] > .cell, .share-menu .cell)
     grid-row: calc(2 + var(--fmax2));
   }
 }
-@media (max-width: 640px) {
+@media (max-width: 759.98px) {
   .gridpaper:not([data-film-cols]) .gc-film-card {
     --film-width: var(--band-cells);
     --film-left: var(--col-start);
@@ -774,16 +908,15 @@ body[data-share-modal] .cell:not([data-share-active] > .cell, .share-menu .cell)
      the element); inner texture lines are hidden because the opaque background
      covers them and we don't repaint them. Title links keep their underline. */
 .cell-genre,
-.cell-genre-hover:hover {
+[data-expanded] > .gc-title {
   position: relative;
   z-index: 0;
   color: var(--genre-text);
-
   text-decoration: none;
 }
 
 .cell-genre:after,
-.cell-genre-hover:hover:after {
+[data-expanded] > .gc-title:after {
   content: "";
   position: absolute;
   z-index: -1;
@@ -794,25 +927,42 @@ body[data-share-modal] .cell:not([data-share-active] > .cell, .share-menu .cell)
 }
 
 /* Children that carry their own muted color (e.g. the ↻ recurrence hint)
-     should inherit the genre text color on hover for contrast against the fill. */
+     should inherit the genre text color on the fill for contrast. */
 .cell-genre *,
-.cell-genre-hover:hover * {
+[data-expanded] > .gc-title * {
   color: inherit;
 }
 
-/* When the title link (cell-genre-hover) is hovered, tint the time cell in the
-     same row with the genre primary color. The wrapper has display:contents so
-     :has() reaches through it to find the sibling time element. */
-.contents:has(.cell-genre-hover:hover) time {
-  color: var(--genre-primary);
-}
+/* The hover fill (and its row tint below) only where there is real hover:
+     on touch screens a tap leaves :hover stuck on the tapped cell. The narrow
+     layout's open event fills its title instead ([data-expanded]). */
+@media (hover: hover) {
+  .cell-genre-hover:hover {
+    position: relative;
+    z-index: 0;
+    color: var(--genre-text);
+    text-decoration: none;
+  }
+  .cell-genre-hover:hover:after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    top: 2px;
+    left: 2px;
+    background-color: var(--genre-primary);
+  }
+  .cell-genre-hover:hover * {
+    color: inherit;
+  }
 
-/* ...and draw a genre-colored bottom line across every cell of that row. Each
-     cell paints its own --cell-bottom inset (the row's bottom edge), so the
-     underline runs continuously across the whole band. --genre-primary inherits
-     from the .contents wrapper's data-genre, so every cell resolves it. */
-.contents:has(.cell-genre-hover:hover) {
-  border-bottom: 2px solid var(--genre-primary);
+  /* When the title link (cell-genre-hover) is hovered, tint the time cell in
+     the same row with the genre primary color. The wrapper has
+     display:contents so :has() reaches through it to find the sibling time
+     element. */
+  .contents:has(.cell-genre-hover:hover) time {
+    color: var(--genre-primary);
+  }
 }
 
 /* Truncate long text horizontally without clipping descenders. The cell
@@ -856,7 +1006,7 @@ body[data-share-modal] .cell:not([data-share-active] > .cell, .share-menu .cell)
 /* Mobile: 9 cols × 2 rows; font fills 2 rows (2× the cell). The locale
      switcher tucks into the columns to the right (placed by the nav script),
      and genres flow onto rows 3, 4, … below. */
-@media (max-width: 640px) {
+@media (max-width: 759.98px) {
   .navbar-wordmark {
     grid-column: var(--c-time) / span 9;
     grid-row: 1 / span 2;

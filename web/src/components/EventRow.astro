@@ -1,7 +1,8 @@
 ---
 import type { AgendaEvent, Locale } from "@/lib/types"
 import { t } from "@/i18n"
-import FavouriteStar from "@/components/FavouriteStar.astro"
+import FavouriteToggle from "@/components/FavouriteToggle.astro"
+import CellIcon from "@/components/ui/CellIcon.astro"
 interface Props {
   event: AgendaEvent
   locale: Locale
@@ -17,14 +18,18 @@ const displayPrice = event.price
   ? (strings.prices[event.price] ?? event.price)
   : ""
 ---
-{/* One event = one row of the content band: time · title(grows) · place · price,
-   plus a favourite star in the margin column left of the band and a share
-   trigger in the one right of it (both shown on row hover). The wrapper carries
-   data-time for the day/row visibility script, data-venue for the My list
-   filter, and data-id/data-date (the REAL calendar date — the section's date is
-   the agenda's logical day, which differs for post-midnight shows) for the
-   share menu, which reads the rest off the cells (ShareMenu.astro). It sits on
-   the grid via `display: contents` so its children place directly. */}
+{/* One event = one row of the content band:
+   time · gap · title(grows) · share · place · heart · price.
+   The share trigger sits in the gap right of the title and the favourite heart
+   in the one right of the venue name (both revealed on hover; a favourite's
+   filled heart always shows). Below 760px the event splits over two rows
+   (time · title, then place · price) and a tap opens its panel instead
+   (EventPanel.astro). The wrapper carries data-time for the day/row visibility
+   script, data-venue for the My list filter, and data-id/data-date (the REAL
+   calendar date — the section's date is the agenda's logical day, which
+   differs for post-midnight shows) for the share actions, which read the rest
+   off the cells (lib/event-actions.ts). It sits on the grid via
+   `display: contents` so its children place directly. */}
 <div
   data-event-row
   data-id={event.id}
@@ -35,12 +40,6 @@ const displayPrice = event.price
   style={`--ev: ${index}`}
   class="contents"
 >
-  <FavouriteStar
-    venueSlug={event.venueSlug}
-    venueName={event.venueName}
-    label={strings.favouriteVenue}
-    class="gc-fav"
-  />
   <time
     class="cell cell-truncate gc-time text-muted-foreground"
   ><span class="cell-text">{event.startTime ?? ""}</span></time>
@@ -60,26 +59,7 @@ const displayPrice = event.price
     </span>
   </a>
 
-  {/* Where there's no margin column (mobile, narrow windows) the star rides
-      inline after the venue name instead, always visible (see .fav-star-inline). */}
-  <div
-    class="cell cell-truncate cell-right gc-place"
-  ><span class="cell-text">{event.venueName}</span><FavouriteStar
-      venueSlug={event.venueSlug}
-      venueName={event.venueName}
-      label={strings.favouriteVenue}
-      inline
-      class="mx-2"
-    /></div>
-
-  <div
-    class="cell cell-truncate cell-right gc-price text-muted-foreground"
-  ><span class="cell-text">{displayPrice}</span></div>
-
-  {/* Opens the share menu (ShareMenu.astro). Margin column right of the band
-      on hover; where there's no margin, the last cell of the title, always
-      visible (see .gc-share). The ↗ glyph is drawn in CSS to keep the markup
-      lean on 5,000-row pages. */}
+  {/* Opens the share dropdown (ShareMenu.astro). */}
   <button
     type="button"
     data-share-trigger
@@ -87,7 +67,18 @@ const displayPrice = event.price
     aria-expanded="false"
     aria-label={strings.share}
     class="cell share-trigger gc-share"
-  ></button>
+  ><CellIcon icon="share" /></button>
+
+  <FavouriteToggle
+    venueSlug={event.venueSlug}
+    venueName={event.venueName}
+    label={strings.favouriteVenue}
+    variant="place"
+  />
+
+  <div
+    class="cell cell-truncate cell-right gc-price text-muted-foreground"
+  ><span class="cell-text">{displayPrice}</span></div>
 </div>
 
 <script>
@@ -95,11 +86,12 @@ const displayPrice = event.price
   //  Desktop: one width per PAGE — the widest price, clamped to [3, 5] cells —
   //  published as --price-cells on <html>; global.css shifts the place column
   //  and the title's end by it, so the title absorbs the slack.
-  //  Mobile (≤640px): each row sizes its own price span (--pc on the row
+  //  Narrow (<760px): each row sizes its own price span (--pc on the row
   //  wrapper, [2, 6] cells); the place cell on row B takes the rest.
   // Text is measured with canvas measureText in the price cell's font, once
   // per distinct string, so a 5,000-row page costs no layout reads per row.
   import { cellSpan, PRICE_CELLS_DESKTOP, PRICE_CELLS_MOBILE } from "@/lib/price-fit"
+  import { NARROW_QUERY } from "@/lib/breakpoints"
 
   const ctx = document.createElement("canvas").getContext("2d")
   const widths = new Map<string, number>()
@@ -129,7 +121,7 @@ const displayPrice = event.price
     const cellOf = (el: HTMLElement) => parseFloat(el.style.getPropertyValue("--cell")) || 0
     const sections = [...document.querySelectorAll<HTMLElement>("section.gridpaper")]
 
-    if (!window.matchMedia("(max-width: 640px)").matches) {
+    if (!window.matchMedia(NARROW_QUERY).matches) {
       // Desktop cells are a fixed size; take it from any laid-out section.
       const cell = Math.max(0, ...sections.map(cellOf))
       let widest = 0

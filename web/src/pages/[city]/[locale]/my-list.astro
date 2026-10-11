@@ -9,6 +9,7 @@ import Layout from "@/components/Layout.astro"
 import Navbar from "@/components/Navbar.astro"
 import AgendaDay from "@/components/AgendaDay.astro"
 import ShareMenu from "@/components/ShareMenu.astro"
+import EventPanel from "@/components/EventPanel.astro"
 import VenueDirectory from "@/components/VenueDirectory.astro"
 import OptionsPanel from "@/components/OptionsPanel.astro"
 import GridRadioButtons from "@/components/ui/GridRadioButtons.astro"
@@ -25,7 +26,7 @@ const strings = t(locale)
 
 // Favourites live in the visitor's browser, so the page ships every curated
 // event in the city and a client script hides rows from venues that aren't
-// starred (data-filtered; see syncAgenda in Layout.astro). Films get their own
+// favourited (data-filtered; see syncAgenda in Layout.astro). Films get their own
 // view so screenings don't drown out the rest.
 const events = await getCityEvents(city, locale)
 // Same coarse build-time cut as ListView: drop days before today.
@@ -82,8 +83,14 @@ const agendaViews = [
       </div>
     </div>
   </main>
-  {/* One share menu per page, shared by every event row. */}
+  {/* One share menu (desktop) and event panel template (narrow) per page,
+      shared by every event row. */}
   <ShareMenu city={city} locale={locale} />
+  <EventPanel
+    city={city}
+    locale={locale}
+    events={agendaViews.flatMap((v) => v.days.flatMap((d) => d.events))}
+  />
 
   <script>
     import { initViewSwitch } from "@/lib/view-switch"

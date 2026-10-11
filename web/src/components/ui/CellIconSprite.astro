@@ -1,0 +1,27 @@
+---
+---
+{/* The icon geometry CellIcon draws, once per page. Every symbol shares a
+    16×16 box; stroke colour/width and fill come from CSS (.cell-icon), so one
+    "heart" can render outline or filled by state. vector-effect keeps strokes
+    a constant px weight (matching the 2px gridlines) at every icon size. */}
+<svg width="0" height="0" aria-hidden="true" focusable="false" style="position: absolute; overflow: hidden">
+  <symbol id="ci-share" viewBox="0 0 16 16">
+    <path vector-effect="non-scaling-stroke" d="M3.5 12.5 12 4M5.5 3.5h7v7" />
+  </symbol>
+  <symbol id="ci-heart" viewBox="0 0 16 16">
+    <path vector-effect="non-scaling-stroke" d="M8 14C5.2 11.9 1.5 9 1.5 5.6 1.5 3.6 3 2 4.9 2 6.3 2 7.4 2.9 8 4.1 8.6 2.9 9.7 2 11.1 2 13 2 14.5 3.6 14.5 5.6 14.5 9 10.8 11.9 8 14Z" />
+  </symbol>
+  <symbol id="ci-heart-filled" viewBox="0 0 16 16">
+    <path vector-effect="non-scaling-stroke" fill="currentColor" d="M8 14C5.2 11.9 1.5 9 1.5 5.6 1.5 3.6 3 2 4.9 2 6.3 2 7.4 2.9 8 4.1 8.6 2.9 9.7 2 11.1 2 13 2 14.5 3.6 14.5 5.6 14.5 9 10.8 11.9 8 14Z" />
+  </symbol>
+  <symbol id="ci-calendar" viewBox="0 0 16 16">
+    <path vector-effect="non-scaling-stroke" d="M2 3.5h12v11H2zM2 7h12M5 1.5v3.5M11 1.5v3.5" />
+  </symbol>
+  <symbol id="ci-eye" viewBox="0 0 16 16">
+    <path vector-effect="non-scaling-stroke" d="M1 8C2.8 4.7 5.2 3 8 3s5.2 1.7 7 5c-1.8 3.3-4.2 5-7 5S2.8 11.3 1 8Z" />
+    <circle vector-effect="non-scaling-stroke" cx="8" cy="8" r="2.2" />
+  </symbol>
+  <symbol id="ci-chevron" viewBox="0 0 16 16">
+    <path vector-effect="non-scaling-stroke" d="M3.5 5.75 8 10.25l4.5-4.5" />
+  </symbol>
+</svg>

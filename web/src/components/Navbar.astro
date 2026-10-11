@@ -51,7 +51,8 @@ const ssrPos = (slug: string) =>
   ><span class="cell-text">Ca<span class="mr-0.5">r</span>telita</span></a>
 
   {/* Category nav: JS places links on row 3, flowing right from col 12 (after
-      the 11-col wordmark). Wraps up to row 2/1 before the locale zone (last 3 cols). */}
+      the 11-col wordmark). Wraps up to row 2/1 before the locale zone, or flows
+      below the wordmark when that's full (lib/nav-layout.ts). */}
   {navItems.map((l) => (
     <a
       data-genre={l.slug}
@@ -73,22 +74,27 @@ const ssrPos = (slug: string) =>
       href={`/${city}/${lc}/${activeList}`}
       aria-current={lc === locale ? "page" : undefined}
       style={`grid-column: calc(var(--c-end) - ${LOCALES.length - i}) / span 1; grid-row: 1`}
-      class="cell justify-end text-muted-foreground no-underline hover:text-foreground aria-[current=page]:font-medium aria-[current=page]:text-foreground text-xs sm:text-base"
+      class="cell justify-end text-muted-foreground no-underline hover:text-foreground aria-[current=page]:font-medium aria-[current=page]:text-foreground text-xs min-[760px]:text-base"
     >
       <span class="cell-text">{lc.toUpperCase()}</span>
     </a>
   ))}
 
   <script>
+    import { layoutNavLinks } from "@/lib/nav-layout";
+    import { NARROW_QUERY } from "@/lib/breakpoints";
+
     // The navbar packs links into the one grid by column line. Two layouts:
     //
-    //  Desktop (>640px): wordmark 11 cols × rows 1–3. Locales sit top-right on
+    //  Desktop (≥760px): wordmark 11 cols × rows 1–3. Locales sit top-right on
     //  row 1 (one cell each). Genres flow right from col 12 on row 3, wrapping
-    //  UP (3 → 2 → 1) before they reach the locale zone.
+    //  UP (3 → 2 → 1) before the locale zone — or, when three rows beside the
+    //  wordmark can't hold them, below it from row 4 (lib/nav-layout.ts).
     //
-    //  Mobile (≤640px): wordmark 9 cols × rows 1–2 (set in CSS). Locales restack
-    //  into the 2 cols right of the wordmark across rows 1–2. Genres flow from
-    //  the band start on row 3, wrapping DOWN (3 → 4 → 5 …) at the band edge.
+    //  Narrow (<760px): wordmark 9 cols × rows 1–2 (set in CSS). Locales
+    //  restack into the cols right of the wordmark across rows 1–2. Genres
+    //  flow from the band start on row 3, wrapping DOWN (3 → 4 → 5 …).
+    const NARROW = window.matchMedia(NARROW_QUERY);
     function layoutNav() {
       const header = document.querySelector<HTMLElement>("header.gridpaper");
       if (!header) return;
@@ -97,16 +103,16 @@ const ssrPos = (slug: string) =>
       const colStart = parseInt(cs.getPropertyValue("--col-start")) || 1;
       const bandCells = parseInt(cs.getPropertyValue("--band-cells")) || 40;
       const bandEnd = colStart + bandCells; // exclusive end line
-      const mobile = window.matchMedia("(max-width: 640px)").matches;
+      const narrow = NARROW.matches;
 
       const locales = header.querySelectorAll<HTMLElement>("a[data-locale]");
-      const links = header.querySelectorAll<HTMLElement>("a[data-navlink]");
+      const links = [...header.querySelectorAll<HTMLElement>("a[data-navlink]")];
       const spanOf = (a: HTMLElement) => {
         const text = a.querySelector<HTMLElement>(".cell-text") ?? a;
         return Math.max(1, Math.ceil((text.scrollWidth + 6) / cell));
       };
 
-      if (mobile) {
+      if (narrow) {
         // Locales: packed into the top-right corner, flush against the band's
         // right edge. Fill right-to-left on row 1; if they don't all fit beside
         // the 9-col wordmark, the overflow wraps onto row 2 (also right-flush).
@@ -120,42 +126,23 @@ const ssrPos = (slug: string) =>
           a.style.gridColumn = `${bandEnd - rowCount + inRow} / span 1`;
           a.style.gridRow = `${1 + row}`;
         });
-        // Genres: flow from band start on row 3, wrapping down at the band edge.
-        let col = colStart;
-        let row = 3;
-        links.forEach((a) => {
-          const span = spanOf(a);
-          if (col + span > bandEnd && col > colStart) {
-            row += 1;
-            col = colStart;
-          }
-          a.style.gridColumn = `${col} / span ${span}`;
-          a.style.gridRow = `${row}`;
-          col += span;
+      } else {
+        // Restore the per-cell locale placement (a prior narrow pass may have
+        // moved them).
+        locales.forEach((a, i) => {
+          a.style.gridColumn = `${bandEnd - (locales.length - i)} / span 1`;
+          a.style.gridRow = "1";
         });
-        return;
       }
-
-      // Desktop. Restore the per-cell locale placement (a prior mobile pass may
-      // have moved them), then flow genres on row 3, wrapping up.
-      locales.forEach((a, i) => {
-        a.style.gridColumn = `${bandEnd - (locales.length - i)} / span 1`;
-        a.style.gridRow = "1";
+      const placed = layoutNavLinks(links.map(spanOf), {
+        colStart,
+        bandEnd,
+        localeCount: locales.length,
+        narrow,
       });
-      const navStart = colStart + 11; // right after the 11-col wordmark
-      const localeCol = bandEnd - 3; // last 3 cols reserved for locales
-      let col = navStart;
-      let row = 3;
-      links.forEach((a) => {
-        const span = spanOf(a);
-        // If this link would overflow into the locale column, wrap up a row.
-        if (col + span > localeCol && col > navStart) {
-          row = Math.max(1, row - 1);
-          col = navStart;
-        }
-        a.style.gridColumn = `${col} / span ${span}`;
-        a.style.gridRow = `${row}`;
-        col += span;
+      links.forEach((a, i) => {
+        a.style.gridColumn = `${placed[i].col} / span ${placed[i].span}`;
+        a.style.gridRow = `${placed[i].row}`;
       });
     }
     layoutNav();

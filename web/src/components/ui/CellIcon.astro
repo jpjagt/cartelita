@@ -1,0 +1,13 @@
+---
+import type { CellIconName } from "@/lib/types"
+interface Props {
+  icon: CellIconName
+  class?: string
+}
+const { icon, class: className = "" } = Astro.props
+---
+{/* One icon, centered in the grid cell of its nearest positioned ancestor
+    (which must be exactly one cell square). The geometry lives once per page
+    in CellIconSprite; this is just a <use> of it, so even 5,000 rows of icons
+    stay lean. Size/offset are tuned per icon in global.css (.cell-icon). */}
+<svg class={`cell-icon ${className}`} data-icon={icon} aria-hidden="true" focusable="false"><use href={`#ci-${icon}`} /></svg>
