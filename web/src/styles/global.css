@@ -103,6 +103,11 @@
 body {
   container-type: inline-size;
 }
+/* A query container's background doesn't propagate to the canvas, so paint
+   the page colour on the root too (dark mode below a short page). */
+html {
+  background-color: var(--background);
+}
 .gridpaper {
   --grid-line: var(--muted);
 
