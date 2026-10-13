@@ -3,6 +3,8 @@ import datetime as dt
 import hashlib
 import logging
 import re
+import unicodedata
+from collections import Counter
 
 import httpx
 
@@ -17,10 +19,12 @@ from cartelera.types import (
 # jazzin.amsterdam — curated Amsterdam culture calendars (jazz, classical,
 # theater, pop, club, film, alternative; ~6,200 upcoming events across ~190
 # venues) with a
-# public JSON API. MULTI-VENUE source: the VENUES table below is the editorial
-# whitelist, the name-normalization map, and each venue's category lists (see
-# jazzin_amsterdam_SOURCE.md). The API returns at most PAGE_SIZE events per
-# call; `offset` pages (its `page` param is ignored).
+# public JSON API. MULTI-VENUE, OPT-OUT source (see jazzin_amsterdam_SOURCE.md):
+# every venue the feed names becomes a venue automatically (discovered at run
+# time, see cartelera.discovery); code holds only the exceptions — VENUES
+# (overrides: merges, names, addresses, categories) and DENIED (names that are
+# never venues). The API returns at most PAGE_SIZE events per call; `offset`
+# pages (its `page` param is ignored).
 API_URL = "https://jazzin.amsterdam/api"
 PAGE_SIZE = 600
 MAX_PAGES = 20  # safety stop against a misbehaving offset
@@ -44,22 +48,17 @@ CALENDARS: dict[str, str] = {
 
 logger = logging.getLogger(__name__)
 
-# (venue slug, display name, address, jazzin venue-name aliases, categories).
-# jazzin's `venue` field is free text typed per upstream source, so one venue
-# arrives under several spellings ("ZOJazz Stage", "ZOjazz Stage",
-# "ZOJazzstage "); aliases are matched after _venue_key normalization
-# (case/whitespace-insensitive). `categories` are the calendars the venue
-# appears in: each becomes a whitelisted list membership. Addresses are
-# jazzin's; the ones it gives only as "Amsterdam" are hand-filled or None.
-# Deliberately absent: Comedytrain's halls (the upstream `toomler` feed has
-# junk titles like "20:30 uur"); the few venues in other cities (Leiden,
-# Utrecht, Woerden, Laren, Hillegom); and, from the alternative calendar,
-# Filmhuis Cavia + its one-off Nassaukerk screening (own scraper:
-# filmhuis_cavia.py), Bar Bario (closed; its feed re-dates past events into
-# next year), and non-venues: the bare city "Amsterdam", the street corners of
-# the weekly "Vlaggen voor Palestina" vigils (Buikslotermeerplein, Op de brug,
-# Jan van Galenstraat A10 snelweg) and the organisation Fossil Free Culture NL
-# (street-only address).
+# OVERRIDES: (venue slug, display name, address, jazzin venue-name aliases,
+# categories). jazzin's `venue` field is free text typed per upstream source,
+# so one venue arrives under several spellings ("ZOJazz Stage", "ZOjazz
+# Stage", "ZOJazzstage "); aliases are matched after _venue_key normalization
+# (case/whitespace-insensitive, nothing fuzzier) and merge those names into
+# one venue. `categories` are the calendars the venue appears in: each becomes
+# a whitelisted list membership; for these venues the table is authoritative
+# (seeded; a new calendar is logged, not added). Addresses are jazzin's; the
+# ones it gives only as "Amsterdam" are hand-filled or None. A name in no row
+# and not DENIED is a discovered venue (see discover_venues); add a row only
+# to merge spellings or to override what discovery would derive.
 VENUES: list[tuple[str, str, str | None, list[str], list[str]]] = [
     ('concertgebouw', 'Het Concertgebouw', 'Concertgebouwplein 10, 1071 LN Amsterdam',
      ['Het Concertgebouw', 'Concertgebouw'], ['jazz', 'classical']),
@@ -118,7 +117,7 @@ VENUES: list[tuple[str, str, str | None, list[str], list[str]]] = [
     ('john-doe', 'John Doe', 'Rembrandtplein 31, 1017 CT Amsterdam, Netherlands',
      ['John Doe'], ['club']),
     ('de-roode-bioscoop', 'De Roode Bioscoop', 'Haarlemmerplein 7, 1013 HP Amsterdam',
-     ['De Roode Bioscoop'], ['jazz', 'classical', 'theater']),
+     ['De Roode Bioscoop', 'Roode Bioscoop'], ['jazz', 'classical', 'theater']),
     ('theater-vrijburcht', 'Theater Vrijburcht', 'Jan Olphert Vaillantlaan 143, 1086 XZ Amsterdam',
      ['Theater Vrijburcht'], ['jazz', 'theater']),
     ('black-cat-theatre', 'Black Cat Theatre', 'Schakelstraat 2, 1014 AW Amsterdam',
@@ -136,7 +135,8 @@ VENUES: list[tuple[str, str, str | None, list[str], list[str]]] = [
     ('oosterkerk', 'Oosterkerk', 'Kleine Wittenburgerstraat 3, 1018 LS Amsterdam',
      ['Oosterkerk'], ['classical', 'theater']),
     ('conservatorium-van-amsterdam', 'Conservatorium van Amsterdam', 'Oosterdokskade 151, 1011 DL Amsterdam',
-     ['CvA', 'Amsterdam Blue Dock, CvA', 'Bernard Haitinkzaal, CvA', 'Sweelinckzaal, CvA'], ['jazz', 'classical', 'pop']),
+     ['CvA', 'Amsterdam Blue Dock, CvA', 'Bernard Haitinkzaal, CvA', 'Sweelinckzaal, CvA',
+      'Ensemblezaal, CvA'], ['jazz', 'classical', 'pop']),
     ('cafe-de-engelbewaarder', 'Café de Engelbewaarder', 'Kloveniersburgwal 59HS, 1011 JZ Amsterdam',
      ['Café de Engelbewaarder'], ['jazz']),
     ('theater-de-krakeling', 'Theater De Krakeling', 'Pazzanistraat 15, 1014 DB Amsterdam',
@@ -206,7 +206,7 @@ VENUES: list[tuple[str, str, str | None, list[str], list[str]]] = [
     ('cafe-czaar', 'Café Czaar', 'Czaar Peterstraat 281, 1018 PL Amsterdam',
      ['Café Czaar'], ['jazz']),
     ('pianola-museum', 'Pianola Museum', 'Westerstraat 106, 1015 MN Amsterdam',
-     ['Pianola Museum'], ['jazz', 'classical']),
+     ['Pianola Museum', 'Gelvinck Pianola Museum'], ['jazz', 'classical']),
     ('de-kleine-kerk', 'De Kleine Kerk (Duivendrecht)', 'Rijksstraatweg 129, Duivendrecht, Netherlands',
      ['De Kleine Kerk'], ['classical']),
     ('tillatec', 'TILLATEC', 'Doctor Jan van Breemenstraat 1; 1056 AB Amsterdam',
@@ -377,6 +377,9 @@ VENUES: list[tuple[str, str, str | None, list[str], list[str]]] = [
      ['Cinetol'], ['pop']),
     ('dick-dick', 'Dick & Dick', 'Gedempt Hamerkanaal 36',
      ['Dick & Dick'], ['club']),
+    # Frascati's feed lists its café separately; same building.
+    ('het-verbond', 'Het Verbond', 'Nes 71, 1012 KD Amsterdam',
+     ['Het Verbond', 'Het Verbond - Café'], ['theater']),
     # --- alternative calendar only (squats, DIY spaces) ---
     ('nieuwland', 'NieuwLand', 'Pieter Nieuwlandstraat 93, Amsterdam',
      ['NieuwLand'], ['alternative']),
@@ -460,6 +463,50 @@ VENUE_BY_KEY: dict[str, str] = {
 }
 VENUE_CATEGORIES: dict[str, set[str]] = {slug: set(cats) for slug, *_rest, cats in VENUES}
 
+# DENYLIST: jazzin venue names (matched via _venue_key) that never become
+# venues, with why. Their events are dropped.
+DENIED: dict[str, str] = {
+    # not venues
+    "Amsterdam": "bare city name, no venue (address ', Amsterdam')",
+    "Buikslotermeerplein": "street corner of the weekly 'Vlaggen voor Palestina' vigil",
+    "Op de brug": "street corner of the weekly 'Vlaggen voor Palestina' vigil",
+    "Jan van Galenstraat A10 snelweg": "street corner of the weekly 'Vlaggen voor Palestina' vigil",
+    "Fossil Free Culture NL": "an organisation, not a venue (address just 'Overtoom, Amsterdam')",
+    "Grote Zaal": "bare hall name (Comedytrain, Westergas) from the junk toomler feed",
+    "Kleine Zaal": "bare hall name (Comedytrain, Westergas) from the junk toomler feed",
+    # closed
+    "Bar Bario": "closed; its feed re-dates past events into next year",
+    # owned by a dedicated scraper (filmhuis_cavia.py, venue filmhuis-cavia)
+    "Filmhuis Cavia": "own scraper: filmhuis_cavia.py",
+    "Nassaukerk": "Filmhuis Cavia's one-off screening there; own scraper: filmhuis_cavia.py",
+    # outside the Amsterdam area (the cva feed tours the Conservatorium's students)
+    "Stadsgehoorzaal Leiden": "Leiden — outside the Amsterdam area",
+    "TivoliVredenburg": "Utrecht — outside the Amsterdam area",
+    "Theater Het Klooster Woerden": "Woerden — outside the Amsterdam area",
+    "Papagenohuis": "Laren — outside the Amsterdam area",
+    "De Kulturele Raad": "Hillegom — outside the Amsterdam area",
+}
+DENIED_KEYS: frozenset[str] = frozenset(_venue_key(n) for n in DENIED)
+
+# Upstream feeds (the API's `source` field) dropped whole, with why.
+DENIED_FEEDS: dict[str, str] = {
+    "toomler": "Comedytrain's halls (Westergas): junk titles like '20:30 uur'",
+}
+
+
+def slugify(name: str) -> str:
+    """A discovered venue's slug: ascii, lowercase, hyphens; quotes dropped
+    ("Joe's Garage" → "joes-garage", "Café Czaar" → "cafe-czaar")."""
+    ascii_ = unicodedata.normalize("NFKD", name).encode("ascii", "ignore").decode()
+    ascii_ = re.sub("['\"`]", "", ascii_.casefold())
+    return re.sub(r"[^a-z0-9]+", "-", ascii_).strip("-")
+
+
+def _address(raw: str | None) -> str | None:
+    """jazzin's address, whitespace-collapsed; None when it's just the city."""
+    text = re.sub(r"\s+", " ", raw or "").strip()
+    return None if text.strip(" ,").casefold() in ("", "amsterdam") else text
+
 
 # --- price -----------------------------------------------------------------
 
@@ -536,14 +583,27 @@ def occurrence_key(start_date: dt.date, start_time: dt.time | None, title: str) 
     return hashlib.sha1(raw.encode()).hexdigest()[:16]
 
 
+def resolve_venue(name: str) -> str | None:
+    """The venue slug a jazzin venue name maps to: an override's (alias
+    match), else the discovered slug; None when the name is denied or yields
+    no slug."""
+    key = _venue_key(name)
+    if key in VENUE_BY_KEY:
+        return VENUE_BY_KEY[key]
+    if not key or key in DENIED_KEYS:
+        return None
+    return slugify(name) or None
+
+
 def parse_events(
     items: list[tuple[str, dict]],
-) -> tuple[list[ScrapedEvent], set[str]]:
+) -> tuple[list[ScrapedEvent], list[VenueDefinition], set[str]]:
     """Map (category slug, API event object) pairs to ScrapedEvents. Pure:
     JSON in, events out.
 
-    Returns the events plus the set of venue names not in VENUES (dropped —
-    the whitelist; logged so new venues get added deliberately).
+    Returns (events, discovered venues, denied names). Opt-out: an event at a
+    venue name that matches no override alias and isn't DENIED (nor from a
+    DENIED_FEEDS feed) goes to a discovered venue — see discover_venues.
 
     jazzin repeats occurrences under several ids — within a calendar
     (Muziekgebouw lists a concert up to 5×) and across calendars (a
@@ -552,12 +612,15 @@ def parse_events(
     see occurrence_key — keeping the first-listed (lowest id) item's fields
     and the union of the calendars' categories."""
     by_key: dict[tuple, ScrapedEvent] = {}
-    unknown: set[str] = set()
+    denied: set[str] = set()
+    # discovered slug → raw names / addresses seen for it
+    names: dict[str, Counter[str]] = {}
+    addresses: dict[str, Counter[str]] = {}
     for category, item in sorted(items, key=lambda ci: ci[1].get("id") or 0):
-        venue_name = (item.get("venue") or "").strip()
-        venue_slug = VENUE_BY_KEY.get(_venue_key(venue_name))
+        venue_name = re.sub(r"\s+", " ", item.get("venue") or "").strip()
+        venue_slug = None if item.get("source") in DENIED_FEEDS else resolve_venue(venue_name)
         if venue_slug is None:
-            unknown.add(venue_name)
+            denied.add(venue_name)
             continue
         title = (item.get("title") or "").strip()
         if not title or not item.get("date") or _CANCELED_MARK.search(title):
@@ -569,6 +632,11 @@ def parse_events(
         except ValueError:
             continue
         start_time = _parse_time(item.get("time"))
+
+        if venue_slug not in VENUE_CATEGORIES:
+            names.setdefault(venue_slug, Counter())[venue_name] += 1
+            if addr := _address(item.get("address")):
+                addresses.setdefault(venue_slug, Counter())[addr] += 1
 
         external_id = occurrence_key(start_date, start_time, title)
         key = (venue_slug, external_id)
@@ -588,16 +656,53 @@ def parse_events(
             external_id=external_id,
             venue_slug=venue_slug,
         )
-    return list(by_key.values()), unknown
+    events = list(by_key.values())
+    return events, discover_venues(events, names, addresses), denied
+
+
+def discover_venues(
+    events: list[ScrapedEvent],
+    names: dict[str, Counter[str]],
+    addresses: dict[str, Counter[str]],
+) -> list[VenueDefinition]:
+    """One VenueDefinition per discovered slug: jazzin's most common name and
+    address for it (None when only "Amsterdam"), city amsterdam, and the
+    categories of the calendars its events appear in, each a whitelisted list
+    membership (the same shape as the overrides)."""
+    cats: dict[str, set[str]] = {}
+    for ev in events:
+        if ev.venue_slug in names:
+            cats.setdefault(ev.venue_slug, set()).update(ev.category_slugs)
+    order = list(CALENDARS.values())
+    venues = []
+    for slug in sorted(cats):
+        cs = sorted(cats[slug], key=order.index)
+        addr = addresses.get(slug)
+        venues.append(_venue_definition(
+            slug, names[slug].most_common(1)[0][0],
+            addr.most_common(1)[0][0] if addr else None, cs))
+    return venues
+
+
+def _venue_definition(slug: str, name: str, address: str | None, cats: list[str]) -> VenueDefinition:
+    return VenueDefinition(
+        slug=slug,
+        name=name,
+        city_slug=CITY_SLUG,
+        address=address,
+        category_slugs=cats,
+        list_memberships=[ListMembership(list_slug=c, whitelist_category_slug=c) for c in cats],
+    )
 
 
 def unlisted_categories(events: list[ScrapedEvent]) -> set[tuple[str, str]]:
-    """(venue, category) pairs the feed now has but VENUES doesn't list — those
-    events are stored but no list shows them until the venue's categories are
-    updated."""
+    """(override venue, category) pairs the feed now has but VENUES doesn't
+    list — those events are stored but no list shows them until the venue's
+    row is updated. (Discovered venues gain categories automatically.)"""
     return {
         (ev.venue_slug, c)
         for ev in events
+        if ev.venue_slug in VENUE_CATEGORIES
         for c in ev.category_slugs
         if c not in VENUE_CATEGORIES[ev.venue_slug]
     }
@@ -623,13 +728,16 @@ def fetch_items() -> list[tuple[str, dict]]:
 
 
 class JazzinAmsterdamScraper:
+    """Opt-out: also implements scrapers.base.DiscoversVenues."""
+
+    def __init__(self) -> None:
+        self._discovered: list[VenueDefinition] = []
+
     def scrape(self) -> list[ScrapedEvent]:
-        events, unknown = parse_events(fetch_items())
-        if unknown:
-            logger.warning(
-                "jazzin-amsterdam: dropped events at venues not in VENUES: %s",
-                ", ".join(sorted(unknown)),
-            )
+        events, self._discovered, denied = parse_events(fetch_items())
+        if denied:
+            logger.info("jazzin-amsterdam: dropped events at %d denied venue names", len(denied))
+            logger.debug("jazzin-amsterdam: denied venue names: %s", ", ".join(sorted(denied)))
         if missing := unlisted_categories(events):
             logger.warning(
                 "jazzin-amsterdam: venues with events in categories they aren't listed for: %s",
@@ -637,23 +745,18 @@ class JazzinAmsterdamScraper:
             )
         return events
 
+    def discovered_venues(self) -> list[VenueDefinition]:
+        return list(self._discovered)
+
 
 register_source(
     scraper=JazzinAmsterdamScraper(),
     source=SourceDefinition(
         slug=SOURCE_SLUG,
         name="jazzin.amsterdam",
+        # The overrides only; discovered venues are created at run time.
         venues=[
-            VenueDefinition(
-                slug=slug,
-                name=name,
-                city_slug=CITY_SLUG,
-                address=address,
-                category_slugs=cats,
-                list_memberships=[
-                    ListMembership(list_slug=c, whitelist_category_slug=c) for c in cats
-                ],
-            )
+            _venue_definition(slug, name, address, cats)
             for slug, name, address, _aliases, cats in VENUES
         ],
     ),

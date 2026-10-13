@@ -49,6 +49,9 @@ class Venue(Base):
     address: Mapped[str | None] = mapped_column(Text)
     site_url: Mapped[str | None] = mapped_column(Text)
     instagram_url: Mapped[str | None] = mapped_column(Text)
+    # The source that created this venue at run time (an opt-out aggregator,
+    # see cartelera.discovery); NULL for venues defined in code.
+    discovered_by: Mapped[str | None] = mapped_column(Text)
     city: Mapped[City] = relationship()
     categories: Mapped[list[Category]] = relationship(secondary=venue_category)
     events: Mapped[list["Event"]] = relationship(back_populates="venue", passive_deletes=True)
@@ -144,5 +147,7 @@ class SourceHealth(Base):
     issue_kind: Mapped[str | None] = mapped_column(Text)
     last_comment_at: Mapped[dt.datetime | None] = mapped_column(DateTime(timezone=True))
     last_signature: Mapped[str | None] = mapped_column(Text)
+    # The rolling "new venues to review" issue of a venue-discovering source.
+    review_issue_number: Mapped[int | None] = mapped_column(Integer)
     updated_at: Mapped[dt.datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now())

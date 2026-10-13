@@ -41,6 +41,13 @@ single file. For *what Cartelera is and why*, read `MANIFESTO.md`. For dev setup
   A multi-venue source sets `venue_slug` on every ScrapedEvent; its venue list
   is its editorial whitelist and the runner fails fast on any event outside
   it. `cartelera run <slug>` takes source slugs. Sources have no DB table.
+  **Exception — opt-out sources** (only `jazzin-amsterdam`, decided
+  2026-10-13; rationale in its `_SOURCE.md`): the scraper also implements
+  `scrapers.base.DiscoversVenues`, so any feed venue it neither overrides
+  (`VENUES` aliases) nor denies (`DENIED`) is created at run time
+  (`cartelera.discovery`; `venue.discovered_by` = the source), reported on a
+  rolling `venue-review` GitHub issue, and reviewed after the fact. Exact name
+  matching only, never fuzzy; a discovered slug something else owns is refused.
 - **Cities**: `seed.CITIES` (scraper) and `web/src/lib/cities.ts` (locales,
   defaults — UI config lives web-side, not in Postgres) must both know a city.
   URLs are `/:city[/:locale[/:category]]`; bare `/` is the city selector.

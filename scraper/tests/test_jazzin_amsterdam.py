@@ -13,6 +13,8 @@ import pytest
 from cartelera.scrapers import REGISTRY, load_all
 from cartelera.scrapers.jazzin_amsterdam import (
     CALENDARS,
+    DENIED,
+    DENIED_FEEDS,
     SOURCE_SLUG,
     VENUES,
     VENUE_BY_KEY,
@@ -20,6 +22,8 @@ from cartelera.scrapers.jazzin_amsterdam import (
     occurrence_key,
     parse_events,
     parse_price,
+    resolve_venue,
+    slugify,
     unlisted_categories,
 )
 
@@ -28,14 +32,15 @@ FIXTURES = Path(__file__).parent / "fixtures"
 BY_CATEGORY = json.loads((FIXTURES / "jazzin_amsterdam_api.json").read_text())
 PAIRS = [(cat, item) for cat, items in BY_CATEGORY.items() for item in items]
 ITEMS = [item for _cat, item in PAIRS]
-EVENTS, UNKNOWN = parse_events(PAIRS)
+EVENTS, DISCOVERED, DENIED_NAMES = parse_events(PAIRS)
 
 
 def ext_id(item: dict) -> str | None:
     """The external_id the scraper derives for one raw API item (None when
     the item is dropped)."""
-    evs, _ = parse_events([("jazz", item)])
+    evs, _, _ = parse_events([("jazz", item)])
     return evs[0].external_id if evs else None
+# Denied by name, or (the Comedytrain halls) by their toomler feed.
 EXCLUDED = {"Grote Zaal", "Kleine Zaal", "Comedytrain - Westergas - Grote Zaal",
             "Comedytrain - Westergas - Kleine Zaal", "Stadsgehoorzaal Leiden",
             "TivoliVredenburg", "De Kulturele Raad", "Papagenohuis",
@@ -55,8 +60,10 @@ def test_parses_most_of_the_feed():
     assert len(EVENTS) > 5300
 
 
-def test_only_deliberately_excluded_venues_are_dropped():
-    assert UNKNOWN == EXCLUDED
+def test_only_deliberately_denied_venues_are_dropped():
+    assert DENIED_NAMES == EXCLUDED
+    # Every other venue in the fixture is covered by an override.
+    assert DISCOVERED == []
 
 
 def test_every_event_is_complete_with_a_known_venue():
@@ -161,18 +168,98 @@ def test_price_coverage_matches_the_source():
 
 def test_status_markers_in_titles():
     base = dict(ITEMS[0], venue="Bimhuis", price="€13")
-    events, _ = parse_events([
+    events, _, _ = parse_events([
         ("jazz", dict(base, id=1, title="Joan As Police Woman (sold out)")),
         ("jazz", dict(base, id=2, title="Babs [CANCELED]", time="21:00:00")),
     ])
     assert [(ev.title, ev.price) for ev in events] == [("Joan As Police Woman", "sold-out")]
 
 
-def test_unknown_venues_are_dropped_and_reported():
-    item = dict(ITEMS[0], venue="Some New Café", id=1)
-    events, unknown = parse_events([("jazz", item)])
-    assert events == []
-    assert unknown == {"Some New Café"}
+# --- opt-out: discovered venues ---------------------------------------------------
+
+def _item(venue: str, id_: int, **kw) -> dict:
+    base = dict(ITEMS[0], venue=venue, id=id_, title=f"Gig {id_}", date="2026-11-03",
+                time="20:30:00", price="€10", site="https://example.org/gig",
+                address="Somestraat 1, 1011 AA Amsterdam", source="submit")
+    base.update(kw)
+    return base
+
+
+def test_unknown_venue_is_discovered():
+    events, venues, denied = parse_events([
+        ("jazz", _item("  Café  de Muurbloem ", 1, address="Bloemgracht 170, 1015 TV Amsterdam")),
+        ("classical", _item("Café de Muurbloem", 2, address="Bloemgracht 170, 1015 TV Amsterdam")),
+        ("jazz", _item("café de muurbloem", 3, address="Amsterdam")),
+    ])
+    assert denied == set()
+    assert {ev.venue_slug for ev in events} == {"cafe-de-muurbloem"}
+    assert len(events) == 3
+    [v] = venues
+    assert v.slug == "cafe-de-muurbloem"
+    assert v.name == "Café de Muurbloem"            # most common spelling, trimmed
+    assert v.address == "Bloemgracht 170, 1015 TV Amsterdam"  # "Amsterdam" alone ignored
+    assert v.city_slug == "amsterdam"
+    assert v.category_slugs == ["jazz", "classical"]  # calendar order
+    assert [(m.list_slug, m.whitelist_category_slug) for m in v.list_memberships] == [
+        ("jazz", "jazz"), ("classical", "classical")]
+
+
+def test_discovered_venue_with_only_a_city_address_has_none():
+    _, [v], _ = parse_events([("pop", _item("Felix Meritis", 1, address=", Amsterdam"))])
+    assert v.address is None
+
+
+def test_denied_names_and_feeds_produce_no_venue_or_events():
+    events, venues, denied = parse_events([
+        ("alternative", _item("Amsterdam", 1)),
+        ("alternative", _item("  op  de brug", 2)),           # key-normalized match
+        ("theater", _item("Comedytrain - Westergas - Grote Zaal", 3, source="toomler")),
+        ("classical", _item("TivoliVredenburg", 4)),
+    ])
+    assert events == [] and venues == []
+    assert denied == {"Amsterdam", "op de brug", "Comedytrain - Westergas - Grote Zaal",
+                      "TivoliVredenburg"}
+    assert "toomler" in DENIED_FEEDS
+    assert all(reason for reason in DENIED.values())
+
+
+def test_aliases_still_merge_into_overrides():
+    events, venues, _ = parse_events([
+        ("jazz", _item("Roode Bioscoop", 1)),
+        ("classical", _item("Gelvinck Pianola Museum", 2)),
+        ("classical", _item("Ensemblezaal, CvA", 3)),
+        ("theater", _item("Het Verbond - Café", 4)),
+    ])
+    assert venues == []
+    assert [ev.venue_slug for ev in events] == [
+        "de-roode-bioscoop", "pianola-museum", "conservatorium-van-amsterdam", "het-verbond"]
+
+
+def test_no_override_alias_is_denied_and_slugs_are_unique():
+    alias_keys = set(VENUE_BY_KEY)
+    assert not alias_keys & {_venue_key(n) for n in DENIED}
+    slugs = [slug for slug, *_ in VENUES]
+    assert len(slugs) == len(set(slugs))
+
+
+@pytest.mark.parametrize("name,slug", [
+    ("Joe's Garage", "joes-garage"),
+    ("Café Czaar", "cafe-czaar"),
+    ("ITA | Internationaal Theater", "ita-internationaal-theater"),
+    ("The Brokers Bar (Beurs van Berlage)", "the-brokers-bar-beurs-van-berlage"),
+    ("Dick & Dick", "dick-dick"),
+    ("Sociëteit ‘De Kring’", "societeit-de-kring"),
+])
+def test_slugify(name, slug):
+    assert slugify(name) == slug
+
+
+def test_resolve_venue():
+    assert resolve_venue("ZOjazz Stage") == "zojazz-stage"
+    assert resolve_venue("Frascati") == "frascati"
+    assert resolve_venue("Bar Bario") is None
+    assert resolve_venue("") is None
+    assert resolve_venue("!!!") is None
 
 
 @pytest.mark.parametrize(
@@ -220,17 +307,17 @@ def test_external_id_is_content_derived_and_stable_across_relisted_ids():
     # occurrence must keep its key regardless.
     base = dict(ITEMS[0], venue="Bimhuis", title="Joan  As Police Woman ",
                 date="2026-11-03", time="20:30:00")
-    a, _ = parse_events([("jazz", dict(base, id=111))])
-    b, _ = parse_events([("jazz", dict(base, id=999, title="joan as police woman"))])
+    a, _, _ = parse_events([("jazz", dict(base, id=111))])
+    b, _, _ = parse_events([("jazz", dict(base, id=999, title="joan as police woman"))])
     assert a[0].external_id == b[0].external_id
     assert a[0].external_id == occurrence_key(
         dt.date(2026, 11, 3), dt.time(20, 30), "Joan As Police Woman")
     assert len(a[0].external_id) == 16 and not a[0].external_id.isdigit()
     # a sold-out marker added later doesn't change it either
-    c, _ = parse_events([("jazz", dict(base, id=5, title="Joan As Police Woman (sold out)"))])
+    c, _, _ = parse_events([("jazz", dict(base, id=5, title="Joan As Police Woman (sold out)"))])
     assert c[0].external_id == a[0].external_id
     # a different date or time is a different occurrence
-    d, _ = parse_events([("jazz", dict(base, id=6, time="22:00:00"))])
+    d, _, _ = parse_events([("jazz", dict(base, id=6, time="22:00:00"))])
     assert d[0].external_id != a[0].external_id
 
 

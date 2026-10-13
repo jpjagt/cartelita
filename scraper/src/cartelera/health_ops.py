@@ -43,7 +43,7 @@ def last_healthy(session: Session, source_slug: str) -> dt.datetime | None:
         .order_by(ScrapeRun.started_at.desc()).limit(1))
 
 
-def _module_of(source_slug: str) -> str | None:
+def module_of(source_slug: str) -> str | None:
     entry = REGISTRY.get(source_slug)
     return type(entry[0]).__module__.rsplit(".", 1)[-1] if entry else None
 
@@ -54,7 +54,7 @@ def issue_context(
     latest = runs[0]
     return health.IssueContext(
         source_slug=source_slug,
-        module=_module_of(source_slug),
+        module=module_of(source_slug),
         repo=repo,
         verdict=latest.verdict,
         error_kind=latest.error_kind,
@@ -114,11 +114,14 @@ def sync_issue(
 # --- cartelera health ... -------------------------------------------------------
 
 def _source_venue_ids(session: Session, source_slug: str) -> list[int]:
+    """The source's code-defined venues plus the ones it discovered at run
+    time (cartelera.discovery)."""
     entry = REGISTRY.get(source_slug)
     if entry is None:
         return []
     return list(session.scalars(
-        select(Venue.id).where(Venue.slug.in_([v.slug for v in entry[1].venues]))))
+        select(Venue.id).where(or_(Venue.slug.in_([v.slug for v in entry[1].venues]),
+                                   Venue.discovered_by == source_slug))))
 
 
 def ack(

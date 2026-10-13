@@ -92,8 +92,10 @@ issue closes).
 ### Owner setup (one-off)
 
 1. **Labels** on `jpjagt/cartelita`: create `scraper-health`, `kind:broken`,
-   `kind:degraded`, `kind:site-down` (a token with only Issues access may not
-   be able to auto-create labels).
+   `kind:degraded`, `kind:site-down`, and `venue-review` (the rolling
+   "`<source>`: new venues to review" issue of an opt-out source, today
+   jazzin.amsterdam — see its `_SOURCE.md`) (a token with only Issues access
+   may not be able to auto-create labels).
 2. **Issue token:** a fine-grained personal access token, repository access
    *only* `jpjagt/cartelita`, permission **Issues: Read and write** (nothing
    else). Set `GITHUB_TOKEN=<token>` and `GITHUB_REPOSITORY=jpjagt/cartelita` on
@@ -137,6 +139,17 @@ healthy (or acked) run saw, so each source's first run after the migration
 skips it, and old rows that left the site long ago never count against
 coverage: they are missed by every healthy run and hidden after the third.
 The baseline rules apply from the third healthy run on.
+
+### Rollout: jazzin.amsterdam opt-out venues (prod, once)
+
+jazzin.amsterdam now creates venues it doesn't know at run time (see
+`scraper/src/cartelera/scrapers/jazzin_amsterdam_SOURCE.md`). Create the
+`venue-review` label first (above). Then merge + deploy the scraper app;
+`cartelera run` applies `0006_discovered_venues.sql` itself (or run `cartelera
+migrate`). The next jazzin run creates the ~10 venues it used to drop
+(Frascati, ITA, Felix Meritis, …), lists them in its output, and opens the
+"jazzin-amsterdam: new venues to review" issue; the next web build shows them.
+Review that issue: merge or deny names in `jazzin_amsterdam.py`, then close it.
 
 ## Notes
 

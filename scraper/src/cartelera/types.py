@@ -63,6 +63,9 @@ class ScrapeResult:
     verdict: str | None = None           # healthy | degraded | broken | site_down
     fired: list[str] = field(default_factory=list)   # degraded rules, human-readable
     hidden: int = 0                      # events newly hidden by this run
+    # Venues this run created (a venue-discovering source), as recorded in
+    # scrape_run.metrics["new_venues"]: {slug, name, address, categories, events}.
+    new_venues: list[dict] = field(default_factory=list)
 
 
 class ListMembership(BaseModel):
@@ -88,7 +91,9 @@ class SourceDefinition(BaseModel):
     wraps a bare VenueDefinition). Aggregators (e.g. a ticketing site covering
     a whole city) and social-media profiles are sources too; their `venues`
     list doubles as the editorial whitelist: the runner rejects events for any
-    venue not listed here."""
+    venue not listed here — unless the scraper also discovers venues at run
+    time (an opt-out source, see scrapers.base.DiscoversVenues and
+    cartelera.discovery), in which case `venues` holds only the overrides."""
     slug: str
     name: str
     venues: list[VenueDefinition] = Field(min_length=1)

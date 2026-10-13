@@ -90,8 +90,49 @@ def _upsert_venue(session: Session, defn: VenueDefinition, city_id: int, cats: d
         _ensure_membership(session, lst.id, venue.id, whitelist_id)
 
 
+def upsert_discovered_venue(session: Session, source_slug: str, defn: VenueDefinition) -> bool:
+    """Create or grow a venue a source discovered at run time (see
+    cartelera.discovery). Returns True when the venue was created.
+
+    Created once, with `discovered_by = source_slug`; afterwards only grows:
+    new categories and list memberships are added (never removed), and an
+    address is filled in if it had none. Runs in the caller's transaction.
+    The caller has checked the slug isn't owned by anything else."""
+    city = session.query(City).filter_by(slug=defn.city_slug).one_or_none()
+    if city is None:
+        raise ValueError(f"unknown city slug {defn.city_slug!r} for discovered venue "
+                         f"{defn.slug!r}; add it to seed.CITIES")
+    cats = {c.slug: c for c in session.query(Category)}
+    wanted = set(defn.category_slugs) | {
+        m.whitelist_category_slug for m in defn.list_memberships if m.whitelist_category_slug}
+    if unknown := sorted(wanted - set(cats)):
+        raise ValueError(f"unknown category slug {unknown[0]!r} for discovered venue "
+                         f"{defn.slug!r}; add it to seed.CATEGORIES")
+    venue = session.query(Venue).filter_by(slug=defn.slug).one_or_none()
+    created = venue is None
+    if created:
+        venue = Venue(slug=defn.slug, name=defn.name, city_id=city.id, address=defn.address,
+                      site_url=defn.site_url, instagram_url=defn.instagram_url,
+                      discovered_by=source_slug)
+        session.add(venue)
+        session.flush()
+    elif venue.address is None and defn.address:
+        venue.address = defn.address
+    have = {c.slug for c in venue.categories}
+    venue.categories = list(venue.categories) + [
+        cats[s] for s in defn.category_slugs if s not in have]
+    for membership in defn.list_memberships:
+        lst = _get_or_create_list(session, membership.list_slug, venue.city_id)
+        whitelist_id = cats[membership.whitelist_category_slug].id if membership.whitelist_category_slug else None
+        _ensure_membership(session, lst.id, venue.id, whitelist_id)
+    session.flush()
+    return created
+
+
 def seed(session: Session) -> None:
-    """Idempotent seed: ensures cities, categories, and all registered venues exist."""
+    """Idempotent seed: ensures cities, categories, and all registered venues
+    exist. Venues a source discovers at run time are created by `cartelera
+    run` (upsert_discovered_venue), not here; they persist between runs."""
     load_all()
     cities = {slug: _get_or_create_city(session, slug, name) for slug, name in CITIES}
     cats = {slug: _get_or_create_category(session, slug, name) for slug, name in CATEGORIES}

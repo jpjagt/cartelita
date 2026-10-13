@@ -3,34 +3,39 @@ import datetime as dt
 import importlib
 import logging
 import sys
+from collections.abc import Iterable
+from dataclasses import dataclass, field
 from sqlalchemy import select, or_
 from sqlalchemy.orm import Session
 from cartelera import health
 from cartelera.github import IssueTracker, make_tracker
 from cartelera import health_ops
-from cartelera.health_ops import sync_issue
+from cartelera.health_ops import sync_issue, module_of
+from cartelera.discovery import accept_discovered, source_venue_slugs, sync_venue_review
 from cartelera.models import ScrapeRun, Venue
 from cartelera.db import make_engine, make_session_factory, ensure_database_exists
 from cartelera.migrate import apply_migrations
-from cartelera.seed import seed as seed_db
+from cartelera.seed import seed as seed_db, upsert_discovered_venue
 from cartelera.upsert import (
     upsert_venue_events, known_upcoming_snapshot, count_reseen, count_misses,
 )
-from cartelera.types import ScrapeResult, ScrapedEvent, SourceDefinition
+from cartelera.types import ScrapeResult, ScrapedEvent, SourceDefinition, VenueDefinition
 from cartelera.scrapers import REGISTRY, load_all
+from cartelera.scrapers.base import DiscoversVenues
 
 logger = logging.getLogger(__name__)
 
 
 def _group_events_by_venue(
-    source: SourceDefinition, events: list[ScrapedEvent]
+    source: SourceDefinition, events: list[ScrapedEvent], discovered: Iterable[str] = ()
 ) -> dict[str, list[ScrapedEvent]]:
     """Resolve each event to one of the source's venues, failing fast on any
     mismatch. For a single-venue source, events may leave venue_slug unset (it
     resolves to the sole venue); a multi-venue source must set it on every
     event, and any slug outside the source's venue list — its editorial
-    whitelist — is an error, never a silent drop."""
-    known = {v.slug for v in source.venues}
+    whitelist — plus, for an opt-out source, the `discovered` venue slugs, is
+    an error, never a silent drop."""
+    known = {v.slug for v in source.venues} | set(discovered)
     sole = source.venues[0].slug if len(source.venues) == 1 else None
     by_venue: dict[str, list[ScrapedEvent]] = {}
     for ev in events:
@@ -53,16 +58,53 @@ def _now() -> dt.datetime:
     return dt.datetime.now(dt.timezone.utc)
 
 
+@dataclass
+class _Written:
+    verdict: str
+    fired: list[health.FiredRule]
+    metrics: dict
+    hidden: int
+    new_venues: list[dict] = field(default_factory=list)
+
+
+def _discover(
+    session: Session, source: SourceDefinition, events: list[ScrapedEvent],
+    discovered: list[VenueDefinition],
+) -> tuple[list[ScrapedEvent], list[str], dict[str, str]]:
+    """Create/grow the source's discovered venues (see cartelera.discovery).
+    Returns (events minus those at refused venues, slugs created by this run,
+    {refused slug: why})."""
+    accepted, refused = accept_discovered(session, source, discovered)
+    if refused:
+        logger.warning("%s: skipped events at discovered venues it may not create "
+                       "(deny or merge them in code): %s", source.slug, "; ".join(refused.values()))
+        events = [ev for ev in events if ev.venue_slug not in refused]
+    created = [d.slug for d in accepted if upsert_discovered_venue(session, source.slug, d)]
+    return events, created, refused
+
+
 def _write_source(
-    session: Session, source: SourceDefinition, events: list[ScrapedEvent], today: dt.date
-) -> tuple[str, list[health.FiredRule], dict, int]:
-    """Classify a successful scrape and write it. Metrics are taken from a
-    pre-write snapshot; then upsert (healthy + degraded) and, only when
-    healthy, count misses / hide. Returns (verdict, fired, metrics_json,
-    newly_hidden). Raises on any write-side failure (caller rolls back)."""
-    by_venue = _group_events_by_venue(source, events)
-    slugs = [v.slug for v in source.venues]
+    session: Session, source: SourceDefinition, events: list[ScrapedEvent], today: dt.date,
+    discovered: list[VenueDefinition] | None = None,
+) -> _Written:
+    """Classify a successful scrape and write it. Discovered venues (an
+    opt-out source) are created first; metrics are taken from a pre-write
+    snapshot; then upsert (healthy + degraded) and, only when healthy, count
+    misses / hide. Raises on any write-side failure (caller rolls back)."""
+    created: list[str] = []
+    refused: dict[str, str] = {}
+    if discovered:
+        events, created, refused = _discover(session, source, events, discovered)
+    slugs = source_venue_slugs(session, source)
+    static = {v.slug for v in source.venues}
+    by_venue = _group_events_by_venue(source, events, discovered=set(slugs) - static)
     venues = {v.slug: v for v in session.scalars(select(Venue).where(Venue.slug.in_(slugs)))}
+    # A discovered venue absent from this run isn't evaluated on its own:
+    # discovered venues are the feed's long tail (one-off gigs at a café), so
+    # going quiet is normal — and it is what a deny/merge in code looks like.
+    # Its known events still count toward the source's coverage and are
+    # hidden by miss counting like any other.
+    quiet = {s for s in slugs if s not in static and s not in by_venue}
 
     # 1. pre-write snapshot → metrics. Coverage is measured against what the
     # previous trusted run saw — healthy, or an acked data-writing run (the
@@ -88,7 +130,8 @@ def _write_source(
         venue_metrics[slug] = health.compute_metrics(
             evs, len(idx.ids), count_reseen(idx, evs), today)
     metrics = health.RunMetrics(
-        source=health.aggregate_metrics(venue_metrics.values()), venues=venue_metrics)
+        source=health.aggregate_metrics(venue_metrics.values()),
+        venues={s: m for s, m in venue_metrics.items() if s not in quiet})
 
     # 2. baseline + rules → verdict
     source_hist, venue_hist = _baseline_history(session, source.slug)
@@ -103,7 +146,18 @@ def _write_source(
     if verdict == health.HEALTHY:
         for venue in venues.values():
             hidden += count_misses(session, venue.id, seen, today)[1]
-    return verdict, fired, metrics.to_json(fired), hidden
+    metrics_json = metrics.to_json(fired)
+    new_venues = [
+        {"slug": s, "name": venues[s].name, "address": venues[s].address,
+         "categories": [c.slug for c in venues[s].categories],
+         "events": len(by_venue.get(s, []))}
+        for s in created
+    ]
+    if new_venues:
+        metrics_json["new_venues"] = new_venues
+    if refused:
+        metrics_json["refused_venues"] = refused
+    return _Written(verdict, fired, metrics_json, hidden, new_venues)
 
 
 def _baseline_history(
@@ -140,7 +194,9 @@ def run_one(
 
     The source's writes run in their own transaction: broken (any exception,
     including on write) and site_down runs roll back, keeping the last good
-    data; degraded runs upsert but never count misses or hide."""
+    data; degraded runs upsert but never count misses or hide. Venues an
+    opt-out source discovered are created inside that transaction; the ones
+    new this run go to the source's review issue (see cartelera.discovery)."""
     scraper, source = REGISTRY[source_slug]
     today = today or dt.date.today()
     started = _now()
@@ -149,9 +205,14 @@ def run_one(
     metrics_json: dict | None = None
     error_kind = error_message = None
     hidden = 0
+    new_venues: list[dict] = []
     try:
         events = scraper.scrape()
-        verdict, fired, metrics_json, hidden = _write_source(session, source, events, today)
+        discovered = (scraper.discovered_venues()
+                      if isinstance(scraper, DiscoversVenues) else None)
+        w = _write_source(session, source, events, today, discovered)
+        verdict, fired, metrics_json, hidden, new_venues = (
+            w.verdict, w.fired, w.metrics, w.hidden, w.new_venues)
         session.commit()
     except Exception as exc:  # noqa: BLE001 - we want all failures isolated per source
         session.rollback()
@@ -174,6 +235,14 @@ def run_one(
         session.rollback()
         logger.exception("updating the health issue failed for source %r", source_slug)
 
+    if new_venues:
+        try:
+            sync_venue_review(session, source_slug, module_of(source_slug), new_venues,
+                              tracker or make_tracker(), today=today)
+        except Exception:  # noqa: BLE001 - GitHub trouble must never fail the scrape
+            session.rollback()
+            logger.exception("posting new venues for review failed for source %r", source_slug)
+
     return ScrapeResult(
         source_slug=source_slug,
         ok=verdict not in health.FAILED_VERDICTS,
@@ -182,6 +251,7 @@ def run_one(
         verdict=verdict,
         fired=[r.detail if r.scope == "source" else f"{r.scope}: {r.detail}" for r in fired],
         hidden=hidden,
+        new_venues=new_venues,
     )
 
 
@@ -267,6 +337,11 @@ def _report(results: list[ScrapeResult]) -> None:
         else:
             label = "SITE DOWN" if r.verdict == health.SITE_DOWN else "FAIL"
             print(f"[{label}] {r.source_slug}: {r.error}", file=sys.stderr)
+        if r.new_venues:
+            print(f"       {r.source_slug}: {len(r.new_venues)} new venue(s), posted for review:")
+            for v in r.new_venues:
+                print(f"         + {v['name']} ({v['slug']}) — {v.get('address') or 'no address'}; "
+                      f"{', '.join(v['categories'])}; {v['events']} events")
 
 
 def _dry_run(module_name: str) -> int:
@@ -304,6 +379,10 @@ def _dry_run(module_name: str) -> int:
         return 1
 
     _print_coverage(slug, events)
+    if isinstance(scraper, DiscoversVenues) and (found := scraper.discovered_venues()):
+        print(f"  --- {len(found)} discovered venue(s) (created on `run` unless already known) ---")
+        for v in found:
+            print(f"  {v.slug}: {v.name} | {v.address or '-'} | {', '.join(v.category_slugs)}")
     return 0
 
 

@@ -1,6 +1,6 @@
 from __future__ import annotations
-from typing import Protocol
-from cartelera.types import ScrapedEvent
+from typing import Protocol, runtime_checkable
+from cartelera.types import ScrapedEvent, VenueDefinition
 
 
 class Scraper(Protocol):
@@ -16,4 +16,20 @@ class Scraper(Protocol):
     """
 
     def scrape(self) -> list[ScrapedEvent]:
+        ...
+
+
+@runtime_checkable
+class DiscoversVenues(Protocol):
+    """Optional extra for an OPT-OUT multi-venue source (jazzin.amsterdam):
+    besides the venues its SourceDefinition declares (the overrides), it may
+    emit events for venues it found in the feed. After `scrape()`, the runner
+    calls `discovered_venues()` and creates/updates those venues (and their
+    list memberships) in the same transaction as the events — see
+    cartelera.discovery. A discovered slug that another source (or a code-
+    defined venue) already owns is refused and its events skipped."""
+
+    def discovered_venues(self) -> list[VenueDefinition]:
+        """The venues the last scrape() emitted events for that the source's
+        SourceDefinition doesn't declare."""
         ...
