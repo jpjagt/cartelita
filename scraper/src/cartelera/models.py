@@ -133,8 +133,9 @@ class ScrapeRun(Base):
     verdict: Mapped[str] = mapped_column(Text)  # healthy | degraded | broken | site_down
     error_kind: Mapped[str | None] = mapped_column(Text)
     error_message: Mapped[str | None] = mapped_column(Text)
-    # {"source": {...}, "venues": {slug: {...}}, "fired": [{...}]}; NULL when
-    # the scrape raised (no metrics to record).
+    # {"source": {...}, "venues": {slug: {..., "verdict"}}, "degraded_venues":
+    # [slug], "fired": [{...}], "acked_venues": [slug] (health ack <source>
+    # <venue>)}; NULL when the scrape raised (no metrics to record).
     metrics: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
     acked: Mapped[bool] = mapped_column(Boolean, server_default="false", default=False)
 
@@ -147,7 +148,11 @@ class SourceHealth(Base):
     issue_kind: Mapped[str | None] = mapped_column(Text)
     last_comment_at: Mapped[dt.datetime | None] = mapped_column(DateTime(timezone=True))
     last_signature: Mapped[str | None] = mapped_column(Text)
-    # The rolling "new venues to review" issue of a venue-discovering source.
+    # The rolling "venues to review" issue (new discovered + long-degraded venues).
     review_issue_number: Mapped[int | None] = mapped_column(Integer)
+    # Long-degraded venues listed on that review issue: what was last posted
+    # (health.venue_review_signature) and when (comment-on-change, weekly cap).
+    venue_review_signature: Mapped[str | None] = mapped_column(Text)
+    venue_review_comment_at: Mapped[dt.datetime | None] = mapped_column(DateTime(timezone=True))
     updated_at: Mapped[dt.datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now())

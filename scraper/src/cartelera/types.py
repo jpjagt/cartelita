@@ -66,6 +66,9 @@ class ScrapeResult:
     # Venues this run created (a venue-discovering source), as recorded in
     # scrape_run.metrics["new_venues"]: {slug, name, address, categories, events}.
     new_venues: list[dict] = field(default_factory=list)
+    # Venues of a multi-venue source degraded on their own this run (the
+    # source verdict stays healthy; their events are not missed/hidden).
+    degraded_venues: list[str] = field(default_factory=list)
 
 
 class ListMembership(BaseModel):

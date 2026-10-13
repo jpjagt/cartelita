@@ -165,7 +165,7 @@ def test_review_issue_opens_once_then_comments_then_reopens_when_closed(session,
     run_one(session, SLUG, tracker=gh, today=TODAY)
     assert list(gh.issues) == [1]
     issue = gh.issues[1]
-    assert issue["title"] == review_title(SLUG) == "jazzin-amsterdam: new venues to review"
+    assert issue["title"] == review_title(SLUG) == "jazzin-amsterdam: venues to review"
     assert issue["labels"] == [REVIEW_LABEL]
     for text in ("Frascati", "`frascati`", "Somestraat 1", "jazz", "DENIED", "VENUES",
                  "jazzin_amsterdam.py"):
@@ -190,7 +190,7 @@ def test_review_without_github_is_logged(session, feed, caplog):
     with caplog.at_level(logging.WARNING):
         r = run_one(session, SLUG, today=TODAY)              # LoggingTracker
     assert r.ok and r.new_venues
-    assert "would open issue 'jazzin-amsterdam: new venues to review'" in caplog.text
+    assert "would open issue 'jazzin-amsterdam: venues to review'" in caplog.text
 
 
 def test_github_failure_on_review_never_fails_the_run(session, feed):

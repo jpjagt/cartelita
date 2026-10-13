@@ -64,7 +64,9 @@ moved).
 **baseline** = median of each metric over its last 14 *healthy-or-acked* runs
 (only applied once ≥ 3 such runs exist). Any rule firing ⇒ degraded; evaluated
 per venue for multi-venue sources (a venue with too few events for a floor is
-skipped), and the source is degraded if any venue is:
+skipped), and the source is degraded if any venue is (**superseded** for
+multi-venue sources — see *Revision 2026-10-13* below: a venue-level rule now
+degrades only that venue):
 
 | Rule | Fires when | Floor (rule skipped below it) |
 |---|---|---|
@@ -175,6 +177,79 @@ GitHub client (open, comment-on-change, weekly cap, close on recovery, ack);
 jazzin key stability across re-listed ids. Integration: `run` on a scratch DB
 with a fake scraper simulating healthy → paginated-truncated → down → recovered.
 Web: queries exclude hidden events.
+
+## Revision 2026-10-13: venue-scoped verdicts for multi-venue sources
+
+**Why.** On prod, jazzin.amsterdam (~190 venues, incl. discovered ones) was
+`degraded` every run from 2026-10-12 because of single venues — De FilmHallen
+and The Movies went to 0 events in jazzin's own feed (upstream breakage we
+can't fix), plus `horizon_shrink` at cinema-the-pulse and meervaart. Any
+venue-level rule degraded the whole source, so miss counting/hiding paused
+for all its venues and a source issue (`#1 (degraded)`) opened.
+
+**Verdicts.** The rules are evaluated exactly as before (§2), but:
+
+- the **source verdict** comes from the `source`-scope rules only (plus
+  exceptions → broken / site_down as before);
+- a `venue:<slug>` rule marks only **that venue** degraded for the run.
+  Recorded in `scrape_run.metrics`: `degraded_venues: [slug]` and a `verdict`
+  per entry of `venues`. Readers derive degraded venues from the `fired`
+  scopes, so runs recorded before this revision read correctly too.
+- Single-venue sources are unchanged: they only have source-scope rules.
+
+**Data (§3/§4).** After a source-healthy run, miss counting/hiding runs for
+every venue **except** the ones degraded in this run (their events are
+upserted, but neither missed nor hidden). A source-degraded run still pauses
+hiding for the whole source.
+
+**Baselines and coverage reference.** A run is *trusted for a venue* when it
+wrote data and either the source was acked, the venue was acked in it
+(below), or the run was source-healthy and the venue not degraded in it (a
+venue absent from a run isn't degraded in it). Then:
+
+- a venue's baseline = its metrics from the last 14 runs trusted for it
+  (same `BASELINE_MIN_RUNS` and floors), so a degraded venue doesn't pollute
+  its own baseline — otherwise after 14 source-healthy runs an empty venue
+  would have an empty baseline, score healthy, and have its events hidden;
+- a venue's coverage reference (the `last_seen_at >=` cut-off for its known
+  events) = the newest run trusted for it. A healthy venue: the previous
+  trusted run, as before. A venue degraded in the previous run falls back to
+  its last trusted run's seen set, so a persistently truncated venue keeps
+  being measured against its full view instead of its own truncated one
+  (same reasoning as for sources in §2).
+- The source baseline is unchanged (its source-healthy-or-acked runs).
+- The lookback is the last `BASELINE_SCAN_RUNS` (60) runs that are healthy,
+  acked or hold a venue ack; a venue degraded for longer than that falls back
+  to a cold start (by then it has long been on the review issue).
+
+**Issues.** Venue-level degradation never opens or keeps a source issue; the
+source issue's signature only includes source-scope rules. A source issue
+opened because of venue rules under the old semantics (prod `#1`) closes via
+the normal recovery path — the next source-healthy run — and the close
+comment says how many venues are still degraded and where they are tracked.
+Instead:
+
+- `cartelera health` shows per source the number of venues degraded in its
+  latest run (minus acked ones); `cartelera health <source>` lists them with
+  their fired rules and streak (consecutive runs that degraded the venue;
+  broken/site_down runs neither count nor break it; a run where the venue was
+  fine/absent, or a venue or source ack, ends it).
+- Venues degraded for `VENUE_REVIEW_STREAK` (7)+ runs are listed on the
+  source's rolling review issue (`venue-review`, the one for new discovered
+  venues, now titled `<source>: venues to review`; any multi-venue source can
+  get one): posted when the set of such venues or their rules changes, else
+  at most weekly, and one "cleared" comment when none are left. If no review
+  issue is open, one is opened. Bookkeeping: `source_health.
+  venue_review_signature` / `venue_review_comment_at` (migration `0007`).
+
+**Ack.** `cartelera health ack <source> <venue>` records the venue in the
+latest data-writing run's `metrics.acked_venues`: that run becomes the
+venue's coverage reference, its baseline **restarts** from that run (older
+runs no longer count — so accepting "this venue has no programme any more"
+actually sticks, unlike a source ack whose acked run is just one of 14), its
+streak ends, and its visible upcoming events that run did not see are hidden
+(reversible). The source issue and other venues are untouched.
+`cartelera health ack <source>` is unchanged.
 
 ## Out of scope
 

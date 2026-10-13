@@ -165,9 +165,15 @@ site_down), records a `scrape_run`, and opens/closes a GitHub issue per bad
 source — the repair queue. Design and thresholds:
 `docs/superpowers/specs/2026-10-12-scraper-health-design.md`; code in
 `scraper/src/cartelera/health.py` (pure: constants, rules, state machine) and
-`health_ops.py`. CLI: `cartelera health`, `cartelera health ack <source>`
+`health_ops.py`. CLI: `cartelera health`, `cartelera health <source>`
+(detail, incl. degraded venues), `cartelera health ack <source> [<venue>]`
 (legit change, e.g. season break: also hides the upcoming events that run
-didn't see). Coverage counts only events the previous healthy/acked run saw. If you're repairing a scraper from a health
+didn't see). Coverage counts only events the previous healthy/acked run saw.
+For a **multi-venue source** (jazzin.amsterdam) a venue-level rule degrades
+only that venue (its events are neither missed nor hidden; it's excluded from
+its own baseline) — the source verdict comes from source-level rules only;
+venues degraded 7+ runs go on the source's `venue-review` issue, not a
+source issue (spec: "Revision 2026-10-13"). If you're repairing a scraper from a health
 issue: follow the `writing-a-scraper` skill, and note a degraded verdict often
 means a *partial* break (pagination stopping early, a dead field selector).
 

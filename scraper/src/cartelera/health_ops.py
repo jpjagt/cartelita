@@ -1,5 +1,6 @@
-"""DB + GitHub side of scraper health: syncing a source's issue after a run,
-and the `cartelera health [ack|rekey]` commands. Decisions live in the pure
+"""DB + GitHub side of scraper health: syncing a source's issue (and the
+long-degraded venues on its review issue) after a run, and the `cartelera
+health [<source>|ack|rekey]` commands. Decisions live in the pure
 `cartelera.health`; this module only loads state, executes, and persists."""
 from __future__ import annotations
 
@@ -28,10 +29,16 @@ def recent_runs(session: Session, source_slug: str, limit: int = RECENT_RUNS) ->
     ))
 
 
+def view(run: ScrapeRun) -> health.RunView:
+    return health.RunView(run.verdict, run.acked, run.metrics, run.started_at)
+
+
 def summarize(run: ScrapeRun) -> health.RunSummary:
-    fired = [health.FiredRule.from_json(f) for f in (run.metrics or {}).get("fired", [])]
+    """For the SOURCE issue: only source-level rules make its signature (a
+    venue-level rule never degrades the source; see sync_degraded_venues)."""
     return health.RunSummary(
-        verdict=run.verdict, error_kind=run.error_kind, rules=[f.key for f in fired],
+        verdict=run.verdict, error_kind=run.error_kind,
+        rules=[f.key for f in health.source_rules(view(run).fired)],
         acked=run.acked, started_at=run.started_at)
 
 
@@ -59,10 +66,11 @@ def issue_context(
         verdict=latest.verdict,
         error_kind=latest.error_kind,
         error_message=latest.error_message,
-        fired=[health.FiredRule.from_json(f) for f in (latest.metrics or {}).get("fired", [])],
+        fired=health.source_rules(view(latest).fired),
         metrics=latest.metrics,
         last_healthy=last_healthy(session, source_slug),
         streak=health.bad_streak([summarize(r) for r in runs]),
+        degraded_venues=len(view(latest).degraded_venues),
     )
 
 
@@ -105,10 +113,67 @@ def sync_issue(
                 case health.CommentIssue():
                     tracker.comment(state.number, health.render_comment(a.body_kind, ctx))
                 case health.CloseIssue():
-                    tracker.comment(state.number, health.render_close_comment(a.reason, source_slug))
+                    tracker.comment(state.number, health.render_close_comment(
+                        a.reason, source_slug, ctx.degraded_venues))
                     tracker.close_issue(state.number)
     _save_state(session, sh, new)
     return actions
+
+
+def venue_alerts(
+    session: Session, runs: list[ScrapeRun], min_streak: int = 1
+) -> list[dict]:
+    """The venues degraded in the newest run with metrics, with their streak
+    (consecutive degraded runs) and fired rules: [{slug, name, streak, rules:
+    [detail], rule_names}], longest streak first. Only those with streak >=
+    `min_streak`."""
+    views = [view(r) for r in runs]
+    latest = next((v for v in views if v.metrics is not None), None)
+    if latest is None:
+        return []
+    bad = latest.degraded_venues
+    names = dict(session.execute(select(Venue.slug, Venue.name).where(Venue.slug.in_(bad))).all())
+    alerts = []
+    for slug, rules in bad.items():
+        streak = health.venue_streak(views, slug)
+        if streak >= min_streak:
+            alerts.append({"slug": slug, "name": names.get(slug, slug), "streak": streak,
+                           "rules": [f"{r.rule}: {r.detail}" for r in rules],
+                           "rule_names": [r.rule for r in rules]})
+    return sorted(alerts, key=lambda a: (-a["streak"], a["slug"]))
+
+
+def sync_degraded_venues(
+    session: Session, source_slug: str, tracker: IssueTracker, now: dt.datetime | None = None,
+) -> str | None:
+    """List venues degraded on their own for VENUE_REVIEW_STREAK+ runs on the
+    source's rolling review issue (cartelera.discovery): comment when the set
+    or their rules change, else at most weekly; one "cleared" comment when
+    none are left. Never touches the source issue. Returns the posted kind."""
+    from cartelera.discovery import post_review, render_degraded_review
+
+    now = now or _now()
+    runs = recent_runs(session, source_slug)
+    if not runs or runs[0].metrics is None:
+        return None  # broken / site_down: nothing new about venues
+    alerts = venue_alerts(session, runs, min_streak=health.VENUE_REVIEW_STREAK)
+    sig = health.venue_review_signature({a["slug"]: a["rule_names"] for a in alerts})
+    sh = session.get(SourceHealth, source_slug) or SourceHealth(source_slug=source_slug)
+    kind = health.plan_venue_review(sig, sh.venue_review_signature, sh.venue_review_comment_at, now)
+    if kind == "cleared" and not (sh.review_issue_number and tracker.is_open(sh.review_issue_number)):
+        kind = None  # nothing open to tell; just forget the old set
+        sh.venue_review_signature = None
+    if kind is not None:
+        module = module_of(source_slug)
+        post_review(session, source_slug, tracker,
+                    render_degraded_review(source_slug, module, alerts, kind, first=True),
+                    render_degraded_review(source_slug, module, alerts, kind, first=False))
+        sh = session.get(SourceHealth, source_slug)
+        sh.venue_review_signature = sig
+        sh.venue_review_comment_at = now
+    session.add(sh)
+    session.commit()
+    return kind
 
 
 # --- cartelera health ... -------------------------------------------------------
@@ -160,11 +225,48 @@ def ack(
     return msg
 
 
+def ack_venue(
+    session: Session, source_slug: str, venue_slug: str, today: dt.date | None = None
+) -> str:
+    """Accept one venue's state in the source's latest run as its new normal
+    (e.g. it has no programme any more): the run is recorded as acked for that
+    venue (metrics["acked_venues"]) — its baseline restarts from this run, its
+    coverage reference becomes this run, its degraded streak ends — and the
+    venue's visible upcoming events that run did not see are hidden
+    (reversible). The source issue and the other venues are untouched."""
+    today = today or dt.date.today()
+    entry = REGISTRY.get(source_slug)
+    venue = session.scalar(select(Venue).where(Venue.slug == venue_slug))
+    if venue is None or venue.id not in _source_venue_ids(session, source_slug):
+        raise ValueError(f"{venue_slug!r} is not a venue of source {source_slug!r}")
+    if entry is not None and len(entry[1].venues) == 1 and not session.scalar(
+            select(Venue.id).where(Venue.discovered_by == source_slug).limit(1)):
+        raise ValueError(f"{source_slug!r} has a single venue: use "
+                         f"`cartelera health ack {source_slug}`")
+    runs = recent_runs(session, source_slug, limit=1)
+    if not runs or not view(runs[0]).wrote_data:
+        raise ValueError(f"the latest {source_slug} run wrote no data (or there is none); "
+                         "a venue can only be acked against a healthy/degraded run")
+    run = runs[0]
+    run.metrics = {**run.metrics,
+                   "acked_venues": sorted(view(run).acked_venues | {venue_slug})}
+    hidden = session.execute(
+        update(Event).where(
+            Event.venue_id == venue.id, Event.start_date >= today, Event.hidden_at.is_(None),
+            or_(Event.last_seen_at.is_(None), Event.last_seen_at < run.started_at))
+        .values(hidden_at=_now()).execution_options(synchronize_session=False)
+    ).rowcount
+    session.commit()
+    return (f"acked venue {venue_slug} in run #{run.id} ({run.verdict}, "
+            f"{run.started_at:%Y-%m-%d %H:%M}); hid {hidden} of its upcoming events "
+            "that run did not see")
+
+
 def status_lines(session: Session) -> list[str]:
-    """One line per source: latest verdict, bad streak, last healthy run, open
-    issue."""
+    """One line per source: latest verdict, bad streak, venues degraded on
+    their own (latest run), last healthy run, open issue."""
     slugs = sorted(set(REGISTRY) | set(session.scalars(select(ScrapeRun.source_slug).distinct())))
-    lines = [f"{'source':32} {'latest':10} {'streak':>6}  {'last healthy':16}  issue"]
+    lines = [f"{'source':32} {'latest':10} {'streak':>6} {'venues':>6}  {'last healthy':16}  issue"]
     for slug in slugs:
         runs = recent_runs(session, slug)
         if not runs:
@@ -175,9 +277,52 @@ def status_lines(session: Session) -> list[str]:
         lh = last_healthy(session, slug)
         sh = session.get(SourceHealth, slug)
         issue = f"#{sh.issue_number} ({sh.issue_kind})" if sh and sh.issue_number else "-"
+        lv = next((view(r) for r in runs if r.metrics is not None), None)
+        n_bad = len(set(lv.degraded_venues) - lv.acked_venues) if lv and not lv.acked else 0
         lines.append(
-            f"{slug:32} {latest:10} {health.bad_streak(summaries):>6}  "
+            f"{slug:32} {latest:10} {health.bad_streak(summaries):>6} {n_bad or '-':>6}  "
             f"{lh.strftime('%Y-%m-%d %H:%M') if lh else 'never':16}  {issue}")
+    return lines
+
+
+def detail_lines(session: Session, source_slug: str) -> list[str]:
+    """`cartelera health <source>`: its state, plus every venue degraded on
+    its own in the latest run, with the fired rules and its streak."""
+    runs = recent_runs(session, source_slug)
+    if not runs:
+        if source_slug not in REGISTRY:
+            raise ValueError(f"unknown source {source_slug!r}")
+        return [f"{source_slug}: never run"]
+    latest = runs[0]
+    sh = session.get(SourceHealth, source_slug)
+    lh = last_healthy(session, source_slug)
+    lines = [
+        f"{source_slug}",
+        f"  latest run   #{latest.id} {latest.verdict}{' (acked)' if latest.acked else ''} "
+        f"at {latest.started_at:%Y-%m-%d %H:%M}",
+        f"  bad streak   {health.bad_streak([summarize(r) for r in runs])}",
+        f"  last healthy {lh.strftime('%Y-%m-%d %H:%M') if lh else 'never'}",
+        f"  issue        " + (f"#{sh.issue_number} ({sh.issue_kind})"
+                              if sh and sh.issue_number else "-"),
+        f"  review issue " + (f"#{sh.review_issue_number}"
+                              if sh and sh.review_issue_number else "-"),
+    ]
+    if latest.error_kind:
+        lines.append(f"  error        {latest.error_kind}")
+    for r in health.source_rules(view(latest).fired):
+        lines.append(f"  source rule  {r.rule}: {r.detail}")
+    alerts = venue_alerts(session, runs)
+    if not alerts:
+        lines.append("  degraded venues: none")
+        return lines
+    lines.append(f"  degraded venues: {len(alerts)} (runs = consecutive degraded runs; "
+                 f">= {health.VENUE_REVIEW_STREAK} → on the review issue)")
+    width = max(len(a["slug"]) for a in alerts)
+    for a in alerts:
+        lines.append(f"    {a['slug']:{width}}  {a['streak']:>3} runs  {a['name']}")
+        for rule in a["rules"]:
+            lines.append(f"    {'':{width}}            {rule}")
+    lines.append(f"  accept a venue's new state: cartelera health ack {source_slug} <venue>")
     return lines
 
 
@@ -228,8 +373,12 @@ def rekey(
             + ack(session, source_slug, tracker, today=today))
 
 
+USAGE = ("usage: cartelera health [<source> | ack <source> [<venue>] | "
+         "rekey <source> [--apply]]")
+
+
 def main(session: Session, args: list[str], tracker: IssueTracker) -> int:
-    """`cartelera health [ack <source> | rekey <source> [--apply]]`."""
+    """`cartelera health [<source> | ack <source> [<venue>] | rekey <source> [--apply]]`."""
     try:
         if not args:
             print("\n".join(status_lines(session)))
@@ -237,11 +386,17 @@ def main(session: Session, args: list[str], tracker: IssueTracker) -> int:
         if args[0] == "ack" and len(args) == 2:
             print(ack(session, args[1], tracker))
             return 0
+        if args[0] == "ack" and len(args) == 3:
+            print(ack_venue(session, args[1], args[2]))
+            return 0
         if args[0] == "rekey" and len(args) in (2, 3) and args[2:] in ([], ["--apply"]):
             print(rekey(session, args[1], tracker, apply=args[2:] == ["--apply"]))
+            return 0
+        if len(args) == 1 and args[0] not in ("ack", "rekey"):
+            print("\n".join(detail_lines(session, args[0])))
             return 0
     except ValueError as exc:
         print(str(exc), file=sys.stderr)
         return 1
-    print("usage: cartelera health [ack <source> | rekey <source> [--apply]]", file=sys.stderr)
+    print(USAGE, file=sys.stderr)
     return 1

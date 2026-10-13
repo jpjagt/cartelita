@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session
 from cartelera import health
 from cartelera.github import IssueTracker, make_tracker
 from cartelera import health_ops
-from cartelera.health_ops import sync_issue, module_of
+from cartelera.health_ops import sync_issue, sync_degraded_venues, module_of
 from cartelera.discovery import accept_discovered, source_venue_slugs, sync_venue_review
 from cartelera.models import ScrapeRun, Venue
 from cartelera.db import make_engine, make_session_factory, ensure_database_exists
@@ -65,6 +65,7 @@ class _Written:
     metrics: dict
     hidden: int
     new_venues: list[dict] = field(default_factory=list)
+    degraded_venues: list[str] = field(default_factory=list)
 
 
 def _discover(
@@ -107,17 +108,14 @@ def _write_source(
     quiet = {s for s in slugs if s not in static and s not in by_venue}
 
     # 1. pre-write snapshot → metrics. Coverage is measured against what the
-    # previous trusted run saw — healthy, or an acked data-writing run (the
-    # same runs the baseline uses); none yet → coverage skipped. Degraded runs
-    # don't move the reference: otherwise a persistently truncated scraper
-    # would be flagged once, then measured against its own truncated view,
-    # score healthy, and hide the real events through miss counting.
-    seen_since = session.scalar(
-        select(ScrapeRun.started_at)
-        .where(ScrapeRun.source_slug == source.slug,
-               or_(ScrapeRun.verdict == health.HEALTHY,
-                   ScrapeRun.acked.is_(True) & (ScrapeRun.verdict == health.DEGRADED)))
-        .order_by(ScrapeRun.started_at.desc()).limit(1))
+    # previous trusted run saw — per venue: the newest run trusted for THAT
+    # venue (healthy and the venue not degraded in it, or acked; see
+    # health.RunView.venue_trusted); none yet → coverage skipped. Degraded
+    # runs don't move the reference: otherwise a persistently truncated
+    # scraper (or venue) would be flagged once, then measured against its own
+    # truncated view, score healthy, and hide the real events through miss
+    # counting.
+    trusted = _trusted_runs(session, source.slug)
     venue_metrics: dict[str, health.ScopeMetrics] = {}
     for slug in slugs:
         evs = by_venue.get(slug, [])
@@ -126,26 +124,32 @@ def _write_source(
             if evs:  # let the upsert raise its usual error
                 upsert_venue_events(session, slug, evs)
             continue
-        idx = known_upcoming_snapshot(session, venue.id, today, seen_since)
+        idx = known_upcoming_snapshot(
+            session, venue.id, today, health.venue_reference(trusted, slug))
         venue_metrics[slug] = health.compute_metrics(
             evs, len(idx.ids), count_reseen(idx, evs), today)
     metrics = health.RunMetrics(
         source=health.aggregate_metrics(venue_metrics.values()),
         venues={s: m for s, m in venue_metrics.items() if s not in quiet})
 
-    # 2. baseline + rules → verdict
-    source_hist, venue_hist = _baseline_history(session, source.slug)
-    fired = health.evaluate_run(metrics, source_hist, venue_hist)
+    # 2. baseline + rules → source verdict (source-level rules only) and the
+    # venues degraded on their own (venue-level rules of a multi-venue source)
+    fired = health.evaluate_run(
+        metrics, health.source_history(trusted),
+        {s: health.venue_history(trusted, s) for s in metrics.venues})
     verdict = health.verdict_for(fired)
+    degraded_venues = sorted(health.venue_rules(fired))
 
-    # 3. write; 4. hide (healthy only)
+    # 3. write; 4. hide (healthy source only, and never at a degraded venue:
+    # its events are neither missed nor hidden this run)
     seen: set[int] = set()
     for slug, evs in by_venue.items():
         upsert_venue_events(session, slug, evs, seen_ids=seen)
     hidden = 0
     if verdict == health.HEALTHY:
-        for venue in venues.values():
-            hidden += count_misses(session, venue.id, seen, today)[1]
+        for slug, venue in venues.items():
+            if slug not in degraded_venues:
+                hidden += count_misses(session, venue.id, seen, today)[1]
     metrics_json = metrics.to_json(fired)
     new_venues = [
         {"slug": s, "name": venues[s].name, "address": venues[s].address,
@@ -157,29 +161,24 @@ def _write_source(
         metrics_json["new_venues"] = new_venues
     if refused:
         metrics_json["refused_venues"] = refused
-    return _Written(verdict, fired, metrics_json, hidden, new_venues)
+    return _Written(verdict, fired, metrics_json, hidden, new_venues, degraded_venues)
 
 
-def _baseline_history(
-    session: Session, source_slug: str
-) -> tuple[list[health.ScopeMetrics], dict[str, list[health.ScopeMetrics]]]:
-    """Metrics of the source's last BASELINE_WINDOW healthy-or-acked runs,
-    newest first: source-level, and per venue."""
+def _trusted_runs(session: Session, source_slug: str) -> list[health.RunView]:
+    """The source's recent runs that can serve as a baseline / coverage
+    reference for the source or any of its venues (healthy, acked, or holding
+    a venue ack), newest first. Per-scope filtering happens in health
+    (source_history / venue_history / venue_reference)."""
     rows = session.scalars(
         select(ScrapeRun)
         .where(ScrapeRun.source_slug == source_slug,
                ScrapeRun.metrics.is_not(None),
-               or_(ScrapeRun.verdict == health.HEALTHY, ScrapeRun.acked.is_(True)))
+               or_(ScrapeRun.verdict == health.HEALTHY, ScrapeRun.acked.is_(True),
+                   ScrapeRun.metrics.has_key("acked_venues")))
         .order_by(ScrapeRun.started_at.desc(), ScrapeRun.id.desc())
-        .limit(health.BASELINE_WINDOW)
+        .limit(health.BASELINE_SCAN_RUNS)
     ).all()
-    source_hist = [health.ScopeMetrics.from_json(r.metrics["source"]) for r in rows
-                   if r.metrics.get("source")]
-    venue_hist: dict[str, list[health.ScopeMetrics]] = {}
-    for r in rows:
-        for slug, vm in (r.metrics.get("venues") or {}).items():
-            venue_hist.setdefault(slug, []).append(health.ScopeMetrics.from_json(vm))
-    return source_hist, venue_hist
+    return [health_ops.view(r) for r in rows]
 
 
 def run_one(
@@ -194,7 +193,9 @@ def run_one(
 
     The source's writes run in their own transaction: broken (any exception,
     including on write) and site_down runs roll back, keeping the last good
-    data; degraded runs upsert but never count misses or hide. Venues an
+    data; degraded runs upsert but never count misses or hide. A venue of a
+    multi-venue source degraded on its own leaves the source healthy, but its
+    events are neither missed nor hidden this run. Venues an
     opt-out source discovered are created inside that transaction; the ones
     new this run go to the source's review issue (see cartelera.discovery)."""
     scraper, source = REGISTRY[source_slug]
@@ -206,13 +207,14 @@ def run_one(
     error_kind = error_message = None
     hidden = 0
     new_venues: list[dict] = []
+    degraded_venues: list[str] = []
     try:
         events = scraper.scrape()
         discovered = (scraper.discovered_venues()
                       if isinstance(scraper, DiscoversVenues) else None)
         w = _write_source(session, source, events, today, discovered)
-        verdict, fired, metrics_json, hidden, new_venues = (
-            w.verdict, w.fired, w.metrics, w.hidden, w.new_venues)
+        verdict, fired, metrics_json, hidden, new_venues, degraded_venues = (
+            w.verdict, w.fired, w.metrics, w.hidden, w.new_venues, w.degraded_venues)
         session.commit()
     except Exception as exc:  # noqa: BLE001 - we want all failures isolated per source
         session.rollback()
@@ -243,6 +245,14 @@ def run_one(
             session.rollback()
             logger.exception("posting new venues for review failed for source %r", source_slug)
 
+    if metrics_json is not None:
+        try:
+            sync_degraded_venues(session, source_slug, tracker or make_tracker())
+        except Exception:  # noqa: BLE001 - GitHub trouble must never fail the scrape
+            session.rollback()
+            logger.exception("posting degraded venues for review failed for source %r",
+                             source_slug)
+
     return ScrapeResult(
         source_slug=source_slug,
         ok=verdict not in health.FAILED_VERDICTS,
@@ -252,6 +262,7 @@ def run_one(
         fired=[r.detail if r.scope == "source" else f"{r.scope}: {r.detail}" for r in fired],
         hidden=hidden,
         new_venues=new_venues,
+        degraded_venues=degraded_venues,
     )
 
 
@@ -331,6 +342,10 @@ def _report(results: list[ScrapeResult]) -> None:
         if r.verdict == health.HEALTHY:
             extra = f", {r.hidden} hidden" if r.hidden else ""
             print(f"[ok]   {r.source_slug}: {len(r.events)} events{extra}")
+            if r.degraded_venues:
+                print(f"       {r.source_slug}: {len(r.degraded_venues)} venue(s) degraded "
+                      "(their events kept, none hidden): " + "; ".join(
+                          f for f in r.fired if f.startswith("venue:")), file=sys.stderr)
         elif r.verdict == health.DEGRADED:
             print(f"[DEGRADED] {r.source_slug}: {len(r.events)} events written, nothing hidden; "
                   + "; ".join(r.fired), file=sys.stderr)
@@ -420,7 +435,7 @@ def main() -> int:
             "usage: cartelera [migrate|seed|"
             "run [all|<slug>[,<slug>...]|:<city_slug>|-c <category_slug>]|"
             "dry-run <module_name>|"
-            "health [ack <source>|rekey <source> [--apply]]]",
+            "health [<source>|ack <source> [<venue>]|rekey <source> [--apply]]]",
             file=sys.stderr,
         )
         return 1

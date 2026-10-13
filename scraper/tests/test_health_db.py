@@ -239,6 +239,9 @@ def test_run_healthy_truncated_down_recovered(session, fake):
     assert runs[3].metrics["source"]["known_upcoming"] == 30
     assert runs[3].metrics["source"]["reseen"] == 12
     assert runs[3].metrics["fired"]
+    # single-venue source: only source-level rules, no venue verdicts
+    assert {f["scope"] for f in runs[3].metrics["fired"]} == {"source"}
+    assert runs[3].metrics["degraded_venues"] == []
     assert session.get(SourceHealth, "jamboree").issue_number is None
 
 

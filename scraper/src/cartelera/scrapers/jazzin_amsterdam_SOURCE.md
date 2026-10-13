@@ -117,7 +117,7 @@ No description, image, or genre tags. Film events never carry a price.
   `scrape_run.metrics.refused_venues`) — deny or merge that name.
 - **Review loop.** Venues created for the first time are printed by `cartelera
   run`, recorded in `scrape_run.metrics.new_venues`, and posted to one rolling
-  GitHub issue, `jazzin-amsterdam: new venues to review` (label
+  GitHub issue, `jazzin-amsterdam: venues to review` (label
   `venue-review`; later batches are comments; once closed, the next batch
   opens a new one; without a token it's only logged). To review:
   - **merge** a spelling variant: add the name to the right `VENUES` row's
@@ -129,6 +129,14 @@ No description, image, or genre tags. Film events never carry a price.
   stays — `DELETE FROM venue WHERE slug = '…'` removes it (cascades).
   `cartelera dry-run jazzin_amsterdam` lists what a run would discover.
 - Some addresses come as just `Amsterdam`; those were filled in by hand.
+- **Venue health.** jazzin aggregates other people's scrapers, so single
+  venues break upstream (2026-10-12: De FilmHallen and The Movies went to 0
+  events in jazzin's film feed). Such a venue is degraded on its own — the
+  source stays healthy, the venue's events are kept and not hidden — and
+  after 7 consecutive degraded runs it is listed on the same rolling review
+  issue (`jazzin-amsterdam: venues to review`). Decide per venue: wait, deny /
+  merge it, or `cartelera health ack jazzin-amsterdam <slug>` to accept its new
+  state. `cartelera health jazzin-amsterdam` lists the degraded venues.
 
 Opt-out switch (2026-10-13), live feed: 6,537 raw → 6,106 events; 10 venues
 discovered (Frascati 120 events, Theater van Deyssel 8, ITA | Internationaal

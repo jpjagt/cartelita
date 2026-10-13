@@ -15,6 +15,10 @@ code neither overrides nor denies becomes a venue automatically. The runner
 4. reports the venues created for the first time: in the run output, in
    `scrape_run.metrics["new_venues"]`, and on one rolling GitHub issue per
    source (label `venue-review`) — see sync_venue_review.
+
+That rolling review issue also lists venues of any multi-venue source that
+have been degraded on their own for VENUE_REVIEW_STREAK+ runs
+(health_ops.sync_degraded_venues, render_degraded_review).
 """
 from __future__ import annotations
 
@@ -25,6 +29,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from cartelera.github import IssueTracker
+from cartelera.health import VENUE_REVIEW_STREAK
 from cartelera.models import SourceHealth, Venue
 from cartelera.scrapers import load_all
 from cartelera.types import SourceDefinition, VenueDefinition
@@ -73,7 +78,9 @@ def source_venue_slugs(session: Session, source: SourceDefinition) -> list[str]:
 # --- review issue -------------------------------------------------------------------
 
 def review_title(source_slug: str) -> str:
-    return f"{source_slug}: new venues to review"
+    # Holds new venues (opt-out discovery) and long-degraded venues of any
+    # multi-venue source.
+    return f"{source_slug}: venues to review"
 
 
 def _cell(text: str) -> str:
@@ -112,6 +119,55 @@ def render_review(source_slug: str, module: str | None, new_venues: list[dict],
     return "\n\n".join(parts)
 
 
+def render_degraded_review(source_slug: str, module: str | None, alerts: list[dict],
+                           kind: str, *, first: bool) -> str:
+    """The long-degraded-venues section. `alerts`: {slug, name, streak, rules:
+    [detail]}; `kind`: health.plan_venue_review's "update" | "weekly" |
+    "cleared"."""
+    if kind == "cleared":
+        return (f"No `{source_slug}` venue is degraded for {VENUE_REVIEW_STREAK}+ runs any "
+                "more (recovered, acked, merged or denied).")
+    path = f"scraper/src/cartelera/scrapers/{module or '<module>'}.py"
+    head = {"weekly": "Still degraded (weekly reminder):"}.get(
+        kind, f"Venues degraded on their own for {VENUE_REVIEW_STREAK}+ consecutive runs:")
+    rows = ["| venue | slug | runs | rules |", "|---|---|---|---|"]
+    for a in alerts:
+        rows.append(f"| {_cell(a['name'])} | `{a['slug']}` | {a['streak']} | "
+                    f"{_cell('; '.join(a['rules']))} |")
+    parts = [head, "\n".join(rows),
+             "These venues don't degrade the source; their events are kept as last seen "
+             "and are neither missed nor hidden while they're degraded. For an aggregator "
+             "this usually means the upstream feed lost them. **To decide**, per venue: "
+             f"wait (it recovers by itself); **deny** / **merge** it (or drop it) in `{path}` "
+             "if it shouldn't come from this source; or accept the new state (e.g. no programme any more) with "
+             f"`cartelera health ack {source_slug} <slug>` — that makes this run its "
+             "baseline and hides its upcoming events the run didn't see. "
+             f"Details: `cartelera health {source_slug}`."]
+    if first:
+        parts.insert(0, f"Scraper health flagged venues of `{source_slug}`.")
+    return "\n\n".join(parts)
+
+
+def post_review(
+    session: Session, source_slug: str, tracker: IssueTracker, first_body: str,
+    comment_body: str,
+) -> str:
+    """Post to the source's rolling review issue: comment when one is open,
+    else open one with `first_body`. Commits. Returns "opened" / "commented"."""
+    sh = session.get(SourceHealth, source_slug) or SourceHealth(source_slug=source_slug)
+    number = sh.review_issue_number
+    if number is not None and tracker.is_open(number):
+        tracker.comment(number, comment_body)
+        action = "commented"
+    else:
+        sh.review_issue_number = tracker.open_issue(
+            review_title(source_slug), first_body, [REVIEW_LABEL])
+        action = "opened"
+    session.add(sh)
+    session.commit()
+    return action
+
+
 def sync_venue_review(
     session: Session, source_slug: str, module: str | None, new_venues: list[dict],
     tracker: IssueTracker, today: dt.date | None = None,
@@ -121,17 +177,7 @@ def sync_venue_review(
     if not new_venues:
         return None
     today = today or dt.date.today()
-    sh = session.get(SourceHealth, source_slug) or SourceHealth(source_slug=source_slug)
-    number = sh.review_issue_number
-    if number is not None and tracker.is_open(number):
-        tracker.comment(number, render_review(source_slug, module, new_venues, today, first=False))
-        action = "commented"
-    else:
-        sh.review_issue_number = tracker.open_issue(
-            review_title(source_slug),
-            render_review(source_slug, module, new_venues, today, first=True),
-            [REVIEW_LABEL])
-        action = "opened"
-    session.add(sh)
-    session.commit()
-    return action
+    return post_review(
+        session, source_slug, tracker,
+        render_review(source_slug, module, new_venues, today, first=True),
+        render_review(source_slug, module, new_venues, today, first=False))

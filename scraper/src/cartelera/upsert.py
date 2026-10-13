@@ -213,8 +213,8 @@ def known_upcoming_snapshot(
     session: Session, venue_id: int, today: dt.date, seen_since: dt.datetime | None
 ) -> MatchIndex:
     """The coverage denominator, before this run writes anything: the venue's
-    visible upcoming events that the source's previous trusted (healthy or
-    acked) run saw (last_seen_at >= its start). Rows nobody has re-seen since (stale rows
+    visible upcoming events that the previous run trusted for this venue
+    (health.venue_reference) saw (last_seen_at >= its start). Rows nobody has re-seen since (stale rows
     from before scraper health, long gone from the site) are excluded — they
     age out through miss counting instead of pinning coverage low forever.
     No previous trusted run (`seen_since` None) → empty: coverage is

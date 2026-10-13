@@ -59,6 +59,12 @@ FILL_FIELDS = ("price", "start_time", "description")
 
 HIDE_AFTER_MISSES = 3         # healthy runs an upcoming event may be missing
 
+# Multi-venue sources: runs the baseline / coverage reference may look back
+# through to find a venue's own trusted runs (a venue degraded for longer than
+# this falls back to a cold start; by then it has long been on review).
+BASELINE_SCAN_RUNS = 60
+VENUE_REVIEW_STREAK = 7       # a venue degraded this many runs goes on the review issue
+
 SITE_DOWN_ISSUE_STREAK = 3
 BLOCKED_AS_BROKEN_STREAK = 7  # a block this long needs a code change
 BROKEN_ISSUE_STREAK = 2
@@ -192,9 +198,12 @@ class RunMetrics:
     venues: dict[str, ScopeMetrics]
 
     def to_json(self, fired: list[FiredRule]) -> dict[str, Any]:
+        bad = venue_rules(fired)
         return {
             "source": self.source.to_json(),
-            "venues": {k: v.to_json() for k, v in self.venues.items()},
+            "venues": {k: {**v.to_json(), "verdict": DEGRADED if k in bad else HEALTHY}
+                       for k, v in self.venues.items()},
+            "degraded_venues": sorted(bad),
             "fired": [r.to_json() for r in fired],
         }
 
@@ -302,7 +311,9 @@ def evaluate_run(
 ) -> list[FiredRule]:
     """All rules for a run. A single-venue source is evaluated once (source ==
     venue); a multi-venue source per venue AND as a whole (the aggregate
-    catches truncation spread thinly over many small venues)."""
+    catches truncation spread thinly over many small venues). Only the
+    "source"-scope rules decide the source verdict (verdict_for); a
+    "venue:<slug>" rule degrades just that venue (venue_rules)."""
     fired = evaluate_rules("source", metrics.source, compute_baseline(source_history))
     if len(metrics.venues) > 1:
         for slug, vm in metrics.venues.items():
@@ -312,8 +323,141 @@ def evaluate_run(
     return fired
 
 
+VENUE_SCOPE = "venue:"
+
+
+def venue_rules(fired: list[FiredRule]) -> dict[str, list[FiredRule]]:
+    """{venue slug: its fired rules} — the venues degraded on their own."""
+    out: dict[str, list[FiredRule]] = {}
+    for r in fired:
+        if r.scope.startswith(VENUE_SCOPE):
+            out.setdefault(r.scope[len(VENUE_SCOPE):], []).append(r)
+    return out
+
+
+def source_rules(fired: list[FiredRule]) -> list[FiredRule]:
+    return [r for r in fired if r.scope == "source"]
+
+
 def verdict_for(fired: list[FiredRule]) -> str:
-    return DEGRADED if fired else HEALTHY
+    """The SOURCE verdict: only source-level rules count. A venue-level rule of
+    a multi-venue source degrades just that venue for the run (see
+    `venue_rules`); a single-venue source only has source-level rules."""
+    return DEGRADED if source_rules(fired) else HEALTHY
+
+
+# --- venue-scoped trust (multi-venue sources) ---------------------------------
+
+@dataclass
+class RunView:
+    """What the venue-scoped decisions need from a scrape_run row."""
+    verdict: str
+    acked: bool = False
+    metrics: dict[str, Any] | None = None
+    started_at: dt.datetime | None = None
+
+    @property
+    def fired(self) -> list[FiredRule]:
+        return [FiredRule.from_json(f) for f in (self.metrics or {}).get("fired", [])]
+
+    @property
+    def degraded_venues(self) -> dict[str, list[FiredRule]]:
+        # Derived from `fired` (not the newer per-venue "verdict" key), so it
+        # reads runs recorded before venue-scoped verdicts too.
+        return venue_rules(self.fired)
+
+    @property
+    def acked_venues(self) -> set[str]:
+        return set((self.metrics or {}).get("acked_venues") or [])
+
+    @property
+    def wrote_data(self) -> bool:
+        return self.metrics is not None and self.verdict in (HEALTHY, DEGRADED)
+
+    @property
+    def source_trusted(self) -> bool:
+        """Its source-level view can be a baseline / coverage reference."""
+        return self.wrote_data and (self.verdict == HEALTHY or self.acked)
+
+    def venue_trusted(self, slug: str) -> bool:
+        """This run's view of `slug` can be that venue's baseline / coverage
+        reference: the venue was acked in it, or the run was source-trusted
+        and the venue not degraded in it (an absent venue isn't degraded)."""
+        if not self.wrote_data:
+            return False
+        if slug in self.acked_venues or self.acked:
+            return True
+        return self.verdict == HEALTHY and slug not in self.degraded_venues
+
+
+def source_history(runs: list[RunView]) -> list[ScopeMetrics]:
+    """Source-level baseline history (runs newest first)."""
+    return [ScopeMetrics.from_json(r.metrics["source"]) for r in runs
+            if r.source_trusted and r.metrics.get("source")][:BASELINE_WINDOW]
+
+
+def venue_history(runs: list[RunView], slug: str) -> list[ScopeMetrics]:
+    """A venue's baseline history: its metrics from runs where IT was trusted
+    (so a run that degraded only this venue doesn't pollute its baseline),
+    newest first. A venue ack starts the history afresh: the acked run's state
+    is the new normal, older runs no longer count."""
+    out: list[ScopeMetrics] = []
+    for r in runs:
+        if len(out) >= BASELINE_WINDOW:
+            break
+        if not r.venue_trusted(slug):
+            continue
+        vm = (r.metrics.get("venues") or {}).get(slug)
+        if vm is not None:
+            out.append(ScopeMetrics.from_json(vm))
+        if slug in r.acked_venues:
+            break
+    return out
+
+
+def venue_reference(runs: list[RunView], slug: str) -> dt.datetime | None:
+    """Coverage reference for a venue: the start of the newest run that was
+    trusted for it. A venue degraded in the previous run falls back to its
+    last trusted run's seen set (its known events don't shrink to the
+    degraded view); otherwise this is simply the previous trusted run."""
+    return next((r.started_at for r in runs if r.venue_trusted(slug)), None)
+
+
+def venue_streak(runs: list[RunView], slug: str) -> int:
+    """Consecutive recorded runs (newest first) that degraded `slug`. Runs
+    without metrics (broken / site_down) neither count nor break it; a run
+    where the venue was fine, absent, acked, or the source acked ends it."""
+    n = 0
+    for r in runs:
+        if r.metrics is None:
+            continue
+        if r.acked or slug in r.acked_venues or slug not in r.degraded_venues:
+            break
+        n += 1
+    return n
+
+
+def venue_review_signature(alerts: dict[str, list[str]]) -> str | None:
+    """{venue slug: rule names} → a stable signature (None when empty)."""
+    if not alerts:
+        return None
+    return ";".join(f"{s}:{','.join(sorted(rs))}" for s, rs in sorted(alerts.items()))
+
+
+def plan_venue_review(
+    signature: str | None, last_signature: str | None, last_comment_at: dt.datetime | None,
+    now: dt.datetime,
+) -> str | None:
+    """What to post about long-degraded venues on the source's review issue:
+    "update" when the set (or their rules) changed, "weekly" when unchanged
+    for COMMENT_INTERVAL, "cleared" when the last ones recovered, else None."""
+    if signature is None:
+        return "cleared" if last_signature else None
+    if signature != last_signature:
+        return "update"
+    if last_comment_at is None or now - last_comment_at >= COMMENT_INTERVAL:
+        return "weekly"
+    return None
 
 
 # --- 5. streaks → issue state machine -----------------------------------------
@@ -465,6 +609,7 @@ class IssueContext:
     metrics: dict[str, Any] | None
     last_healthy: dt.datetime | None
     streak: int
+    degraded_venues: int = 0           # venues degraded on their own (not in `fired`)
 
 
 def _link(repo: str | None, path: str) -> str:
@@ -542,8 +687,15 @@ def desired_kind_label(ctx: IssueContext) -> str:
     return ctx.verdict
 
 
-def render_close_comment(reason: str, source_slug: str) -> str:
+def render_close_comment(reason: str, source_slug: str, degraded_venues: int = 0) -> str:
     if reason == "acked":
         return (f"Acknowledged via `cartelera health ack {source_slug}`: the latest run "
                 "now counts as baseline. Closing.")
-    return f"Recovered: `{source_slug}` had a healthy run. Closing."
+    msg = f"Recovered: `{source_slug}` had a healthy run. Closing."
+    if degraded_venues:
+        msg += (f"\n\n{degraded_venues} venue(s) are still degraded on their own. Venue-level "
+                "rules no longer degrade a multi-venue source: those venues' events are "
+                "kept (not hidden), and a venue degraded for "
+                f"{VENUE_REVIEW_STREAK}+ runs is listed on the source's venue review issue. "
+                f"Details: `cartelera health {source_slug}`.")
+    return msg

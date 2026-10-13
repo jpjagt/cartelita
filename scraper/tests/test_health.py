@@ -191,10 +191,28 @@ def test_per_venue_evaluation_for_multi_venue_sources():
     scopes = {(r.scope, r.rule) for r in fired}
     assert ("venue:b", "count_drop") in scopes and ("venue:b", "coverage_drop") in scopes
     assert not any(s == "venue:a" for s, _ in scopes)
+    # the aggregate's coverage (110/200) fires too: that degrades the source
+    assert ("source", "coverage_drop") in scopes
     assert h.verdict_for(fired) == h.DEGRADED
+    assert set(h.venue_rules(fired)) == {"b"}
     # a venue with too little history is skipped (only its coverage rule applies)
     run2 = h.RunMetrics(source=good, venues={"a": good, "new": M(0, 0, 0, None, {})})
     assert h.evaluate_run(run2, _hist(5), {"a": _hist(5)}) == []
+
+
+def test_venue_level_rules_alone_leave_the_source_healthy():
+    hist = {s: _hist(5) for s in "abcdefghij"}
+    good = M(100, 100, 100, 120, dict(FULL))
+    venues = {s: good for s in "abcdefghi"} | {"j": M(0, 100, 0, None, {})}
+    run = h.RunMetrics(source=h.aggregate_metrics(venues.values()), venues=venues)
+    fired = h.evaluate_run(run, _hist(5, emitted=1000), hist)
+    assert {r.scope for r in fired} == {"venue:j"}
+    assert h.verdict_for(fired) == h.HEALTHY
+    assert {s: [r.rule for r in rs] for s, rs in h.venue_rules(fired).items()} == {
+        "j": ["coverage_drop", "empty"]}
+    j = run.to_json(fired)
+    assert j["degraded_venues"] == ["j"]
+    assert j["venues"]["j"]["verdict"] == h.DEGRADED and j["venues"]["a"]["verdict"] == h.HEALTHY
 
 
 def test_single_venue_source_evaluated_once():
@@ -213,6 +231,81 @@ def test_truncated_pagination_is_caught_by_coverage_even_with_plausible_count():
 
 def test_a_few_cancellations_stay_healthy():
     assert _rules(M(97, 100, 97, 120, dict(FULL)), _hist(5)) == []
+
+
+# --- venue-scoped trust ---------------------------------------------------------
+
+T0 = dt.datetime(2026, 10, 1, 2, tzinfo=dt.UTC)
+
+
+def _run_view(i, verdict="healthy", venues=("a", "b"), degraded=(), acked=False,
+              acked_venues=None, emitted=10):
+    """Run i days after T0 (callers pass newest first)."""
+    metrics = {"source": M(emitted * len(venues), 0, 0, 30).to_json(),
+               "venues": {v: M(0 if v in degraded else emitted, 0, 0, 30).to_json()
+                          for v in venues},
+               "fired": [{"scope": f"venue:{v}", "rule": "empty", "detail": ""}
+                         for v in degraded]}
+    if acked_venues:
+        metrics["acked_venues"] = list(acked_venues)
+    return h.RunView(verdict, acked, None if verdict in ("broken", "site_down") else metrics,
+                     T0 + dt.timedelta(days=i))
+
+
+def test_venue_history_skips_runs_that_degraded_that_venue():
+    runs = [_run_view(5, degraded=["b"]), _run_view(4, degraded=["b"]), _run_view(3),
+            _run_view(2, "degraded"), _run_view(1, "broken"), _run_view(0)]
+    assert [m.emitted for m in h.venue_history(runs, "a")] == [10, 10, 10, 10]
+    assert [m.emitted for m in h.venue_history(runs, "b")] == [10, 10]
+    # the source's own baseline ignores venue-level degradation
+    assert len(h.source_history(runs)) == 4
+    # a source-acked run counts for every venue, degraded or not
+    acked = [_run_view(6, "degraded", degraded=["b"], acked=True)] + runs
+    assert h.venue_history(acked, "b")[0].emitted == 0
+
+
+def test_venue_ack_restarts_the_venue_baseline():
+    runs = [_run_view(3), _run_view(2, degraded=["b"], acked_venues=["b"]), _run_view(1),
+            _run_view(0)]
+    assert [m.emitted for m in h.venue_history(runs, "b")] == [10, 0]
+    assert len(h.venue_history(runs, "a")) == 4
+    # even in a run whose source verdict was degraded
+    runs = [_run_view(1, "degraded", degraded=["b"], acked_venues=["b"]), _run_view(0)]
+    assert [m.emitted for m in h.venue_history(runs, "b")] == [0]
+    assert len(h.venue_history(runs, "a")) == 1  # the healthy run 0 only
+
+
+def test_venue_reference_falls_back_to_its_last_trusted_run():
+    runs = [_run_view(3, degraded=["b"]), _run_view(2, "broken"), _run_view(1, "degraded"),
+            _run_view(0)]
+    assert h.venue_reference(runs, "a") == T0 + dt.timedelta(days=3)
+    assert h.venue_reference(runs, "b") == T0
+    # a venue absent from the run (quiet / new) isn't degraded in it
+    assert h.venue_reference(runs, "zzz") == T0 + dt.timedelta(days=3)
+    assert h.venue_reference([_run_view(0, "degraded")], "a") is None
+
+
+def test_venue_streak():
+    runs = [_run_view(4, degraded=["b"]), _run_view(3, "site_down"),
+            _run_view(2, "degraded", degraded=["b"]), _run_view(1, degraded=["b"]),
+            _run_view(0)]
+    assert h.venue_streak(runs, "b") == 3       # broken/site_down neither count nor break
+    assert h.venue_streak(runs, "a") == 0
+    acked = [_run_view(5, degraded=["b"]), _run_view(4, degraded=["b"], acked_venues=["b"])]
+    assert h.venue_streak(acked + runs, "b") == 1
+    assert h.venue_streak([_run_view(5, degraded=["b"], acked=True)] + runs, "b") == 0
+
+
+def test_plan_venue_review():
+    sig = h.venue_review_signature({"b": ["empty", "coverage_drop"], "a": ["horizon_shrink"]})
+    assert sig == "a:horizon_shrink;b:coverage_drop,empty"
+    assert h.venue_review_signature({}) is None
+    assert h.plan_venue_review(None, None, None, NOW) is None
+    assert h.plan_venue_review(sig, None, None, NOW) == "update"
+    assert h.plan_venue_review(sig, sig, NOW - dt.timedelta(days=6), NOW) is None
+    assert h.plan_venue_review(sig, sig, NOW - dt.timedelta(days=7), NOW) == "weekly"
+    assert h.plan_venue_review("a:empty", sig, NOW, NOW) == "update"
+    assert h.plan_venue_review(None, sig, NOW, NOW) == "cleared"
 
 
 # --- streaks → issues --------------------------------------------------------------
