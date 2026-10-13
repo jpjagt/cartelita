@@ -144,8 +144,9 @@ setup, documented in `docs/deploy.md`. Alternatively open the issue in any
 Claude Code session.
 
 **Acknowledging a legitimate change** (a theatre's summer break):
-`cartelera health ack <source>` marks the latest run `acked` (it then counts as
-baseline), resets the streak and closes the issue with a comment.
+`cartelera health ack <source>` marks the latest run `acked` (the baseline
+restarts from it — see *Revision 2026-10-13*), resets the streak and closes the
+issue with a comment.
 `cartelera health` prints every source's state, streak, last healthy run and
 open issue.
 
@@ -246,10 +247,21 @@ Instead:
 latest data-writing run's `metrics.acked_venues`: that run becomes the
 venue's coverage reference, its baseline **restarts** from that run (older
 runs no longer count — so accepting "this venue has no programme any more"
-actually sticks, unlike a source ack whose acked run is just one of 14), its
-streak ends, and its visible upcoming events that run did not see are hidden
-(reversible). The source issue and other venues are untouched.
-`cartelera health ack <source>` is unchanged.
+actually sticks), its streak ends, and its visible upcoming events that run
+did not see are hidden (reversible). The source issue and other venues are
+untouched.
+
+**Source ack is sticky too.** `cartelera health ack <source>` (and `rekey`,
+which acks) now also restarts the baseline: the acked run's state is the new
+normal (e.g. a summer break), and runs before it no longer count — for the
+source's baseline and for every venue's (a source ack accepts all of them).
+Previously the acked run was just one of the 14 runs the median is taken
+over, so the count / horizon / field rules fired again on the next run. The
+baseline-relative rules now wait for `BASELINE_MIN_RUNS` (3) trusted runs
+since the ack (cold start: only coverage applies), then measure against the
+new normal. Coverage keeps working off the acked run's seen set (it is the
+reference until the next trusted run). An acked broken / site_down run wrote
+nothing and restarts nothing.
 
 ## Out of scope
 

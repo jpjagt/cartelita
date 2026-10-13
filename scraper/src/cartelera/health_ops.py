@@ -192,8 +192,8 @@ def _source_venue_ids(session: Session, source_slug: str) -> list[int]:
 def ack(
     session: Session, source_slug: str, tracker: IssueTracker, today: dt.date | None = None
 ) -> str:
-    """Accept the latest run as correct: mark it acked (it joins the baseline
-    and ends the bad streak), hide the source's visible upcoming events that
+    """Accept the latest run as correct: mark it acked (the source's and its
+    venues' baselines restart from it, and it ends the bad streak), hide the source's visible upcoming events that
     run did not see (reversible: they un-hide if they reappear), and close the
     source's issue. Only a data-writing run (healthy / degraded) can vouch for
     what's gone; acking a broken / site_down run hides nothing."""

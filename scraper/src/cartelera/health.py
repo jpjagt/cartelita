@@ -391,16 +391,27 @@ class RunView:
 
 
 def source_history(runs: list[RunView]) -> list[ScopeMetrics]:
-    """Source-level baseline history (runs newest first)."""
-    return [ScopeMetrics.from_json(r.metrics["source"]) for r in runs
-            if r.source_trusted and r.metrics.get("source")][:BASELINE_WINDOW]
+    """Source-level baseline history (runs newest first). A source ack starts
+    it afresh: the acked run's state is the new normal (e.g. a summer break),
+    older runs no longer count, so the baseline-relative rules wait for
+    BASELINE_MIN_RUNS trusted runs since the ack."""
+    out: list[ScopeMetrics] = []
+    for r in runs:
+        if len(out) >= BASELINE_WINDOW:
+            break
+        if r.source_trusted and r.metrics.get("source"):
+            out.append(ScopeMetrics.from_json(r.metrics["source"]))
+        if r.acked and r.wrote_data:
+            break
+    return out
 
 
 def venue_history(runs: list[RunView], slug: str) -> list[ScopeMetrics]:
     """A venue's baseline history: its metrics from runs where IT was trusted
     (so a run that degraded only this venue doesn't pollute its baseline),
-    newest first. A venue ack starts the history afresh: the acked run's state
-    is the new normal, older runs no longer count."""
+    newest first. A venue ack, or a source ack (it accepts every venue's
+    state), starts the history afresh: the acked run's state is the new
+    normal, older runs no longer count."""
     out: list[ScopeMetrics] = []
     for r in runs:
         if len(out) >= BASELINE_WINDOW:
@@ -410,7 +421,7 @@ def venue_history(runs: list[RunView], slug: str) -> list[ScopeMetrics]:
         vm = (r.metrics.get("venues") or {}).get(slug)
         if vm is not None:
             out.append(ScopeMetrics.from_json(vm))
-        if slug in r.acked_venues:
+        if slug in r.acked_venues or (r.acked and r.wrote_data):
             break
     return out
 
@@ -690,7 +701,7 @@ def desired_kind_label(ctx: IssueContext) -> str:
 def render_close_comment(reason: str, source_slug: str, degraded_venues: int = 0) -> str:
     if reason == "acked":
         return (f"Acknowledged via `cartelera health ack {source_slug}`: the latest run "
-                "now counts as baseline. Closing.")
+                "is the new baseline (older runs no longer count). Closing.")
     msg = f"Recovered: `{source_slug}` had a healthy run. Closing."
     if degraded_venues:
         msg += (f"\n\n{degraded_venues} venue(s) are still degraded on their own. Venue-level "

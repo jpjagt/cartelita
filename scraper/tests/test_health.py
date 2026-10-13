@@ -275,6 +275,17 @@ def test_venue_ack_restarts_the_venue_baseline():
     assert len(h.venue_history(runs, "a")) == 1  # the healthy run 0 only
 
 
+def test_source_ack_restarts_the_source_and_venue_baselines():
+    runs = [_run_view(4), _run_view(3), _run_view(2, "degraded", degraded=["b"], acked=True),
+            _run_view(1), _run_view(0)]
+    assert len(h.source_history(runs)) == 3          # runs 4, 3 and the acked 2
+    assert len(h.venue_history(runs, "a")) == 3
+    assert [m.emitted for m in h.venue_history(runs, "b")] == [10, 10, 0]
+    # an acked broken run wrote nothing: it is no new normal, history goes on
+    broken = [_run_view(4), _run_view(3, "broken", acked=True), _run_view(1), _run_view(0)]
+    assert len(h.source_history(broken)) == 3
+
+
 def test_venue_reference_falls_back_to_its_last_trusted_run():
     runs = [_run_view(3, degraded=["b"]), _run_view(2, "broken"), _run_view(1, "degraded"),
             _run_view(0)]

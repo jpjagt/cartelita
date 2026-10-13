@@ -458,6 +458,29 @@ def test_ack_hides_unseen_upcoming_events_reversibly(session, fake):
     assert evs["e5"].hidden_at is None and evs["e5"].missed_runs == 0
 
 
+def test_source_ack_is_sticky_the_acked_run_is_the_new_normal(session, fake):
+    gh = FakeTracker()
+    fake.events = _full(30)
+    for _ in range(5):  # mature baseline: 30 events, ~88-day horizon
+        assert _run(session, gh).verdict == h.HEALTHY
+    fake.events = _full(30)[:4]  # summer break: 4 events, short horizon
+    r = _run(session, gh)
+    assert r.verdict == h.DEGRADED and any("baseline" in f for f in r.fired)
+    health_ops.ack(session, "jamboree", gh, today=TODAY)
+    # the old 30-event baseline no longer counts: count / horizon rules wait
+    # for BASELINE_MIN_RUNS trusted runs since the ack, and then measure
+    # against the break itself; coverage works off the acked run's view
+    for _ in range(h.BASELINE_WINDOW):
+        r = _run(session, gh)
+        assert r.verdict == h.HEALTHY, r.fired
+    latest = session.query(ScrapeRun).order_by(ScrapeRun.id.desc()).first()
+    assert (latest.metrics["source"]["known_upcoming"], latest.metrics["source"]["reseen"]) == (4, 4)
+    assert len(gh.issues) == 0 or all(i["state"] == "closed" for i in gh.issues.values())
+    # the new normal is enforced in turn: the source dying now is flagged
+    fake.events = []
+    assert _run(session, gh).verdict == h.DEGRADED
+
+
 def test_ack_of_a_broken_run_hides_nothing(session, fake):
     gh = FakeTracker()
     fake.events = _full(5)

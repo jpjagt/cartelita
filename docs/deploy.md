@@ -84,10 +84,12 @@ Design: `docs/superpowers/specs/2026-10-12-scraper-health-design.md`. Every
 degraded / broken / site_down), hides upcoming events missing from 3 healthy
 runs (reversible: `event.hidden_at`, nothing deleted), and opens / comments on /
 closes one GitHub issue per bad source (labels `scraper-health`, `kind:<kind>`).
-Commands: `cartelera health` (state of every source), `cartelera health ack
-<source>` (accept a legitimate change: the latest run becomes baseline, the
-upcoming events it didn't see are hidden right away — reversibly — and the
-issue closes).
+Commands: `cartelera health` (state of every source), `cartelera health
+<source>` (detail, incl. venues degraded on their own), `cartelera health ack
+<source>` (accept a legitimate change: the latest run becomes the new baseline —
+older runs stop counting — the upcoming events it didn't see are hidden right
+away — reversibly — and the issue closes), `cartelera health ack <source>
+<venue>` (the same for one venue of a multi-venue source).
 
 ### Owner setup (one-off)
 

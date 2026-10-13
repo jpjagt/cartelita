@@ -167,8 +167,8 @@ source — the repair queue. Design and thresholds:
 `scraper/src/cartelera/health.py` (pure: constants, rules, state machine) and
 `health_ops.py`. CLI: `cartelera health`, `cartelera health <source>`
 (detail, incl. degraded venues), `cartelera health ack <source> [<venue>]`
-(legit change, e.g. season break: also hides the upcoming events that run
-didn't see). Coverage counts only events the previous healthy/acked run saw.
+(legit change, e.g. season break: the acked run becomes the new baseline —
+older runs stop counting — and the upcoming events it didn't see are hidden). Coverage counts only events the previous healthy/acked run saw.
 For a **multi-venue source** (jazzin.amsterdam) a venue-level rule degrades
 only that venue (its events are neither missed nor hidden; it's excluded from
 its own baseline) — the source verdict comes from source-level rules only;
