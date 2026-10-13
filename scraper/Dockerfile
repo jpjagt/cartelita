@@ -21,6 +21,8 @@ RUN uv sync --frozen --no-dev
 
 ENV PATH="/app/.venv/bin:$PATH"
 
-# Default command; the nightly Coolify Scheduled Task overrides/wraps this with
-# `cartelera migrate && cartelera run all`.
-CMD ["cartelera", "run", "all"]
+# Idle by default: scraping happens only in the nightly Coolify Scheduled Task
+# (`cartelera migrate && cartelera run all`, exec'd in this container). A
+# scraping CMD would exit when done, Coolify would restart the container, and
+# every site would be re-scraped every ~15 minutes, all day.
+CMD ["sleep", "infinity"]
