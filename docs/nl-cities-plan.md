@@ -5,6 +5,13 @@ risks). This file is the shared contract for the parallel scraper batches.
 
 ## Rules (decided with the owner)
 
+- **Curation and quality over exhaustiveness.** Include a venue only if a
+  culturally engaged local would want it on the agenda. Within a venue, use the
+  source's own structural signals (categories, genres, series, sections) to
+  leave out non-programme items: rentals, private events, tours, workshops,
+  markets, church services, generic recurring nights. Never filter by guessing
+  from title keywords. Record every exclusion and its reason in SOURCE.md.
+
 - **One owning source per venue.** Miss-counting/health are per venue, so a
   second source feeding a venue would get the first source's events hidden.
   Aggregators (Cineville, jazz010, the uit-agendas) therefore run as
