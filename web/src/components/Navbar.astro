@@ -26,7 +26,11 @@ const LOCALES = cityCfg.locales // the locale switcher offers the CITY's locales
 // apart after them. Every genre renders both as a tab and as a More entry;
 // the layout shows one of the two per width (display vars below).
 const lists = await getCategoryLists(city)
-const genreLists = navOrder(lists.filter((l) => l.slug !== FILM_LIST))
+// A genre with nothing upcoming in the nav window gets no tab or More entry
+// (its page still exists for shared links); the active page always shows.
+const genreLists = navOrder(
+  lists.filter((l) => l.slug !== FILM_LIST && (l.upcoming > 0 || l.slug === activeList)),
+)
 const genres = genreLists.map((l) => ({ slug: l.slug, label: categoryName(locale, l.slug) }))
 const fixed = [
   ...(lists.some((l) => l.slug === FILM_LIST)

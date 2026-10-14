@@ -99,11 +99,35 @@ Oct 2026 at Cine de Barrio). See each SOURCE.md.
 
 ## Deferred: Instagram-only venues (next step)
 
-Candidates for an Instagram source (like Yerevan's), to confirm one by one
-that they have no usable website agenda before building. The research
-hand-off's own list was not available when this doc was written; these come
-from venues seen in the sources above and in press theatre listings (Hoy,
-2026):
+The research pass (2026-10-14) found that roughly 60–70% of Asunción's small,
+curated scene publishes only on Instagram, so this is what makes the city a
+real small-culture agenda. Needs the Instagram ingest
+(`docs/superpowers/specs/2026-08-19-instagram-ingest-design.md`, not built
+yet); ~18–25 handles for decent coverage, so the ingest must be robust
+(dedicated account, proxy, < 25 profiles/night). The curated aggregator
+**How to Love Paraguay** (howtoloveparaguay.com/agenda-cultural, Rosa
+Grimaldi; daily, links each entry to its IG post) is the best discovery
+bridge — ask her before scraping it, and consider a partnership.
+
+From the research pass (verify each is alive before building):
+
+- **CCPA – Teatro de las Américas** — jazz (CCPA Jazz Quintet, jazz
+  festival), dance (Contemporáneas), theatre, film cycle; key institution
+- **El Granel** — jazz ("Jazz a Granel live sessions"), cultural bar
+- **Voüdevil** — rock/alternative/metal; busiest small music venue
+- **Absoluto Rock Bar** — punk/rock/metal (site has a broken TLS cert)
+- **Centro Cultural Punto Divertido** — readings, small concerts
+- **Espacio Cultural Staudt** (SNC) — theatre, concerts
+- **Sala La Correa / La Correíta, Arlequín Teatro, El Otro Teatro, Sala
+  Tiatro (TIA)** — independent theatre
+- **Casa Bicentenario de las Artes Visuales, Centro Cultural del Puerto,
+  Instituto Guimarães Rosa / Teatro Tom Jobim, El Cabildo (site down)** —
+  film, concerts, performance
+- **Cine Cañisá** — ~100-year-old cinema + bar (activity unverified)
+- Club (volatile; RA activity stopped spring 2026): Yugen, Studio Colombo,
+  Tango, Condesa Club, Pikó; promoters Sunshine, ART Dept
+
+Also seen in the sources above and in press theatre listings (Hoy, 2026):
 
 - Sala La Correa (independent theatre/dance; hosts CCE co-productions)
 - Arlequín Teatro

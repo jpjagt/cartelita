@@ -174,7 +174,8 @@ def test_list_queries_exclude_hidden_events(session):
 def test_web_queries_filter_hidden_events():
     """Every event query in the web frontend must exclude hidden events."""
     src = (Path(__file__).parents[2] / "web/src/lib/queries.ts").read_text()
-    joins = re.findall(r"JOIN event e ON[^\n]*", src)
+    # The join condition may span lines; take it up to the next WHERE/JOIN.
+    joins = re.findall(r"JOIN event e ON.*?(?=\n\s*(?:WHERE|GROUP|ORDER|LEFT|JOIN)\b)", src, re.S)
     assert joins, "expected event queries in web/src/lib/queries.ts"
     assert all("e.hidden_at IS NULL" in j for j in joins), joins
 
