@@ -44,4 +44,14 @@ describe("i18n", () => {
       expect(t(locale).prices["sold-out"]).toBeTruthy();
     }
   });
+
+  it("every locale labels the navbar dropdowns and collapsed days", () => {
+    for (const locale of ["ca", "es", "en", "hy", "ru", "nl"] as const) {
+      const s = t(locale);
+      for (const key of ["more", "city", "allCities", "eventsHidden"] as const) {
+        expect(s[key], `${locale}.${key}`).toBeTruthy();
+      }
+    }
+    expect(t("nl").more).toBe("Meer");
+  });
 });

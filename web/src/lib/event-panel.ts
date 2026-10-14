@@ -28,3 +28,17 @@ export function numberRows(panels: number[], first = 0): RowNumbering[] {
   out.push({ ev: first + panels.length, po });
   return out;
 }
+
+/** A collapsed day (its header toggled shut): every row hidden, one note row
+    ("Events hidden — click to show") in their place, then the spacer. The
+    note takes row index 0 like the first event would; the spacer the next.
+    Narrow, an event spans two grid rows but the note only one, so the
+    spacer's `po` pulls it back up a row there (desktop row formulas ignore
+    `po`) — header, note, one blank row, in both layouts. */
+export function numberCollapsed(): { note: RowNumbering; spacer: RowNumbering } {
+  return { note: { ev: 0, po: 0 }, spacer: { ev: 1, po: -1 } };
+}
+
+/** Window event announcing a day was just collapsed (detail: its section), so
+    an open event panel or share menu in it closes (EventPanel, ShareMenu). */
+export const DAY_COLLAPSE_EVENT = "daycollapse";

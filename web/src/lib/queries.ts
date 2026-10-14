@@ -1,5 +1,6 @@
 import { sql } from "@/lib/db"
 import { excerpt } from "@/lib/description"
+import { FILM_LIST, NAV_WINDOW_DAYS, orderByVolume } from "@/lib/genre-nav"
 import type {
   CategoryList,
   AgendaEvent,
@@ -23,33 +24,42 @@ interface EventRow {
   source_url: string
 }
 
-// Broad-appeal genres, in display order. These lead the navbar at full weight;
-// everything else (pop, flamenco, kids, …) trails after and renders muted so the
-// eye skips past it without the niche genres being hidden behind a control.
-const PRIMARY_LIST_ORDER = ["jazz", "classical", "theater", "film", "dance"]
+const lists = new Map<string, Promise<CategoryList[]>>()
 
-// Events in the film list go to My list's Films view rather than Events.
-const FILM_LIST = "film"
+/** A city's cartelera lists, busiest first (lib/genre-nav.ts orderByVolume):
+    each with its event count over the next NAV_WINDOW_DAYS — the same
+    membership + whitelist rule as getEventsForList. Memoised per build: every
+    page's navbar asks. */
+export function getCategoryLists(citySlug: string): Promise<CategoryList[]> {
+  let hit = lists.get(citySlug)
+  if (!hit) {
+    hit = queryCategoryLists(citySlug)
+    lists.set(citySlug, hit)
+  }
+  return hit
+}
 
-export async function getCategoryLists(citySlug: string): Promise<CategoryList[]> {
+async function queryCategoryLists(citySlug: string): Promise<CategoryList[]> {
   // List slugs are unique per city (each city has its own "jazz" list).
-  const rows = await sql<{ slug: string }[]>`
-    SELECT l.slug FROM list l
+  const rows = await sql<{ slug: string; upcoming: number }[]>`
+    SELECT l.slug, count(DISTINCT e.id)::int AS upcoming
+    FROM list l
     JOIN city c ON c.id = l.city_id
-    WHERE l.author = 'cartelera' AND c.slug = ${citySlug}`
-  return rows
-    .map((r) => ({
-      slug: r.slug,
-      primary: PRIMARY_LIST_ORDER.includes(r.slug),
-    }))
-    .sort((a, b) => {
-      const ai = PRIMARY_LIST_ORDER.indexOf(a.slug)
-      const bi = PRIMARY_LIST_ORDER.indexOf(b.slug)
-      if (ai !== -1 && bi !== -1) return ai - bi
-      if (ai !== -1) return -1
-      if (bi !== -1) return 1
-      return a.slug.localeCompare(b.slug)
-    })
+    LEFT JOIN list_venue lv ON lv.list_id = l.id
+    LEFT JOIN event e ON e.venue_id = lv.venue_id
+      AND e.hidden_at IS NULL
+      AND e.start_date >= CURRENT_DATE
+      AND e.start_date < CURRENT_DATE + ${NAV_WINDOW_DAYS}::int
+      AND (
+        lv.whitelist_category_id IS NULL
+        OR EXISTS (
+          SELECT 1 FROM event_category ec
+          WHERE ec.event_id = e.id AND ec.category_id = lv.whitelist_category_id
+        )
+      )
+    WHERE l.author = 'cartelera' AND c.slug = ${citySlug}
+    GROUP BY l.slug`
+  return orderByVolume(rows.map((r) => ({ slug: r.slug, upcoming: Number(r.upcoming) })))
 }
 
 function toDateStr(v: Date | string): string {
@@ -175,20 +185,15 @@ export async function getCityEvents(
     GROUP BY e.id, v.slug, v.name, t.title, t.description, t.source_url
     ORDER BY e.start_date, e.start_time NULLS FIRST, e.id`
 
+  // An event in several lists tints by the busiest of them (navbar order).
+  const order = (await getCategoryLists(citySlug)).map((l) => l.slug)
+  const tint = (listSlugs: string[]) =>
+    order.find((s) => listSlugs.includes(s)) ?? [...listSlugs].sort()[0]
   return expandShowtimes(rows, (r, base) => ({
     ...base,
-    genre: primaryGenre(r.list_slugs),
+    genre: tint(r.list_slugs),
     isFilm: r.list_slugs.includes(FILM_LIST),
   }))
-}
-
-/** The list slug that tints an event on a mixed page: the first primary genre
-    it appears in, else any. */
-function primaryGenre(listSlugs: string[]): string {
-  return (
-    PRIMARY_LIST_ORDER.find((s) => listSlugs.includes(s)) ??
-    [...listSlugs].sort()[0]
-  )
 }
 
 export async function getVenueDirectory(citySlug: string): Promise<VenueGroup[]> {

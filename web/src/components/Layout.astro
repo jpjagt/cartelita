@@ -160,7 +160,8 @@ const gridCss = gridGeometryCss()
       window.addEventListener("load", syncGrid);
     </script>
     <script>
-      import { numberRows } from "@/lib/event-panel";
+      import { DAY_COLLAPSE_EVENT, numberCollapsed, numberRows } from "@/lib/event-panel";
+      import type { RowNumbering } from "@/lib/types";
       import { onPage } from "@/lib/page-lifecycle";
       import { track } from "@/lib/track";
       // Time-aware agenda. Runs on load and whenever the tab is refocused, so a
@@ -222,6 +223,8 @@ const gridCss = gridGeometryCss()
           });
           // Drop any prior early-screenings toggle; renumbering below recreates it.
           section.querySelector(".gc-early-toggle")?.remove();
+          const note = section.querySelector<HTMLElement>("[data-day-note]");
+          if (note) note.hidden = true;
 
           if (date < nowLogicalDate) {
             // Fully past logical days hidden (also heals a stale build).
@@ -231,6 +234,10 @@ const gridCss = gridGeometryCss()
           if (!section.querySelector("[data-film-card]") && !packRows(section)) {
             // Every row filtered out: the day has nothing to show.
             section.hidden = true;
+            return;
+          }
+          if (section.hasAttribute("data-collapsed")) {
+            collapse(section, note);
             return;
           }
           if (date === nowLogicalDate) {
@@ -287,14 +294,30 @@ const gridCss = gridGeometryCss()
       // row) onto `rows` and the section's spacer. See lib/event-panel.ts.
       function numberSection(section: HTMLElement, rows: HTMLElement[], first: number) {
         const nums = numberRows(rows.map((r) => Number(r.dataset.panelRows) || 0), first);
-        const write = (el: HTMLElement, { ev, po }: { ev: number; po: number }) => {
-          el.style.setProperty("--ev", String(ev));
-          // --po is almost always 0 (its CSS default): skip the write.
-          if (po || el.style.getPropertyValue("--po")) el.style.setProperty("--po", String(po));
-        };
-        rows.forEach((row, i) => write(row, nums[i]));
+        rows.forEach((row, i) => writeRow(row, nums[i]));
         const spacer = section.querySelector<HTMLElement>(".gc-spacer");
-        if (spacer) write(spacer, nums[rows.length]);
+        if (spacer) writeRow(spacer, nums[rows.length]);
+      }
+
+      function writeRow(el: HTMLElement, { ev, po }: RowNumbering) {
+        el.style.setProperty("--ev", String(ev));
+        // --po is almost always 0 (its CSS default): skip the write.
+        if (po || el.style.getPropertyValue("--po")) el.style.setProperty("--po", String(po));
+      }
+
+      // A collapsed day (its header toggled shut): every row hidden — event
+      // rows, film titles and showtimes all carry data-time; a row's open
+      // panel goes with it — and the note row in their place, the spacer
+      // right after (lib/event-panel.ts numberCollapsed). No now-marker.
+      function collapse(section: HTMLElement, note: HTMLElement | null) {
+        section.querySelectorAll<HTMLElement>("[data-time]").forEach((row) => (row.hidden = true));
+        const nums = numberCollapsed();
+        if (note) {
+          note.hidden = false;
+          writeRow(note, nums.note);
+        }
+        const spacer = section.querySelector<HTMLElement>(".gc-spacer");
+        if (spacer) writeRow(spacer, nums.spacer);
       }
 
       // Collapse the leading run of screenings that started >2h ago (cutoffKey)
@@ -425,6 +448,25 @@ const gridCss = gridGeometryCss()
         line.style.gridRow = gridRowStart;
         section.appendChild(line);
       }
+
+      // Day headers toggle their day (collapsed = header + a note row, which
+      // expands it again too). Per page view: nothing is persisted. Closing
+      // first takes any open panel / share menu in the day with it.
+      document.addEventListener("click", (e) => {
+        const toggle = (e.target as Element | null)?.closest<HTMLElement>(
+          "[data-day-toggle], [data-day-note]",
+        );
+        const section = toggle?.closest<HTMLElement>("section[data-date]");
+        if (!toggle || !section) return;
+        const collapsed = !section.hasAttribute("data-collapsed");
+        section.toggleAttribute("data-collapsed", collapsed);
+        const header = section.querySelector<HTMLElement>("[data-day-toggle]");
+        header?.setAttribute("aria-expanded", String(!collapsed));
+        if (collapsed) window.dispatchEvent(new CustomEvent(DAY_COLLAPSE_EVENT, { detail: section }));
+        syncAgenda(section);
+        // The note just vanished under the pointer / focus: keep focus on the day.
+        if (toggle.matches("[data-day-note]")) header?.focus({ preventScroll: true });
+      });
 
       // Expose so the film view toggle can re-place dots when it swaps views.
       (window as any).syncAgenda = syncAgenda;

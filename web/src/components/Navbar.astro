@@ -1,12 +1,14 @@
 ---
 import { getCategoryLists } from "@/lib/queries"
-import { cityConfig, MY_LIST } from "@/lib/cities"
-import { type Locale } from "@/lib/types"
+import { CITIES, cityConfig, cityHref, MY_LIST, PICK_PARAM } from "@/lib/cities"
+import { FILM_LIST, tabbableCount } from "@/lib/genre-nav"
+import type { Locale, NavModel } from "@/lib/types"
 import { t, categoryName } from "@/i18n"
 import { measureText } from "@/lib/text-metrics"
 import { navVars } from "@/lib/nav-layout"
 import { gridGeometry } from "@/lib/grid-geometry"
 import { renderStepCss, stepTable } from "@/lib/step-table"
+import CellIcon from "@/components/ui/CellIcon.astro"
 
 interface Props {
   city: string
@@ -18,30 +20,69 @@ const { city, locale, activeList } = Astro.props
 const strings = t(locale)
 const cityCfg = cityConfig(city)
 const LOCALES = cityCfg.locales // the locale switcher offers the CITY's locales
+
+// Genre tabs, busiest first (lib/genre-nav.ts); Film and My list are set
+// apart after them. Every genre renders both as a tab and as a More entry;
+// the layout shows one of the two per width (display vars below).
 const lists = await getCategoryLists(city)
-// Category tabs, then the visitor's own My list (favourite venues) at the end.
-const navItems = [
-  ...lists.map((l) => ({ slug: l.slug, label: categoryName(locale, l.slug), primary: l.primary })),
-  { slug: MY_LIST, label: strings.myList, primary: true },
+const genreLists = lists.filter((l) => l.slug !== FILM_LIST)
+const genres = genreLists.map((l) => ({ slug: l.slug, label: categoryName(locale, l.slug) }))
+const fixed = [
+  ...(lists.some((l) => l.slug === FILM_LIST)
+    ? [{ slug: FILM_LIST, label: categoryName(locale, FILM_LIST) }]
+    : []),
+  { slug: MY_LIST, label: strings.myList },
 ]
+const active = genres.findIndex((g) => g.slug === activeList)
+
+// City selector: every city, on this page's locale + list where it has them.
+const cityLinks = await Promise.all(
+  Object.values(CITIES).map(async (c) => ({
+    slug: c.slug,
+    name: c.name,
+    href: cityHref(c, locale, activeList, (await getCategoryLists(c.slug)).map((l) => l.slug)),
+  })),
+)
 
 // Build-time placement. Each label is measured in the page font
-// (lib/text-metrics.ts), and the whole navbar layout — link spans, wrapping,
-// the locale cells — is swept over every container width into a step table
-// on the header (lib/nav-layout.ts navVars → lib/step-table.ts), emitted with
-// only the rules where a placement changes. Columns are offsets from
-// --col-start (or --c-end for locales), never absolute lines, so they follow
-// the grid geometry table. The nav script below only corrects labels the
-// bundled font can't measure (data-measure: Cyrillic, Armenian).
-const ems = navItems.map((l) => measureText(l.label))
+// (lib/text-metrics.ts), and the whole navbar layout — tab spans, the More
+// split, the set-apart tabs, the city and locale cells, both dropdowns — is
+// swept over every container width into a step table on the header
+// (lib/nav-layout.ts navVars → lib/step-table.ts), emitted with only the
+// rules where a placement changes. Columns are offsets from --col-start,
+// never absolute lines, so they follow the grid geometry table. The nav
+// script below only corrects labels the bundled font can't measure
+// (data-measure: Cyrillic, Armenian), re-measuring each by its data-nav-em key.
+const g = genres.map((x) => measureText(x.label))
+const f = fixed.map((x) => measureText(x.label))
+const more = measureText(strings.more)
+const cityName = measureText(cityCfg.name)
+const c = [...cityLinks.map((x) => x.name), strings.allCities].map((x) => measureText(x))
+const model: NavModel = {
+  genres: g.map((m) => m.em),
+  tabbable: tabbableCount(genreLists),
+  active,
+  more: more.em,
+  fixed: f.map((m) => m.em),
+  city: cityName.em,
+  cityMenu: c.map((m) => m.em),
+  localeCount: LOCALES.length,
+}
 const navCss = renderStepCss(
   "[data-navbar]",
-  stepTable((width, narrow) =>
-    navVars(ems.map((m) => m.em), LOCALES.length, gridGeometry(width, narrow), narrow),
-  ),
+  stepTable((width, narrow) => navVars(model, gridGeometry(width, narrow), narrow)),
 )
+const measure = (m: { covered: boolean }) => (m.covered ? undefined : "")
+const tabClass = (slug: string) =>
+  `cell cell-truncate cell-genre-hover whitespace-nowrap no-underline text-foreground${slug === activeList ? " cell-genre" : ""}`
 ---
-<header class="gridpaper" data-navbar>
+<header
+  class="gridpaper"
+  data-navbar
+  data-city={city}
+  data-locale={locale}
+  data-nav-model={JSON.stringify(model)}
+>
   <style is:inline set:html={navCss} />
   {/* Wordmark. Desktop: 11 cols × 3 rows, font 2.6× the cell. Mobile: 9 cols
       × 2 rows, font 2× (see .navbar-wordmark in global.css). Placement lives
@@ -51,32 +92,131 @@ const navCss = renderStepCss(
     class="cell cell-truncate font-semibold no-underline text-foreground navbar-wordmark"
   ><span class="cell-text">Ca<span class="mr-0.5">r</span>telita</span></a>
 
-  {/* Category nav: links flow on row 3 right of the 11-col wordmark, wrapping
-      up to row 2/1 before the locale zone, or below the wordmark when that's
-      full (lib/nav-layout.ts); placed by the step table above. */}
-  {navItems.map((l, i) => (
+  {/* Genre tabs (those in More are display:none at this width). */}
+  {genres.map((l, i) => (
     <a
       data-genre={l.slug}
       data-navlink
-      data-em={String(ems[i].em)}
-      data-measure={ems[i].covered ? undefined : ""}
+      data-nav-em={`g${i}`}
+      data-measure={measure(g[i])}
       href={`/${city}/${locale}/${l.slug}`}
       aria-current={l.slug === activeList ? "page" : undefined}
-      style={`grid-column: calc(var(--col-start) + var(--n${i}c)) / span var(--n${i}s); grid-row: var(--n${i}r)`}
-      class={`cell cell-truncate cell-genre-hover whitespace-nowrap no-underline ${l.primary ? "text-foreground" : "text-muted-foreground"}${l.slug === activeList ? " cell-genre" : ""}`}
+      style={`display: var(--t${i}d); grid-column: calc(var(--col-start) + var(--t${i}c)) / span var(--t${i}s); grid-row: var(--t${i}r)`}
+      class={tabClass(l.slug)}
     ><span class="cell-text">{l.label}</span></a>
   ))}
 
+  {/* More ▾: the plain trigger, or — when the page's own genre is in More —
+      one showing that genre, filled like an active tab. Both open the same
+      dropdown, which follows them in source order (tab order). */}
+  {genres.length > 0 && (
+    <button
+      type="button"
+      data-nav-trigger
+      data-genre=""
+      data-nav-em="more"
+      data-measure={measure(more)}
+      aria-expanded="false"
+      aria-controls="nav-more"
+      style="display: var(--mtd); grid-column: calc(var(--col-start) + var(--mtc)) / span var(--mts); grid-row: var(--mtr)"
+      class="cell cell-truncate cell-genre-hover nav-trigger text-foreground"
+    ><span class="cell-text">{strings.more}</span><span class="nav-chevron"><CellIcon icon="chevron" /></span></button>
+  )}
+  {active >= 0 && (
+    <button
+      type="button"
+      data-nav-trigger
+      data-genre={activeList}
+      aria-expanded="false"
+      aria-controls="nav-more"
+      style="display: var(--mad); grid-column: calc(var(--col-start) + var(--mtc)) / span var(--mts); grid-row: var(--mtr)"
+      class="cell cell-truncate cell-genre nav-trigger"
+    ><span class="cell-text">{genres[active].label}</span><span class="nav-chevron"><CellIcon icon="chevron" /></span></button>
+  )}
+  {genres.length > 0 && (
+    <div
+      id="nav-more"
+      data-nav-menu
+      hidden
+      class="nav-menu"
+      style="--nmc: var(--mmc); --nmr: var(--mmr); --nmw: var(--mmw); --nmh: var(--mmh)"
+    >
+      {genres.map((l, i) => (
+        <a
+          data-genre={l.slug}
+          href={`/${city}/${locale}/${l.slug}`}
+          aria-current={l.slug === activeList ? "page" : undefined}
+          style={`display: var(--m${i}d); grid-row: var(--m${i}r)`}
+          class={tabClass(l.slug)}
+        ><span class="cell-text">{l.label}</span></a>
+      ))}
+    </div>
+  )}
+
+  {/* Film · My list, set apart at the end of the last tab row. */}
+  {fixed.map((l, j) => (
+    <a
+      data-genre={l.slug}
+      data-navlink
+      data-nav-em={`f${j}`}
+      data-measure={measure(f[j])}
+      href={`/${city}/${locale}/${l.slug}`}
+      aria-current={l.slug === activeList ? "page" : undefined}
+      style={`grid-column: calc(var(--col-start) + var(--f${j}c)) / span var(--f${j}s); grid-row: var(--f${j}r)`}
+      class={tabClass(l.slug)}
+    ><span class="cell-text">{l.label}</span></a>
+  ))}
+
+  {/* City selector: the current city ▾, its dropdown right-aligned to the
+      band. Each city keeps this page's locale and list where it has them
+      (lib/cities.ts cityHref); "All cities" opens the picker at /. */}
+  <button
+    type="button"
+    data-nav-trigger
+    data-nav-em="city"
+    data-measure={measure(cityName)}
+    aria-expanded="false"
+    aria-controls="nav-city"
+    aria-label={`${strings.city}: ${cityCfg.name}`}
+    style="grid-column: calc(var(--col-start) + var(--cc)) / span var(--cs); grid-row: var(--cr)"
+    class="cell cell-truncate nav-trigger nav-city text-foreground"
+  ><span class="cell-text">{cityCfg.name}</span><span class="nav-chevron"><CellIcon icon="chevron" /></span></button>
+  <div
+    id="nav-city"
+    data-nav-menu
+    hidden
+    class="nav-menu"
+    style={`--nmc: var(--cmc); --nmr: var(--cmr); --nmw: var(--cmw); --nmh: ${cityLinks.length + 1}`}
+  >
+    {cityLinks.map((x, j) => (
+      <a
+        href={x.href}
+        data-nav-em={`c${j}`}
+        data-measure={measure(c[j])}
+        aria-current={x.slug === city ? "page" : undefined}
+        style={`grid-row: ${j + 1}`}
+        class="cell cell-truncate nav-menu-item no-underline text-foreground"
+      ><span class="cell-text">{x.name}</span></a>
+    ))}
+    <a
+      href={`/?${PICK_PARAM}`}
+      data-nav-em={`c${cityLinks.length}`}
+      data-measure={measure(c[cityLinks.length])}
+      style={`grid-row: ${cityLinks.length + 1}`}
+      class="cell cell-truncate nav-menu-item no-underline text-muted-foreground"
+    ><span class="cell-text">{strings.allCities}</span></a>
+  </div>
+
   {/* Locale switcher. Desktop: one cell per locale, top-right row 1,
-      right-aligned. Mobile: restacked into the columns right of the 9-col
-      wordmark, across rows 1–2 (lib/nav-layout.ts layoutLocales). */}
+      right-aligned. Mobile: right-flush beside the 9-col wordmark, on row 1
+      with the city or on row 2 below it (lib/nav-layout.ts layoutNav). */}
   {LOCALES.map((lc, i) => (
     <a
       data-locale
       data-locale-index={i}
       href={`/${city}/${lc}/${activeList}`}
       aria-current={lc === locale ? "page" : undefined}
-      style={`grid-column: calc(var(--c-end) - var(--l${i}o)) / span 1; grid-row: var(--l${i}r)`}
+      style={`grid-column: calc(var(--col-start) + var(--l${i}c)) / span 1; grid-row: var(--l${i}r)`}
       class="cell justify-end text-muted-foreground no-underline hover:text-foreground aria-[current=page]:font-medium aria-[current=page]:text-foreground text-xs min-[760px]:text-base"
     >
       <span class="cell-text">{lc.toUpperCase()}</span>
@@ -87,31 +227,137 @@ const navCss = renderStepCss(
     import { navVars } from "@/lib/nav-layout";
     import { correctVars, isNarrow, liveGrid, measureEm } from "@/lib/grid-client";
     import { onPage } from "@/lib/page-lifecycle";
+    import { LAST_CITY_KEY } from "@/lib/cities";
+    import type { NavModel } from "@/lib/types";
 
-    // The build-time step table already places every link and locale cell
-    // for every width. This only CORRECTS it, writing (inline, on the header)
-    // just the vars that differ from the table: labels the bundled font can't
-    // cover (data-measure) are re-measured in the font the browser actually
-    // picked, and beyond the table's width range the layout is recomputed
-    // from the same function (lib/nav-layout.ts navVars). On Latin pages it
-    // writes nothing.
+    const header = () => document.querySelector<HTMLElement>("header[data-navbar]");
+
+    // The build-time step table already places every item for every width.
+    // This only CORRECTS it, writing (inline, on the header) just the vars
+    // that differ from the table: labels the bundled font can't cover
+    // (data-measure) are re-measured in the font the browser actually picked,
+    // and beyond the table's width range the layout is recomputed from the
+    // same function (lib/nav-layout.ts navVars). On Latin pages it writes
+    // nothing.
     function layoutNav() {
-      const header = document.querySelector<HTMLElement>("header[data-navbar]");
-      if (!header) return;
-      const links = [...header.querySelectorAll<HTMLElement>("a[data-navlink]")];
-      const ems = links.map((a) =>
-        a.hasAttribute("data-measure")
-          ? measureEm(a.querySelector<HTMLElement>(".cell-text") ?? a)
-          : Number(a.dataset.em) || 0,
-      );
-      const localeCount = header.querySelectorAll("a[data-locale]").length;
-      correctVars(header, navVars(ems, localeCount, liveGrid(), isNarrow()));
+      const h = header();
+      if (!h) return;
+      let model: NavModel;
+      try {
+        model = JSON.parse(h.dataset.navModel ?? "");
+      } catch {
+        return;
+      }
+      h.querySelectorAll<HTMLElement>("[data-nav-em][data-measure]").forEach((el) => {
+        const key = el.dataset.navEm ?? "";
+        const em = measureEm(el.querySelector<HTMLElement>(".cell-text") ?? el);
+        if (key === "more") model.more = em;
+        else if (key === "city") model.city = em;
+        else {
+          const list = { g: model.genres, f: model.fixed, c: model.cityMenu }[key[0]];
+          const i = Number(key.slice(1));
+          if (list && i < list.length) list[i] = em;
+        }
+      });
+      correctVars(h, navVars(model, liveGrid(), isNarrow()));
     }
+
+    // ── Dropdowns (More, city) ─────────────────────────────────────────
+    // A disclosure: the trigger toggles its menu (aria-expanded), whose links
+    // follow it in tab order. Arrow keys move through the links; Esc, a press
+    // outside or focus leaving closes it. One open at a time.
+    let open: { trigger: HTMLElement; menu: HTMLElement } | null = null;
+
+    const linksOf = (menu: HTMLElement) =>
+      [...menu.querySelectorAll<HTMLElement>("a")].filter((a) => getComputedStyle(a).display !== "none");
+
+    function openMenu(trigger: HTMLElement, focusFirst: boolean) {
+      closeMenu(false);
+      const menu = document.getElementById(trigger.getAttribute("aria-controls") ?? "");
+      if (!menu) return;
+      menu.hidden = false;
+      trigger.setAttribute("aria-expanded", "true");
+      open = { trigger, menu };
+      if (focusFirst) linksOf(menu)[0]?.focus({ preventScroll: true });
+    }
+
+    function closeMenu(restoreFocus = true) {
+      if (!open) return;
+      const { trigger, menu } = open;
+      open = null;
+      menu.hidden = true;
+      trigger.setAttribute("aria-expanded", "false");
+      if (restoreFocus) trigger.focus({ preventScroll: true });
+    }
+
+    // Document listeners: registered once per session, acting on the
+    // current page's header.
+    document.addEventListener("click", (e) => {
+      const trigger = (e.target as Element | null)?.closest<HTMLElement>("[data-nav-trigger]");
+      if (!trigger) return;
+      if (open?.trigger === trigger) closeMenu(false);
+      // A keyboard "click" (Enter / Space) has no pointer detail: move focus in.
+      else openMenu(trigger, e.detail === 0);
+    });
+
+    document.addEventListener("pointerdown", (e) => {
+      if (!open) return;
+      const target = e.target as Node;
+      if (open.menu.contains(target) || open.trigger.contains(target)) return;
+      closeMenu(false);
+    });
+
+    document.addEventListener("focusin", (e) => {
+      if (!open) return;
+      const target = e.target as Node;
+      if (open.menu.contains(target) || open.trigger.contains(target)) return;
+      closeMenu(false);
+    });
+
+    document.addEventListener("keydown", (e) => {
+      const target = e.target as HTMLElement | null;
+      if (!open) {
+        // ArrowDown on a closed trigger opens its menu on the first link.
+        const trigger = target?.closest<HTMLElement>("[data-nav-trigger]");
+        if (trigger && e.key === "ArrowDown") {
+          e.preventDefault();
+          openMenu(trigger, true);
+        }
+        return;
+      }
+      if (e.key === "Escape") {
+        e.preventDefault();
+        closeMenu(true);
+        return;
+      }
+      const links = linksOf(open.menu);
+      if (!links.length) return;
+      const i = links.indexOf(document.activeElement as HTMLElement);
+      let next = -1;
+      if (e.key === "ArrowDown") next = i < 0 ? 0 : (i + 1) % links.length;
+      else if (e.key === "ArrowUp") next = i < 0 ? links.length - 1 : (i - 1 + links.length) % links.length;
+      else if (e.key === "Home") next = 0;
+      else if (e.key === "End") next = links.length - 1;
+      if (next < 0) return;
+      e.preventDefault();
+      links[next].focus({ preventScroll: true });
+    });
+
     onPage(() => {
+      open = null; // a client navigation brings a fresh, closed header
       layoutNav();
       // A measured label's width changes when its font arrives.
-      if (document.querySelector("a[data-navlink][data-measure]")) {
+      if (document.querySelector("header[data-navbar] [data-measure]")) {
         document.fonts?.ready.then(layoutNav);
+      }
+      // Remember the city (and locale) for the picker at / (CityPicker.astro).
+      const h = header();
+      if (h?.dataset.city && h.dataset.locale) {
+        try {
+          localStorage.setItem(LAST_CITY_KEY, `/${h.dataset.city}/${h.dataset.locale}/`);
+        } catch {
+          // Storage blocked: / just shows the picker.
+        }
       }
     });
     window.addEventListener("gridsync", layoutNav);

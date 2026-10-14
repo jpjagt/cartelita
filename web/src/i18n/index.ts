@@ -17,6 +17,10 @@ interface Strings {
   addToCalendar: string    // event share menu: .ics export
   copied: string           // share fallback: text copied to the clipboard
   view: string             // event panel: open the event's own page
+  more: string             // navbar: the dropdown holding the quieter genres
+  city: string             // navbar: city selector label (aria)
+  allCities: string        // city selector: back to the city picker
+  eventsHidden: string     // a collapsed day's placeholder row
   // Share text: {title}, {when} (date[, time]) and {venue}; " (price)" is
   // appended when there is one (lib/share.ts).
   shareTemplate: string
@@ -43,6 +47,10 @@ const DICT: Record<Locale, Strings> = {
     addToCalendar: "Afegeix al calendari",
     copied: "Copiat",
     view: "Veure",
+    more: "Més",
+    city: "Ciutat",
+    allCities: "Totes les ciutats",
+    eventsHidden: "Esdeveniments amagats — clica per mostrar-los",
     shareTemplate: "{title} — {when} a {venue}",
     categories: {
       film: "Cinema",
@@ -77,6 +85,10 @@ const DICT: Record<Locale, Strings> = {
     addToCalendar: "Añadir al calendario",
     copied: "Copiado",
     view: "Ver",
+    more: "Más",
+    city: "Ciudad",
+    allCities: "Todas las ciudades",
+    eventsHidden: "Eventos ocultos — haz clic para mostrarlos",
     shareTemplate: "{title} — {when} en {venue}",
     categories: {
       film: "Cine",
@@ -111,6 +123,10 @@ const DICT: Record<Locale, Strings> = {
     addToCalendar: "Add to calendar",
     copied: "Copied",
     view: "View",
+    more: "More",
+    city: "City",
+    allCities: "All cities",
+    eventsHidden: "Events hidden — click to show",
     shareTemplate: "{title} — {when} at {venue}",
     categories: {
       film: "Film",
@@ -145,6 +161,10 @@ const DICT: Record<Locale, Strings> = {
     addToCalendar: "Ավելացնել օրացույցին",
     copied: "Պատճենված է",
     view: "Դիտել",
+    more: "Ավելին",
+    city: "Քաղաք",
+    allCities: "Բոլոր քաղաքները",
+    eventsHidden: "Միջոցառումները թաքցված են — սեղմեք՝ ցուցադրելու համար",
     shareTemplate: "{title} — {when}, {venue}",
     categories: {
       film: "Կինո",
@@ -179,6 +199,10 @@ const DICT: Record<Locale, Strings> = {
     addToCalendar: "Добавить в календарь",
     copied: "Скопировано",
     view: "Открыть",
+    more: "Ещё",
+    city: "Город",
+    allCities: "Все города",
+    eventsHidden: "События скрыты — нажмите, чтобы показать",
     shareTemplate: "{title} — {when}, {venue}",
     categories: {
       film: "Кино",
@@ -213,6 +237,10 @@ const DICT: Record<Locale, Strings> = {
     addToCalendar: "Toevoegen aan agenda",
     copied: "Gekopieerd",
     view: "Bekijken",
+    more: "Meer",
+    city: "Stad",
+    allCities: "Alle steden",
+    eventsHidden: "Evenementen verborgen — klik om te tonen",
     shareTemplate: "{title} — {when} in {venue}",
     categories: {
       film: "Film",

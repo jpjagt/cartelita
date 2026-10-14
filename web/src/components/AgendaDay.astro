@@ -1,6 +1,7 @@
 ---
 import type { AgendaDay, Locale } from "@/lib/types";
-import { localeTag } from "@/i18n";
+import { localeTag, t } from "@/i18n";
+import CellIcon from "@/components/ui/CellIcon.astro";
 import EventRow from "@/components/EventRow.astro";
 interface Props {
   day: AgendaDay
@@ -21,10 +22,14 @@ const heading = new Date(day.date + "T00:00:00").toLocaleDateString(localeTag(lo
       add `cell-lined-cols` to the class list below (and `cell-lined-rows`
       for horizontal). They redraw the same texture pattern inside the cell;
       see .cell-lined-cols in global.css. */}
-  <h2
-    style="grid-row: 1"
-    class="cell cell-truncate cell-lined gc-full bg-muted font-medium"
-  ><span class="cell-text">{heading}</span></h2>
+  <h2 style="grid-row: 1" class="cell cell-lined gc-full bg-muted font-medium day-head">
+    {/* The header toggles the day's events (collapsed: one note row in their
+        place; syncAgenda in Layout.astro). */}
+    <button type="button" data-day-toggle aria-expanded="true" class="day-toggle"
+      ><span class="cell-text">{heading}</span><span class="day-chevron"><CellIcon icon="chevron" /></span></button>
+  </h2>
+  <button type="button" data-day-note hidden class="cell cell-truncate gc-full gc-day-note text-muted-foreground"
+    ><span class="cell-text">{t(locale).eventsHidden}</span></button>
   {day.events.map((e, i) => <EventRow event={e} locale={locale} genre={genre} index={i} />)}
   {/* One empty spacer row beneath the day's events. An auto grid row only
       gains height when something occupies it, so place an empty cell spanning

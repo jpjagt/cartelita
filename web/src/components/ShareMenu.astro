@@ -44,6 +44,7 @@ const { timezone } = cityConfig(city)
   import { NARROW_QUERY } from "@/lib/breakpoints"
   import { liveGrid } from "@/lib/grid-client"
   import { onPage } from "@/lib/page-lifecycle"
+  import { DAY_COLLAPSE_EVENT } from "@/lib/event-panel"
   import { eventProps, track } from "@/lib/track"
 
   // The current page's menu; null on pages without event rows.
@@ -191,6 +192,10 @@ const { timezone } = cityConfig(city)
 
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && row) close()
+  })
+  // Collapsing the open row's day hides the row (and its trigger): close.
+  window.addEventListener(DAY_COLLAPSE_EVENT, (e) => {
+    if (row && (e as CustomEvent<HTMLElement>).detail.contains(row)) close(false)
   })
   // The grid can re-flow under an open menu (resize, rotation): re-place
   // it, or close it if the layout switched to the narrow one (no trigger).

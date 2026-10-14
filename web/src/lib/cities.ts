@@ -1,4 +1,4 @@
-import type { CityConfig } from "@/lib/types";
+import type { CityConfig, Locale } from "@/lib/types";
 
 // Every city Cartelita serves. The city is the product scope: it determines
 // which locales exist and what the landing list is. The DB `city` table is
@@ -61,3 +61,21 @@ export function cityConfig(slug: string): CityConfig {
   if (!city) throw new Error(`unknown city slug ${JSON.stringify(slug)}`);
   return city;
 }
+
+/** Where the city selector sends a visitor reading `list` in `locale`:
+    `target` in the same locale when it serves it (else its default locale),
+    on the same list when it has one by that slug (My list always exists),
+    else its default list. `targetLists` are the target city's list slugs. */
+export function cityHref(target: CityConfig, locale: Locale, list: string, targetLists: string[]): string {
+  const lc = target.locales.includes(locale) ? locale : target.defaultLocale;
+  const slug = list === MY_LIST || targetLists.includes(list) ? list : target.defaultList;
+  return `/${target.slug}/${lc}/${slug}`;
+}
+
+/** Query flag on `/` that shows the city picker instead of redirecting to the
+    last visited city (the city selector's "All cities"). */
+export const PICK_PARAM = "pick";
+
+/** localStorage key holding the last visited city page's prefix
+    (`/<city>/<locale>/`), where `/` redirects to. */
+export const LAST_CITY_KEY = "cartelita-last-city";

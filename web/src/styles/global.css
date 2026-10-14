@@ -963,6 +963,151 @@ html {
   }
 }
 
+/* ── Navbar dropdowns (Navbar.astro): More ▾ and the city selector ─────
+     A trigger spans its label's whole cells plus one for the chevron, which
+     sits centered in that last cell (muted; it turns over while open). The
+     menu is absolutely placed on the header's grid in whole cells — left /
+     top / width / height all multiples of --cell from the build-time nav
+     step table (--nmc/--nmr/--nmw/--nmh, lib/nav-layout.ts) — so it overlays
+     the page without adding a row (no shift), and lines up with the
+     gridlines. Opaque, with the grid texture redrawn inside and a 2px
+     muted-foreground frame on its outer gridlines, like the share menu. */
+.nav-trigger {
+  appearance: none;
+  border: 0;
+  margin: 0;
+  background: transparent;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  padding-right: calc(var(--cell) + 3px);
+}
+.nav-chevron {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: var(--cell);
+  height: 100%;
+  pointer-events: none;
+}
+.nav-trigger:not(.cell-genre) .nav-chevron {
+  color: var(--muted-foreground);
+}
+.nav-trigger:hover .nav-chevron,
+.nav-trigger[aria-expanded="true"] .nav-chevron {
+  color: inherit;
+}
+.nav-trigger[aria-expanded="true"] .nav-chevron .cell-icon {
+  rotate: 180deg;
+}
+.nav-trigger:focus-visible,
+.nav-menu > a:focus-visible,
+.day-toggle:focus-visible {
+  outline: 2px solid var(--genre-primary);
+  outline-offset: -2px;
+}
+.nav-city:hover .cell-text {
+  text-decoration: underline;
+}
+.nav-menu {
+  position: absolute;
+  z-index: 40;
+  left: calc((var(--col-start) - 1 + var(--nmc)) * var(--cell));
+  top: calc(var(--nmr) * var(--cell));
+  width: calc(var(--nmw) * var(--cell) + 2px);
+  /* +2px puts the right frame on the next gridline — except at the edge of a
+     full-bleed (narrow) band, where that line is the viewport's edge. */
+  max-width: calc(100% - (var(--col-start) - 1 + var(--nmc)) * var(--cell));
+  height: calc(var(--nmh) * var(--cell) + 2px);
+  display: grid;
+  grid-template-columns: repeat(var(--nmw), var(--cell));
+  grid-auto-rows: var(--cell);
+  align-content: start;
+  background-color: var(--background);
+  background-image:
+    linear-gradient(to right, var(--grid-line) 2px, transparent 2px),
+    linear-gradient(to bottom, var(--grid-line) 2px, transparent 2px);
+  background-size: var(--cell) var(--cell);
+  box-shadow: inset 0 0 0 2px var(--muted-foreground);
+}
+.nav-menu[hidden] {
+  display: none;
+}
+.nav-menu > a {
+  grid-column: 1 / -1;
+}
+.nav-menu-item:hover .cell-text,
+.nav-menu-item[aria-current="page"] .cell-text {
+  text-decoration: underline;
+}
+.nav-menu-item[aria-current="page"] {
+  font-weight: 500;
+}
+
+/* ── Collapsible days (AgendaDay / FilmDay; syncAgenda in Layout.astro) ──
+     The shaded day header is one button across the band; its chevron (last
+     cell) shows on hover/focus and while the day is collapsed, turned to
+     point right. A collapsed day hides its rows and shows one muted note row
+     in their place (--ev 0); its spacer follows on row 3. */
+.day-head {
+  padding: 0;
+}
+.day-toggle {
+  appearance: none;
+  border: 0;
+  margin: 0;
+  background: transparent;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  align-self: stretch;
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 0 calc(var(--cell) + 3px) 1px 3px;
+}
+.day-chevron {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: var(--cell);
+  height: 100%;
+  color: var(--muted-foreground);
+  visibility: hidden;
+  pointer-events: none;
+}
+.day-toggle:hover .day-chevron,
+.day-toggle:focus-visible .day-chevron,
+.day-toggle[aria-expanded="false"] .day-chevron {
+  visibility: visible;
+}
+.day-toggle[aria-expanded="false"] .day-chevron .cell-icon {
+  rotate: -90deg;
+}
+.gc-day-note {
+  grid-row: calc(2 + var(--ev, 0));
+  appearance: none;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.gc-day-note:hover {
+  color: var(--foreground);
+}
+section[data-collapsed] > .gc-film-spacer {
+  grid-row: 3;
+}
+@media (max-width: 759.98px) {
+  .gc-day-note {
+    grid-row: calc(2 + var(--ev, 0) * 2 + var(--po, 0));
+  }
+}
+
 /* Faux isometric extrusion. The ::before is the extruded block behind the
      cell, offset 20% toward bottom-right. Two-tone walls via conic-gradient:
      top wall = --wall-top, left wall = --wall-left. Only opacity + transform

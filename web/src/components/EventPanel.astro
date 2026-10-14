@@ -56,7 +56,7 @@ const descriptionsJson = JSON.stringify(descriptions).replace(/</g, "\\u003c")
 
 <script>
   import { eventOf, shareEvent, addToCalendar } from "@/lib/event-actions"
-  import { panelRows } from "@/lib/event-panel"
+  import { DAY_COLLAPSE_EVENT, panelRows } from "@/lib/event-panel"
   import { NARROW_QUERY } from "@/lib/breakpoints"
   import { FAVOURITES_EVENT } from "@/lib/favourites"
   import { liveGrid } from "@/lib/grid-client"
@@ -223,6 +223,11 @@ const descriptionsJson = JSON.stringify(descriptions).replace(/</g, "\\u003c")
     if (!row) return
     if (!NARROW.matches) close()
     else if (measure(row)) repack(row)
+  })
+
+  // Collapsing the open row's day hides the row: take its panel with it.
+  window.addEventListener(DAY_COLLAPSE_EVENT, (e) => {
+    if (row && (e as CustomEvent<HTMLElement>).detail.contains(row)) close()
   })
 
   // My list: un-favouriting the open row's venue filters the row out; take

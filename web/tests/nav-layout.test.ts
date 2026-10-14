@@ -1,7 +1,18 @@
 import { describe, it, expect } from "vitest";
-import { layoutLocales, layoutNavLinks, navVars, WORDMARK_COLS } from "@/lib/nav-layout";
+import {
+  fitTabs,
+  flowLines,
+  layoutNav,
+  MIN_BESIDE_TABS,
+  NARROW_WORDMARK_COLS,
+  NAV_GAP,
+  navSpans,
+  navVars,
+  WORDMARK_COLS,
+} from "@/lib/nav-layout";
 import { gridGeometry } from "@/lib/grid-geometry";
-import type { NavPlacement } from "@/lib/types";
+import { measureText } from "@/lib/text-metrics";
+import type { NavLayout, NavModel, NavPlacement, NavSpans } from "@/lib/types";
 
 // Two placements overlap when they share a row and their column ranges meet.
 function overlaps(ps: NavPlacement[]): boolean {
@@ -12,99 +23,230 @@ function overlaps(ps: NavPlacement[]): boolean {
   );
 }
 
-// Amsterdam EN: 7 categories + My list.
-const AMS = [3, 4, 4, 3, 3, 2, 5, 3];
+// Every visible item of a layout (the wordmark as placements too).
+function items(nav: NavLayout, narrow: boolean): NavPlacement[] {
+  const cols = narrow ? NARROW_WORDMARK_COLS : WORDMARK_COLS;
+  const rows = narrow ? 2 : 3;
+  const wordmark = Array.from({ length: rows }, (_, i) => ({ col: 1, span: cols, row: 1 + i }));
+  return [
+    ...wordmark,
+    ...nav.tabs.filter((p): p is NavPlacement => !!p),
+    ...(nav.more ? [nav.more] : []),
+    ...nav.fixed,
+    nav.city,
+    ...nav.locales,
+  ];
+}
 
-describe("layoutNavLinks", () => {
-  it("flows beside the wordmark on row 3 when there's room", () => {
-    const ps = layoutNavLinks([3, 4], { colStart: 5, bandEnd: 45, localeCount: 2, narrow: false });
-    expect(ps).toEqual([
-      { col: 5 + WORDMARK_COLS, span: 3, row: 3 },
-      { col: 5 + WORDMARK_COLS + 3, span: 4, row: 3 },
+const spans = (over: Partial<NavSpans> = {}): NavSpans => ({
+  genres: [3, 4, 2, 3, 2],
+  tabbable: 5,
+  active: -1,
+  more: 3,
+  activeMore: 0,
+  fixed: [2, 3],
+  city: 5,
+  cityMenu: [4, 4, 4, 4, 4, 5],
+  localeCount: 2,
+  ...over,
+});
+
+// Rotterdam, nl: genres by volume (kids … folk), the last three under the
+// weekly threshold; Film and Mijn lijst set apart.
+const em = (s: string) => measureText(s).em;
+const ROTTERDAM: NavModel = {
+  genres: ["Kinderen", "Dans", "Jazz", "Club", "Theater", "Pop", "Klassiek", "Alternatief", "Folk"].map(em),
+  tabbable: 6,
+  active: -1,
+  more: em("Meer"),
+  fixed: [em("Film"), em("Mijn lijst")],
+  city: em("Rotterdam"),
+  cityMenu: ["Barcelona", "Yerevan", "Amsterdam", "Rotterdam", "Utrecht", "Alle steden"].map(em),
+  localeCount: 2,
+};
+
+describe("flowLines", () => {
+  it("flows items and right-aligns the fixed group on the last line after a gap", () => {
+    const r = flowLines([3, 4], [2, 3], [{ row: 3, start: 12, end: 42 }])!;
+    expect(r.flow).toEqual([
+      { col: 12, span: 3, row: 3 },
+      { col: 15, span: 4, row: 3 },
+    ]);
+    expect(r.fixed).toEqual([
+      { col: 37, span: 2, row: 3 },
+      { col: 39, span: 3, row: 3 },
     ]);
   });
 
-  it("wraps up a row before the locale zone", () => {
-    const ps = layoutNavLinks(AMS, { colStart: 1, bandEnd: 33, localeCount: 2, narrow: false });
-    expect(Math.min(...ps.map((p) => p.row))).toBeGreaterThanOrEqual(1);
-    expect(ps.every((p) => p.row <= 3)).toBe(true);
-    expect(ps.every((p) => p.col + p.span <= 33 - 3)).toBe(true);
-    expect(overlaps(ps)).toBe(false);
+  it("wraps onto the next line and keeps the gap before the fixed group", () => {
+    const r = flowLines([4, 4, 4], [3], [
+      { row: 3, start: 1, end: 10 },
+      { row: 4, start: 1, end: 10 },
+    ])!;
+    expect(r.flow.map((p) => p.row)).toEqual([3, 3, 4]);
+    expect(r.fixed).toEqual([{ col: 7, span: 3, row: 4 }]);
+    expect(r.flow[2].col + r.flow[2].span + NAV_GAP).toBeLessThanOrEqual(r.fixed[0].col);
   });
 
-  it("falls back below the wordmark when three rows don't hold the links", () => {
-    // 23 columns: 9 beside the wordmark minus the locale zone — too few.
-    const ps = layoutNavLinks(AMS, { colStart: 1, bandEnd: 24, localeCount: 2, narrow: false });
-    expect(ps[0]).toEqual({ col: 1, span: 3, row: 4 });
-    expect(ps.every((p) => p.row >= 4 && p.col + p.span <= 24)).toBe(true);
-    expect(overlaps(ps)).toBe(false);
-  });
-
-  it("never overlaps at any desktop band width", () => {
-    for (let cols = 20; cols <= 60; cols++) {
-      const ps = layoutNavLinks(AMS, { colStart: 1, bandEnd: 1 + cols, localeCount: 3, narrow: false });
-      expect(overlaps(ps), `cols=${cols}`).toBe(false);
-      // Beside the wordmark (rows 1–3) a link must stay right of it.
-      for (const p of ps) {
-        if (p.row <= 3) expect(p.col).toBeGreaterThanOrEqual(1 + WORDMARK_COLS);
-      }
-    }
-  });
-
-  it("narrow: flows from the band start on row 3, wrapping down", () => {
-    const ps = layoutNavLinks(AMS, { colStart: 1, bandEnd: 17, localeCount: 2, narrow: true });
-    expect(ps[0]).toEqual({ col: 1, span: 3, row: 3 });
-    expect(ps.every((p) => p.col + p.span <= 17)).toBe(true);
-    expect(overlaps(ps)).toBe(false);
+  it("fails when the items don't fit", () => {
+    expect(flowLines([5, 5], [3], [{ row: 3, start: 1, end: 12 }])).toBeNull();
   });
 });
 
-describe("layoutLocales", () => {
-  it("desktop: one cell each, right-aligned on row 1", () => {
-    expect(layoutLocales(3, 41, false)).toEqual([
-      { offset: 3, row: 1 },
-      { offset: 2, row: 1 },
-      { offset: 1, row: 1 },
-    ]);
+describe("fitTabs (the More split)", () => {
+  const line = (end: number) => [{ row: 3, start: 1, end }];
+
+  it("shows every tab, without More, when they fit", () => {
+    const r = fitTabs(spans(), line(40))!;
+    expect(r.k).toBe(5);
+    expect(r.flow).toHaveLength(5); // no trigger
   });
 
-  it("narrow: right-flush beside the wordmark, overflow onto row 2", () => {
-    // 16 cells: 7 beside the 9-col wordmark — all three on row 1.
-    expect(layoutLocales(3, 16, true)).toEqual([
-      { offset: 3, row: 1 },
-      { offset: 2, row: 1 },
-      { offset: 1, row: 1 },
+  it("keeps genres under the weekly threshold in More even with room", () => {
+    const r = fitTabs(spans({ tabbable: 3 }), line(40))!;
+    expect(r.k).toBe(3);
+    expect(r.flow).toHaveLength(4); // 3 tabs + More
+  });
+
+  it("moves the overflowing tail into More", () => {
+    // 18 cells: fixed 5 + gap 1 → 12 for tabs + More (3).
+    const r = fitTabs(spans(), line(19))!;
+    expect(r.k).toBe(3); // 3 + 4 + 2 + More 3 = 12; a 4th tab (3) → 15
+    const flowEnd = Math.max(...r.flow.map((p) => p.col + p.span));
+    expect(flowEnd + NAV_GAP).toBeLessThanOrEqual(r.fixed[0].col);
+  });
+
+  it("never puts a single genre in More when its own tab fits", () => {
+    // tabbable 4 of 5: More would hold one genre (span 2 ≤ More's 3).
+    expect(fitTabs(spans({ tabbable: 4 }), line(40))!.k).toBe(5);
+  });
+
+  it("sizes the trigger for the active genre's name when it is in More", () => {
+    // Active genre 4 (span 2) is in More: its trigger is 2 + 1 chevron.
+    const r = fitTabs(spans({ tabbable: 2, active: 4, activeMore: 3, genres: [3, 4, 2, 3, 6] }), line(40))!;
+    expect(r.k).toBe(2);
+    const wide = fitTabs(spans({ tabbable: 2, active: 4, activeMore: 7, genres: [3, 4, 2, 3, 6] }), line(40))!;
+    expect(wide.flow[2].span).toBe(7);
+  });
+});
+
+describe("layoutNav", () => {
+  it("desktop: tabs beside the wordmark on row 3, city · locales on row 1", () => {
+    const nav = layoutNav(spans(), 41, false);
+    expect(nav.tabs[0]).toEqual({ col: 1 + WORDMARK_COLS, span: 3, row: 3 });
+    expect(nav.fixed.at(-1)!.col + nav.fixed.at(-1)!.span).toBe(42); // right-aligned
+    expect(nav.locales).toEqual([
+      { col: 40, span: 1, row: 1 },
+      { col: 41, span: 1, row: 1 },
     ]);
-    // 11 cells: 2 per row.
-    expect(layoutLocales(3, 11, true)).toEqual([
-      { offset: 2, row: 1 },
-      { offset: 1, row: 1 },
-      { offset: 1, row: 2 },
-    ]);
+    expect(nav.city).toEqual({ col: 40 - NAV_GAP - 5, span: 5, row: 1 });
+    // Under the trigger (widest entry 5 + 1 cells), inside the band.
+    expect(nav.cityMenu).toEqual({ col: nav.city.col, row: 1, width: 6 });
+    expect(layoutNav(spans({ city: 3 }), 41, false).cityMenu.col).toBe(42 - 6);
+  });
+
+  it("desktop: moves the tabs below the wordmark when beside is too cramped", () => {
+    // 23 cells: 12 beside → fixed 5 + gap + More 3 leaves 3 → one tab.
+    const nav = layoutNav(spans(), 23, false);
+    expect(nav.tabs[0]!.row).toBe(4);
+    expect(nav.tabs.filter(Boolean).length).toBeGreaterThanOrEqual(MIN_BESIDE_TABS);
+  });
+
+  it("places the More menu under its trigger, inside the band", () => {
+    const nav = layoutNav(spans({ tabbable: 2 }), 30, false);
+    expect(nav.more).not.toBeNull();
+    expect(nav.moreMenu!.row).toBe(nav.more!.row);
+    expect(nav.moreMenu!.col + nav.moreMenu!.width).toBeLessThanOrEqual(31);
+    expect(nav.moreMenu!.width).toBe(3 + 1); // widest entry (genres 2–4) + 1
+  });
+
+  it("narrow: city on row 1 and locales on row 2 when they don't share a row", () => {
+    const nav = layoutNav(spans(), 16, true); // 7 cells beside the wordmark
+    expect(nav.city).toEqual({ col: 17 - 5, span: 5, row: 1 });
+    expect(nav.locales.map((p) => p.row)).toEqual([2, 2]);
+    expect(nav.locales.at(-1)!.col).toBe(16);
+  });
+
+  it("narrow: city and locales share row 1 when there's room", () => {
+    const nav = layoutNav(spans({ city: 4 }), 20, true); // 11 beside
+    expect(nav.city.row).toBe(1);
+    expect(nav.locales.every((p) => p.row === 1)).toBe(true);
+    expect(nav.city.col + nav.city.span + NAV_GAP).toBe(nav.locales[0].col);
+  });
+
+  it("narrow: one tab row when everything fits, two at most", () => {
+    expect(layoutNav(spans({ genres: [3, 2] }), 16, true).tabs.every((p) => p!.row === 3)).toBe(true);
+    const nav = layoutNav(spans(), 16, true);
+    const rows = [...nav.tabs, nav.more, ...nav.fixed].filter(Boolean).map((p) => p!.row);
+    expect(Math.max(...rows)).toBeLessThanOrEqual(4);
+  });
+
+  it("never overlaps, at any width, in either layout", () => {
+    for (const narrow of [false, true]) {
+      for (let cells = narrow ? 13 : 20; cells <= 60; cells++) {
+        for (const sp of [spans(), spans({ tabbable: 2, active: 3, activeMore: 4 }), spans({ genres: [] })]) {
+          const nav = layoutNav(sp, cells, narrow);
+          const all = items(nav, narrow);
+          expect(overlaps(all), `cells=${cells} narrow=${narrow}`).toBe(false);
+          expect(all.every((p) => p.col >= 1 && p.col + p.span <= cells + 1), `cells=${cells}`).toBe(true);
+          // Film · My list keep their gap after the last tab / More.
+          const flow = [...nav.tabs, nav.more].filter((p): p is NavPlacement => !!p);
+          const last = flow.filter((p) => p.row === nav.fixed[0].row);
+          for (const p of last) expect(p.col + p.span + NAV_GAP).toBeLessThanOrEqual(nav.fixed[0].col);
+        }
+      }
+    }
   });
 });
 
 describe("navVars", () => {
-  // "Jazz" 2.056em, "My list" ≈ 2.828em.
-  const ems = [2.056, 2.828];
+  it("places items relative to --col-start, never on absolute lines", () => {
+    const wide = navVars(ROTTERDAM, gridGeometry(1400, false), false);
+    expect(wide["--t0c"]).toBe(String(WORDMARK_COLS));
+    expect(wide["--t0r"]).toBe("3");
+    // 2000px has a different --col-start but the same band.
+    expect(navVars(ROTTERDAM, gridGeometry(2000, false), false)).toEqual(wide);
+  });
 
-  it("places links relative to --col-start, never on absolute lines", () => {
-    const wide = navVars(ems, 3, gridGeometry(1400, false), false);
-    // 1400px: --col-start 2, but offsets are band-relative.
-    expect(wide).toMatchObject({ "--n0c": String(WORDMARK_COLS), "--n0s": "2", "--n0r": "3" });
-    expect(wide["--n1c"]).toBe(String(WORDMARK_COLS + 2));
-    expect(navVars(ems, 3, gridGeometry(2000, false), false)).toEqual(wide);
+  it("Rotterdam at 1400px: six tabs, the quiet three in More, in order", () => {
+    const v = navVars(ROTTERDAM, gridGeometry(1400, false), false);
+    expect([0, 1, 2, 3, 4, 5].map((i) => v[`--t${i}d`])).toEqual(Array(6).fill("flex"));
+    expect([6, 7, 8].map((i) => v[`--t${i}d`])).toEqual(["none", "none", "none"]);
+    expect([6, 7, 8].map((i) => [v[`--m${i}d`], v[`--m${i}r`]])).toEqual([
+      ["flex", "1"],
+      ["flex", "2"],
+      ["flex", "3"],
+    ]);
+    expect(v["--mmh"]).toBe("3");
+    expect(v["--mtd"]).toBe("flex");
+    expect(v["--mad"]).toBe("none");
+  });
+
+  it("shows the active genre on the More trigger when it's in More", () => {
+    const v = navVars({ ...ROTTERDAM, active: 7 }, gridGeometry(1400, false), false);
+    expect(v["--mtd"]).toBe("none");
+    expect(v["--mad"]).toBe("flex");
+    // "Alternatief" (5 cells at 32px) + the chevron.
+    expect(Number(v["--mts"])).toBeGreaterThan(Number(navVars(ROTTERDAM, gridGeometry(1400, false), false)["--mts"]));
+  });
+
+  it("narrow 390px: fewer tabs, the tail in More, nothing past row 4", () => {
+    const g = gridGeometry(390, true);
+    const v = navVars(ROTTERDAM, g, true);
+    const rows = Object.entries(v)
+      .filter(([k]) => /^--(t\d+|f\d+|mt)r$/.test(k))
+      .map(([, r]) => Number(r));
+    expect(Math.max(...rows)).toBeLessThanOrEqual(4);
+    expect(v["--l0r"]).toBe("2"); // locales below the city
+    expect(v["--cr"]).toBe("1");
   });
 
   it("spans whole cells of the narrow cell at the exact width", () => {
+    const m: NavModel = { ...ROTTERDAM, fixed: [em("Film"), em("My list")] };
+    const s = (w: number) => navSpans(m, gridGeometry(w, true)).fixed[1];
     // 16px "My list" ≈ 45.2px + 7 → 3 cells of 24px …
-    expect(navVars(ems, 2, gridGeometry(384, true), true)["--n1s"]).toBe("3");
-    // … but 2 cells once the cell grows past 26.1px (e.g. 8 cells over 210px).
-    expect(navVars(ems, 2, gridGeometry(215, true), true)["--n1s"]).toBe("2");
-  });
-
-  it("publishes the locale cells", () => {
-    const v = navVars(ems, 2, gridGeometry(1000, false), false);
-    expect(v).toMatchObject({ "--l0o": "2", "--l0r": "1", "--l1o": "1", "--l1r": "1" });
+    expect(s(384)).toBe(3);
+    // … but 2 once the cell grows past 26.1px (8 cells over 215px).
+    expect(s(215)).toBe(2);
   });
 });

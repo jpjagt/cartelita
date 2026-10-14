@@ -20,8 +20,9 @@ export interface GridRadioOption {
 
 export interface CategoryList {
   slug: string;        // also the category slug, used for name translation
-  primary: boolean;    // broad-appeal genre, shown full-weight in the navbar;
-                       // niche genres (false) render muted so the eye skips them
+  /** Events in the next NAV_WINDOW_DAYS (lib/genre-nav.ts): orders the city's
+      genre tabs and decides which go behind "More". */
+  upcoming: number;
 }
 
 export interface AgendaEvent {
@@ -154,26 +155,95 @@ export interface RowNumbering {
   po: number;
 }
 
-/** The navbar's band geometry, in grid column lines (lib/nav-layout.ts). */
-export interface NavGeometry {
-  colStart: number;     // first column of the content band
-  bandEnd: number;      // exclusive end line of the band
-  localeCount: number;  // locale switcher cells at the right of row 1
-  narrow: boolean;      // the narrow (<760px) stacked layout
-}
-
-/** One navbar link's grid placement. */
+/** One navbar item's grid placement (lib/nav-layout.ts): first column line,
+    whole cells spanned, row. */
 export interface NavPlacement {
   col: number;
   span: number;
   row: number;
 }
 
-/** One locale switcher cell's placement (lib/nav-layout.ts): `offset` cells
-    left of the band's end line (--c-end), on `row`. */
-export interface LocalePlacement {
-  offset: number;
+/** One run of navbar cells the tabs may flow along: `row`, columns
+    [start, end) (end exclusive). */
+export interface NavLine {
   row: number;
+  start: number;
+  end: number;
+}
+
+/** A navbar dropdown (More, city): its first column, the row of its trigger
+    (the menu's top edge is that row's bottom gridline), its width in cells. */
+export interface NavMenuPlacement {
+  col: number;
+  row: number;
+  width: number;
+}
+
+/** What the navbar lays out, as label advances at font-size 1px
+    (lib/text-metrics.ts; the client re-measures labels the bundled font
+    can't cover). lib/nav-layout.ts turns it into placements per grid. */
+export interface NavModel {
+  /** Genre tab labels, in tab (volume) order. */
+  genres: number[];
+  /** How many leading genres qualify for a tab (lib/genre-nav.ts
+      tabbableCount); the rest always go behind More. */
+  tabbable: number;
+  /** Index into `genres` of the page's own genre; -1 when it isn't one. */
+  active: number;
+  /** The "More" trigger label. */
+  more: number;
+  /** The set-apart tabs after the genres: Film (when the city has it), My list. */
+  fixed: number[];
+  /** The current city's name (the city selector trigger). */
+  city: number;
+  /** The city dropdown's entries: every city, then "All cities". */
+  cityMenu: number[];
+  /** Locale switcher cells. */
+  localeCount: number;
+}
+
+/** A NavModel in whole cells at one grid (lib/nav-layout.ts navSpans): every
+    label's span; the triggers' include their chevron cell. */
+export interface NavSpans {
+  genres: number[];
+  tabbable: number;
+  active: number;
+  more: number;
+  /** The More trigger when it shows the active genre's name instead. */
+  activeMore: number;
+  fixed: number[];
+  city: number;
+  cityMenu: number[];
+  localeCount: number;
+}
+
+/** Tab-row items flowed onto their lines (lib/nav-layout.ts flowLines). */
+export interface NavFlow {
+  flow: NavPlacement[];
+  fixed: NavPlacement[];
+}
+
+/** A tab-row fit: `k` genre tabs shown; genres [k, n) are in More. */
+export interface NavFit extends NavFlow {
+  k: number;
+}
+
+/** The navbar at one grid (lib/nav-layout.ts layoutNav). */
+export interface NavLayout {
+  /** Per genre: its tab, or null when it sits in the More dropdown. */
+  tabs: (NavPlacement | null)[];
+  /** The More trigger (label + chevron cell); null when nothing is in More. */
+  more: NavPlacement | null;
+  /** The More dropdown; one row per genre in it, in order. */
+  moreMenu: NavMenuPlacement | null;
+  /** Whether the More trigger shows the active genre's name (it's in More). */
+  moreShowsActive: boolean;
+  fixed: NavPlacement[];
+  /** The city selector trigger (name + chevron cell). */
+  city: NavPlacement;
+  cityMenu: NavMenuPlacement;
+  /** One cell each. */
+  locales: NavPlacement[];
 }
 
 /** One GridRadioButtons option's placement (lib/radio-layout.ts): the

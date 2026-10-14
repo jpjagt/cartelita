@@ -1,15 +1,45 @@
 ---
-import { CITIES } from "@/lib/cities"
+import { CITIES, LAST_CITY_KEY, PICK_PARAM } from "@/lib/cities"
 
 interface Props {
   /** Optional line above the city list (the 404 page's "not found"). */
   message?: string
+  /** Send a returning visitor straight to the last city they visited (the
+      bare / page), unless they asked for the picker (?pick). */
+  redirect?: boolean
 }
-const { message } = Astro.props
+const { message, redirect = false } = Astro.props
+// Every city page prefix the redirect may go to (what Navbar.astro stores).
+const prefixes = Object.values(CITIES).flatMap((c) => c.locales.map((lc) => `/${c.slug}/${lc}/`))
 // The wordmark and the cities in a centered vertical list on the gridpaper.
 // Each city link lands on /:city (its default locale + list).
 const cities = Object.values(CITIES)
 ---
+{redirect && (
+  /* Before the picker paints: a visitor who has been in a city (Navbar.astro
+     stores its /<city>/<locale>/) goes back there — on a fresh load of / only.
+     Not on ?pick (the city selector's "All cities"), not on back/forward
+     (that would trap the back button), not when / is reached by a client
+     navigation (the navigation entry is then the first page's). */
+  <script is:inline define:vars={{ key: LAST_CITY_KEY, param: PICK_PARAM, prefixes }}>
+    try {
+      // Only the document's first run: the router may re-run inline scripts
+      // when a client navigation (Back included) returns to /.
+      const first = !window.__cartelitaPicker;
+      window.__cartelitaPicker = true;
+      const entry = performance.getEntriesByType("navigation")[0];
+      const fresh =
+        first && (!entry || (new URL(entry.name).pathname === "/" && entry.type !== "back_forward"));
+      const last = localStorage.getItem(key);
+      if (fresh && last && prefixes.includes(last) && !new URLSearchParams(location.search).has(param)) {
+        document.documentElement.style.visibility = "hidden";
+        location.replace(last);
+      }
+    } catch {
+      // Storage blocked: show the picker.
+    }
+  </script>
+)}
 <main class="gridpaper city-picker-page">
   <div class="city-picker">
     <span class="city-picker-wordmark font-semibold">Ca<span class="mr-0.5">r</span>telita</span>

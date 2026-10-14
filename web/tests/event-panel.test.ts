@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { panelRows, numberRows } from "@/lib/event-panel";
+import { panelRows, numberRows, numberCollapsed } from "@/lib/event-panel";
 
 describe("panelRows", () => {
   it("adds 1-cell margins and 1-cell gaps between elements", () => {
@@ -37,5 +37,18 @@ describe("numberRows", () => {
       { ev: 3, po: 7 },
       { ev: 4, po: 16 },
     ]);
+  });
+});
+
+describe("numberCollapsed", () => {
+  // The CSS row formulas (global.css): desktop row = 2 + ev; narrow
+  // event row A / spacer = 2 + 2·ev + po, the note row = 2 + 2·ev + po.
+  const desktop = (n: { ev: number }) => 2 + n.ev;
+  const narrow = (n: { ev: number; po: number }) => 2 + 2 * n.ev + n.po;
+
+  it("puts the note right under the header and the spacer right under it", () => {
+    const { note, spacer } = numberCollapsed();
+    expect([desktop(note), desktop(spacer)]).toEqual([2, 3]);
+    expect([narrow(note), narrow(spacer)]).toEqual([2, 3]);
   });
 });
