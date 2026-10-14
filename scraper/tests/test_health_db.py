@@ -489,3 +489,26 @@ def test_ack_of_a_broken_run_hides_nothing(session, fake):
     _run(session, gh)
     assert "hid 0" in health_ops.ack(session, "jamboree", gh, today=TODAY)
     assert all(e.hidden_at is None for e in _events(session).values())
+
+
+# --- venue categories stay code-defined for other sources ---------------------------
+
+def test_other_sources_never_extend_venue_categories(session, fake, caplog):
+    import logging
+    from cartelera.models import ListVenue
+    assert REGISTRY["jamboree"][1].extends_venue_categories is False
+    jam = session.query(Venue).filter_by(slug="jamboree").one()
+    before_cats = {c.slug for c in jam.categories}
+    before_lv = session.query(ListVenue).filter_by(venue_id=jam.id).count()
+    fake.events = [_se("a", category_slugs=["classical"])]
+    with caplog.at_level(logging.WARNING):
+        r = run_one(session, "jamboree", tracker=FakeTracker(), today=TODAY)
+    assert r.ok and r.new_categories == []
+    session.expire_all()
+    jam = session.query(Venue).filter_by(slug="jamboree").one()
+    assert {c.slug for c in jam.categories} == before_cats
+    assert session.query(ListVenue).filter_by(venue_id=jam.id).count() == before_lv
+    run = session.query(ScrapeRun).filter_by(source_slug="jamboree").one()
+    assert "new_categories" not in run.metrics
+    # stored but on no list: only logged
+    assert "jamboree/classical" in caplog.text

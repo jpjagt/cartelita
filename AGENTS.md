@@ -48,6 +48,12 @@ single file. For *what Cartelera is and why*, read `MANIFESTO.md`. For dev setup
   (`cartelera.discovery`; `venue.discovered_by` = the source), reported on a
   rolling `venue-review` GitHub issue, and reviewed after the fact. Exact name
   matching only, never fuzzy; a discovered slug something else owns is refused.
+  jazzin also sets `SourceDefinition.extends_venue_categories`: an override
+  venue whose events show up in a new calendar gains that category + a
+  whitelisted list membership in the DB at run time (reported as
+  `metrics.new_categories`, same review issue); never removed automatically,
+  and `seed` keeps them. Every other source's venue categories stay strictly
+  code-defined (an event category no list shows is only logged).
 - **Cities**: `seed.CITIES` (scraper) and `web/src/lib/cities.ts` (locales,
   defaults — UI config lives web-side, not in Postgres) must both know a city.
   URLs are `/:city[/:locale[/:category]]`; bare `/` is the city selector.

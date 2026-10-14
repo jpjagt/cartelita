@@ -71,7 +71,14 @@ def _ensure_membership(
         session.add(ListVenue(list_id=list_id, venue_id=venue_id, whitelist_category_id=whitelist_category_id))
 
 
-def _upsert_venue(session: Session, defn: VenueDefinition, city_id: int, cats: dict[str, Category]) -> None:
+def _upsert_venue(
+    session: Session, defn: VenueDefinition, city_id: int, cats: dict[str, Category],
+    *, keep_extra_categories: bool = False,
+) -> None:
+    """Create/update a code-defined venue. Its categories become exactly the
+    code-defined ones — unless `keep_extra_categories` (its source extends
+    venue categories at run time): then code's are the minimum and categories
+    a run added are kept. List memberships are only ever added."""
     venue = session.query(Venue).filter_by(slug=defn.slug).one_or_none()
     if not venue:
         venue = Venue(slug=defn.slug, name=defn.name, city_id=city_id, address=defn.address,
@@ -83,11 +90,35 @@ def _upsert_venue(session: Session, defn: VenueDefinition, city_id: int, cats: d
         venue.address = defn.address
         venue.site_url = defn.site_url
         venue.instagram_url = defn.instagram_url
-    venue.categories = [cats[s] for s in defn.category_slugs if s in cats]
+    code = [cats[s] for s in defn.category_slugs if s in cats]
+    extra = ([c for c in venue.categories if c.slug not in defn.category_slugs]
+             if keep_extra_categories else [])
+    venue.categories = code + extra
     for membership in defn.list_memberships:
         lst = _get_or_create_list(session, membership.list_slug, city_id)
         whitelist_id = cats[membership.whitelist_category_slug].id if membership.whitelist_category_slug else None
         _ensure_membership(session, lst.id, venue.id, whitelist_id)
+
+
+def extend_venue_categories(session: Session, venue: Venue, category_slugs: list[str]) -> list[str]:
+    """Add the categories `venue` doesn't have yet, each with a list membership
+    whitelisted to it (the category's list in the venue's city). Never removes
+    anything. Returns the slugs added, in the given order. Runs in the
+    caller's transaction (see SourceDefinition.extends_venue_categories)."""
+    have = {c.slug for c in venue.categories}
+    new = list(dict.fromkeys(s for s in category_slugs if s not in have))
+    if not new:
+        return []
+    cats = {c.slug: c for c in session.query(Category).filter(Category.slug.in_(new))}
+    if unknown := [s for s in new if s not in cats]:
+        raise ValueError(f"unknown category slug {unknown[0]!r} for venue {venue.slug!r}; "
+                         "add it to seed.CATEGORIES")
+    venue.categories = list(venue.categories) + [cats[s] for s in new]
+    for s in new:
+        lst = _get_or_create_list(session, s, venue.city_id)
+        _ensure_membership(session, lst.id, venue.id, cats[s].id)
+    session.flush()
+    return new
 
 
 def upsert_discovered_venue(session: Session, source_slug: str, defn: VenueDefinition) -> bool:
@@ -144,5 +175,6 @@ def seed(session: Session) -> None:
                     f"unknown city slug {venue_def.city_slug!r} for venue "
                     f"{venue_def.slug!r}; add it to seed.CITIES"
                 )
-            _upsert_venue(session, venue_def, city.id, cats)
+            _upsert_venue(session, venue_def, city.id, cats,
+                          keep_extra_categories=source.extends_venue_categories)
     session.commit()

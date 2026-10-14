@@ -54,9 +54,11 @@ logger = logging.getLogger(__name__)
 # Stage", "ZOJazzstage "); aliases are matched after _venue_key normalization
 # (case/whitespace-insensitive, nothing fuzzier) and merge those names into
 # one venue. `categories` are the calendars the venue appears in: each becomes
-# a whitelisted list membership; for these venues the table is authoritative
-# (seeded; a new calendar is logged, not added). Addresses are jazzin's; the
-# ones it gives only as "Amsterdam" are hand-filled or None. A name in no row
+# a whitelisted list membership. They are the seeded minimum: the source
+# `extends_venue_categories`, so when an override venue shows up in another
+# calendar the run adds that category (+ membership) in the DB and reports it
+# on the venue-review issue — mirror it here when convenient. Addresses are
+# jazzin's; the ones it gives only as "Amsterdam" are hand-filled or None. A name in no row
 # and not DENIED is a discovered venue (see discover_venues); add a row only
 # to merge spellings or to override what discovery would derive.
 VENUES: list[tuple[str, str, str | None, list[str], list[str]]] = [
@@ -73,7 +75,7 @@ VENUES: list[tuple[str, str, str | None, list[str], list[str]]] = [
     ('carre', 'Koninklijk Theater Carré', 'Amstel 115-125, 1018 EM Amsterdam',
      ['Carré'], ['jazz', 'theater']),
     ('mezrab', 'Mezrab', 'Veemkade 576, 1019 BL Amsterdam',
-     ['Mezrab'], ['theater']),
+     ['Mezrab'], ['jazz', 'theater']),
     ('de-kleine-komedie', 'De Kleine Komedie', 'Amstel 56-58, 1017AC Amsterdam',
      ['De Kleine Komedie'], ['theater']),
     ('theater-de-landing', 'Theater De Landing', 'Uilenstede 106, 1183 AM Amstelveen',
@@ -252,7 +254,7 @@ VENUES: list[tuple[str, str, str | None, list[str], list[str]]] = [
     ('theater-de-dillewijn', 'Theater De Dillewijn (Ankeveen)', 'Stichts End 57, 1244 PL Ankeveen',
      ['Theater De Dillewijn (Ankeveen)'], ['jazz']),
     ('torpedo-theater', 'Torpedo Theater', 'Sint Pieterspoortsteeg 33, 1012 HM Amsterdam',
-     ['Torpedo Theater'], ['classical', 'theater']),
+     ['Torpedo Theater'], ['jazz', 'classical', 'theater']),
     ('tobacco-theater', 'TOBACCO Theater', 'Nes 75-87, 1012 KD Amsterdam',
      ['TOBACCO Theater'], ['theater']),
     ('apollofirst-theater', 'Apollofirst theater', 'Apollolaan 123, 1077 AP, Amsterdam',
@@ -278,7 +280,7 @@ VENUES: list[tuple[str, str, str | None, list[str], list[str]]] = [
     ('pinksterkerk', 'Pinksterkerk', None,
      ['Pinksterkerk'], ['classical', 'theater']),
     ('rozengracht-55h', 'Rozengracht 55H', 'Rozengracht 55H, Amsterdam',
-     ['Rozengracht 55H'], ['classical']),
+     ['Rozengracht 55H'], ['jazz', 'classical']),
     ('de-thomas', 'De Thomas', 'Prinses Irenestraat 36, 1077 WX Amsterdam',
      ['De Thomas'], ['classical']),
     ('borisov', 'Borisov', 'Rigakade 10 1013 BC Amsterdam, Netherlands',
@@ -372,7 +374,7 @@ VENUES: list[tuple[str, str, str | None, list[str], list[str]]] = [
     ('cafe-checkpoint-charlie', 'Cafe Checkpoint Charlie', 'Nassaukade 48, 1052 CM Amsterdam',
      ['Cafe Checkpoint Charlie'], ['theater']),
     ('bijlmer-parktheater', 'Bijlmer Parktheater', 'Anton de Komplein 240, 1102 DR Amsterdam',
-     ['Bijlmer Parktheater'], ['theater']),
+     ['Bijlmer Parktheater'], ['classical', 'theater']),
     ('cinetol', 'Cinetol', 'Cinetol Tolstraat 182 1074 VM Amsterdam',
      ['Cinetol'], ['pop']),
     ('dick-dick', 'Dick & Dick', 'Gedempt Hamerkanaal 36',
@@ -444,7 +446,7 @@ VENUES: list[tuple[str, str, str | None, list[str], list[str]]] = [
     ('framer-framed', 'Framer Framed', 'Oranje-Vrijstaatkade 71, 1093 KS Amsterdam',
      ['Framer Framed'], ['alternative']),
     ('nieuw-en-meer', 'Nieuw en Meer', 'Oude Haagseweg 53A1, 1066 BV Amsterdam',
-     ['Nieuw en Meer'], ['alternative']),
+     ['Nieuw en Meer'], ['jazz', 'alternative']),
     ('astarotheatro', 'AstaroTheatro', 'Sint Jansstraat 37, Amsterdam',
      ['AstaroTheatro'], ['alternative']),
     ('treehouse-ndsm', 'Treehouse NDSM', 'T.T. Neveritaweg 55-57, 1033 WB Amsterdam',
@@ -695,19 +697,6 @@ def _venue_definition(slug: str, name: str, address: str | None, cats: list[str]
     )
 
 
-def unlisted_categories(events: list[ScrapedEvent]) -> set[tuple[str, str]]:
-    """(override venue, category) pairs the feed now has but VENUES doesn't
-    list — those events are stored but no list shows them until the venue's
-    row is updated. (Discovered venues gain categories automatically.)"""
-    return {
-        (ev.venue_slug, c)
-        for ev in events
-        if ev.venue_slug in VENUE_CATEGORIES
-        for c in ev.category_slugs
-        if c not in VENUE_CATEGORIES[ev.venue_slug]
-    }
-
-
 def fetch_items() -> list[tuple[str, dict]]:
     """Every upcoming event of every calendar, paging by offset until a short
     page."""
@@ -738,11 +727,6 @@ class JazzinAmsterdamScraper:
         if denied:
             logger.info("jazzin-amsterdam: dropped events at %d denied venue names", len(denied))
             logger.debug("jazzin-amsterdam: denied venue names: %s", ", ".join(sorted(denied)))
-        if missing := unlisted_categories(events):
-            logger.warning(
-                "jazzin-amsterdam: venues with events in categories they aren't listed for: %s",
-                ", ".join(f"{v}/{c}" for v, c in sorted(missing)),
-            )
         return events
 
     def discovered_venues(self) -> list[VenueDefinition]:
@@ -754,6 +738,9 @@ register_source(
     source=SourceDefinition(
         slug=SOURCE_SLUG,
         name="jazzin.amsterdam",
+        # The calendars decide an override venue's categories too: a new
+        # one is added at run time (see SourceDefinition), not just logged.
+        extends_venue_categories=True,
         # The overrides only; discovered venues are created at run time.
         venues=[
             _venue_definition(slug, name, address, cats)

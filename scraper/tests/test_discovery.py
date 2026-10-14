@@ -251,3 +251,81 @@ def test_review_table_escapes_pipes_in_names():
 def test_registry_holds_only_the_overrides():
     _scraper, source = REGISTRY[SLUG]
     assert {v.slug for v in source.venues} == {slug for slug, *_ in jazzin.VENUES}
+
+
+# --- override venues gain categories from the feed (extends_venue_categories) -------
+
+def test_override_venue_gains_category_membership_and_list_events(session, feed):
+    from cartelera.queries import events_for_list
+    # Bimhuis is a jazz-only override; jazzin now lists a gig in classical too.
+    feed[:] = _bimhuis() + [("classical", _item("Bimhuis", 1, days=2, title="Bach"))]
+    gh = FakeTracker()
+    r = run_one(session, SLUG, tracker=gh, today=TODAY)
+    assert r.ok and r.verdict == h.HEALTHY, r.fired
+
+    v = session.query(Venue).filter_by(slug="bimhuis").one()
+    assert {c.slug for c in v.categories} == {"jazz", "classical"}
+    assert _memberships(session, v) == {("jazz", "jazz"), ("classical", "classical")}
+    # listed right away, under the whitelist: only the classical event
+    assert [e.title for e in events_for_list(session, "amsterdam", "classical", TODAY)] == ["Bach"]
+    assert "Bach" not in {e.title for e in events_for_list(session, "amsterdam", "jazz", TODAY)}
+
+    # reported: result, metrics, review issue
+    assert r.new_venues == []
+    assert r.new_categories == [{"slug": "bimhuis", "name": "Bimhuis",
+                                 "category": "classical", "events": 1}]
+    run = session.query(ScrapeRun).filter_by(source_slug=SLUG).one()
+    assert run.metrics["new_categories"] == r.new_categories
+    [issue] = gh.issues.values()
+    assert issue["labels"] == [REVIEW_LABEL]
+    assert "| Bimhuis | `bimhuis` | classical | 1 |" in issue["body"]
+    assert "DENIED" not in issue["body"]  # no new venues: no venue instructions
+
+    # nothing new next run: no report, no comment
+    r = run_one(session, SLUG, tracker=gh, today=TODAY)
+    assert r.new_categories == [] and issue["comments"] == []
+    assert "new_categories" not in session.query(ScrapeRun).order_by(
+        ScrapeRun.id.desc()).first().metrics
+
+    # gone from the classical calendar: never removed
+    feed[:] = _bimhuis()
+    run_one(session, SLUG, tracker=gh, today=TODAY)
+    assert _memberships(session, v) == {("jazz", "jazz"), ("classical", "classical")}
+
+    # a further new category is a comment on the open issue
+    feed[:] = _bimhuis() + [("pop", _item("Bimhuis", 2, days=2))]
+    r = run_one(session, SLUG, tracker=gh, today=TODAY)
+    assert [c["category"] for c in r.new_categories] == ["pop"]
+    assert len(gh.issues) == 1 and len(issue["comments"]) == 1
+    assert "`bimhuis` | pop" in issue["comments"][0]
+
+
+def test_reseed_keeps_categories_and_memberships_a_run_added(session, feed):
+    feed[:] = _bimhuis() + [("classical", _item("Bimhuis", 1, days=2))]
+    run_one(session, SLUG, tracker=FakeTracker(), today=TODAY)
+    seed(session)
+    session.expire_all()
+    v = session.query(Venue).filter_by(slug="bimhuis").one()
+    assert {c.slug for c in v.categories} == {"jazz", "classical"}
+    assert _memberships(session, v) == {("jazz", "jazz"), ("classical", "classical")}
+
+
+def test_new_venue_and_new_category_in_one_run_share_one_issue(session, feed):
+    feed[:] = _bimhuis() + [("pop", _item("Bimhuis", 1)), ("jazz", _item("Frascati", 2))]
+    gh = FakeTracker()
+    r = run_one(session, SLUG, tracker=gh, today=TODAY)
+    assert [v["slug"] for v in r.new_venues] == ["frascati"]
+    assert [(c["slug"], c["category"]) for c in r.new_categories] == [("bimhuis", "pop")]
+    [issue] = gh.issues.values()
+    assert "`frascati`" in issue["body"] and "`bimhuis` | pop" in issue["body"]
+    assert "DENIED" in issue["body"]
+
+
+def test_discovered_venue_growth_is_not_reported_as_a_new_category(session, feed):
+    feed[:] = _bimhuis() + [("jazz", _item("Frascati", 1))]
+    run_one(session, SLUG, tracker=FakeTracker(), today=TODAY)
+    feed[:] += [("theater", _item("Frascati", 2))]
+    r = run_one(session, SLUG, tracker=FakeTracker(), today=TODAY)
+    assert r.new_categories == []
+    v = session.query(Venue).filter_by(slug="frascati").one()
+    assert {c.slug for c in v.categories} == {"jazz", "theater"}

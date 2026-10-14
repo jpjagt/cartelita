@@ -15,7 +15,7 @@ from cartelera.discovery import accept_discovered, source_venue_slugs, sync_venu
 from cartelera.models import ScrapeRun, Venue
 from cartelera.db import make_engine, make_session_factory, ensure_database_exists
 from cartelera.migrate import apply_migrations
-from cartelera.seed import seed as seed_db, upsert_discovered_venue
+from cartelera.seed import seed as seed_db, upsert_discovered_venue, extend_venue_categories
 from cartelera.upsert import (
     upsert_venue_events, known_upcoming_snapshot, count_reseen, count_misses,
 )
@@ -66,6 +66,47 @@ class _Written:
     hidden: int
     new_venues: list[dict] = field(default_factory=list)
     degraded_venues: list[str] = field(default_factory=list)
+    new_categories: list[dict] = field(default_factory=list)
+
+
+def _extend_categories(
+    session: Session, venues: dict[str, Venue], by_venue: dict[str, list[ScrapedEvent]],
+    static: set[str],
+) -> list[dict]:
+    """For a source with `extends_venue_categories`: add to each of its
+    code-defined venues the categories its events carry that the venue lacks
+    (seed.extend_venue_categories). Returns the added pairs as
+    {slug, name, category, events}. Discovered venues grow on their own
+    (seed.upsert_discovered_venue) and aren't reported here."""
+    added: list[dict] = []
+    for slug in sorted(static & by_venue.keys()):
+        venue = venues.get(slug)
+        if venue is None:  # not seeded: the upsert raises its usual error
+            continue
+        evs = by_venue[slug]
+        wanted = [c for ev in evs for c in ev.category_slugs]
+        for c in extend_venue_categories(session, venue, wanted):
+            added.append({"slug": slug, "name": venue.name, "category": c,
+                          "events": sum(c in ev.category_slugs for ev in evs)})
+    return added
+
+
+def unlisted_categories(
+    source: SourceDefinition, by_venue: dict[str, list[ScrapedEvent]]
+) -> set[tuple[str, str]]:
+    """(venue, category) pairs of a source's code-defined venues whose events
+    no list shows: the venue's memberships are all whitelisted, and none to
+    that category. Those events are stored but invisible until the venue's
+    definition lists the category. (A source with `extends_venue_categories`
+    fixes this itself at run time.)"""
+    missing: set[tuple[str, str]] = set()
+    for v in source.venues:
+        if any(m.whitelist_category_slug is None for m in v.list_memberships):
+            continue
+        shown = {m.whitelist_category_slug for m in v.list_memberships}
+        missing |= {(v.slug, c) for ev in by_venue.get(v.slug, [])
+                    for c in ev.category_slugs if c not in shown}
+    return missing
 
 
 def _discover(
@@ -106,6 +147,17 @@ def _write_source(
     # Its known events still count toward the source's coverage and are
     # hidden by miss counting like any other.
     quiet = {s for s in slugs if s not in static and s not in by_venue}
+
+    # 0. venue categories: an opted-in source extends its code-defined venues'
+    # categories from its own (before the upsert, so the events are listed
+    # right away); for any other source an unlisted category is only logged.
+    new_categories: list[dict] = []
+    if source.extends_venue_categories:
+        new_categories = _extend_categories(session, venues, by_venue, static)
+    elif missing := unlisted_categories(source, by_venue):
+        logger.warning("%s: venues with events in categories no list shows them in "
+                       "(add the category to the venue's definition): %s", source.slug,
+                       ", ".join(f"{v}/{c}" for v, c in sorted(missing)))
 
     # 1. pre-write snapshot → metrics. Coverage is measured against what the
     # previous trusted run saw — per venue: the newest run trusted for THAT
@@ -161,7 +213,10 @@ def _write_source(
         metrics_json["new_venues"] = new_venues
     if refused:
         metrics_json["refused_venues"] = refused
-    return _Written(verdict, fired, metrics_json, hidden, new_venues, degraded_venues)
+    if new_categories:
+        metrics_json["new_categories"] = new_categories
+    return _Written(verdict, fired, metrics_json, hidden, new_venues, degraded_venues,
+                    new_categories)
 
 
 def _trusted_runs(session: Session, source_slug: str) -> list[health.RunView]:
@@ -196,8 +251,10 @@ def run_one(
     data; degraded runs upsert but never count misses or hide. A venue of a
     multi-venue source degraded on its own leaves the source healthy, but its
     events are neither missed nor hidden this run. Venues an
-    opt-out source discovered are created inside that transaction; the ones
-    new this run go to the source's review issue (see cartelera.discovery)."""
+    opt-out source discovered are created inside that transaction, as are the
+    categories a source with `extends_venue_categories` adds to its venues;
+    the venues and categories new this run go to the source's review issue
+    (see cartelera.discovery)."""
     scraper, source = REGISTRY[source_slug]
     today = today or dt.date.today()
     started = _now()
@@ -208,13 +265,15 @@ def run_one(
     hidden = 0
     new_venues: list[dict] = []
     degraded_venues: list[str] = []
+    new_categories: list[dict] = []
     try:
         events = scraper.scrape()
         discovered = (scraper.discovered_venues()
                       if isinstance(scraper, DiscoversVenues) else None)
         w = _write_source(session, source, events, today, discovered)
-        verdict, fired, metrics_json, hidden, new_venues, degraded_venues = (
-            w.verdict, w.fired, w.metrics, w.hidden, w.new_venues, w.degraded_venues)
+        verdict, fired, metrics_json, hidden = w.verdict, w.fired, w.metrics, w.hidden
+        new_venues, degraded_venues, new_categories = (
+            w.new_venues, w.degraded_venues, w.new_categories)
         session.commit()
     except Exception as exc:  # noqa: BLE001 - we want all failures isolated per source
         session.rollback()
@@ -237,10 +296,11 @@ def run_one(
         session.rollback()
         logger.exception("updating the health issue failed for source %r", source_slug)
 
-    if new_venues:
+    if new_venues or new_categories:
         try:
             sync_venue_review(session, source_slug, module_of(source_slug), new_venues,
-                              tracker or make_tracker(), today=today)
+                              tracker or make_tracker(), today=today,
+                              new_categories=new_categories)
         except Exception:  # noqa: BLE001 - GitHub trouble must never fail the scrape
             session.rollback()
             logger.exception("posting new venues for review failed for source %r", source_slug)
@@ -263,6 +323,7 @@ def run_one(
         hidden=hidden,
         new_venues=new_venues,
         degraded_venues=degraded_venues,
+        new_categories=new_categories,
     )
 
 
@@ -357,6 +418,12 @@ def _report(results: list[ScrapeResult]) -> None:
             for v in r.new_venues:
                 print(f"         + {v['name']} ({v['slug']}) — {v.get('address') or 'no address'}; "
                       f"{', '.join(v['categories'])}; {v['events']} events")
+        if r.new_categories:
+            print(f"       {r.source_slug}: {len(r.new_categories)} new venue categor"
+                  f"{'y' if len(r.new_categories) == 1 else 'ies'}, posted for review:")
+            for c in r.new_categories:
+                print(f"         + {c['name']} ({c['slug']}) → {c['category']}; "
+                      f"{c['events']} events")
 
 
 def _dry_run(module_name: str) -> int:

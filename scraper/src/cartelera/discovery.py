@@ -16,6 +16,11 @@ code neither overrides nor denies becomes a venue automatically. The runner
    `scrape_run.metrics["new_venues"]`, and on one rolling GitHub issue per
    source (label `venue-review`) — see sync_venue_review.
 
+A source with `SourceDefinition.extends_venue_categories` (also jazzin) grows
+its code-defined venues' categories from its feed (run._extend_categories,
+seed.extend_venue_categories); the (venue, category) pairs a run adds are
+reported the same way (`scrape_run.metrics["new_categories"]`, same issue).
+
 That rolling review issue also lists venues of any multi-venue source that
 have been degraded on their own for VENUE_REVIEW_STREAK+ runs
 (health_ops.sync_degraded_venues, render_degraded_review).
@@ -95,14 +100,36 @@ def _table(new_venues: list[dict]) -> str:
     return "\n".join(rows)
 
 
+def _categories_table(new_categories: list[dict]) -> str:
+    rows = ["| venue | slug | category | events |", "|---|---|---|---|"]
+    for c in new_categories:
+        rows.append(f"| {_cell(c['name'])} | `{c['slug']}` | {c['category']} | "
+                    f"{c.get('events', 0)} |")
+    return "\n".join(rows)
+
+
 def render_review(source_slug: str, module: str | None, new_venues: list[dict],
-                  today: dt.date, *, first: bool) -> str:
+                  today: dt.date, *, first: bool,
+                  new_categories: list[dict] | None = None) -> str:
     path = f"scraper/src/cartelera/scrapers/{module or '<module>'}.py"
-    head = (f"`{source_slug}` created {len(new_venues)} new venue(s) from its feed "
+    parts: list[str] = []
+    if new_venues:
+        parts += [
+            f"`{source_slug}` created {len(new_venues)} new venue(s) from its feed "
             f"on {today.isoformat()}. They are live (opt-out: unknown venue names become "
-            "venues automatically).")
-    parts = [head, _table(new_venues)]
-    if first:
+            "venues automatically).",
+            _table(new_venues)]
+    if new_categories:
+        parts += [
+            f"`{source_slug}` added {len(new_categories)} categor"
+            f"{'y' if len(new_categories) == 1 else 'ies'} to code-defined venues on "
+            f"{today.isoformat()}, from its feed's own categorization. They are live: "
+            "each venue is now on that category's list (never removed automatically). "
+            f"Fine as is → optionally add the category to the venue's `VENUES` row in "
+            f"`{path}` so code matches; wrong → fix the feed mapping in code and remove "
+            "the venue's category + list membership by hand.",
+            _categories_table(new_categories)]
+    if first and new_venues:
         parts.append(
             "**To review** each one, in `" + path + "`:\n\n"
             "- fine as is → nothing to do;\n"
@@ -171,13 +198,17 @@ def post_review(
 def sync_venue_review(
     session: Session, source_slug: str, module: str | None, new_venues: list[dict],
     tracker: IssueTracker, today: dt.date | None = None,
+    new_categories: list[dict] | None = None,
 ) -> str | None:
-    """Post a run's new venues to the source's rolling review issue: comment
-    when one is open, else open one. Returns "opened" / "commented" / None."""
-    if not new_venues:
+    """Post a run's new venues and new venue categories to the source's
+    rolling review issue: comment when one is open, else open one. Returns
+    "opened" / "commented" / None (nothing new)."""
+    if not new_venues and not new_categories:
         return None
     today = today or dt.date.today()
     return post_review(
         session, source_slug, tracker,
-        render_review(source_slug, module, new_venues, today, first=True),
-        render_review(source_slug, module, new_venues, today, first=False))
+        render_review(source_slug, module, new_venues, today, first=True,
+                      new_categories=new_categories),
+        render_review(source_slug, module, new_venues, today, first=False,
+                      new_categories=new_categories))

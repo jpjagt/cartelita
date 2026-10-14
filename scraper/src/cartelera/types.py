@@ -69,6 +69,10 @@ class ScrapeResult:
     # Venues of a multi-venue source degraded on their own this run (the
     # source verdict stays healthy; their events are not missed/hidden).
     degraded_venues: list[str] = field(default_factory=list)
+    # Categories this run added to code-defined venues of a source with
+    # `extends_venue_categories`, as recorded in
+    # scrape_run.metrics["new_categories"]: {slug, name, category, events}.
+    new_categories: list[dict] = field(default_factory=list)
 
 
 class ListMembership(BaseModel):
@@ -96,7 +100,17 @@ class SourceDefinition(BaseModel):
     list doubles as the editorial whitelist: the runner rejects events for any
     venue not listed here — unless the scraper also discovers venues at run
     time (an opt-out source, see scrapers.base.DiscoversVenues and
-    cartelera.discovery), in which case `venues` holds only the overrides."""
+    cartelera.discovery), in which case `venues` holds only the overrides.
+
+    `extends_venue_categories` (opt-in; today only jazzin.amsterdam): when an
+    event at one of `venues` carries a category the venue doesn't have yet,
+    the run adds that category to the venue, plus a list membership
+    whitelisted to it (list slug = category slug), before writing the events —
+    the source's own categorization decides where its venues are listed. The
+    code-defined categories are the seeded minimum; the DB only ever gains
+    categories (never loses them, also not on re-seed). For every other source
+    a venue's categories are strictly code-defined."""
     slug: str
     name: str
     venues: list[VenueDefinition] = Field(min_length=1)
+    extends_venue_categories: bool = False

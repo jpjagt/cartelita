@@ -63,11 +63,18 @@ No description, image, or genre tags. Film events never carry a price.
   old one is hidden after 3 healthy runs.
 - **Venue categories:** each category a venue has becomes a list membership
   whitelisted to that category (multi-category venues like Melkweg =
-  jazz/pop/club split correctly). Override venues: `VENUES` lists them and is
-  authoritative — a new calendar is logged (`venues with events in categories
-  they aren't listed for`); add the category to its row. Discovered venues
-  gain categories (and memberships) automatically when they appear in a new
-  calendar; nothing is ever removed automatically.
+  jazz/pop/club split correctly). jazzin's calendars decide categories for
+  every venue (decided 2026-10-14): override venues' `VENUES` categories are
+  the seeded minimum, and the source sets `extends_venue_categories`, so when
+  an override venue appears in a new calendar the run adds that category + a
+  whitelisted membership in the DB before writing its events (`run.
+  _extend_categories`, `seed.extend_venue_categories`); `seed` keeps those DB
+  additions. Each addition is printed by `cartelera run`, recorded in
+  `scrape_run.metrics.new_categories` and posted to the venue-review issue
+  below — mirror it in the `VENUES` row when convenient. Discovered venues
+  gain categories the same way (not reported). Nothing is ever removed
+  automatically; a wrong category is removed by hand (venue_category +
+  list_venue rows) after fixing its cause in code.
 - **Title status markers:** `(sold out)` / `(uitverkocht)` → price
   `sold-out`, marker stripped; `[CANCELED]` (and Dutch variants) → skipped.
 - **Denylist (`DENIED`, `DENIED_FEEDS`)** — names that never become venues,
@@ -115,7 +122,8 @@ No description, image, or genre tags. Film events never carry a price.
   that a code-defined venue of any source, or a DB venue this source didn't
   create, already has is refused: its events are skipped with a warning (and
   `scrape_run.metrics.refused_venues`) — deny or merge that name.
-- **Review loop.** Venues created for the first time are printed by `cartelera
+- **Review loop.** Venues created for the first time (and categories added
+  to override venues, see above) are printed by `cartelera
   run`, recorded in `scrape_run.metrics.new_venues`, and posted to one rolling
   GitHub issue, `jazzin-amsterdam: venues to review` (label
   `venue-review`; later batches are comments; once closed, the next batch

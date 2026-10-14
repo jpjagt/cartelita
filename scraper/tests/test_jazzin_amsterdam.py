@@ -24,8 +24,8 @@ from cartelera.scrapers.jazzin_amsterdam import (
     parse_price,
     resolve_venue,
     slugify,
-    unlisted_categories,
 )
+from cartelera.run import unlisted_categories
 
 FIXTURES = Path(__file__).parent / "fixtures"
 # {category slug: [API event objects]}, every page of each used calendar.
@@ -85,7 +85,16 @@ def test_every_category_is_well_represented():
 
 
 def test_venue_categories_cover_the_fixture():
-    assert unlisted_categories(EVENTS) == set()
+    # The source extends its venues' categories at run time anyway; the
+    # VENUES table still covers the fixture.
+    by_venue: dict = {}
+    for ev in EVENTS:
+        by_venue.setdefault(ev.venue_slug, []).append(ev)
+    assert unlisted_categories(REGISTRY[SOURCE_SLUG][1], by_venue) == set()
+
+
+def test_source_extends_venue_categories():
+    assert REGISTRY[SOURCE_SLUG][1].extends_venue_categories is True
 
 
 def test_cross_calendar_duplicates_merge_categories():
