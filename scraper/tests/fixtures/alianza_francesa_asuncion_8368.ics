@@ -1,0 +1,30 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+METHOD:PUBLISH
+CALSCALE:GREGORIAN
+PRODID:-//WordPress - MECv7.11.0//EN
+X-ORIGINAL-URL:https://alianzafrancesa.edu.py/
+X-WR-CALNAME:Alianza Francesa
+X-WR-CALDESC:Paraguay
+REFRESH-INTERVAL;VALUE=DURATION:PT1H
+X-PUBLISHED-TTL:PT1H
+X-MS-OLK-FORCEINSPECTOROPEN:TRUE
+BEGIN:VEVENT
+CLASS:PUBLIC
+UID:MEC-83004190b1793d7aa15f8d0d49a13eba@alianzafrancesa.edu.py
+DTSTART:20261002T200000Z
+DTEND:20261003T020000Z
+DTSTAMP:20260928T230600Z
+CREATED:20260928
+LAST-MODIFIED:20260928
+PRIORITY:5
+SEQUENCE:58
+TRANSP:OPAQUE
+SUMMARY:La Terrasse
+DESCRIPTION: Encendé el finde en La Terrasse\n\n\n\nJazzy Z, OTOT y Gustavo Kwak ponen la música para arrancar el fin de semana al aire libre, entre amigos y con ganas de quedarse un tema más. \n\n\nTu entrada incluye una bebida de cortesía. Además, habrá picadas a la venta para acompañar la noche.\n\n\n\n Alianza Francesa de Asunción · Mcal. Estigarribia 1039\n Viernes 2 de octubre · 17:00 a 23:00 h\n Acceso: 25.000 Gs.\nEntradas ( https://afasuncion.extranet-aec.com/events/detail/323#/ )\n\n\n\n \n
+URL:https://alianzafrancesa.edu.py/events/la-terrasse/
+CATEGORIES:Dj sets,música,Terrasse
+LOCATION:Mcal. Estigarribia 1039 c/ EEUU
+ATTACH;FMTTYPE=image/jpeg:https://alianzafrancesa.edu.py/wp-content/uploads/2026/09/la-terrase-3-copy-100.jpg.jpeg
+END:VEVENT
+END:VCALENDAR

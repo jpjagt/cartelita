@@ -1,0 +1,30 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+METHOD:PUBLISH
+CALSCALE:GREGORIAN
+PRODID:-//WordPress - MECv7.11.0//EN
+X-ORIGINAL-URL:https://alianzafrancesa.edu.py/
+X-WR-CALNAME:Alianza Francesa
+X-WR-CALDESC:Paraguay
+REFRESH-INTERVAL;VALUE=DURATION:PT1H
+X-PUBLISHED-TTL:PT1H
+X-MS-OLK-FORCEINSPECTOROPEN:TRUE
+BEGIN:VEVENT
+CLASS:PUBLIC
+UID:MEC-8ce241e1ed84937ee48322b170b9b18c@alianzafrancesa.edu.py
+DTSTART:20261001T220000Z
+DTEND:20261002T000000Z
+DTSTAMP:20260928T231900Z
+CREATED:20260928
+LAST-MODIFIED:20260928
+PRIORITY:5
+SEQUENCE:50
+TRANSP:OPAQUE
+SUMMARY:Ciclo de conferencias sobre filosofía francesa contemporánea
+DESCRIPTION:\n Democracia y pensamiento político | Cierre del ciclo de filosofía francesa\n\n\n\nDesde la Alianza Francesa de Asunción y el CIF Paraguay , te invitamos a la última jornada del «Ciclo de Conferencias sobre Filosofía Francesa Contemporánea».\n\n\n\n\nEsta vez, dos miradas para pensar la democracia y el totalitarismo a partir de la obra de Jacques Rancière y Claude Lefort:\n\n\n\n Cristian Andino\n«Jacques Rancière y el (nuevo) odio a la democracia»\n\n\n Nicolás Gayol\n«Democracia y totalitarismo en las lecturas de lo político de Claude Lefort»\n\n\n\n\n\n\n\n\n\n 1 de octubre | 19:00 h\n Alianza Francesa de Asunción (Mcal. Estigarribia 1039)\n Entrada libre y gratuita\n\n \n
+URL:https://alianzafrancesa.edu.py/events/ciclo-de-conferencias-sobre-filosofia-francesa-contemporanea-2/
+CATEGORIES:Biblioteca,Charla,Filosofía,Mediateca
+LOCATION:Mcal. Estigarribia 1039 c/ EEUU
+ATTACH;FMTTYPE=image/png:https://alianzafrancesa.edu.py/wp-content/uploads/2026/09/Ciclo-de-Conferencias-filosofia-1.png
+END:VEVENT
+END:VCALENDAR

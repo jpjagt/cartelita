@@ -1,0 +1,30 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+METHOD:PUBLISH
+CALSCALE:GREGORIAN
+PRODID:-//WordPress - MECv7.11.0//EN
+X-ORIGINAL-URL:https://alianzafrancesa.edu.py/
+X-WR-CALNAME:Alianza Francesa
+X-WR-CALDESC:Paraguay
+REFRESH-INTERVAL;VALUE=DURATION:PT1H
+X-PUBLISHED-TTL:PT1H
+X-MS-OLK-FORCEINSPECTOROPEN:TRUE
+BEGIN:VEVENT
+CLASS:PUBLIC
+UID:MEC-10c72a9d42dd07a028ee910f7854da5d@alianzafrancesa.edu.py
+DTSTART:20260929T220000Z
+DTEND:20260930T000000Z
+DTSTAMP:20260916T194900Z
+CREATED:20260916
+LAST-MODIFIED:20260916
+PRIORITY:5
+SEQUENCE:53
+TRANSP:OPAQUE
+SUMMARY:AF Cine – Les Félins
+DESCRIPTION:#AFCine | Les Félins\nSinopsis:\n\n\nUn jugador profesional, intentando escapar desesperadamente de un grupo de gánsters que quieren asesinarlo, se oculta como chófer en la mansión de una enigmática millonaria que años atrás asesinó a su marido. Cuando la viuda comienza a enamorarse de él, el jugador se verá arrastrado sin escapatoria hacia los oscuros secretos y el pasado de las mujeres de la casa.\n\n\nMartes 29 de septiembre – 19:00 hSala Molière – Alianza Francesa de Asunción\n️ Entradas ( https://afasuncion.extranet-aec.com/events/view/22-AFCINE#/ )\n \n
+URL:https://alianzafrancesa.edu.py/events/af-cine-les-felins/
+CATEGORIES:arte,Cine
+LOCATION:Mcal. Estigarribia 1039 c/ EEUU
+ATTACH;FMTTYPE=image/jpeg:https://alianzafrancesa.edu.py/wp-content/uploads/2026/09/29-SET.jpg
+END:VEVENT
+END:VCALENDAR

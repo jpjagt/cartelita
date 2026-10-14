@@ -1,0 +1,30 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+METHOD:PUBLISH
+CALSCALE:GREGORIAN
+PRODID:-//WordPress - MECv7.11.0//EN
+X-ORIGINAL-URL:https://alianzafrancesa.edu.py/
+X-WR-CALNAME:Alianza Francesa
+X-WR-CALDESC:Paraguay
+REFRESH-INTERVAL;VALUE=DURATION:PT1H
+X-PUBLISHED-TTL:PT1H
+X-MS-OLK-FORCEINSPECTOROPEN:TRUE
+BEGIN:VEVENT
+CLASS:PUBLIC
+UID:MEC-b1c1c47f20cf1d3253555b8cf83949c0@alianzafrancesa.edu.py
+DTSTART:20260930T220000Z
+DTEND:20261001T000000Z
+DTSTAMP:20260916T201000Z
+CREATED:20260916
+LAST-MODIFIED:20260916
+PRIORITY:5
+SEQUENCE:56
+TRANSP:OPAQUE
+SUMMARY:Ciclo de cine paraguayo – Bajo las banderas, el sol
+DESCRIPTION:Bajo las banderas, el sol\nSinopsis:\n\n\n\n\n\n\nBajo las banderas, el sol (2025), documental dirigido por Juanjo Pereira.\n\n\nA partir de materiales audiovisuales de archivo encontrados en Paraguay y otros países, la película reconstruye la dictadura de Alfredo Stroessner y explora el papel de las imágenes, la propaganda y los medios en la construcción del poder y la memoria colectiva.\n\n\n Dato destacado: la película tuvo su estreno mundial en la Berlinale 2025, dentro de la sección Panorama, donde obtuvo el Premio FIPRESCI de la crítica internacional.\n\n\n\n Miércoles 30 de septiembre\n 19:00 h\n Sala Molière – Alianza Francesa de Asunción\nMcal. Estigarribia 1039\n\n Entrada libre y gratuita\n\n\n\n\n\n
+URL:https://alianzafrancesa.edu.py/events/ciclo-de-cine-paraguayo-bajo-las-banderas-el-sol/
+CATEGORIES:arte,Cine
+LOCATION:Mcal. Estigarribia 1039 c/ EEUU
+ATTACH;FMTTYPE=image/png:https://alianzafrancesa.edu.py/wp-content/uploads/2026/09/bajo-las-banderas-el-sol-30-sept.png
+END:VEVENT
+END:VCALENDAR

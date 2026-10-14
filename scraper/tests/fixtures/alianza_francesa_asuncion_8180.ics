@@ -1,0 +1,30 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+METHOD:PUBLISH
+CALSCALE:GREGORIAN
+PRODID:-//WordPress - MECv7.11.0//EN
+X-ORIGINAL-URL:https://alianzafrancesa.edu.py/
+X-WR-CALNAME:Alianza Francesa
+X-WR-CALDESC:Paraguay
+REFRESH-INTERVAL;VALUE=DURATION:PT1H
+X-PUBLISHED-TTL:PT1H
+X-MS-OLK-FORCEINSPECTOROPEN:TRUE
+BEGIN:VEVENT
+CLASS:PUBLIC
+UID:MEC-6e187996e9cc9d93c5f4452695768290@alianzafrancesa.edu.py
+DTSTART:20260321T160000Z
+DTEND:20260321T210000Z
+DTSTAMP:20260309T225500Z
+CREATED:20260309
+LAST-MODIFIED:20260309
+PRIORITY:5
+SEQUENCE:7
+TRANSP:OPAQUE
+SUMMARY:Fiesta de la Francofonía 2026
+DESCRIPTION:Fiesta de la Francofonía y la Lengua Francesa en la AF\nTe invitamos a vivir una jornada única en la Alianza Francesa de Asunción (Mcal. Estigarribia 1039 e/ Brasil y EE. UU.) desde las 12:30 hasta las 20:30 h. Disfruta de una programación especial con delegaciones internacionales y actividades para toda la familia:\n\nCiclo de cine francófono\nEspacios de realidad virtual\nActividades infantiles\nConciertos y DJ set\nFeria cultural y gastronómica\n\n\n\nEntrada libre y gratuita\nParticipan\nEmbajada de Francia, Embajada de Bélgica, Embajada de Canadá, Embajada de Marruecos, Embajada de Suiza, Embajada Austria\n
+URL:https://alianzafrancesa.edu.py/events/francofonia-839/
+CATEGORIES:Cine,Feria de países,Festival,música
+LOCATION:Mcal. Estigarribia 1039 c/ EEUU
+ATTACH;FMTTYPE=image/png:https://alianzafrancesa.edu.py/wp-content/uploads/2026/03/Feed-instagram.png
+END:VEVENT
+END:VCALENDAR
