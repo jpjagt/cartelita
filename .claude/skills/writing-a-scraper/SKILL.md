@@ -168,7 +168,10 @@ rule for you (range only when `hi >= 2*lo`, else `"{hi}€"`). Don't hand-roll
 `f"{lo}–{hi}€"`. Armenian dram uses the same rules with the symbol convention
 (`"5000֏"`, range `"2500–5000֏"`): `format_amd_range(lo, hi)` for numeric
 bounds, `normalize_amd(text)` for source free text ("5000 AMD" → "5000֏") —
-never emit the "AMD" unit in output.
+never emit the "AMD" unit in output. Paraguayan guaraní likewise uses
+dot-thousands and the symbol (`"40.000₲"`, range `"40.000–120.000₲"`):
+`format_pyg` / `format_pyg_range(lo, hi)` for integers, `pyg_price(text)` for
+free text ("Gs. 80.000", "40.000 PYG") — never emit "Gs"/"PYG".
 - Tests assert real properties: parses many events; every event has a valid
   date/title/url and a known category; **price coverage** (e.g. ≥90% have a
   price — this is the test that would have caught the original bug); the category

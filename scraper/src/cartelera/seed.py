@@ -12,6 +12,7 @@ CITIES = [
     ("amsterdam", "Amsterdam"),
     ("rotterdam", "Rotterdam"),
     ("utrecht", "Utrecht"),
+    ("asuncion", "Asunción"),
 ]
 
 # Categories are global (shared across cities); lists are per-city, created

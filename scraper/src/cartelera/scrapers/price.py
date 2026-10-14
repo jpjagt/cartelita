@@ -116,3 +116,68 @@ def eur_price(text: str | None, *, require_symbol: bool = False) -> str | None:
     if lo > 0 and hi >= _RANGE_FACTOR * lo:
         return f"{format_eur(lo)[:-1]}–{format_eur(hi)}"
     return format_eur(hi)
+
+
+# --- Paraguayan guaraní amounts in free text (Asunción venues) -------------
+#
+# Paraguayan sites state prices as "Gs. 80.000", "Gs80.000", "Gs380000",
+# "40.000 PYG", "₲ 50.000", "30.000 Gs." (dot = thousands separator; the
+# guaraní has no minor unit in use). House display convention, mirroring the
+# € and ֏ ones: the integer with Paraguayan dot-thousands and the ₲ symbol
+# glued after it — "40.000₲", range "40.000–120.000₲" (2x rule, see above),
+# zero → "free". Never emit "Gs"/"PYG" in output.
+
+# An amount: digits with optional dot-thousands groups ("80.000", "1.250.000")
+# or a bare run of digits ("380000").
+_PYG_NUM = r"(\d{1,3}(?:\.\d{3})+|\d+)(?![\d.,:]\d)"
+# A guaraní marker before ("Gs.", "Gs", "₲", "PYG") or after ("PYG", "Gs.",
+# "₲", "guaraníes") the amount. A bare number is never a guaraní price
+# ("21:00", "Sala 2").
+_PYG_BEFORE = re.compile(r"(?:\bGs\.?|₲|\bPYG\b)\s*" + _PYG_NUM, re.IGNORECASE)
+_PYG_AFTER = re.compile(
+    r"(?<![\d.])" + _PYG_NUM + r"\s*(?:PYG\b|Gs\b\.?|₲|guaran[ií]es\b)", re.IGNORECASE
+)
+
+
+def format_pyg(value: int) -> str:
+    """40000 → "40.000₲", 0 → "free"."""
+    if value <= 0:
+        return "free"
+    return f"{value:,}".replace(",", ".") + "₲"
+
+
+def format_pyg_range(lo: int, hi: int) -> str:
+    """Guaraní price from integer bounds, with the 2x-spread rule of
+    format_eur_range: one price (the high) unless hi >= 2*lo, then a
+    "lo–hi₲" range. A zero low (a free tier) is not a range."""
+    if hi <= 0:
+        return "free"
+    if lo <= 0 or lo == hi or hi < _RANGE_FACTOR * lo:
+        return format_pyg(hi)
+    return f"{format_pyg(lo)[:-1]}–{format_pyg(hi)}"
+
+
+def pyg_amounts(text: str) -> list[int]:
+    """Every guaraní-marked amount in `text`, in order of appearance."""
+    found: list[tuple[int, int]] = []
+    taken: list[tuple[int, int]] = []
+    for pattern in (_PYG_BEFORE, _PYG_AFTER):
+        for m in pattern.finditer(text):
+            span = m.span(1)
+            if any(span[0] < e and s < span[1] for s, e in taken):
+                continue
+            taken.append(span)
+            found.append((span[0], int(m.group(1).replace(".", ""))))
+    return [v for _pos, v in sorted(found)]
+
+
+def pyg_price(text: str | None) -> str | None:
+    """Normalize a guaraní price statement to the price convention: the
+    highest amount, or a range when the spread is >= 2x; zero → "free"; no
+    marked amount → None (callers handle "gratuito"/"agotado" wording)."""
+    if not text:
+        return None
+    amounts = pyg_amounts(text)
+    if not amounts:
+        return None
+    return format_pyg_range(min(amounts), max(amounts))

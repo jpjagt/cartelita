@@ -4,6 +4,10 @@ from cartelera.scrapers.price import (
     eur_to_float,
     format_eur,
     format_eur_range,
+    format_pyg,
+    format_pyg_range,
+    pyg_amounts,
+    pyg_price,
 )
 
 
@@ -89,3 +93,44 @@ def test_eur_price_require_symbol_skips_bare_numbers():
     text = "Doors 20.00, 3 acts, tickets €18"
     assert eur_price(text, require_symbol=True) == "18€"
     assert eur_price("Line-up of 3 acts", require_symbol=True) is None
+
+
+# --- Paraguayan guaraní (Asunción) -------------------------------------------
+
+
+def test_format_pyg_dot_thousands_and_symbol():
+    assert format_pyg(40000) == "40.000₲"
+    assert format_pyg(380000) == "380.000₲"
+    assert format_pyg(1250000) == "1.250.000₲"
+    assert format_pyg(500) == "500₲"
+    assert format_pyg(0) == "free"
+
+
+def test_format_pyg_range_two_x_rule():
+    assert format_pyg_range(40000, 40000) == "40.000₲"
+    assert format_pyg_range(50000, 80000) == "80.000₲"  # < 2x: highest
+    assert format_pyg_range(40000, 80000) == "40.000–80.000₲"
+    assert format_pyg_range(0, 0) == "free"
+    assert format_pyg_range(0, 50000) == "50.000₲"  # a free tier is no range
+
+
+def test_pyg_amounts_need_a_currency_marker():
+    assert pyg_amounts("Gs300.000") == [300000]
+    assert pyg_amounts("Gs380000") == [380000]
+    assert pyg_amounts("Gs. 80.000") == [80000]
+    assert pyg_amounts("40.000 PYG") == [40000]
+    assert pyg_amounts("₲ 50.000 / ₲100.000") == [50000, 100000]
+    assert pyg_amounts("Entrada: 30.000 Gs.") == [30000]
+    assert pyg_amounts("Platea 150.000 guaraníes") == [150000]
+    assert pyg_amounts("16 oct 2026, 21:00") == []
+    assert pyg_amounts("Sala 2, 20.000 personas") == []
+
+
+def test_pyg_price_convention():
+    assert pyg_price("40.000 PYG") == "40.000₲"
+    assert pyg_price("Gs. 50.000 – Gs. 80.000") == "80.000₲"
+    assert pyg_price("Gs. 40.000 / Gs. 120.000") == "40.000–120.000₲"
+    assert pyg_price("Gs. 0") == "free"
+    assert pyg_price("Gratuito") is None  # wording is the caller's call
+    assert pyg_price("") is None
+    assert pyg_price(None) is None
