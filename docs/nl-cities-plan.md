@@ -44,7 +44,7 @@ updates this table in its commit).
 | KINO | kino-rotterdam | film | cineville | 1 |
 | Cinerama | cinerama | film | cineville | 1 |
 | Wenneker (Schiedam) | wenneker | film | cineville | 1 |
-| LantarenVenster | lantarenvenster | film, jazz | lantarenvenster | 4 |
+| LantarenVenster | lantarenvenster | film, jazz, kids, folk | lantarenvenster | 4 |
 | WORM | worm | alternative, film, club | worm | 3 |
 | Dizzy, Vrijmoed, Fruitvis, Grounds, Heerenhuys, other jazz010 venues not owned below | (per venue) | jazz | jazz010 | 2 |
 | BIRD | bird | jazz, pop, club | bird | 3 |
@@ -55,10 +55,10 @@ updates this table in its commit).
 | Maassilo | maassilo | club, pop | maassilo (own agenda + Rotown's Maassilo shows) | 3 |
 | Roodkapje | roodkapje | alternative | roodkapje | 3 |
 | ~~Poortgebouw~~ | — | — | not scraped: site's activities page last updated Oct 2025, programme lives on Facebook | 3 |
-| De Doelen | de-doelen | classical, jazz, pop | doelen (Peppered) | 4 |
-| Theater Zuidplein | theater-zuidplein | theater, pop | doelen (same platform) | 4 |
+| De Doelen | de-doelen | classical, jazz, pop, folk | doelen (Peppered) | 4 |
+| Theater Zuidplein | theater-zuidplein | theater, dance, kids, pop, folk | doelen (same platform) | 4 |
 | Laurenskerk | laurenskerk | classical | laurenskerk | 4 |
-| Luxor (optional) | luxor | theater, pop | luxor | 4 |
+| ~~Luxor~~ (optional — skipped: mainstream touring fare) | — | — | — | 4 |
 | Theater Rotterdam (TR25 Schouwburg + TR8 William Boothlaan; Keilepand is not TR in the feed) | theater-rotterdam | theater, dance, kids | uitagenda-rotterdam | 5 |
 | Theater Walhalla (Kantine Walhalla, Theater Walhalla, Werkplaats Walhalla — one programme) | theater-walhalla | theater, dance, kids | uitagenda-rotterdam | 5 |
 | Theater Mooi Weer | mooi-weer | theater | uitagenda-rotterdam | 5 |
