@@ -59,13 +59,12 @@ updates this table in its commit).
 | Theater Zuidplein | theater-zuidplein | theater, pop | doelen (same platform) | 4 |
 | Laurenskerk | laurenskerk | classical | laurenskerk | 4 |
 | Luxor (optional) | luxor | theater, pop | luxor | 4 |
-| Theater Rotterdam (Schouwburg, Witte de With, Keilezaal) | theater-rotterdam | theater, dance | uitagenda-rotterdam | 5 |
-| Kantine Walhalla | kantine-walhalla-rotterdam | theater | uitagenda-rotterdam | 5 |
-| Mooi Weer | mooi-weer | theater | uitagenda-rotterdam | 5 |
-| Hofplein | hofplein | theater | uitagenda-rotterdam | 5 |
-| Maaspodium | maaspodium | theater, dance | uitagenda-rotterdam | 5 |
-| Maas theater en dans | maas-theater-en-dans | theater, dance | maas | 5 |
-| Dansateliers | dansateliers | dance | dansateliers | 5 |
+| Theater Rotterdam (TR25 Schouwburg + TR8 William Boothlaan; Keilepand is not TR in the feed) | theater-rotterdam | theater, dance, kids | uitagenda-rotterdam | 5 |
+| Theater Walhalla (Kantine Walhalla, Theater Walhalla, Werkplaats Walhalla — one programme) | theater-walhalla | theater, dance, kids | uitagenda-rotterdam | 5 |
+| Theater Mooi Weer | mooi-weer | theater | uitagenda-rotterdam | 5 |
+| Jeugdtheater Hofplein | hofplein | theater, kids | uitagenda-rotterdam | 5 |
+| Maaspodium (= Maas theater en dans' own stage; one venue, not two) | maaspodium | theater, dance, kids | maas | 5 |
+| ~~Dansateliers~~ — not built: a production house whose agenda is its makers' touring dates; its Rotterdam shows are at TR/Zuidplein (owned above), and at its own studio only ~2 performances/season amid talks/funding sessions with no structural signal to tell them apart | — | — | — | 5 |
 
 ### Utrecht
 
