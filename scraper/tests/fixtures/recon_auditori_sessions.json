@@ -1,0 +1,62 @@
+[
+ {
+  "type": "post",
+  "wp_post": {
+   "ID": 115840,
+   "post_date": "2026-07-09 11:20:08",
+   "post_title": "Sessió La Banda a la Festa Major de Sants 05/09/2026 19.00 h",
+   "post_status": "publish",
+   "post_name": "sessio-la-banda-a-la-festa-major-de-sants-05-09-2026-19-00-h",
+   "post_type": "session"
+  },
+  "post_type": "session",
+  "ID": 115840,
+  "output_profile": "current",
+  "start_datetime": "1788627600"
+ },
+ {
+  "type": "post",
+  "wp_post": {
+   "ID": 116402,
+   "post_date": "2026-07-30 13:24:09",
+   "post_title": "Sessió Visita guiada a l’exposició ‘Ricard Viñes. Diari d’un pianista’ 17/09/2026 18.00 h",
+   "post_status": "publish",
+   "post_name": "sessio-visita-guiada-a-lexposicio-ricard-vines-diari-dun-pianista-17-09-2026-18-00-h",
+   "post_type": "session"
+  },
+  "post_type": "session",
+  "ID": 116402,
+  "output_profile": "current",
+  "start_datetime": "1789660800"
+ },
+ {
+  "type": "post",
+  "wp_post": {
+   "ID": 115843,
+   "post_date": "2026-07-09 11:57:59",
+   "post_title": "Sessió La Banda a la Festa Major del Poblenou 17/09/2026 20.00 h",
+   "post_status": "publish",
+   "post_name": "sessio-la-banda-a-la-festa-major-del-poblenou-17-09-2026-20-00-h",
+   "post_type": "session"
+  },
+  "post_type": "session",
+  "ID": 115843,
+  "output_profile": "current",
+  "start_datetime": "1789668000"
+ },
+ {
+  "type": "post",
+  "wp_post": {
+   "ID": 117107,
+   "post_date": "2026-09-18 12:49:33",
+   "post_title": "Sessió Visita guiada al Museu de la Música 20/09/2026 11.00 h",
+   "post_status": "publish",
+   "post_name": "sessio-visita-guiada-al-museu-de-la-musica-20-09-2026-11-00-h",
+   "post_type": "session"
+  },
+  "post_type": "session",
+  "ID": 117107,
+  "output_profile": "current",
+  "start_datetime": "1789894800"
+ }
+]

@@ -16,6 +16,7 @@ Requires PostgreSQL running locally, `uv`, and `pnpm`.
 createdb cartelera_dev
 createdb cartelera_test       # used by the Python test suite
 cd scraper && uv sync --extra dev
+uv run playwright install chromium-headless-shell  # one-time; only for tools/recon.py
 cp .env.example .env          # sets DATABASE_URL=postgresql://localhost:5432/cartelera_dev
 uv run cartelera migrate
 uv run cartelera seed

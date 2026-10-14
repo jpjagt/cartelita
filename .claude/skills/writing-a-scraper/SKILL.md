@@ -48,16 +48,36 @@ esora.app exposes `GET /api/event-sources?city=<city>&limit=500` and
 `GET /api/events/feed?eventSourceId=...`, the source behind several Yerevan
 scrapers).
 
-Reach for the `browser-use` skill only when HTTP is genuinely insufficient
-(JS-only rendering with no discoverable API). **Caveat (2026-08-18):**
-browser-use CLI 3.x dropped `--session` isolation and attaches to the user's
-real Chrome via remote debugging, which requires an interactive approval —
-NEVER attach to the user's personal browser from an agent, and don't run the
-shared daemon from parallel agents (they hijack each other's tab). If the
-browser is unavailable, do recon and verification via HTTP and record that in
-`SOURCE.md`; if the site is truly browser-only, report the blocker instead of
-working around it (a scraper that only works in a browser can't run in
-production anyway).
+**When httpx comes back without the events** (few links/cards, an empty shell,
+a 403 or challenge page), run the recon tool from `scraper/`:
+
+```bash
+uv run python tools/recon.py <list-url> [--scroll] [--click SEL]... [--wait MS] [--dump DIR]
+```
+
+It reports, in a few hundred tokens: whether httpx / curl_cffi get the page,
+server- vs JS-rendered, and a ranked list of candidate data sources — XHR/fetch
+JSON (with method, POST body, structure sketch, sample) and embedded state
+(`__NEXT_DATA__`, Nuxt, RSC, JSON-LD, Astro props, `data-*` JSON). Then fetch
+the top candidate **with httpx** and confirm it carries every field you need
+(it's a candidate, not a verdict). `--scroll`/`--click` trigger lazy loads and
+load-more buttons. One-time setup: `uv run playwright install
+chromium-headless-shell`.
+
+**Browser only via `tools/recon.py`** — it launches its own isolated headless
+Chromium (parallel-safe). NEVER attach to the user's personal Chrome. For an
+interactive flow recon can't drive (multi-step filters, date pickers), use
+`playwright-cli -s=<venue> …` (a named, isolated session) with `requests
+--filter <substring>`, redirecting response bodies to files — `response-body`
+inlines the whole body into your context. If the site is truly browser-only,
+report the blocker instead of working around it (a scraper that only works in
+a browser can't run in production anyway).
+
+- **Bot protection** (403 / Cloudflare "Just a moment..." with httpx even with
+  a browser UA): try `curl_cffi.requests.get(url, impersonate="chrome")` (or
+  `cartelera.scrapers.http.fetch(url, impersonate=True)`) — a valid production
+  client (it's a runtime dependency). recon.py's verdict says which client
+  works; record the client in `SOURCE.md`.
 
 Work top-down:
 
@@ -172,8 +192,9 @@ INDEPENDENT read of the live site**:
   mismatch here is a real bug (this is exactly how the Jamboree price/category
   bugs were caught and confirmed fixed). For a server-rendered site this is
   equivalent to (and stricter than) eyeballing the browser DOM; if the site is
-  JS-rendered, verify against its underlying JSON API instead. Use the browser
-  only if neither exists — see the Phase 1 caveat.
+  JS-rendered, verify against its underlying JSON API instead, or against the
+  rendered DOM from `uv run python tools/recon.py <url> --dump DIR`
+  (`DIR/rendered.html`) parsed with throwaway BeautifulSoup.
 - Record the result + date + method in `SOURCE.md` ("last verified: YYYY-MM-DD
   via HTTP cross-check").
 

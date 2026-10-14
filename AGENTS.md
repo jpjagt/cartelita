@@ -105,7 +105,8 @@ not optional process decoration — it encodes a real lesson: the first Jamboree
 scraper passed its tests while silently dropping price for ~160 events and
 mislabeling club nights, because it trusted JSON-LD that lacked those fields. The
 skill's non-negotiable step is **verifying scraper output against the live site
-field-by-field** (via the `browser-use` skill). Each scraper has a
+field-by-field** (HTTP-first; `scraper/tools/recon.py` when a site needs a
+browser). Each scraper has a
 `<venue>_SOURCE.md` next to it recording where each field comes from; write one.
 `scraper/src/cartelera/scrapers/jamboree.py` + `jamboree_SOURCE.md` are the
 worked example (note: parse the venue's **list/`llista` view DOM**, not just
@@ -185,9 +186,14 @@ means a *partial* break (pagination stopping early, a dead field selector).
 
 ## Gotchas
 
-- `browser-use` CLI 3.x lost `--session` isolation and attaches to the user's
-  real Chrome (interactive approval required) — scraper recon/verification is
-  HTTP-first now; see the writing-a-scraper skill's Phase 1 caveat.
+- Don't use `browser-use` for scraper work: CLI 3.x lost `--session` isolation
+  and attaches to the user's real Chrome. Recon/verification is HTTP-first;
+  when a site needs a browser, `cd scraper && uv run python tools/recon.py <url>`
+  runs its own isolated headless Chromium (one-time `uv run playwright install
+  chromium-headless-shell`; playwright is a dev-only dependency, not in the
+  prod image). Bot-protected sites (403/Cloudflare with httpx): `curl_cffi`
+  `impersonate="chrome"` is a runtime dependency — see the writing-a-scraper
+  skill, Phase 1.
 - The migration runner pre-creates `schema_migrations`, so its SQL uses
   `CREATE TABLE IF NOT EXISTS`. Migrations are applied in filename order and are
   idempotent; reset a dev/test DB with
