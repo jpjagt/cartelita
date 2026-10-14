@@ -77,10 +77,10 @@ updates this table in its commit).
 | De Helling | de-helling | pop, club | de-helling | 6 |
 | EKKO | ekko | pop, club | ekko | 6 |
 | dB's | dbs | pop, alternative | dbs | 6 |
-| BASIS | basis-utrecht | club | basis | 6 |
-| ACU | acu | alternative, pop, club, film | acu | 6 |
-| KABUL à GoGo | kabul-a-gogo | club, alternative | kabul | 6 |
-| Moira | moira | alternative | moira | 6 |
+| BASIS | basis-utrecht | club | basis-utrecht | 6 |
+| ACU | acu | alternative, club, film (no pop: its own labels have no pop programme) | acu | 6 |
+| KABUL à GoGo | kabul-a-gogo | club, alternative | kabul-a-gogo | 6 |
+| ~~Moira~~ — not built: a squat-basement community venue; its agenda is a weekly open mic plus occasional improv, talks and workshops (3 upcoming items, no concerts) — too thin/low-signal for a curated agenda | — | — | — | 6 |
 | Stadsschouwburg Utrecht | stadsschouwburg-utrecht | theater, dance | cre8ion (shared parser) | 7 |
 | Theater Kikker | theater-kikker | theater, dance | cre8ion | 7 |
 | Podium Hoge Woerd | podium-hoge-woerd | theater, dance | cre8ion | 7 |
