@@ -48,6 +48,16 @@ export const CITIES: Record<string, CityConfig> = {
     defaultList: "pop",
     timezone: "Europe/Amsterdam",
   },
+  asuncion: {
+    slug: "asuncion",
+    name: "Asunción",
+    locales: ["es", "en"],
+    defaultLocale: "es",
+    // Asunción's sources are mostly cinemas and cultural centres' film cycles.
+    defaultList: "film",
+    // Paraguay has been on permanent UTC−3 (no DST) since October 2024.
+    timezone: "America/Asuncion",
+  },
 };
 
 // Slug of the per-visitor favourites page, /:city/:locale/my-list. Lives beside
