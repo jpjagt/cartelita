@@ -242,3 +242,23 @@ export interface PageDoc {
   readonly body: object | null;
   addEventListener(type: string, listener: () => void): void;
 }
+
+/** One analytics event's properties (Umami event data): low-cardinality
+    strings and small numbers only — never titles or free text
+    (docs/analytics.md). */
+export type AnalyticsData = Record<string, string | number | boolean>;
+
+/** Where a page sits in the site, read off its path (lib/analytics.ts
+    pageOfPath): "" for a part the path doesn't have (the bare / city picker
+    has no city, locale or list). */
+export interface PageRef {
+  city: string;
+  locale: string;
+  list: string;
+}
+
+/** One navigation's analytics event (lib/analytics.ts navEvent). */
+export interface NavEvent {
+  name: "city_switch" | "locale_switch" | "nav_tab";
+  data: AnalyticsData;
+}

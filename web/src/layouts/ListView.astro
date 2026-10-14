@@ -46,6 +46,7 @@ const priceFit = pricePageFit(days.flatMap((d) => d.events.map((e) => displayPri
   canonical={`/${city}/${locale}/${list}`}
   ogImage={`/og/${city}-${locale}-${list}.png`}
   genre={list}
+  city={city}
   priceFit={priceFit}
 >
   <Navbar city={city} locale={locale} activeList={list} />

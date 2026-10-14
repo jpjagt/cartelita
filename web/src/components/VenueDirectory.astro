@@ -96,6 +96,7 @@ const strings = t(locale)
     parseCollapsed,
   } from "@/lib/venue-directory"
   import { onPage } from "@/lib/page-lifecycle"
+  import { track } from "@/lib/track"
 
   function readCollapsed(): Set<string> {
     try {
@@ -167,6 +168,10 @@ const strings = t(locale)
     else collapsed.add(slug)
     writeCollapsed(collapsed)
     apply(collapsed)
+    track("directory_card", {
+      category: slug,
+      state: collapsed.has(slug) ? "collapsed" : "expanded",
+    })
   })
 
   // Another tab collapsed/expanded a card: follow it.

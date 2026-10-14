@@ -7,4 +7,9 @@ interface Window {
   /** Re-run the time-aware agenda pass (row packing, now-dots/lines;
       Layout.astro) — for every day, or just `section`. */
   syncAgenda?: (section?: HTMLElement) => void
+  /** Umami's tracker (Layout.astro loads it deferred; absent when blocked).
+      Only called through lib/track.ts. */
+  umami?: {
+    track(name: string, data?: Record<string, string | number | boolean>): Promise<unknown>
+  }
 }

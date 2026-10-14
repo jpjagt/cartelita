@@ -49,6 +49,7 @@ const { venueSlug, venueName, label, variant } = Astro.props
   } from "@/lib/favourites"
   import { NARROW_QUERY } from "@/lib/breakpoints"
   import { onPage } from "@/lib/page-lifecycle"
+  import { track } from "@/lib/track"
 
   const store = browserStore()
   const NARROW = window.matchMedia(NARROW_QUERY)
@@ -89,6 +90,18 @@ const { venueSlug, venueName, label, variant } = Astro.props
     e.preventDefault()
     const favs = toggleFavourite(store, btn.dataset.venue)
     paint(favs)
+    // Track before announcing: on My list, un-favouriting filters the row
+    // (and its open panel) away.
+    track("favourite", {
+      venue: btn.dataset.venue,
+      state: favs.has(btn.dataset.venue) ? "on" : "off",
+      surface: !btn.hasAttribute("data-fav-place")
+        ? "directory"
+        : btn.closest("[data-expanded]")
+          ? "panel"
+          : "row",
+      favourites: favs.size,
+    })
     window.dispatchEvent(new CustomEvent(FAVOURITES_EVENT, { detail: favs }))
   })
 

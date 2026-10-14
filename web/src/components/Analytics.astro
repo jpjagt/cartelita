@@ -1,0 +1,118 @@
+---
+// Site-wide Umami instrumentation (docs/analytics.md): no markup, one module
+// script whose document/window listeners are registered once per session and
+// act on whatever page is current. Page views are NOT sent here — Umami counts
+// them itself (Layout.astro). Component-specific events (panel, share menu,
+// hearts, "show earlier", directory cards) are tracked in their components
+// through lib/track.ts.
+---
+<script>
+  import { depthBucket, dayOffset, logicalToday, navEvent, pageOfPath, referrerSource } from "@/lib/analytics"
+  import { eventProps, favouritesBucket, track, whenUmami } from "@/lib/track"
+  import { onPage } from "@/lib/page-lifecycle"
+
+  // Landing: once per full page load (this module runs once per session),
+  // after Umami's own page view. Where the visit came from, and whether the
+  // visitor already has favourites (a returning, set-up visitor).
+  whenUmami(() =>
+    track("landing", {
+      source: referrerSource(document.referrer, location.hostname),
+      favourites: favouritesBucket(),
+    }),
+  )
+
+  // ---- Scroll depth: the furthest day (0 = today) whose heading reached the
+  // viewport, sent once per page view when the visitor leaves it — a client
+  // navigation, the tab hidden (an event opened in a new tab, the app
+  // backgrounded) or the page unloaded. Pages without day sections send none.
+  let maxDay = -1
+  let sent = false
+  let queued = false
+
+  function measure() {
+    queued = false
+    const today = logicalToday(new Date())
+    for (const s of document.querySelectorAll<HTMLElement>("main section[data-date]")) {
+      // Past days and the hidden views of a view switch take no space.
+      if (s.hidden || s.getClientRects().length === 0) continue
+      // Day sections run in date order, top to bottom.
+      if (s.getBoundingClientRect().top >= window.innerHeight) break
+      maxDay = Math.max(maxDay, dayOffset(s.dataset.date ?? "", today))
+    }
+  }
+  function queueMeasure() {
+    if (queued) return
+    queued = true
+    requestAnimationFrame(measure)
+  }
+  function flushDepth() {
+    if (sent) return
+    measure() // what's on screen right now counts too
+    if (maxDay < 0) return
+    sent = true
+    track("scroll_depth", { max_day: Math.min(maxDay, 60), depth: depthBucket(maxDay) })
+  }
+
+  onPage(() => {
+    maxDay = -1
+    sent = false
+    queueMeasure()
+  })
+  window.addEventListener("scroll", queueMeasure, { passive: true })
+  window.addEventListener("pagehide", flushDepth)
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "hidden") flushDepth()
+  })
+
+  // ---- Navigation between pages (tabs, locales, cities). The router
+  // announces where it's going before it fetches; Umami's page view for the
+  // new URL follows on its own. `via` is the control used: a
+  // data-nav-via="…" on (or around) it, else the navbar's known parts.
+  function viaOf(source: Element | undefined, type: string): string {
+    if (type === "traverse") return "history"
+    const declared = source?.closest<HTMLElement>("[data-nav-via]")?.dataset.navVia
+    if (declared) return declared
+    if (source?.closest("[data-navlink]")) return "tab"
+    if (source?.closest("[data-locale]")) return "locale"
+    if (source?.closest(".navbar-wordmark")) return "logo"
+    if (source?.closest(".city-picker-list")) return "picker"
+    return "link"
+  }
+  document.addEventListener("astro:before-preparation", (e) => {
+    // The outgoing page's scroll depth first: the page (and Umami's current
+    // URL) is still the one being left.
+    flushDepth()
+    const nav = navEvent(
+      pageOfPath(e.from.pathname),
+      pageOfPath(e.to.pathname),
+      viaOf(e.sourceElement, e.navigationType),
+    )
+    if (nav) track(nav.name, nav.data, false)
+  })
+
+  // ---- Opening an event: the outbound click to the venue/ticket page (title
+  // link on wide screens, the panel's View on narrow ones, a film showtime).
+  // On window, after the page's own handlers: a narrow-layout title tap that
+  // opened the event panel instead (preventDefault) is not an open.
+  const OUTBOUND = "a.gc-title, a[data-panel-view], a[data-film-showtime]"
+  function onOutbound(e: MouseEvent) {
+    if (e.defaultPrevented) return
+    const a = (e.target as Element | null)?.closest?.<HTMLAnchorElement>(OUTBOUND)
+    if (!a) return
+    const surface = a.matches("[data-panel-view]") ? "panel" : a.matches("[data-film-showtime]") ? "film" : "row"
+    track("event_open", { surface, ...eventProps(a) })
+  }
+  window.addEventListener("click", onOutbound)
+  // Middle-click opens a background tab without a click event.
+  window.addEventListener("auxclick", (e) => e.button === 1 && onOutbound(e))
+
+  // ---- View switches (GridRadioButtons announce `gridradiochange`; the page's
+  // own switcher has already applied it by the time it bubbles here).
+  document.addEventListener("gridradiochange", (e) => {
+    const name = (e.target as HTMLElement | null)?.dataset?.gridRadio
+    const view = (e as CustomEvent<string>).detail
+    if (name === "film-view") track("film_view", { view })
+    else if (name === "my-list") track("my_list_view", { view, favourites: favouritesBucket() })
+    queueMeasure()
+  })
+</script>

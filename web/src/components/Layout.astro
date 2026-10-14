@@ -2,6 +2,7 @@
 import type { Locale, PricePageFit } from "@/lib/types"
 import "@/styles/global.css"
 import CellIconSprite from "@/components/ui/CellIconSprite.astro"
+import Analytics from "@/components/Analytics.astro"
 import { gridGeometryCss } from "@/lib/grid-css"
 import { ClientRouter } from "astro:transitions"
 
@@ -13,11 +14,14 @@ interface Props {
   /** Active genre slug; sets data-genre on <body> so --genre-primary resolves
       page-wide (the now-line and any other genre-tinted chrome read it). */
   genre: string
+  /** The page's city slug (none on the bare / city picker); data-city on
+      <body>, for analytics' page context (lib/track.ts). */
+  city?: string
   /** The page's build-time price column fit (pages with event rows). */
   priceFit?: PricePageFit
 }
 
-const { locale, title, canonical, ogImage, genre, priceFit } = Astro.props
+const { locale, title, canonical, ogImage, genre, city, priceFit } = Astro.props
 const canonicalUrl = new URL(canonical, Astro.site)
 const ogImageUrl = ogImage ? new URL(ogImage, Astro.site).href : undefined
 // The grid geometry for every container width, as a container-query step
@@ -75,9 +79,10 @@ const gridCss = gridGeometryCss()
         lib/page-lifecycle.ts onPage. */}
     <ClientRouter fallback="swap" />
   </head>
-  <body data-genre={genre} class="font-sans bg-background text-foreground">
+  <body data-genre={genre} data-city={city} class="font-sans bg-background text-foreground">
     <CellIconSprite />
     <slot />
+    <Analytics />
     <script>
       // Client navigations, part 1 — analytics. Umami counts the first load
       // and every pushState itself (it wraps history.pushState); a
@@ -157,6 +162,7 @@ const gridCss = gridGeometryCss()
     <script>
       import { numberRows } from "@/lib/event-panel";
       import { onPage } from "@/lib/page-lifecycle";
+      import { track } from "@/lib/track";
       // Time-aware agenda. Runs on load and whenever the tab is refocused, so a
       // page left open overnight self-corrects. Reasons in the same "logical
       // day" frame as src/lib/agenda.ts: the 05:00 boundary means events at
@@ -335,6 +341,7 @@ const gridCss = gridGeometryCss()
         toggle.addEventListener("click", () => {
           section.setAttribute("data-show-early", "");
           syncAgenda();
+          track("show_earlier", { hidden: nEarly });
         });
         // Insert before the first row so it's first in source order (placement is
         // by --ev, but keeping source order tidy helps AT/tab order).

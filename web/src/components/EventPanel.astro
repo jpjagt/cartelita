@@ -61,6 +61,7 @@ const descriptionsJson = JSON.stringify(descriptions).replace(/</g, "\\u003c")
   import { FAVOURITES_EVENT } from "@/lib/favourites"
   import { liveGrid } from "@/lib/grid-client"
   import { onPage } from "@/lib/page-lifecycle"
+  import { eventProps, track } from "@/lib/track"
 
   // The current page's template; null on pages without event rows.
   let template: HTMLTemplateElement | null = null
@@ -188,14 +189,17 @@ const descriptionsJson = JSON.stringify(descriptions).replace(/</g, "\\u003c")
       const r = panel.closest<HTMLElement>("[data-event-row]")
       if (!action || !r) return
       const ev = eventOf(r)
+      const props = { surface: "panel", ...eventProps(r) }
       if (action.dataset.panelAction === "share") {
         const result = await shareEvent(ev, {
           localeTag: template.dataset.localeTag ?? "en-GB",
           template: template.dataset.template ?? "{title} — {when}, {venue}",
         })
+        track("share", { ...props, result })
         if (result === "copied") showCopied(panel)
       } else {
         addToCalendar(ev, template.dataset.timezone ?? "UTC")
+        track("calendar_add", props)
       }
       return
     }
@@ -206,8 +210,10 @@ const descriptionsJson = JSON.stringify(descriptions).replace(/</g, "\\u003c")
     // Any other tap on the row — the title link included — toggles its
     // panel rather than navigating (View does that).
     e.preventDefault()
+    const action = r === row ? "close" : "open"
     if (r === row) close()
     else open(r)
+    track("event_panel", { action, ...eventProps(r) })
   })
 
   // The grid re-flows on resize/rotation: the description may wrap to a
