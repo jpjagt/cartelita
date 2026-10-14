@@ -30,6 +30,24 @@ export const CITIES: Record<string, CityConfig> = {
     defaultList: "jazz",
     timezone: "Europe/Amsterdam",
   },
+  rotterdam: {
+    slug: "rotterdam",
+    name: "Rotterdam",
+    locales: ["nl", "en"],
+    defaultLocale: "nl",
+    defaultList: "jazz",
+    timezone: "Europe/Amsterdam",
+  },
+  utrecht: {
+    slug: "utrecht",
+    name: "Utrecht",
+    locales: ["nl", "en"],
+    defaultLocale: "nl",
+    // Utrecht's jazz scene is thin; its strongest list is pop (TivoliVredenburg,
+    // De Helling, EKKO, dB's).
+    defaultList: "pop",
+    timezone: "Europe/Amsterdam",
+  },
 };
 
 // Slug of the per-visitor favourites page, /:city/:locale/my-list. Lives beside
