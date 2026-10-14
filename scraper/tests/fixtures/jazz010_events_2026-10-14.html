@@ -1,0 +1,1199 @@
+<!doctype html>
+<html lang="nl">
+<head>
+    <title>Jazzagenda Rotterdam</title>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes">
+  <meta name="keywords" content="live jazz agenda rotterdam 010">
+  <meta name="description"
+        content="Mis nooit meer een jazz concert in Rotterdam! Hier het complete overzicht van live jazz in Rotterdam. De rotterdamse jazz agenda.">
+  <meta name="theme-color" content="#6060b1" />
+
+  <meta property="og:site_name" content="De Rotterdamse Live Jazz Agenda">
+
+    <meta property="og:title" content="De Rotterdamse Live Jazz Agenda">
+
+    <meta property="og:description"
+          content="Mis nooit meer een jazz concert in Rotterdam! Hier het complete overzicht van live jazz in Rotterdam. De rotterdamse jazz agenda.">
+
+    <meta property="og:image" content="https://jazz010.nl/images/jazz-010-logo.png">
+
+  <meta property="og:url" content="https://jazz010.live">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="nl_NL">
+
+  <link rel="icon" href="/images/favicon.png">
+
+
+  <link rel="shortcut-icon" type="image/png" href="/images/jazz-010-logo-round.png" />
+  <link rel="apple-touch-icon" href="/images/jazz-010-logo-round.png" />
+  <link rel="canonical" href="https://jazz010.live" />
+
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="#6f6fb9">
+  <meta name="apple-mobile-web-app-title" content="JAZZ 010 LIVE">
+
+  <style>
+    @font-face {
+      font-family: 'Oxanium';
+      src: url('/assets/fonts/Oxanium[wght].woff2') format('woff2-variations');
+      font-weight: 200 800;
+      font-display: swap;
+    }
+  </style>
+
+  <link rel="stylesheet" href="/styles/main.css">
+
+
+    <script>
+       const KEY = 'JITSessionToken'
+    
+       function token () {
+          return {
+             id: crypto.randomUUID(),
+             valid: new Date().setHours(23, 59, 59, 999)
+          }
+       }
+    
+       function track (m, to = 0) {
+    
+          if (/(bot|spider|crawl|headless|Google-Read-Aloud)/i.test(navigator.userAgent) ||
+              navigator.webdriver ||
+              (window.outerHeight === 0 && window.outerWidth === 0)) {
+             return
+          }
+    
+          let t = JSON.parse(localStorage.getItem(KEY))
+    
+          if (!t || t.valid < new Date().getTime()) {
+             t = token()
+             localStorage.setItem(KEY, JSON.stringify(t))
+          }
+    
+          const d = {
+             ...m,
+             session: t.id,
+             referrer: document.referrer
+          }
+    
+          setTimeout(() => {
+             fetch('/analytics', {
+                method: 'POST',
+                headers: {
+                   'Accept': 'application/json',
+                   'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(d)
+             })
+          }, to)
+       }
+    
+       track({url: window.location.href}, 3000)
+    
+       addEventListener('DOMContentLoaded', () => {
+          const links = document.getElementsByTagName('a')
+    
+          for (let i = 0; i < links.length; i++) {
+             if (links[i].getAttribute('target') === '_blank') {
+                links[i].addEventListener('click', (event) => {
+                   track({
+                      type: 'external',
+                      url: event.target.href
+                   })
+                })
+             }
+          }
+       })
+    </script>
+
+</head>
+<body>
+<section class="page">
+  <section>
+
+   <header class="page-header">
+      <section class="banner-content">
+         <a href="/">
+            <img src="/images/jazz-010-round.svg" class="logo" alt="logo" width="100" height="100">
+         </a>
+         <h1 role="heading">DE ROTTERDAMSE JAZZAGENDA</h1>
+
+         <button class="button search-button" onclick="displaySearchBox()" aria-label="Display search dialog">
+           <svg style="width: 30px; height: 30px; fill: white" xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 512 512">
+             <!--! Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+             <path
+               d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z" />
+           </svg>
+         </button>
+         
+         <section class="backdrop hidden" id="backdrop">
+           <section id="search-dialog" class="dialog">
+             <section class="search-dialog-content">
+         
+               <header>
+                 <img src="/images/jazz-010-round.svg" alt="logo" width="32" height="32">
+                   <h2>ZOEKEN IN JAZZ 010 LIVE</h2>
+                 <svg id="close-button" xmlns="http://www.w3.org/2000/svg" style="width:32px; height: 32px;"
+                      viewBox="0 0 384 512">
+                   <path
+                     d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z" />
+                 </svg>
+               </header>
+               <section style="position: relative; height:100%">
+                 <input class="search-query" type="text" id="search-query" placeholder="Zoek een concert"
+                        autocapitalize="none" autocomplete="off">
+                 <svg id="clear-button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"
+                      style="display: none; width: 20px; height: 20px; position: absolute; right: 10px; top: 10px; cursor: pointer;">
+                   <path
+                     d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm121.6 313.1c4.7 4.7 4.7 12.3 0 17L338 377.6c-4.7 4.7-12.3 4.7-17 0L256 312l-65.1 65.6c-4.7 4.7-12.3 4.7-17 0L134.4 338c-4.7-4.7-4.7-12.3 0-17l65.6-65-65.6-65.1c-4.7-4.7-4.7-12.3 0-17l39.6-39.6c4.7-4.7 12.3-4.7 17 0l65 65.7 65.1-65.6c4.7-4.7 12.3-4.7 17 0l39.6 39.6c4.7 4.7 4.7 12.3 0 17L312 256l65.6 65.1z" />
+                 </svg>
+               </section>
+               <section id="search-results"></section>
+             </section>
+           </section>
+         </section>
+         
+         <script>
+           const backDrop = document.getElementById('backdrop')
+           const searchDialog = document.getElementById('search-dialog')
+           const closeButton = document.getElementById('close-button')
+           const clearButton = document.getElementById('clear-button')
+           const searchQueryInput = document.getElementById('search-query')
+           const searchResults = document.getElementById('search-results')
+         
+           backDrop.addEventListener('click', close)
+           closeButton.addEventListener('click', close)
+           clearButton.addEventListener('click', clear)
+           searchQueryInput.addEventListener('keyup', search)
+         
+           searchDialog.addEventListener('close', () => {
+             searchQueryInput.value = ''
+             searchResults.innerHTML = null
+           })
+         
+           searchDialog.addEventListener('click', (event) => {
+             event.stopPropagation()
+           })
+         
+           function search (event) {
+             const query = event.target.value
+         
+             if (query.length > 2) {
+               fetch(`/search?q=${query}`)
+                 .then(response => response.text())
+                 .then(response => {
+                   document.getElementById('search-results').innerHTML = response
+         
+                   // bind event for closing the search box on navigation
+                   const links = document.getElementsByClassName('search-result-item')
+         
+                   for (let i = 0; i < links.length; i++) {
+                     links[i].addEventListener('click', (event) => {
+                       close(event)
+                       window.location.href = links[i]
+                     })
+                   }
+                   clearButton.style.display = 'inline-block'
+                 })
+                 .catch(error => console.error(error))
+             }
+           }
+         
+           function displaySearchBox () {
+             searchQueryInput.value = ''
+             backDrop.classList.remove('hidden')
+             searchQueryInput.focus()
+           }
+         
+           function close (event) {
+             event.preventDefault()
+             clearButton.style.display = 'none'
+             backDrop.classList.add('hidden')
+           }
+         
+           function clear (event) {
+             event.stopPropagation()
+             searchQueryInput.value = ''
+             searchResults.innerHTML = null
+             clearButton.style.display = 'none'
+             searchQueryInput.focus()
+           }
+         
+         </script>      </section>
+   </header>
+
+   <section class="jl-banner">
+      ga voor een landelijk overzicht naar&nbsp;<a href="https://jazzladder.nl" target="_blank">DE JAZZLADDER</a>
+   </section>
+
+   <section class="wrapped-banner">
+      bekijk ook het&nbsp;<a href="/2025">jaaroverzicht 2025</a>
+   </section>
+</section>
+
+<main>
+
+   <section class="page-body" role="main">
+      <section class="flex-horizontal" style="margin-bottom: 20px;">
+         <h2 style="margin: 0; text-transform: uppercase;">VANAF 14 oktober</h2>
+         <button class="button" onclick="displayNewsletterDialog()" aria-label="Display newsletter dialog">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="20" height="20">
+               <path
+                   d="M64 112c-8.8 0-16 7.2-16 16v22.1L220.5 291.7c20.7 17 50.4 17 71.1 0L464 150.1V128c0-8.8-7.2-16-16-16H64zM48 212.2V384c0 8.8 7.2 16 16 16H448c8.8 0 16-7.2 16-16V212.2L322 328.8c-38.4 31.5-93.7 31.5-132 0L48 212.2zM0 128C0 92.7 28.7 64 64 64H448c35.3 0 64 28.7 64 64V384c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V128z"/>
+            </svg>
+            Ontvang 'm wekelijks!
+         </button>
+         
+         <dialog id="newsletter-dialog">
+            <header>
+               <img src="/images/jazz-010-round.svg" alt="logo" width="32" height="32">
+               <h2>NIEUWSBRIEF</h2>
+               <svg xmlns="http://www.w3.org/2000/svg" style="width:32px; height: 32px;"
+                    viewBox="0 0 384 512" id="close-newsletter-dialog">
+                  <path
+                      d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/>
+               </svg>
+            </header>
+            <form id="newsletter-form" class="form">
+               <main>
+                  <p>Ja ik wil wekelijks het complete live jazz overzicht ontvangen!</p>
+                  <label for="email-address">E-mailadres</label>
+                  <input id="email-address" type="email" required>
+               </main>
+               <footer>
+                  <button type="submit" class="button">AANMELDEN</button>
+               </footer>
+            </form>
+            <section class="message hidden">
+               <main>
+                  <p>Hartelijk bedankt voor uw aanmelding!</p>
+                  <p>U ontvangt op korte termijn een e-mail ter bevestiging</p>
+               </main>
+               <footer>
+                  <button class="button" onclick="close()">AFSLUITEN</button>
+               </footer>
+            </section>
+         </dialog>
+         
+         <script>
+            const newsletterDialog = document.getElementById('newsletter-dialog')
+            const emailInput = document.getElementById('email-address')
+            const form = document.querySelector('#newsletter-dialog .form')
+            const message = document.querySelector('#newsletter-dialog .message')
+         
+            document.getElementById('newsletter-form').addEventListener('submit', subscribe)
+         
+            document.getElementById('close-newsletter-dialog')
+                .addEventListener('click', closeNewsletterDialog)
+         
+            newsletterDialog.addEventListener('close', () => {
+               emailInput.value = ''
+            })
+         
+            function displayNewsletterDialog () {
+               form.classList.remove('hidden')
+               message.classList.add('hidden')
+         
+               newsletterDialog.showModal()
+            }
+         
+            function closeNewsletterDialog (event) {
+               event.preventDefault()
+               newsletterDialog.close()
+            }
+         
+            function subscribe (event) {
+               event.preventDefault()
+               event.stopPropagation()
+         
+               fetch('/subscribe', {
+                  method: 'POST',
+                  body: JSON.stringify({email: emailInput.value}),
+                  headers: {
+                     'Content-Type': 'application/json'
+                  }
+               })
+                   .then(() => {
+                      form.classList.add('hidden')
+                      message.classList.remove('hidden')
+                      setTimeout(() => newsletterDialog.close(), 3000)
+                   })
+                   .catch(error => console.error(error))
+            }
+         
+         </script>      </section>
+
+           <article class="listing">
+           <section class="icon">
+             <img class="favicon" src="/images/icons/vrijmoed.png"
+                  alt="Logo Vrijmoed" width="32" height="32">
+           </section>
+           <section class="listing-head">
+             <div class="date-panel">
+                 <span class="timestamp">wo 14 oktober 19:30</span>
+               <span class="venue">
+                       Vrijmoed
+                   </span>
+             </div>
+             <div>
+             </div>
+           </section>
+           <section class="artist">
+             <a href="/event/vrijmoed-jadi-peperzak-2026-10-14">Jadi Peperzak quartet</a>
+           </section>
+           <section class="listing-lineup">
+               <span class="performer-name">Dries Verheesen</span>
+               <span class="performer-name">Jadi Peperzak</span>
+               <span class="performer-name">Jakob Lampert</span>
+               <span class="performer-name">Mees Booden</span>
+           </section>
+         </article>           <article class="listing">
+           <section class="icon">
+             <img class="favicon" src="/images/icons/LantarenVenster.png"
+                  alt="Logo LantarenVenster" width="32" height="32">
+           </section>
+           <section class="listing-head">
+             <div class="date-panel">
+                 <span class="timestamp">wo 14 oktober 20:00</span>
+               <span class="venue">
+                       LantarenVenster Rotterdam
+                   </span>
+             </div>
+             <div>
+             </div>
+           </section>
+           <section class="artist">
+             <a href="/event/lantaren-venster-cortoalto-2026-10-14">corto.alto</a>
+           </section>
+           <section class="listing-lineup">
+               <span class="performer-name">Fergus McCreadie</span>
+               <span class="performer-name">Graham Costello</span>
+               <span class="performer-name">Liam Shortall</span>
+               <span class="performer-name">Mateusz Sobieski</span>
+           </section>
+         </article>           <article class="listing">
+           <section class="icon">
+             <img class="favicon" src="/images/icons/cafe-la-bru.png"
+                  alt="Logo Café LaBru" width="32" height="32">
+           </section>
+           <section class="listing-head">
+             <div class="date-panel">
+                 <span class="timestamp">wo 14 oktober 21:30</span>
+               <span class="venue">
+                       Café LaBru
+                   </span>
+             </div>
+             <div>
+                 <span class="free-entrance">GRATIS</span>
+             </div>
+           </section>
+           <section class="artist">
+             <a href="/event/cafe-la-bru-live-jazz-2026-10-14">Live Jazz</a>
+           </section>
+           <section class="listing-lineup">
+               <span class="performer-name">Daniel Bulatkin</span>
+               <span class="performer-name">Eddy Nielsen</span>
+               <span class="performer-name">Marios Charalampous</span>
+               <span class="performer-name">Nikolas Tsangaris</span>
+           </section>
+         </article>           <article class="listing">
+           <section class="icon">
+             <img class="favicon" src="/images/icons/Doelen.png"
+                  alt="Logo de Doelen" width="32" height="32">
+           </section>
+           <section class="listing-head">
+             <div class="date-panel">
+                 <span class="timestamp">do 15 oktober 19:30</span>
+               <span class="venue">
+                       de Doelen
+                   </span>
+             </div>
+             <div>
+                 <span class="free-entrance">GRATIS</span>
+             </div>
+           </section>
+           <section class="artist">
+             <a href="/event/de-doelen-codarts-jazz-global-sessions-rumishams-2026-10-15">Codarts Jazz &amp; Global Sessions: Rumi &amp; Shams</a>
+           </section>
+           <section class="listing-lineup">
+               <span class="performer-name">Milad Mohammadi</span>
+               <span class="performer-name">Mostafa Taleb</span>
+           </section>
+         </article>           <article class="listing">
+           <section class="icon">
+             <img class="favicon" src="/images/icons/LantarenVenster.png"
+                  alt="Logo LantarenVenster" width="32" height="32">
+           </section>
+           <section class="listing-head">
+             <div class="date-panel">
+                 <span class="timestamp">do 15 oktober 20:30</span>
+               <span class="venue">
+                       LantarenVenster
+                   </span>
+             </div>
+             <div>
+                 <span class="sold-out">UITVERKOCHT</span>
+             </div>
+           </section>
+           <section class="artist">
+             <a href="/event/lantaren-venster-myles-sanko-2026-10-15">Myles Sanko</a>
+           </section>
+           <section class="listing-lineup">
+           </section>
+         </article>           <article class="listing">
+           <section class="icon">
+             <img class="favicon" src="/images/icons/Dizzy.png"
+                  alt="Logo Dizzy" width="32" height="32">
+           </section>
+           <section class="listing-head">
+             <div class="date-panel">
+                 <span class="timestamp">do 15 oktober 21:30</span>
+               <span class="venue">
+                       Dizzy
+                   </span>
+             </div>
+             <div>
+             </div>
+           </section>
+           <section class="artist">
+             <a href="/event/dizzy-tribute-to-lou-donaldson-2026-10-15">Tribute to Lou Donaldson</a>
+           </section>
+           <section class="listing-lineup">
+           </section>
+         </article>           <article class="listing recommended">
+           <section class="icon">
+             <img class="favicon" src="/images/icons/75493564-e463-4e86-b095-5f31fa30050d"
+                  alt="Logo Jazz In De Fruitvis" width="32" height="32">
+           </section>
+           <section class="listing-head">
+             <div class="date-panel">
+                 <span class="timestamp">vr 16 oktober 20:00</span>
+               <span class="venue">
+                       Jazz In De Fruitvis
+                   </span>
+             </div>
+             <div>
+                 <span class="tip">TIP!</span>
+             </div>
+           </section>
+           <section class="artist">
+             <a href="/event/jazz-in-de-fruitvis-mete-erker-trio-1-2026-10-16">Mete Erker Trio + 1</a>
+           </section>
+           <section class="listing-lineup">
+               <span class="performer-name">Floris Kappeyne</span>
+               <span class="performer-name">Mete Erker</span>
+               <span class="performer-name">Tijs Klaassen</span>
+               <span class="performer-name">Wouter Kühne</span>
+           </section>
+         </article>           <article class="listing">
+           <section class="icon">
+             <img class="favicon" src="/images/icons/vrijmoed.png"
+                  alt="Logo Vrijmoed" width="32" height="32">
+           </section>
+           <section class="listing-head">
+             <div class="date-panel">
+                 <span class="timestamp">vr 16 oktober 21:00</span>
+               <span class="venue">
+                       Vrijmoed
+                   </span>
+             </div>
+             <div>
+             </div>
+           </section>
+           <section class="artist">
+             <a href="/event/vrijmoed-liuke-2026-10-16">LIUKE</a>
+           </section>
+           <section class="listing-lineup">
+               <span class="performer-name">Florian Marka</span>
+               <span class="performer-name">Ignazio Pintó</span>
+               <span class="performer-name">Luca Polizzi</span>
+           </section>
+         </article>           <article class="listing recommended">
+           <section class="icon">
+             <img class="favicon" src="/images/icons/LantarenVenster.png"
+                  alt="Logo LantarenVenster" width="32" height="32">
+           </section>
+           <section class="listing-head">
+             <div class="date-panel">
+                 <span class="timestamp">za 17 oktober 20:30</span>
+               <span class="venue">
+                       LantarenVenster
+                   </span>
+             </div>
+             <div>
+                 <span class="tip">TIP!</span>
+             </div>
+           </section>
+           <section class="artist">
+             <a href="/event/lantaren-venster-tijn-wybengas-brainteaser-orchestra-2026-10-17">Tyn Wybenga&#x27;s Brainteaser Orchestra</a>
+           </section>
+           <section class="listing-lineup">
+               <span class="performer-name">Alessandro Fongaro</span>
+               <span class="performer-name">Alistair Payne</span>
+               <span class="performer-name">Federico Calcagno</span>
+               <span class="performer-name">Jamie Peet</span>
+               <span class="performer-name">Kika Sprangers</span>
+               <span class="performer-name">Nabou Claerhout</span>
+               <span class="performer-name">Nicolò Ricci</span>
+               <span class="performer-name">Pablo Rodríguez González</span>
+               <span class="performer-name">Teis Semey</span>
+               <span class="performer-name">Theo Ceccaldi</span>
+               <span class="performer-name">Tijn Wybenga</span>
+           </section>
+         </article>           <article class="listing">
+           <section class="icon">
+             <img class="favicon" src="/images/icons/Dizzy.png"
+                  alt="Logo Dizzy" width="32" height="32">
+           </section>
+           <section class="listing-head">
+             <div class="date-panel">
+                 <span class="timestamp">za 17 oktober 21:30</span>
+               <span class="venue">
+                       Dizzy
+                   </span>
+             </div>
+             <div>
+             </div>
+           </section>
+           <section class="artist">
+             <a href="/event/dizzy-a-tribute-to-toninho-horta-2026-10-17">A tribute to Toninho Horta</a>
+           </section>
+           <section class="listing-lineup">
+               <span class="performer-name">Emiliano Roca</span>
+               <span class="performer-name">Femke Smit</span>
+               <span class="performer-name">Marcos Milito</span>
+               <span class="performer-name">Pablo Cruz</span>
+               <span class="performer-name">Pedro Ivo Ferreira</span>
+           </section>
+         </article>           <article class="listing">
+           <section class="icon">
+             <img class="favicon" src="/images/icons/heerenhuys.png"
+                  alt="Logo Heerenhuys" width="32" height="32">
+           </section>
+           <section class="listing-head">
+             <div class="date-panel">
+                 <span class="timestamp">zo 18 oktober 11:30</span>
+               <span class="venue">
+                       Heerenhuys
+                   </span>
+             </div>
+             <div>
+             </div>
+           </section>
+           <section class="artist">
+             <a href="/event/heerenhuys-las-hienas-2026-10-18">Las Hienas</a>
+           </section>
+           <section class="listing-lineup">
+               <span class="performer-name">Anoushka Mariën Garcia</span>
+               <span class="performer-name">Carmen Martínez Navarro</span>
+               <span class="performer-name">Hugrún Sigurðardóttir</span>
+               <span class="performer-name">Inês Kosters</span>
+               <span class="performer-name">Mauricio Méndez</span>
+           </section>
+         </article>           <article class="listing">
+           <section class="icon">
+             <img class="favicon" src="/images/icons/vrijmoed.png"
+                  alt="Logo Vrijmoed" width="32" height="32">
+           </section>
+           <section class="listing-head">
+             <div class="date-panel">
+                 <span class="timestamp">zo 18 oktober 19:30</span>
+               <span class="venue">
+                       Vrijmoed
+                   </span>
+             </div>
+             <div>
+             </div>
+           </section>
+           <section class="artist">
+             <a href="/event/vrijmoed-daniel-sant-trio-2026-10-18">Daniel Sant Trio</a>
+           </section>
+           <section class="listing-lineup">
+               <span class="performer-name">Daniel Sant</span>
+               <span class="performer-name">Dennis Levin</span>
+               <span class="performer-name">Fransesco Parsi</span>
+           </section>
+         </article>           <article class="listing">
+           <section class="icon">
+             <img class="favicon" src="/images/icons/grounds.png"
+                  alt="Logo Grounds" width="32" height="32">
+           </section>
+           <section class="listing-head">
+             <div class="date-panel">
+                 <span class="timestamp">zo 18 oktober 20:30</span>
+               <span class="venue">
+                       Grounds
+                   </span>
+             </div>
+             <div>
+             </div>
+           </section>
+           <section class="artist">
+             <a href="/event/grounds-fanfare-ciocarlia-2026-10-18">Fanfare Ciocărlia</a>
+           </section>
+           <section class="listing-lineup">
+           </section>
+         </article>           <article class="listing">
+           <section class="icon">
+             <img class="favicon" src="/images/icons/Dizzy.png"
+                  alt="Logo Dizzy" width="32" height="32">
+           </section>
+           <section class="listing-head">
+             <div class="date-panel">
+                 <span class="timestamp">zo 18 oktober 21:30</span>
+               <span class="venue">
+                       Dizzy
+                   </span>
+             </div>
+             <div>
+             </div>
+           </section>
+           <section class="artist">
+             <a href="/event/dizzy-flink-and-ride-fly-2026-10-18">FLiNK + RiDE &amp; FLY</a>
+           </section>
+           <section class="listing-lineup">
+               <span class="performer-name">Arthur Flink</span>
+               <span class="performer-name">Bobby Bax</span>
+               <span class="performer-name">Dave Davis</span>
+               <span class="performer-name">Maarten Meddens</span>
+               <span class="performer-name">Marck Heusschen</span>
+               <span class="performer-name">Rick van der Vlist</span>
+           </section>
+         </article>           <article class="listing">
+           <section class="icon">
+             <img class="favicon" src="/images/icons/a5af901a-85e6-4cce-8c39-658a508385dc"
+                  alt="Logo Het Witte Paard" width="32" height="32">
+           </section>
+           <section class="listing-head">
+             <div class="date-panel">
+                 <span class="timestamp">zo 18 oktober 15:00</span>
+               <span class="venue">
+                       Het Witte Paard
+                   </span>
+             </div>
+             <div>
+             </div>
+           </section>
+           <section class="artist">
+             <a href="/event/het-witte-paard-kenturahs-kitchen-2026-10-18">Kenturah’s Kitchen</a>
+           </section>
+           <section class="listing-lineup">
+               <span class="performer-name">Ed Baatsen</span>
+               <span class="performer-name">Friso van Wijck</span>
+               <span class="performer-name">Han Slinger</span>
+           </section>
+         </article>           <article class="listing">
+           <section class="icon">
+             <img class="favicon" src="/images/icons/vrijmoed.png"
+                  alt="Logo Vrijmoed" width="32" height="32">
+           </section>
+           <section class="listing-head">
+             <div class="date-panel">
+                 <span class="timestamp">wo 21 oktober 19:30</span>
+               <span class="venue">
+                       Vrijmoed
+                   </span>
+             </div>
+             <div>
+             </div>
+           </section>
+           <section class="artist">
+             <a href="/event/vrijmoed-barry-green-trio-ft-2026-10-23">Barry Green trio ft. Owen Hart </a>
+           </section>
+           <section class="listing-lineup">
+               <span class="performer-name">Barry Green</span>
+               <span class="performer-name">Owen Hart jr</span>
+               <span class="performer-name">Stefan Lievestro</span>
+           </section>
+         </article>           <article class="listing">
+           <section class="icon">
+             <img class="favicon" src="/images/icons/Batavierhuis.png"
+                  alt="Logo Batavierhuis" width="32" height="32">
+           </section>
+           <section class="listing-head">
+             <div class="date-panel">
+                 <span class="timestamp">wo 21 oktober 21:00</span>
+               <span class="venue">
+                       Batavierhuis
+                   </span>
+             </div>
+             <div>
+             </div>
+           </section>
+           <section class="artist">
+             <a href="/event/batavierhuis-world-sessions-teun-creemers-2026-10-21">World Sessions – Teun Creemers</a>
+           </section>
+           <section class="listing-lineup">
+               <span class="performer-name">Danny Rombout</span>
+               <span class="performer-name">Filip Schrijver</span>
+               <span class="performer-name">Jadi Peperzak</span>
+               <span class="performer-name">Lauriane Ghils</span>
+               <span class="performer-name">Qisheng Zheng</span>
+               <span class="performer-name">Teun Creemers</span>
+           </section>
+         </article>           <article class="listing">
+           <section class="icon">
+             <img class="favicon" src="/images/icons/cafe-la-bru.png"
+                  alt="Logo Café LaBru" width="32" height="32">
+           </section>
+           <section class="listing-head">
+             <div class="date-panel">
+                 <span class="timestamp">wo 21 oktober 21:30</span>
+               <span class="venue">
+                       Café LaBru
+                   </span>
+             </div>
+             <div>
+                 <span class="free-entrance">GRATIS</span>
+             </div>
+           </section>
+           <section class="artist">
+             <a href="/event/cafe-la-bru-live-jazz-2026-10-21">Live Jazz</a>
+           </section>
+           <section class="listing-lineup">
+               <span class="performer-name">Marios Charalampous</span>
+               <span class="performer-name">Simão Raimundo</span>
+               <span class="performer-name">Sulav Maharzan</span>
+               <span class="performer-name">Tiago Greenleaf</span>
+           </section>
+         </article>           <article class="listing">
+           <section class="icon">
+             <img class="favicon" src="/images/icons/Dizzy.png"
+                  alt="Logo Dizzy" width="32" height="32">
+           </section>
+           <section class="listing-head">
+             <div class="date-panel">
+                 <span class="timestamp">wo 21 oktober </span>
+               <span class="venue">
+                       Dizzy
+                   </span>
+             </div>
+             <div>
+             </div>
+           </section>
+           <section class="artist">
+             <a href="/event/dizzy-bakooter-2026-10-21">BaKooTer</a>
+           </section>
+           <section class="listing-lineup">
+               <span class="performer-name">Cas Jiskoot</span>
+               <span class="performer-name">Lean Robbemont</span>
+               <span class="performer-name">Sebastiaan van Bavel</span>
+           </section>
+         </article>           <article class="listing">
+           <section class="icon">
+             <img class="favicon" src="/images/icons/3221ae69-4bf7-4ef3-a447-93f463d0a526"
+                  alt="Logo Stichting Concert Dichtbij" width="32" height="32">
+           </section>
+           <section class="listing-head">
+             <div class="date-panel">
+                 <span class="timestamp">wo 21 oktober 20:00</span>
+               <span class="venue">
+                       Wilskracht Bar &amp; Keuken
+                   </span>
+             </div>
+             <div>
+                 <span class="free-entrance">GRATIS</span>
+             </div>
+           </section>
+           <section class="artist">
+             <a href="/event/concert-dichtbij-tangozzsmore-2026-10-21">TangoZZs&amp;More</a>
+           </section>
+           <section class="listing-lineup">
+           </section>
+         </article>           <article class="listing">
+           <section class="icon">
+             <img class="favicon" src="/images/icons/gillespie.png"
+                  alt="Logo Stichting Gillespie" width="32" height="32">
+           </section>
+           <section class="listing-head">
+             <div class="date-panel">
+                 <span class="timestamp">do 22 oktober 20:00</span>
+               <span class="venue">
+                        Westvestkerk 
+                   </span>
+             </div>
+             <div>
+             </div>
+           </section>
+           <section class="artist">
+             <a href="/event/gillespie-spotlight-on-ella-fitzgerald-2026-10-22">Spotlight on Ella Fitzgerald</a>
+           </section>
+           <section class="listing-lineup">
+           </section>
+         </article>           <article class="listing recommended">
+           <section class="icon">
+             <img class="favicon" src="/images/icons/75493564-e463-4e86-b095-5f31fa30050d"
+                  alt="Logo Jazz In De Fruitvis" width="32" height="32">
+           </section>
+           <section class="listing-head">
+             <div class="date-panel">
+                 <span class="timestamp">vr 23 oktober 20:00</span>
+               <span class="venue">
+                       Jazz In De Fruitvis
+                   </span>
+             </div>
+             <div>
+                 <span class="tip">TIP!</span>
+             </div>
+           </section>
+           <section class="artist">
+             <a href="/event/jazz-in-de-fruitvis-mooren-watson-kay-irons-2026-10-23">Mooren / Watson / Kay / Irons</a>
+           </section>
+           <section class="listing-lineup">
+               <span class="performer-name">Ali Watson</span>
+               <span class="performer-name">Femke Mooren</span>
+               <span class="performer-name">Greg Irons</span>
+               <span class="performer-name">Harben Kay</span>
+           </section>
+         </article>           <article class="listing">
+           <section class="icon">
+             <img class="favicon" src="/images/icons/LantarenVenster.png"
+                  alt="Logo LantarenVenster" width="32" height="32">
+           </section>
+           <section class="listing-head">
+             <div class="date-panel">
+                 <span class="timestamp">vr 23 oktober 20:30</span>
+               <span class="venue">
+                       LantarenVenster
+                   </span>
+             </div>
+             <div>
+             </div>
+           </section>
+           <section class="artist">
+             <a href="/event/lantaren-venster-youngblood-brass-band-2026-10-23">Youngblood Brass Band</a>
+           </section>
+           <section class="listing-lineup">
+           </section>
+         </article>           <article class="listing">
+           <section class="icon">
+             <img class="favicon" src="/images/icons/vrijmoed.png"
+                  alt="Logo Vrijmoed" width="32" height="32">
+           </section>
+           <section class="listing-head">
+             <div class="date-panel">
+                 <span class="timestamp">vr 23 oktober 21:00</span>
+               <span class="venue">
+                       Vrijmoed
+                   </span>
+             </div>
+             <div>
+             </div>
+           </section>
+           <section class="artist">
+             <a href="/event/vrijmoed-jimmi-jo-jones-trio-2026-10-23">Jimmi Jo Jones trio </a>
+           </section>
+           <section class="listing-lineup">
+               <span class="performer-name">Jimmi Jo Hueting</span>
+               <span class="performer-name">TBA</span>
+               <span class="performer-name">Thomas Pol</span>
+           </section>
+         </article>           <article class="listing">
+           <section class="icon">
+             <img class="favicon" src="/images/icons/Doelen.png"
+                  alt="Logo de Doelen" width="32" height="32">
+           </section>
+           <section class="listing-head">
+             <div class="date-panel">
+                 <span class="timestamp">za 24 oktober 20:30</span>
+               <span class="venue">
+                       de Doelen
+                   </span>
+             </div>
+             <div>
+             </div>
+           </section>
+           <section class="artist">
+             <a href="/event/de-doelen-lizz-wright-2026-10-24">Lizz Wright</a>
+           </section>
+           <section class="listing-lineup">
+           </section>
+         </article>           <article class="listing">
+           <section class="icon">
+             <img class="favicon" src="/images/icons/vrijmoed.png"
+                  alt="Logo Vrijmoed" width="32" height="32">
+           </section>
+           <section class="listing-head">
+             <div class="date-panel">
+                 <span class="timestamp">zo 25 oktober 19:30</span>
+               <span class="venue">
+                       Vrijmoed
+                   </span>
+             </div>
+             <div>
+             </div>
+           </section>
+           <section class="artist">
+             <a href="/event/vrijmoed-tim-nevelsteen-quartet-2026-10-25">Tim Nevelsteen Quartet </a>
+           </section>
+           <section class="listing-lineup">
+               <span class="performer-name">Freddie Fleischmann</span>
+               <span class="performer-name">Tiago Greenleaf</span>
+               <span class="performer-name">Tim Nevelsteen</span>
+               <span class="performer-name">Viltė Želvytė</span>
+           </section>
+         </article>           <article class="listing">
+           <section class="icon">
+             <img class="favicon" src="/images/icons/jic.jpg"
+                  alt="Logo Jazz in Crooswijk" width="32" height="32">
+           </section>
+           <section class="listing-head">
+             <div class="date-panel">
+                 <span class="timestamp">zo 25 oktober 19:00</span>
+               <span class="venue">
+                       Nivon
+                   </span>
+             </div>
+             <div>
+             </div>
+           </section>
+           <section class="artist">
+             <a href="/event/crooswijk-lina-gronemeyer-quartet-2026-10-25"> Lina Gronemeyer Quartet</a>
+           </section>
+           <section class="listing-lineup">
+               <span class="performer-name">Guillermo Martín-Viana</span>
+               <span class="performer-name">Johannes Fend</span>
+               <span class="performer-name">Lina Gronemeyer</span>
+               <span class="performer-name">Yiorgos Bereris</span>
+           </section>
+         </article>           <article class="listing">
+           <section class="icon">
+             <img class="favicon" src="/images/icons/cafe-la-bru.png"
+                  alt="Logo Café LaBru" width="32" height="32">
+           </section>
+           <section class="listing-head">
+             <div class="date-panel">
+                 <span class="timestamp">wo 28 oktober 21:30</span>
+               <span class="venue">
+                       Café LaBru
+                   </span>
+             </div>
+             <div>
+                 <span class="free-entrance">GRATIS</span>
+             </div>
+           </section>
+           <section class="artist">
+             <a href="/event/cafe-la-bru-live-jazz-2026-10-28">Live Jazz</a>
+           </section>
+           <section class="listing-lineup">
+               <span class="performer-name">Eddy Nielsen</span>
+               <span class="performer-name">Loek van den Berg</span>
+               <span class="performer-name">Sebastiaan van Bavel</span>
+               <span class="performer-name">Vinsent Planjer</span>
+           </section>
+         </article>           <article class="listing">
+           <section class="icon">
+             <img class="favicon" src="/images/icons/Dizzy.png"
+                  alt="Logo Dizzy" width="32" height="32">
+           </section>
+           <section class="listing-head">
+             <div class="date-panel">
+                 <span class="timestamp">wo 28 oktober 21:30</span>
+               <span class="venue">
+                       Dizzy
+                   </span>
+             </div>
+             <div>
+             </div>
+           </section>
+           <section class="artist">
+             <a href="/event/dizzy-hammond-organ-jazz-night-2026-10-28">Hammond Organ Jazz night</a>
+           </section>
+           <section class="listing-lineup">
+           </section>
+         </article>
+      <section class="listing-footer">
+            <a href="/events?start=2026-10-28" class="button" rel="nofollow">
+            <span>VOLGENDE</span>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="16" height="16">
+               <path
+                   d="M52.5 440.6c-9.5 7.9-22.8 9.7-34.1 4.4S0 428.4 0 416V96C0 83.6 7.2 72.3 18.4 67s24.5-3.6 34.1 4.4L224 214.3V256v41.7L52.5 440.6zM256 352V256 128 96c0-12.4 7.2-23.7 18.4-29s24.5-3.6 34.1 4.4l192 160c7.3 6.1 11.5 15.1 11.5 24.6s-4.2 18.5-11.5 24.6l-192 160c-9.5 7.9-22.8 9.7-34.1 4.4s-18.4-16.6-18.4-29V352z"/>
+            </svg>
+            </a>
+      </section>
+
+
+         <section class="regional">
+            <h2>IN DE BUURT</h2>
+                 <article class="listing">
+                 <section class="icon">
+                   <img class="favicon" src="/images/icons/pdnk.png"
+                        alt="Logo Podium de Nieuwe Kamer" width="32" height="32">
+                 </section>
+                 <section class="listing-head">
+                   <div class="date-panel">
+                       <span class="timestamp">vr 16 oktober 20:00</span>
+                     <span class="venue">
+                             Leonardo Royal Hotel Promenade
+                         <span style="font-weight: normal; text-transform: uppercase"> Den Haag</span>
+                         </span>
+                   </div>
+                   <div>
+                   </div>
+                 </section>
+                 <section class="artist">
+                   <a href="/event/podium-de-nieuwe-kamer-omething-about-sanna-bigband-2026-10-16">Something about Sanna Bigband</a>
+                 </section>
+                 <section class="listing-lineup">
+                     <span class="performer-name">Joost Kesselaar</span>
+                     <span class="performer-name">Kurt Weiss</span>
+                     <span class="performer-name">Sanna van Vliet</span>
+                     <span class="performer-name">Sven Schuster</span>
+                 </section>
+               </article>                 <article class="listing">
+                 <section class="icon">
+                   <img class="favicon" src="/images/icons/amare.ico"
+                        alt="Logo Amare" width="32" height="32">
+                 </section>
+                 <section class="listing-head">
+                   <div class="date-panel">
+                       <span class="timestamp">za 17 oktober 20:15</span>
+                     <span class="venue">
+                             Amare
+                         <span style="font-weight: normal; text-transform: uppercase"> Den Haag</span>
+                         </span>
+                   </div>
+                   <div>
+                   </div>
+                 </section>
+                 <section class="artist">
+                   <a href="/event/amare-the-coltrane-mutations-2026-10-17">The Coltrane Mutations</a>
+                 </section>
+                 <section class="listing-lineup">
+                 </section>
+               </article>                 <article class="listing">
+                 <section class="icon">
+                   <img class="favicon" src="/images/icons/pdnk.png"
+                        alt="Logo Podium de Nieuwe Kamer" width="32" height="32">
+                 </section>
+                 <section class="listing-head">
+                   <div class="date-panel">
+                       <span class="timestamp">do 22 oktober 20:00</span>
+                     <span class="venue">
+                             Sociëteit De Vereeniging
+                         <span style="font-weight: normal; text-transform: uppercase"> Den Haag</span>
+                         </span>
+                   </div>
+                   <div>
+                   </div>
+                 </section>
+                 <section class="artist">
+                   <a href="/event/podium-de-nieuwe-kamer-eduard-preda-jazz-trio-2026-10-22">Eduard Preda Jazz Trio</a>
+                 </section>
+                 <section class="listing-lineup">
+                     <span class="performer-name">Eduard Preda</span>
+                 </section>
+               </article>                 <article class="listing">
+                 <section class="icon">
+                   <img class="favicon" src="/images/icons/djs.webp"
+                        alt="Logo Muziekpodium DJS" width="32" height="32">
+                 </section>
+                 <section class="listing-head">
+                   <div class="date-panel">
+                       <span class="timestamp">za 24 oktober 21:00</span>
+                     <span class="venue">
+                             Muziekpodium DJS
+                         <span style="font-weight: normal; text-transform: uppercase"> Dordrecht</span>
+                         </span>
+                   </div>
+                   <div>
+                   </div>
+                 </section>
+                 <section class="artist">
+                   <a href="/event/djs-toon-roos-kwartet-2026-10-24">Toon Roos Kwartet</a>
+                 </section>
+                 <section class="listing-lineup">
+                     <span class="performer-name">Joost Kesselaar</span>
+                     <span class="performer-name">Martijn van Iterson</span>
+                     <span class="performer-name">Ruud Ouwehand</span>
+                     <span class="performer-name">Toon Roos</span>
+                 </section>
+               </article>                 <article class="listing">
+                 <section class="icon">
+                   <img class="favicon" src="/images/icons/djs.webp"
+                        alt="Logo Muziekpodium DJS" width="32" height="32">
+                 </section>
+                 <section class="listing-head">
+                   <div class="date-panel">
+                       <span class="timestamp">zo 25 oktober 15:00</span>
+                     <span class="venue">
+                             Muziekpodium DJS
+                         <span style="font-weight: normal; text-transform: uppercase"> Dordrecht</span>
+                         </span>
+                   </div>
+                   <div>
+                   </div>
+                 </section>
+                 <section class="artist">
+                   <a href="/event/djs-rob-van-bavel-invites-paul-van-kessel-2026-10-25">Rob van Bavel invites Paul van Kessel</a>
+                 </section>
+                 <section class="listing-lineup">
+                     <span class="performer-name">Paul van Kessel</span>
+                     <span class="performer-name">Sebastiaan van Bavel</span>
+                 </section>
+               </article>                 <article class="listing">
+                 <section class="icon">
+                   <img class="favicon" src="/images/icons/pdnk.png"
+                        alt="Logo Podium de Nieuwe Kamer" width="32" height="32">
+                 </section>
+                 <section class="listing-head">
+                   <div class="date-panel">
+                       <span class="timestamp">zo 25 oktober 15:00</span>
+                     <span class="venue">
+                             Kunstenplein Amare
+                         <span style="font-weight: normal; text-transform: uppercase"> Den Haag</span>
+                         </span>
+                   </div>
+                   <div>
+                   </div>
+                 </section>
+                 <section class="artist">
+                   <a href="/event/podium-de-nieuwe-kamer-nadine-serhalawan-en-anton-jamtander-2026-10-25">Nadine Serhalawan Quartet | Anton Jämtander Quartet</a>
+                 </section>
+                 <section class="listing-lineup">
+                     <span class="performer-name">Demetrio Shintu</span>
+                     <span class="performer-name">Leonardo Adornetto</span>
+                     <span class="performer-name">Nadine Serhalawan</span>
+                     <span class="performer-name">Oscar Ployart</span>
+                     <span class="performer-name">Anton Jämtander</span>
+                     <span class="performer-name">Cas Jiskoot</span>
+                     <span class="performer-name">Nitin Parrée</span>
+                 </section>
+               </article>         </section>
+
+   </section>
+</main>
+
+<footer class="page-footer">
+  <section role="doc-colophon">
+    <span>&copy;</span>
+    <a href="https://boplicity.nl" target="_blank">Boplicity Software</a>
+  </section>
+  <section style="display: flex; align-items: center" role="navigation">
+    <a href="/venues" title="Podia">PODIA</a>
+    <a href="/contact" title="Contact">CONTACT</a>
+    <a href="/about" title="Over de Rotterdamse Jazzagenda">OVER</a>
+
+    <a rel="me" href="https://mastodon.social/@jazz010live" title="Mastodon" target="_blank" style="cursor: pointer">
+      <svg width="20" height="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+        <path fill="white"
+              d="M433 179.1c0-97.2-63.7-125.7-63.7-125.7-62.5-28.7-228.6-28.4-290.5 0 0 0-63.7 28.5-63.7 125.7 0 115.7-6.6 259.4 105.6 289.1 40.5 10.7 75.3 13 103.3 11.4 50.8-2.8 79.3-18.1 79.3-18.1l-1.7-36.9s-36.3 11.4-77.1 10.1c-40.4-1.4-83-4.4-89.6-54a102.5 102.5 0 0 1 -.9-13.9c85.6 20.9 158.7 9.1 178.8 6.7 56.1-6.7 105-41.3 111.2-72.9 9.8-49.8 9-121.5 9-121.5zm-75.1 125.2h-46.6v-114.2c0-49.7-64-51.6-64 6.9v62.5h-46.3V197c0-58.5-64-56.6-64-6.9v114.2H90.2c0-122.1-5.2-147.9 18.4-175 25.9-28.9 79.8-30.8 103.8 6.1l11.6 19.5 11.6-19.5c24.1-37.1 78.1-34.8 103.8-6.1 23.7 27.3 18.4 53 18.4 175z" />
+      </svg>
+    </a>
+    <a href="https://www.instagram.com/jazz010live/" target="_blank" title="Instagram">
+      <svg width="20" height="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+        <path fill="white" d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z"/>
+      </svg>
+    </a>
+    <a href="https://www.linkedin.com/company/jazz-010-live" target="_blank">
+      <svg width="20" height="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" >
+        <path fill="white" d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3zM135.4 416H69V202.2h66.5V416zm-33.2-243c-21.3 0-38.5-17.3-38.5-38.5S80.9 96 102.2 96c21.2 0 38.5 17.3 38.5 38.5 0 21.3-17.2 38.5-38.5 38.5zm282.1 243h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9V416z"/></svg>
+    </a>
+  </section>
+</footer>
+</section>
+</body>
+</html>
