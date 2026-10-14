@@ -45,16 +45,16 @@ updates this table in its commit).
 | Cinerama | cinerama | film | cineville | 1 |
 | Wenneker (Schiedam) | wenneker | film | cineville | 1 |
 | LantarenVenster | lantarenvenster | film, jazz | lantarenvenster | 4 |
-| WORM | worm | alternative, film | worm | 3 |
+| WORM | worm | alternative, film, club | worm | 3 |
 | Dizzy, Vrijmoed, Fruitvis, Grounds, Heerenhuys, other jazz010 venues not owned below | (per venue) | jazz | jazz010 | 2 |
-| BIRD | bird | jazz, club | bird | 3 |
-| Rotown | rotown | pop | rotown | 3 |
-| Baroeg | baroeg | alternative | baroeg | 3 |
+| BIRD | bird | jazz, pop, club | bird | 3 |
+| Rotown | rotown | pop, club | rotown | 3 |
+| Baroeg | baroeg | alternative, club | baroeg | 3 |
 | Annabel | annabel | pop, club | annabel | 3 |
 | Toffler | toffler | club | toffler | 3 |
-| Maassilo | maassilo | club, pop | maassilo | 3 |
+| Maassilo | maassilo | club, pop | maassilo (own agenda + Rotown's Maassilo shows) | 3 |
 | Roodkapje | roodkapje | alternative | roodkapje | 3 |
-| Poortgebouw | poortgebouw | alternative | poortgebouw | 3 |
+| ~~Poortgebouw~~ | — | — | not scraped: site's activities page last updated Oct 2025, programme lives on Facebook | 3 |
 | De Doelen | de-doelen | classical, jazz, pop | doelen (Peppered) | 4 |
 | Theater Zuidplein | theater-zuidplein | theater, pop | doelen (same platform) | 4 |
 | Laurenskerk | laurenskerk | classical | laurenskerk | 4 |
