@@ -27,7 +27,7 @@ const { timezone } = cityConfig(city)
   role="menu"
   aria-label={strings.share}
   hidden
-  class="share-menu"
+  class="share-menu grid-dropdown"
 >
   <button type="button" role="menuitem" data-share-action="share" class="share-item">
     <span class="cell share-item-icon"><CellIcon icon="share" /></span>
@@ -83,11 +83,16 @@ const { timezone } = cityConfig(city)
     label.textContent = prev
     const cols = 2 + Math.max(2, Math.ceil((widest + 7) / cell))
     const width = cols * cell
-    menu!.style.left = `${Math.min(anchor.left - box.left, bandRight - width)}px`
+    const left = Math.min(anchor.left - box.left, bandRight - width)
+    menu!.style.left = `${left}px`
     menu!.style.top = `${top}px`
     // +2px so the right/bottom border lands on the next gridline (lines are
     // drawn on each cell's top/left edge).
     menu!.style.width = `${width + 2}px`
+    // Its graph-paper frame (.grid-dropdown) reaches a cell left and right,
+    // cut short at the full-bleed section's edges (no horizontal scroll).
+    menu!.style.setProperty("--fl", `${Math.max(0, Math.min(cell, left))}px`)
+    menu!.style.setProperty("--fr", `${Math.max(0, Math.min(cell, box.width - left - width - 2))}px`)
     menu!.style.height = `${2 * cell + 2}px`
   }
 
@@ -186,7 +191,9 @@ const { timezone } = cityConfig(city)
   document.addEventListener("pointerdown", (e) => {
     if (!row || !menu) return
     const target = e.target as Node
-    if (menu.contains(target) || trigger?.contains(target)) return
+    // The graph-paper frame (the menu element itself, not an entry) counts
+    // as outside.
+    if ((menu.contains(target) && target !== menu) || trigger?.contains(target)) return
     close(false)
   })
 

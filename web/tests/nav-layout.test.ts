@@ -41,6 +41,7 @@ function items(nav: NavLayout, narrow: boolean): NavPlacement[] {
 const spans = (over: Partial<NavSpans> = {}): NavSpans => ({
   genres: [3, 4, 2, 3, 2],
   tabbable: 5,
+  topLevel: 5,
   active: -1,
   more: 3,
   activeMore: 0,
@@ -51,12 +52,14 @@ const spans = (over: Partial<NavSpans> = {}): NavSpans => ({
   ...over,
 });
 
-// Rotterdam, nl: genres by volume (kids … folk), the last three under the
-// weekly threshold; Film and Mijn lijst set apart.
+// Rotterdam, nl, in navOrder: the top-level genres by volume (the last two
+// under the weekly threshold), then the always-More ones — Kinderen, the
+// busiest of all, and Folk; Film and Mijn lijst set apart.
 const em = (s: string) => measureText(s).em;
 const ROTTERDAM: NavModel = {
-  genres: ["Kinderen", "Dans", "Jazz", "Club", "Theater", "Pop", "Klassiek", "Alternatief", "Folk"].map(em),
-  tabbable: 6,
+  genres: ["Dans", "Jazz", "Club", "Theater", "Pop", "Klassiek", "Alternatief", "Kinderen", "Folk"].map(em),
+  tabbable: 5,
+  topLevel: 7,
   active: -1,
   more: em("Meer"),
   fixed: [em("Film"), em("Mijn lijst")],
@@ -119,6 +122,18 @@ describe("fitTabs (the More split)", () => {
   it("never puts a single genre in More when its own tab fits", () => {
     // tabbable 4 of 5: More would hold one genre (span 2 ≤ More's 3).
     expect(fitTabs(spans({ tabbable: 4 }), line(40))!.k).toBe(5);
+  });
+
+  it("keeps a lone non-top-level genre in More even when its tab would fit", () => {
+    // Genre 4 is not in TOP_LEVEL_GENRES (topLevel 4): More holds just it.
+    const r = fitTabs(spans({ tabbable: 4, topLevel: 4 }), line(40))!;
+    expect(r.k).toBe(4);
+    expect(r.flow).toHaveLength(5); // 4 tabs + More
+  });
+
+  it("never gives a tab past the top-level run, however wide the bar", () => {
+    const r = fitTabs(spans({ tabbable: 2, topLevel: 2 }), line(200))!;
+    expect(r.k).toBe(2);
   });
 
   it("sizes the trigger for the active genre's name when it is in More", () => {
@@ -208,22 +223,23 @@ describe("navVars", () => {
     expect(navVars(ROTTERDAM, gridGeometry(2000, false), false)).toEqual(wide);
   });
 
-  it("Rotterdam at 1400px: six tabs, the quiet three in More, in order", () => {
+  it("Rotterdam at 1400px: five tabs; the quiet two, then Kinderen and Folk, in More", () => {
     const v = navVars(ROTTERDAM, gridGeometry(1400, false), false);
-    expect([0, 1, 2, 3, 4, 5].map((i) => v[`--t${i}d`])).toEqual(Array(6).fill("flex"));
-    expect([6, 7, 8].map((i) => v[`--t${i}d`])).toEqual(["none", "none", "none"]);
-    expect([6, 7, 8].map((i) => [v[`--m${i}d`], v[`--m${i}r`]])).toEqual([
+    expect([0, 1, 2, 3, 4].map((i) => v[`--t${i}d`])).toEqual(Array(5).fill("flex"));
+    expect([5, 6, 7, 8].map((i) => v[`--t${i}d`])).toEqual(Array(4).fill("none"));
+    expect([5, 6, 7, 8].map((i) => [v[`--m${i}d`], v[`--m${i}r`]])).toEqual([
       ["flex", "1"],
       ["flex", "2"],
       ["flex", "3"],
+      ["flex", "4"],
     ]);
-    expect(v["--mmh"]).toBe("3");
+    expect(v["--mmh"]).toBe("4");
     expect(v["--mtd"]).toBe("flex");
     expect(v["--mad"]).toBe("none");
   });
 
   it("shows the active genre on the More trigger when it's in More", () => {
-    const v = navVars({ ...ROTTERDAM, active: 7 }, gridGeometry(1400, false), false);
+    const v = navVars({ ...ROTTERDAM, active: 6 }, gridGeometry(1400, false), false);
     expect(v["--mtd"]).toBe("none");
     expect(v["--mad"]).toBe("flex");
     // "Alternatief" (5 cells at 32px) + the chevron.

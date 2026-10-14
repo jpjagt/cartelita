@@ -52,6 +52,7 @@ export function navSpans(m: NavModel, g: GridGeometry): NavSpans {
   return {
     genres,
     tabbable: m.tabbable,
+    topLevel: m.topLevel,
     active: m.active,
     more: span(m.more) + 1,
     activeMore: m.active >= 0 ? genres[m.active] + 1 : 0,
@@ -103,7 +104,9 @@ const maxTabs = (sp: NavSpans) => Math.min(sp.genres.length, sp.tabbable);
 /** The most genre tabs (in order, up to the tabbable run) that fit on
     `lines` together with the More trigger for the rest and the set-apart
     tabs. A More holding a single genre is pointless: when that genre's own
-    tab fits instead, it gets one. Null when not even More fits. */
+    tab fits instead, it gets one — unless it's not a top-level genre
+    (TOP_LEVEL_GENRES), which only ever sits in More. Null when not even More
+    fits. */
 export function fitTabs(sp: NavSpans, lines: NavLine[]): NavFit | null {
   const n = sp.genres.length;
   const attempt = (k: number): NavFit | null => {
@@ -113,7 +116,7 @@ export function fitTabs(sp: NavSpans, lines: NavLine[]): NavFit | null {
     return r && { k, ...r };
   };
   for (let k = maxTabs(sp); k >= 0; k--) {
-    const all = n - k === 1 ? attempt(n) : null;
+    const all = n - k === 1 && n <= sp.topLevel ? attempt(n) : null;
     if (all) return all;
     const r = attempt(k);
     if (r) return r;

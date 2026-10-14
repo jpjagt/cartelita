@@ -188,6 +188,10 @@ export interface NavModel {
   /** How many leading genres qualify for a tab (lib/genre-nav.ts
       tabbableCount); the rest always go behind More. */
   tabbable: number;
+  /** How many leading genres may ever get a tab (lib/genre-nav.ts
+      topLevelCount, TOP_LEVEL_GENRES); the rest are always in More, even
+      when a lone one would fit as a tab. */
+  topLevel: number;
   /** Index into `genres` of the page's own genre; -1 when it isn't one. */
   active: number;
   /** The "More" trigger label. */
@@ -207,6 +211,7 @@ export interface NavModel {
 export interface NavSpans {
   genres: number[];
   tabbable: number;
+  topLevel: number;
   active: number;
   more: number;
   /** The More trigger when it shows the active genre's name instead. */

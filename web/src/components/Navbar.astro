@@ -1,7 +1,7 @@
 ---
 import { getCategoryLists } from "@/lib/queries"
 import { CITIES, cityConfig, cityHref, MY_LIST, PICK_PARAM } from "@/lib/cities"
-import { FILM_LIST, tabbableCount } from "@/lib/genre-nav"
+import { FILM_LIST, navOrder, tabbableCount, topLevelCount } from "@/lib/genre-nav"
 import type { Locale, NavModel } from "@/lib/types"
 import { t, categoryName } from "@/i18n"
 import { measureText } from "@/lib/text-metrics"
@@ -21,11 +21,12 @@ const strings = t(locale)
 const cityCfg = cityConfig(city)
 const LOCALES = cityCfg.locales // the locale switcher offers the CITY's locales
 
-// Genre tabs, busiest first (lib/genre-nav.ts); Film and My list are set
+// Genre tabs: the top-level genres busiest first, then the always-More ones
+// (lib/genre-nav.ts navOrder, TOP_LEVEL_GENRES); Film and My list are set
 // apart after them. Every genre renders both as a tab and as a More entry;
 // the layout shows one of the two per width (display vars below).
 const lists = await getCategoryLists(city)
-const genreLists = lists.filter((l) => l.slug !== FILM_LIST)
+const genreLists = navOrder(lists.filter((l) => l.slug !== FILM_LIST))
 const genres = genreLists.map((l) => ({ slug: l.slug, label: categoryName(locale, l.slug) }))
 const fixed = [
   ...(lists.some((l) => l.slug === FILM_LIST)
@@ -61,6 +62,7 @@ const c = [...cityLinks.map((x) => x.name), strings.allCities].map((x) => measur
 const model: NavModel = {
   genres: g.map((m) => m.em),
   tabbable: tabbableCount(genreLists),
+  topLevel: topLevelCount(genreLists),
   active,
   more: more.em,
   fixed: f.map((m) => m.em),
@@ -138,7 +140,7 @@ const tabClass = (slug: string) =>
       id="nav-more"
       data-nav-menu
       hidden
-      class="nav-menu"
+      class="nav-menu grid-dropdown"
       style="--nmc: var(--mmc); --nmr: var(--mmr); --nmw: var(--mmw); --nmh: var(--mmh)"
     >
       {genres.map((l, i) => (
@@ -185,7 +187,7 @@ const tabClass = (slug: string) =>
     id="nav-city"
     data-nav-menu
     hidden
-    class="nav-menu"
+    class="nav-menu grid-dropdown"
     style={`--nmc: var(--cmc); --nmr: var(--cmr); --nmw: var(--cmw); --nmh: ${cityLinks.length + 1}`}
   >
     {cityLinks.map((x, j) => (
@@ -307,7 +309,9 @@ const tabClass = (slug: string) =>
     document.addEventListener("pointerdown", (e) => {
       if (!open) return;
       const target = e.target as Node;
-      if (open.menu.contains(target) || open.trigger.contains(target)) return;
+      // The graph-paper frame (the menu element itself, not an entry) counts
+      // as outside.
+      if ((open.menu.contains(target) && target !== open.menu) || open.trigger.contains(target)) return;
       closeMenu(false);
     });
 

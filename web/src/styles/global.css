@@ -367,24 +367,50 @@ html {
   outline: none;
 }
 
+/* Grid dropdowns (.grid-dropdown: the navbar's More and city menus, the
+     share menu): a plain, opaque panel in the page colour — no texture
+     inside — with a 2px muted-foreground outline (the .grid-radio-indicator
+     tone) on its own edge gridlines, set in a one-cell frame of graph paper
+     that covers whatever it overlays. The frame runs down the panel's sides
+     and under it but not above: the row above the panel holds the trigger,
+     which stays visible (and is graph paper already). Both layers sit behind
+     the entries (z-index -1 inside the menu's own stacking context; ::after
+     paints over ::before). The frame starts on the panel's top-left
+     gridline minus one cell, so its texture lands on the page grid; it is
+     cut short at the viewport's edges so it never adds horizontal scroll:
+     --fl / --fr are how far it reaches left / right (a cell, or less). */
+.grid-dropdown::before,
+.grid-dropdown::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+}
+.grid-dropdown::before {
+  inset: 0 calc(-1 * var(--fr, var(--cell))) calc(-1 * var(--cell)) calc(-1 * var(--fl, var(--cell)));
+  background-color: var(--background);
+  background-image:
+    linear-gradient(to right, var(--grid-line) 2px, transparent 2px),
+    linear-gradient(to bottom, var(--grid-line) 2px, transparent 2px);
+  background-size: var(--cell) var(--cell);
+  background-position: 0 0;
+}
+.grid-dropdown::after {
+  inset: 0;
+  background-color: var(--background);
+  box-shadow: inset 0 0 0 2px var(--muted-foreground);
+}
+
 /* Share menu (ShareMenu.astro): placed by its script in px that land on cell
      lines, absolutely within the row's section — it overlays the rows below
-     without adding a grid row, so nothing shifts. Opaque, with the grid
-     texture redrawn inside so it still reads as graph paper, and a 2px
-     muted-foreground frame (the .grid-radio-indicator tone) on its outer
-     gridlines. Each action is one cell row: icon · spacer · label. */
+     without adding a grid row, so nothing shifts. A .grid-dropdown (the
+     script sets its frame's --fl / --fr). Each action is one cell row:
+     icon · spacer · label. */
 .share-menu {
   position: absolute;
   z-index: 30;
   display: grid;
   grid-auto-rows: var(--cell);
   align-content: start;
-  background-color: var(--background);
-  background-image:
-    linear-gradient(to right, var(--grid-line) 2px, transparent 2px),
-    linear-gradient(to bottom, var(--grid-line) 2px, transparent 2px);
-  background-size: var(--cell) var(--cell);
-  box-shadow: inset 0 0 0 2px var(--muted-foreground);
 }
 .share-menu[hidden] {
   display: none;
@@ -1023,12 +1049,11 @@ html {
   grid-template-columns: repeat(var(--nmw), var(--cell));
   grid-auto-rows: var(--cell);
   align-content: start;
-  background-color: var(--background);
-  background-image:
-    linear-gradient(to right, var(--grid-line) 2px, transparent 2px),
-    linear-gradient(to bottom, var(--grid-line) 2px, transparent 2px);
-  background-size: var(--cell) var(--cell);
-  box-shadow: inset 0 0 0 2px var(--muted-foreground);
+  /* A .grid-dropdown. Its frame reaches a cell left and right, cut short at
+     the viewport's edges (the header is full-bleed: 100cqw is its width). */
+  --nm-left: calc((var(--col-start) - 1 + var(--nmc)) * var(--cell));
+  --fl: min(var(--cell), var(--nm-left));
+  --fr: clamp(0px, 100cqw - var(--nm-left) - var(--nmw) * var(--cell) - 2px, var(--cell));
 }
 .nav-menu[hidden] {
   display: none;
