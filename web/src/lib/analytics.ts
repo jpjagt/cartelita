@@ -81,7 +81,7 @@ export function pageOfPath(pathname: string): PageRef {
     navigation. `via` says how (navbar tab, locale cell, history …). */
 export function navEvent(from: PageRef, to: PageRef, via: string): NavEvent | null {
   if (from.city !== to.city) {
-    const data: AnalyticsData = { from: from.city || "none", to: to.city, list: to.list, via };
+    const data: AnalyticsData = { from: from.city || "none", to: to.city || "none", list: to.list, via };
     return { name: "city_switch", data };
   }
   if (from.locale !== to.locale) {

@@ -68,7 +68,7 @@ No titles, descriptions, prices or other free text are ever sent.
 | `landing` | `source`: `direct`/`search`/`social`/`internal`/`other`; `favourites`: `0`/`1`/`2-4`/`5-9`/`10+` | once per full page load (not on client navigation), after Umami's page view | Where do visits land (city/list/locale) and from what kind of place? Are they returning, set-up visitors (have favourites)? |
 | `nav_tab` | `from_list`, `to_list`, `city`, `locale`, `via` | client navigation that changes the list | Which tabs do people move between, and how (`via`)? |
 | `locale_switch` | `from`, `to`, `city`, `list`, `via` | navigation that changes the locale | Who switches language, from which to which? |
-| `city_switch` | `from` (`none` from the picker), `to`, `list`, `via` | navigation that changes the city | Which cities do people pick / hop between? |
+| `city_switch` | `from` / `to` (`none` = the `/` picker, e.g. "All cities"), `list`, `via` | navigation that changes the city | Which cities do people pick / hop between? |
 | `event_open` | `surface`: `row` (title link, wide layout) / `panel` (View in the narrow panel) / `film` (film card showtime); + per-event | outbound click (incl. middle-click) to the venue/ticket page | **The conversion.** Which lists, venues, days ahead, positions get opened? |
 | `event_panel` | `action`: `open`/`close`; + per-event | narrow layout (<760px) row tap | Do mobile visitors open the panel, and then View/Share? |
 | `share_menu_open` | per-event | wide layout share icon | Share menu discovery on desktop |
@@ -79,7 +79,8 @@ No titles, descriptions, prices or other free text are ever sent.
 | `film_view` | `view`: `films` / `time` | film view switch | By film vs by time |
 | `show_earlier` | `hidden`: number of screenings revealed | film time view "show earlier screenings" | Is the early-hide in the way? |
 | `directory_card` | `category`, `state`: `collapsed`/`expanded` | My list venue directory card title | Directory card collapse use |
-| `day_toggle` | `state`: `collapsed`/`expanded`, `day_offset` | day header (or its "events hidden" note) toggled | Do people collapse days (and which: today?) |
+| `day_toggle` | `state`: `collapsed`/`expanded`, `via`: `header`/`note` (the "events hidden" row), `day_offset` | a day header toggled | Do people collapse days (and which: today?) |
+| `nav_menu_open` | `menu`: `more` / `city` | a navbar dropdown opened (click or ArrowDown) | Is More / the city selector discovered? Open → pick rate: compare with `nav_tab` `via=more` / `city_switch` `via=city_menu` |
 | `scroll_depth` | `max_day` (furthest day offset whose heading reached the viewport, capped at 60), `depth`: `0`/`1`/`2`/`3-6`/`7-13`/`14-29`/`30+` | once per page view, when it's left: client navigation, tab hidden (also an event opened in a new tab, app backgrounded), or unload. Not sent on pages without days | How many days ahead do people look? |
 
 `via` (navigation events): `tab` (navbar genre tab), `more` (a tab inside the

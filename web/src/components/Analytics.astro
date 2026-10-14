@@ -72,6 +72,8 @@
     if (type === "traverse") return "history"
     const declared = source?.closest<HTMLElement>("[data-nav-via]")?.dataset.navVia
     if (declared) return declared
+    if (source?.closest("#nav-more")) return "more"
+    if (source?.closest("#nav-city")) return "city_menu"
     if (source?.closest("[data-navlink]")) return "tab"
     if (source?.closest("[data-locale]")) return "locale"
     if (source?.closest(".navbar-wordmark")) return "logo"

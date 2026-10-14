@@ -99,6 +99,11 @@ describe("navEvent", () => {
       data: { from: "none", to: "amsterdam", list: "jazz", via: "picker" },
     });
   });
+  it("back to the picker is a city_switch to none", () => {
+    expect(navEvent(p("barcelona", "ca", "jazz"), p("", "", ""), "city_menu")?.data).toEqual({
+      from: "barcelona", to: "none", list: "", via: "city_menu",
+    });
+  });
   it("the same page is no event", () => {
     expect(navEvent(p("barcelona", "ca", "jazz"), p("barcelona", "ca", "jazz"), "logo")).toBeNull();
   });

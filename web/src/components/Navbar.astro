@@ -228,6 +228,7 @@ const tabClass = (slug: string) =>
     import { correctVars, isNarrow, liveGrid, measureEm } from "@/lib/grid-client";
     import { onPage } from "@/lib/page-lifecycle";
     import { LAST_CITY_KEY } from "@/lib/cities";
+    import { track } from "@/lib/track";
     import type { NavModel } from "@/lib/types";
 
     const header = () => document.querySelector<HTMLElement>("header[data-navbar]");
@@ -278,6 +279,9 @@ const tabClass = (slug: string) =>
       menu.hidden = false;
       trigger.setAttribute("aria-expanded", "true");
       open = { trigger, menu };
+      // Which dropdown (More / city) gets opened; the pick, if any, is the
+      // navigation event that follows (via: more / city_menu).
+      track("nav_menu_open", { menu: menu.id.replace(/^nav-/, "") });
       if (focusFirst) linksOf(menu)[0]?.focus({ preventScroll: true });
     }
 

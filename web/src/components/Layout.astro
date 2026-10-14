@@ -163,7 +163,7 @@ const gridCss = gridGeometryCss()
       import { DAY_COLLAPSE_EVENT, numberCollapsed, numberRows } from "@/lib/event-panel";
       import type { RowNumbering } from "@/lib/types";
       import { onPage } from "@/lib/page-lifecycle";
-      import { track } from "@/lib/track";
+      import { dayOffsetOf, track } from "@/lib/track";
       // Time-aware agenda. Runs on load and whenever the tab is refocused, so a
       // page left open overnight self-corrects. Reasons in the same "logical
       // day" frame as src/lib/agenda.ts: the 05:00 boundary means events at
@@ -464,6 +464,11 @@ const gridCss = gridGeometryCss()
         header?.setAttribute("aria-expanded", String(!collapsed));
         if (collapsed) window.dispatchEvent(new CustomEvent(DAY_COLLAPSE_EVENT, { detail: section }));
         syncAgenda(section);
+        track("day_toggle", {
+          state: collapsed ? "collapsed" : "expanded",
+          via: toggle.matches("[data-day-note]") ? "note" : "header",
+          day_offset: dayOffsetOf(section) ?? 0,
+        });
         // The note just vanished under the pointer / focus: keep focus on the day.
         if (toggle.matches("[data-day-note]")) header?.focus({ preventScroll: true });
       });
