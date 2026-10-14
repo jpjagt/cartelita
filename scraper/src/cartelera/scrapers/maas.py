@@ -26,6 +26,7 @@ import httpx
 from bs4 import BeautifulSoup
 
 from cartelera.scrapers import register_source
+from cartelera.scrapers.http import CARTELITA_COMPAT_UA
 from cartelera.types import (
     ListMembership,
     ScrapedEvent,
@@ -48,7 +49,7 @@ SEARCH_PARAMS = {
     "isMobile": "false",
     "isHomepage": "false",
 }
-USER_AGENT = "Mozilla/5.0 (compatible; Cartelita (+https://cartelita.july.dev))"
+USER_AGENT = CARTELITA_COMPAT_UA
 
 # Genre tokens on the production page ("Fysiek theater, Danstheater, Dans").
 # Anything containing "dans" or "hiphop" is dance; theatre forms are theater.

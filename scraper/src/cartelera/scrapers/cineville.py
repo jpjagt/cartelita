@@ -7,6 +7,7 @@ from zoneinfo import ZoneInfo
 import httpx
 
 from cartelera.scrapers import register_source
+from cartelera.scrapers.http import CARTELITA_UA
 from cartelera.types import (
     ListMembership,
     ScrapedEvent,
@@ -24,7 +25,7 @@ from cartelera.types import (
 API_BASE = "https://api.cineville.nl"
 FILM_PAGE = "https://www.cineville.nl/films/{slug}"
 SOURCE_SLUG = "cineville"
-USER_AGENT = "Cartelita (+https://cartelita.july.dev)"
+USER_AGENT = CARTELITA_UA
 TZ = ZoneInfo("Europe/Amsterdam")
 PAGE_LIMIT = 200
 

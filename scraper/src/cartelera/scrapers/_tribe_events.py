@@ -23,8 +23,8 @@ import re
 
 from bs4 import BeautifulSoup
 
-from cartelera.scrapers._eur import HEADERS, eur_amounts, format_eur, to_float
-from cartelera.scrapers.http import fetch
+from cartelera.scrapers.price import eur_amounts, eur_to_float, format_eur
+from cartelera.scrapers.http import CARTELITA_BROWSER_HEADERS, fetch
 
 API_PATH = "/wp-json/tribe/events/v1/events"
 PER_PAGE = 50
@@ -42,7 +42,7 @@ def fetch_all(site: str) -> list[dict]:
     for _ in range(_MAX_PAGES):
         if not url:
             break
-        payload = json.loads(fetch(url, headers=HEADERS))
+        payload = json.loads(fetch(url, headers=CARTELITA_BROWSER_HEADERS))
         events.extend(payload.get("events") or [])
         url = payload.get("next_rest_url")
     return events
@@ -90,7 +90,7 @@ def cost_price(ev: dict) -> str | None:
     nums: list[float] = []
     for v in values:
         try:
-            nums.append(to_float(str(v)))
+            nums.append(eur_to_float(str(v)))
         except ValueError:
             continue
     cost = text(ev.get("cost"))

@@ -6,7 +6,8 @@ import re
 from bs4 import BeautifulSoup, Tag
 
 from cartelera.scrapers import register
-from cartelera.scrapers._nl_common import ENGLISH_MONTHS, eur_price, first_time, get
+from cartelera.scrapers._nl_common import ENGLISH_MONTHS, first_time, get
+from cartelera.scrapers.price import eur_price
 from cartelera.types import ListMembership, ScrapedEvent, VenueDefinition
 
 # Roodkapje (Keileweg, Rotterdam-M4H) — artist-run "communal living-room,

@@ -6,7 +6,7 @@ jazz-rooted concert stage, club nights, restaurant (Mavis).
 
 Site: `https://www.bird-rotterdam.nl/` (Next.js) fed by a **public Prismic
 repository** `bird-rotterdam`; we read the Prismic documents API, not HTML.
-Client: httpx with the Cartelita UA (`_nl_common.USER_AGENT`).
+Client: httpx with the Cartelita UA (`http.CARTELITA_COMPAT_UA`).
 
 ## Requests
 

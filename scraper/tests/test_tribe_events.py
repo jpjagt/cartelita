@@ -2,21 +2,6 @@ import datetime as dt
 import json
 
 from cartelera.scrapers import _tribe_events as tribe
-from cartelera.scrapers._eur import eur_amounts, format_eur
-
-
-def test_format_eur_house_convention():
-    assert format_eur(15.5) == "15,50€"
-    assert format_eur(9.0) == "9€"
-    assert format_eur(7.95) == "7,95€"
-    assert format_eur(0) == "free"
-
-
-def test_eur_amounts_ignore_times_before_the_sign():
-    assert eur_amounts("/ Early entry before 23:30 €15") == [15.0]
-    assert eur_amounts("€ 15.5") == [15.5]
-    assert eur_amounts("Aan de deur altijd €5,50") == [5.5]
-    assert eur_amounts("12,50 €") == [12.5]
 
 
 def test_cost_price_from_tribe_fields():

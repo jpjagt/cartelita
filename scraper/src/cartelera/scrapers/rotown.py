@@ -7,7 +7,8 @@ import re
 from bs4 import BeautifulSoup, Tag
 
 from cartelera.scrapers import register
-from cartelera.scrapers._nl_common import eur_price, format_eur, get
+from cartelera.scrapers._nl_common import get
+from cartelera.scrapers.price import eur_price, format_eur
 from cartelera.types import ListMembership, ScrapedEvent, VenueDefinition
 
 # Rotown (Nieuwe Binnenweg, Rotterdam) — pop/indie club + café. A WordPress

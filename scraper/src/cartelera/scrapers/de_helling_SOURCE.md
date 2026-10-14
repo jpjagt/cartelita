@@ -3,7 +3,7 @@
 Venue slug: `de-helling` (Utrecht). Categories **pop**, **club**; lists `pop`
 (whitelist pop) and `club` (whitelist club). Helling 7, Rotsoord.
 
-Client: plain httpx (`http.fetch`) with the Cartelita UA (`_eur.HEADERS`).
+Client: plain httpx (`http.fetch`) with the Cartelita UA (`http.CARTELITA_BROWSER_HEADERS`).
 
 ## List URLs
 

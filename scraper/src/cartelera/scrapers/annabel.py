@@ -6,8 +6,9 @@ import json
 import re
 
 from cartelera.scrapers import register
-from cartelera.scrapers._nl_common import USER_AGENT, eur_price, first_time
-from cartelera.scrapers.http import fetch
+from cartelera.scrapers._nl_common import first_time
+from cartelera.scrapers.http import CARTELITA_COMPAT_UA, fetch
+from cartelera.scrapers.price import eur_price
 from cartelera.types import ListMembership, ScrapedEvent, VenueDefinition
 
 # Annabel (Schiestraat, Rotterdam) — concert hall + club. An Elementor
@@ -90,7 +91,7 @@ class AnnabelScraper:
     venue_slug = VENUE_SLUG
 
     def scrape(self) -> list[ScrapedEvent]:
-        posts = json.loads(fetch(API_URL, headers={"User-Agent": USER_AGENT}))
+        posts = json.loads(fetch(API_URL, headers={"User-Agent": CARTELITA_COMPAT_UA}))
         return parse_posts(posts, dt.date.today())
 
 

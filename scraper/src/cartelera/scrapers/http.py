@@ -22,6 +22,17 @@ BROWSER_UA = (
     "(KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36"
 )
 
+# Honest, stable identification of our crawler (docs/nl-cities-plan.md). The
+# single source of truth for the Cartelita marker; build site-specific variants
+# from it rather than re-typing the string.
+CARTELITA_UA = "Cartelita (+https://cartelita.july.dev)"
+# "Mozilla/5.0 (compatible; ...)" keeps naive UA filters happy without
+# pretending to be a browser.
+CARTELITA_COMPAT_UA = f"Mozilla/5.0 (compatible; {CARTELITA_UA})"
+# A browser token for sites that gate on one, plus the Cartelita marker.
+CARTELITA_BROWSER_UA = f"{BROWSER_UA} {CARTELITA_UA}"
+CARTELITA_BROWSER_HEADERS = {"User-Agent": CARTELITA_BROWSER_UA}
+
 
 def fetch(
     url: str,

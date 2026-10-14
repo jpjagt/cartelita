@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 
 from cartelera.scrapers import _tribe_events as tribe
 from cartelera.scrapers import register
-from cartelera.scrapers._eur import eur_amounts, format_eur
+from cartelera.scrapers.price import eur_amounts, format_eur
 from cartelera.types import ListMembership, ScrapedEvent, VenueDefinition
 
 # BASIS (Oudegracht aan de Werf 97, Utrecht) — basement techno/house club in a

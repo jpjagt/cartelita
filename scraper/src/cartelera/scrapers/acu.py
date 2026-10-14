@@ -6,8 +6,8 @@ import re
 from bs4 import BeautifulSoup
 
 from cartelera.scrapers import register
-from cartelera.scrapers._eur import HEADERS, eur_amounts
-from cartelera.scrapers.http import fetch
+from cartelera.scrapers.price import eur_amounts
+from cartelera.scrapers.http import CARTELITA_BROWSER_HEADERS, fetch
 from cartelera.scrapers.price import format_eur_range
 from cartelera.types import ListMembership, ScrapedEvent, VenueDefinition
 
@@ -181,7 +181,7 @@ class AcuScraper:
     venue_slug = VENUE_SLUG
 
     def scrape(self) -> list[ScrapedEvent]:
-        return parse_agenda(fetch(AGENDA_URL, headers=HEADERS), dt.date.today())
+        return parse_agenda(fetch(AGENDA_URL, headers=CARTELITA_BROWSER_HEADERS), dt.date.today())
 
 
 register(

@@ -8,8 +8,8 @@ from urllib.parse import urlparse
 from bs4 import BeautifulSoup, Tag
 
 from cartelera.scrapers import register
-from cartelera.scrapers._eur import HEADERS, eur_amounts, format_eur
-from cartelera.scrapers.http import fetch
+from cartelera.scrapers.price import eur_amounts, format_eur
+from cartelera.scrapers.http import CARTELITA_BROWSER_HEADERS, fetch
 from cartelera.types import ListMembership, ScrapedEvent, VenueDefinition
 
 # EKKO (Bemuurde Weerd WZ 3, Utrecht) — 40-year-old indie/alternative pop venue
@@ -220,9 +220,9 @@ class EkkoScraper:
     venue_slug = VENUE_SLUG
 
     def scrape(self) -> list[ScrapedEvent]:
-        rows = parse_list(fetch(AGENDA_URL, headers=HEADERS), dt.date.today())
+        rows = parse_list(fetch(AGENDA_URL, headers=CARTELITA_BROWSER_HEADERS), dt.date.today())
         with ThreadPoolExecutor(max_workers=6) as pool:
-            pages = list(pool.map(lambda r: fetch(r["url"], headers=HEADERS), rows))
+            pages = list(pool.map(lambda r: fetch(r["url"], headers=CARTELITA_BROWSER_HEADERS), rows))
         details = {row["url"]: page for row, page in zip(rows, pages)}
         return build_events(rows, details)
 

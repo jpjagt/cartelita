@@ -6,7 +6,8 @@ import re
 from bs4 import BeautifulSoup, Tag
 
 from cartelera.scrapers import register
-from cartelera.scrapers._nl_common import eur_price, first_time, get
+from cartelera.scrapers._nl_common import first_time, get
+from cartelera.scrapers.price import eur_price
 from cartelera.types import ListMembership, ScrapedEvent, VenueDefinition
 
 # Baroeg (Spinozaweg, Rotterdam-Lombardijen) — the city's metal/punk/

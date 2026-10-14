@@ -18,6 +18,7 @@ import httpx
 from bs4 import BeautifulSoup
 
 from cartelera.scrapers import register_source
+from cartelera.scrapers.http import CARTELITA_UA
 from cartelera.types import (
     ListMembership,
     ScrapedEvent,
@@ -29,7 +30,7 @@ logger = logging.getLogger(__name__)
 
 BASE_URL = "https://jazz010.live"
 SOURCE_SLUG = "jazz010"
-USER_AGENT = "Cartelita (+https://cartelita.july.dev)"
+USER_AGENT = CARTELITA_UA
 TZ = ZoneInfo("Europe/Amsterdam")
 
 # Pagination: each /events?start=D page covers 14 days and always links a

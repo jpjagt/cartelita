@@ -8,8 +8,8 @@ import re
 from bs4 import BeautifulSoup
 
 from cartelera.scrapers import register
-from cartelera.scrapers._eur import HEADERS, eur_amounts, format_eur, to_float
-from cartelera.scrapers.http import fetch
+from cartelera.scrapers.price import eur_amounts, eur_to_float, format_eur
+from cartelera.scrapers.http import CARTELITA_BROWSER_HEADERS, fetch
 from cartelera.types import ListMembership, ScrapedEvent, VenueDefinition
 
 # De Helling (Helling 7, Utrecht-Rotsoord) — pop venue with concerts and club
@@ -54,7 +54,7 @@ def _price(offers: dict, status: str) -> str | None:
     if raw in (None, ""):
         return None
     try:
-        return format_eur(to_float(str(raw)))
+        return format_eur(eur_to_float(str(raw)))
     except ValueError:
         return None
 
@@ -127,13 +127,13 @@ class DeHellingScraper:
     venue_slug = VENUE_SLUG
 
     def scrape(self) -> list[ScrapedEvent]:
-        agenda = fetch(AGENDA_URL, headers=HEADERS)
-        club_ids = card_ids(fetch(CLUB_URL, headers=HEADERS))
-        cafe_ids = card_ids(fetch(CAFE_URL, headers=HEADERS))
+        agenda = fetch(AGENDA_URL, headers=CARTELITA_BROWSER_HEADERS)
+        club_ids = card_ids(fetch(CLUB_URL, headers=CARTELITA_BROWSER_HEADERS))
+        cafe_ids = card_ids(fetch(CAFE_URL, headers=CARTELITA_BROWSER_HEADERS))
         events = parse_agenda(agenda, club_ids, cafe_ids)
         for ev in events:
             if ev.price is None:
-                ev.price = detail_price(fetch(ev.source_url, headers=HEADERS))
+                ev.price = detail_price(fetch(ev.source_url, headers=CARTELITA_BROWSER_HEADERS))
         return events
 
 

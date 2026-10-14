@@ -7,8 +7,7 @@ from urllib.parse import urljoin
 from bs4 import BeautifulSoup
 
 from cartelera.scrapers import register
-from cartelera.scrapers._eur import HEADERS
-from cartelera.scrapers.http import fetch
+from cartelera.scrapers.http import CARTELITA_BROWSER_HEADERS, fetch
 from cartelera.types import ListMembership, ScrapedEvent, VenueDefinition
 
 # KABUL à GoGo (Gietijzerstraat 3, Utrecht-Werkspoorkwartier) — club and
@@ -148,8 +147,8 @@ class KabulScraper:
     venue_slug = VENUE_SLUG
 
     def scrape(self) -> list[ScrapedEvent]:
-        rows = parse_agenda(fetch(BASE_URL + "/", headers=HEADERS))
-        details = {row["url"]: fetch(row["url"], headers=HEADERS) for row in rows}
+        rows = parse_agenda(fetch(BASE_URL + "/", headers=CARTELITA_BROWSER_HEADERS))
+        details = {row["url"]: fetch(row["url"], headers=CARTELITA_BROWSER_HEADERS) for row in rows}
         return build_events(rows, details)
 
 

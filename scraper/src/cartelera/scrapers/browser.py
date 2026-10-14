@@ -24,11 +24,13 @@ import re
 import time
 from dataclasses import dataclass, field
 
+from cartelera.scrapers.http import CARTELITA_UA
+
 # Honest identification with a browser token (gates reject non-browser UAs).
 # The Chrome version is rewritten to the launched browser's real version.
 BROWSER_HELPER_UA = (
     "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) "
-    "Chrome/141.0.0.0 Safari/537.36 Cartelita (+https://cartelita.july.dev)"
+    f"Chrome/141.0.0.0 Safari/537.36 {CARTELITA_UA}"
 )
 
 

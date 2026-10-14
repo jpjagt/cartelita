@@ -38,6 +38,7 @@ import httpx
 from bs4 import BeautifulSoup, Tag
 
 from cartelera.scrapers import register
+from cartelera.scrapers.http import CARTELITA_UA
 from cartelera.types import ListMembership, ScrapedEvent, VenueDefinition
 
 logger = logging.getLogger(__name__)
@@ -45,7 +46,7 @@ logger = logging.getLogger(__name__)
 BASE_URL = "https://www.tivolivredenburg.nl"
 AGENDA_URL = BASE_URL + "/agenda/"
 VENUE_SLUG = "tivolivredenburg"
-USER_AGENT = "Cartelita (+https://cartelita.july.dev)"
+USER_AGENT = CARTELITA_UA
 MAX_PAGES = 80
 MAX_CONCURRENCY = 2
 PAGE_DELAY = 0.5  # seconds between requests per worker — be polite

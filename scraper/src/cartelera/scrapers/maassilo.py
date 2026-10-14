@@ -11,7 +11,8 @@ from bs4 import BeautifulSoup
 
 from cartelera.scrapers import register
 from cartelera.scrapers import rotown
-from cartelera.scrapers._nl_common import DUTCH_MONTHS, eur_price, first_time, get, infer_year
+from cartelera.scrapers._nl_common import DUTCH_MONTHS, first_time, get, infer_year
+from cartelera.scrapers.price import eur_price
 from cartelera.types import ListMembership, ScrapedEvent, VenueDefinition
 
 # Maassilo (Maashaven, Rotterdam-Zuid) — former grain silo; big dance events

@@ -32,6 +32,7 @@ import re
 import httpx
 
 from cartelera.scrapers import register_source
+from cartelera.scrapers.http import CARTELITA_COMPAT_UA
 from cartelera.types import (
     ListMembership,
     ScrapedEvent,
@@ -42,7 +43,7 @@ from cartelera.types import (
 SOURCE_SLUG = "uitagenda-rotterdam"
 BASE_URL = "https://www.uitagendarotterdam.nl"
 API_URL = f"{BASE_URL}/umbraco/api/Entity/GetProductions"
-USER_AGENT = "Mozilla/5.0 (compatible; Cartelita (+https://cartelita.july.dev))"
+USER_AGENT = CARTELITA_COMPAT_UA
 
 AGENDA_PAGE_ID = 1083  # the /agenda/ page
 DANCE_PAGE_ID = 17488  # the /ontdek/dans-in-rotterdam/ landing page

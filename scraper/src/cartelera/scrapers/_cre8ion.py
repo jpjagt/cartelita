@@ -22,12 +22,13 @@ from decimal import Decimal
 import httpx
 from bs4 import BeautifulSoup
 
+from cartelera.scrapers.http import CARTELITA_COMPAT_UA
 from cartelera.scrapers.price import format_eur_range
 
 # Honest, stable identification (docs/nl-cities-plan.md), with a browser token
 # because cre8ion sites serve the same HTML either way.
 USER_AGENT = (
-    "Mozilla/5.0 (compatible; Cartelita (+https://cartelita.july.dev)) "
+    f"{CARTELITA_COMPAT_UA} "
     "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36"
 )
 # Detail pages are fetched with at most this many requests in flight.

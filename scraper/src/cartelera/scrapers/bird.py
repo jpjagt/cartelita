@@ -7,8 +7,9 @@ import urllib.parse
 from zoneinfo import ZoneInfo
 
 from cartelera.scrapers import register
-from cartelera.scrapers._nl_common import USER_AGENT, eur_price, first_time
-from cartelera.scrapers.http import fetch
+from cartelera.scrapers._nl_common import first_time
+from cartelera.scrapers.http import CARTELITA_COMPAT_UA, fetch
+from cartelera.scrapers.price import eur_price
 from cartelera.types import ListMembership, ScrapedEvent, VenueDefinition
 
 # BIRD (Raampoortstraat, Rotterdam) — jazz/soul/hip-hop concert stage + club.
@@ -191,7 +192,7 @@ class BirdScraper:
     venue_slug = VENUE_SLUG
 
     def scrape(self) -> list[ScrapedEvent]:
-        headers = {"User-Agent": USER_AGENT}
+        headers = {"User-Agent": CARTELITA_COMPAT_UA}
         root = json.loads(fetch(API_ROOT, headers=headers))
         ref = next(r["ref"] for r in root["refs"] if r.get("isMasterRef"))
         today = dt.datetime.now(TZ).date()
