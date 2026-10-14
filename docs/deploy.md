@@ -158,4 +158,9 @@ Review that issue: merge or deny names in `jazzin_amsterdam.py`, then close it.
 - Python 3.14 is pinned in `scraper/Dockerfile` on purpose: the stdlib HTML parser
   parses some venue pages differently on 3.13 (far fewer events). Do not switch the
   scraper to Nixpacks (it caps at 3.13).
+- The scraper image ships Playwright's `chromium-headless-shell` (+ its apt libs,
+  `/ms-playwright`) for `cartelera.scrapers.browser` — the production browser
+  helper for queue gates / bot checks HTTP can't pass (De Doelen, TivoliVredenburg).
+  It adds ~250-300 MB to the image. Smoke-test in the container:
+  `python -c "from cartelera.scrapers.browser import browser_html; print(len(browser_html('https://example.org')))"`.
 - Backups: enable Coolify's Postgres backup feature to object storage when ready.

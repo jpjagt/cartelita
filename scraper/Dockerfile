@@ -15,6 +15,16 @@ WORKDIR /app
 COPY pyproject.toml uv.lock ./
 RUN uv sync --frozen --no-install-project --no-dev
 
+# Headless Chromium for cartelera.scrapers.browser (queue gates / bot checks
+# HTTP can't pass, e.g. De Doelen's csq_token). Only the slim
+# `chromium-headless-shell` (no full Chrome, no Firefox/WebKit) plus its apt
+# system libs (`--with-deps`; Playwright supports Debian 13/trixie, this
+# image's base). Adds roughly 250-300 MB to the image. A fixed browsers path
+# keeps it independent of $HOME.
+ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
+RUN /app/.venv/bin/playwright install --with-deps chromium-headless-shell \
+    && rm -rf /var/lib/apt/lists/*
+
 # Now copy the source and install the project itself (provides the `cartelera` script).
 COPY . .
 RUN uv sync --frozen --no-dev

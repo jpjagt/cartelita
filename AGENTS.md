@@ -190,10 +190,15 @@ means a *partial* break (pagination stopping early, a dead field selector).
   and attaches to the user's real Chrome. Recon/verification is HTTP-first;
   when a site needs a browser, `cd scraper && uv run python tools/recon.py <url>`
   runs its own isolated headless Chromium (one-time `uv run playwright install
-  chromium-headless-shell`; playwright is a dev-only dependency, not in the
-  prod image). Bot-protected sites (403/Cloudflare with httpx): `curl_cffi`
+  chromium-headless-shell`). Bot-protected sites (403/Cloudflare with httpx): `curl_cffi`
   `impersonate="chrome"` is a runtime dependency — see the writing-a-scraper
   skill, Phase 1.
+- **Production browser helper:** `cartelera.scrapers.browser`
+  (`browser_page` / `browser_cookies` / `browser_html`; Playwright + headless
+  shell are in the prod image). Use it ONLY when HTTP/curl_cffi can't get
+  through — e.g. a queue gate: one headless pass for the gate cookie, then plain
+  HTTP with that cookie + the returned User-Agent (`doelen.py` does this).
+  Never launch a browser ad hoc in a scraper.
 - The migration runner pre-creates `schema_migrations`, so its SQL uses
   `CREATE TABLE IF NOT EXISTS`. Migrations are applied in filename order and are
   idempotent; reset a dev/test DB with

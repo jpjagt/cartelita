@@ -3,8 +3,7 @@
     uv run python tools/recon.py <url> [--scroll] [--click SEL]... [--wait MS]
                                        [--top N] [--dump DIR] [--no-browser]
 
-One-time setup (the browser binary; playwright itself is a dev dependency and
-is not in the production image):
+One-time local setup (the browser binary; the prod image installs it itself):
 
     uv run playwright install chromium-headless-shell
 
@@ -456,7 +455,7 @@ def browse(
     try:
         from playwright.sync_api import sync_playwright
     except ImportError:
-        res.error = "playwright not installed (it's a dev dependency: `uv sync`)"
+        res.error = "playwright not installed (`uv sync`)"
         return res
     page_host = urlparse(url).hostname or ""
     with sync_playwright() as p:
