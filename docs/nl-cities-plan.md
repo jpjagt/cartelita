@@ -85,10 +85,10 @@ updates this table in its commit).
 | Theater Kikker | theater-kikker | theater, dance | cre8ion | 7 |
 | Podium Hoge Woerd | podium-hoge-woerd | theater, dance | cre8ion | 7 |
 | Theater Utrecht | theater-utrecht | theater, dance | theater-utrecht | 7 |
-| TivoliVredenburg | tivolivredenburg | pop, jazz, classical, club | tivolivredenburg (fallback: uitagenda-utrecht whitelisted to it) | 8 |
-| UJazz (optional) | ujazz | jazz | ujazz | 8 |
-| Festival Oude Muziek (optional) | festival-oude-muziek | classical | oude-muziek | 8 |
-| Domkerk / Pieterskerk (optional) | domkerk, pieterskerk | classical | per venue | 8 |
+| TivoliVredenburg | tivolivredenburg | pop, jazz, classical, club, folk (Global), kids (Familie) | tivolivredenburg (own site, httpx; no fallback needed) | 8 |
+| UJazz (optional) | ujazz | jazz | ujazz — skipped for now (4 concerts; workshops only separable by title) | 8 |
+| Festival Oude Muziek (optional) | festival-oude-muziek | classical | oude-muziek — skipped (season tour; its Utrecht dates are at TivoliVredenburg, already covered) | 8 |
+| Domkerk / Pieterskerk (optional) | domkerk, pieterskerk | classical | per venue — skipped (agendas mix services/openings; no non-title discriminator) | 8 |
 
 ## Batches
 
