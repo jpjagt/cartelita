@@ -235,3 +235,10 @@ export interface PricePageFit {
   coveredEm: number;  // widest price the bundled font fully covers, in em
   css: string;        // narrow per-width --pw<key> step table
 }
+
+/** The slice of Document lib/page-lifecycle.ts needs (tests pass a stand-in):
+    the current body (a client navigation replaces it) and its events. */
+export interface PageDoc {
+  readonly body: object | null;
+  addEventListener(type: string, listener: () => void): void;
+}

@@ -98,9 +98,13 @@ const priceFit = pricePageFit(days.flatMap((d) => d.events.map((e) => displayPri
   {isFilm && (
     <script>
       import { initViewSwitch } from "@/lib/view-switch"
-      // Apply the stored film view on load; the switcher persists changes.
-      const views = initViewSwitch("film-view", "film-view", "films")
-      views?.show(views.stored())
+      import { onPage } from "@/lib/page-lifecycle"
+      // Apply the stored film view on every film page (also when reached by a
+      // client navigation); the switcher persists changes. Inert elsewhere.
+      onPage(() => {
+        const views = initViewSwitch("film-view", "film-view", "films")
+        views?.show(views.stored())
+      })
     </script>
   )}
 </Layout>

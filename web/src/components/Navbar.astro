@@ -86,6 +86,7 @@ const navCss = renderStepCss(
   <script>
     import { navVars } from "@/lib/nav-layout";
     import { correctVars, isNarrow, liveGrid, measureEm } from "@/lib/grid-client";
+    import { onPage } from "@/lib/page-lifecycle";
 
     // The build-time step table already places every link and locale cell
     // for every width. This only CORRECTS it, writing (inline, on the header)
@@ -106,11 +107,13 @@ const navCss = renderStepCss(
       const localeCount = header.querySelectorAll("a[data-locale]").length;
       correctVars(header, navVars(ems, localeCount, liveGrid(), isNarrow()));
     }
-    layoutNav();
+    onPage(() => {
+      layoutNav();
+      // A measured label's width changes when its font arrives.
+      if (document.querySelector("a[data-navlink][data-measure]")) {
+        document.fonts?.ready.then(layoutNav);
+      }
+    });
     window.addEventListener("gridsync", layoutNav);
-    // A measured label's width changes when its font arrives.
-    if (document.querySelector("a[data-navlink][data-measure]")) {
-      document.fonts?.ready.then(layoutNav);
-    }
   </script>
 </header>

@@ -204,3 +204,10 @@ means a *partial* break (pagination stopping early, a dead field selector).
   idempotent; reset a dev/test DB with
   `psql <db> -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"`.
 - The frontend build needs `DATABASE_URL` in its env (`DATABASE_URL=... pnpm build`).
+- **The web app navigates client-side** (`<ClientRouter />` in `Layout.astro`):
+  pages swap in place, and each bundled `<script>` runs ONCE per session, not
+  per page. Register document/window listeners at module scope (once); put
+  anything that touches the page's elements in `onPage(...)`
+  (`web/src/lib/page-lifecycle.ts`), and never cache page elements in module
+  scope across pages. `<html>` attributes come from the new page on every swap
+  (the dark class is re-applied in `astro:before-swap`).

@@ -82,6 +82,7 @@ const radioCss = renderStepCss(
 <script>
   import { radioVars } from "@/lib/radio-layout"
   import { correctVars, liveGrid, measureEm } from "@/lib/grid-client"
+  import { onPage } from "@/lib/page-lifecycle"
 
   // The build-time step table already packs every group for every width
   // (assuming the OptionsPanel host). This only CORRECTS it, writing inline
@@ -109,14 +110,11 @@ const radioCss = renderStepCss(
     })
   }
 
-  layoutGridRadios()
   window.addEventListener("gridsync", layoutGridRadios)
-  if (document.querySelector(".grid-radio-label[data-measure]")) {
-    document.fonts?.ready.then(layoutGridRadios)
-  }
 
   // Wire selection: clicking an option moves data-active and emits a
-  // `gridradiochange` CustomEvent (detail = value). Stateless beyond the DOM.
+  // `gridradiochange` CustomEvent (detail = value). Stateless beyond the DOM;
+  // data-wired keeps it to one listener per group.
   function wireGridRadios() {
     document.querySelectorAll<HTMLElement>("[data-grid-radio]").forEach((group) => {
       if (group.dataset.wired) return
@@ -137,5 +135,13 @@ const radioCss = renderStepCss(
       })
     })
   }
-  wireGridRadios()
+
+  // Every page's groups (a client navigation brings new ones).
+  onPage(() => {
+    layoutGridRadios()
+    if (document.querySelector(".grid-radio-label[data-measure]")) {
+      document.fonts?.ready.then(layoutGridRadios)
+    }
+    wireGridRadios()
+  })
 </script>

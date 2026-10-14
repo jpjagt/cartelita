@@ -95,6 +95,7 @@ const strings = t(locale)
     directoryHeights,
     parseCollapsed,
   } from "@/lib/venue-directory"
+  import { onPage } from "@/lib/page-lifecycle"
 
   function readCollapsed(): Set<string> {
     try {
@@ -148,7 +149,11 @@ const strings = t(locale)
   }
 
   let collapsed = readCollapsed()
-  if (collapsed.size > 0) apply(collapsed)
+  // Every page's directory (a client navigation brings a fresh, all-expanded
+  // one).
+  onPage(() => {
+    if (collapsed.size > 0) apply(collapsed)
+  })
 
   // Native <button>: Enter/Space fire click, so one listener covers keyboard
   // too. Only the title button toggles; venue lines (favourite toggles) don't.

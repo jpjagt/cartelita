@@ -3,6 +3,7 @@ import type { Locale, PricePageFit } from "@/lib/types"
 import "@/styles/global.css"
 import CellIconSprite from "@/components/ui/CellIconSprite.astro"
 import { gridGeometryCss } from "@/lib/grid-css"
+import { ClientRouter } from "astro:transitions"
 
 interface Props {
   locale: Locale
@@ -47,23 +48,77 @@ const gridCss = gridGeometryCss()
       </>
     )}
     <script is:inline>
-      if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-        document.documentElement.classList.add("dark");
-      }
-      window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e) => {
-        document.documentElement.classList.toggle("dark", e.matches);
-      });
+      (() => {
+        const dark = window.matchMedia("(prefers-color-scheme: dark)");
+        document.documentElement.classList.toggle("dark", dark.matches);
+        dark.addEventListener("change", (e) => {
+          document.documentElement.classList.toggle("dark", e.matches);
+        });
+        // A client navigation (ClientRouter, below) replaces <html>'s
+        // attributes with the next page's, which has no class: put it on the
+        // incoming document before the swap, so a dark page never paints
+        // light. (This script runs once per session: same text every page.)
+        document.addEventListener("astro:before-swap", (e) => {
+          e.newDocument.documentElement.classList.toggle("dark", dark.matches);
+        });
+      })();
     </script>
     <style is:inline set:html={gridCss} />
     {priceFit?.css && <style is:inline set:html={priceFit.css} />}
     <script defer src="https://umm.july.dev/script.js" data-website-id="8caba607-9ee5-4b3a-aba8-7d4f7a06b75e"></script>
+    {/* Page-to-page navigation without a reload: the router fetches the next
+        page (prefetched on hover, astro.config.mjs) and swaps <body>,
+        <head> and <html>'s attributes in place — no white flash, scripts and
+        fonts stay loaded. A short cross-fade where view transitions are
+        supported (none with reduced motion; global.css), an instant swap
+        elsewhere. Component scripts initialise per page via
+        lib/page-lifecycle.ts onPage. */}
+    <ClientRouter fallback="swap" />
   </head>
   <body data-genre={genre} class="font-sans bg-background text-foreground">
     <CellIconSprite />
     <slot />
     <script>
+      // Client navigations, part 1 — analytics. Umami counts the first load
+      // and every pushState itself (it wraps history.pushState); a
+      // back/forward traversal pushes nothing, so it would go uncounted (a
+      // full reload used to count it). Re-stating the URL through
+      // replaceState goes through Umami's own hook: one page view, and its
+      // notion of the current URL — the next view's referrer — follows.
+      // Astro's own replaceState calls pass no URL, which Umami ignores.
+      let traversal = false;
+      document.addEventListener("astro:before-preparation", (e) => {
+        traversal = e.navigationType === "traverse";
+        // Part 2 — script preloading. The router runs the next page's
+        // not-yet-seen module scripts only after the swap, so their onPage
+        // init (My list's filter, the film view …) would land a frame after
+        // the page first paints. Evaluate
+        // them while the page loads instead: they then initialise it on
+        // astro:after-swap, before its first paint (lib/page-lifecycle.ts),
+        // and the router's later <script> finds the module already run.
+        const load = e.loader;
+        e.loader = async () => {
+          await load();
+          const scripts = e.newDocument?.querySelectorAll<HTMLScriptElement>(
+            'script[type="module"][src]',
+          );
+          await Promise.all(
+            [...(scripts ?? [])].map((s) =>
+              import(/* @vite-ignore */ new URL(s.getAttribute("src")!, location.href).href).catch(
+                () => {},
+              ),
+            ),
+          );
+        };
+      });
+      document.addEventListener("astro:after-swap", () => {
+        if (traversal) history.replaceState(history.state, "", location.href);
+      });
+    </script>
+    <script>
       import { geometryVars, gridGeometry, inGridTable } from "@/lib/grid-geometry";
       import { containerWidth, isNarrow, SUPPORTS_CQ } from "@/lib/grid-client";
+      import { onPage } from "@/lib/page-lifecycle";
       // The grid geometry (--cell, --grid-cols, --band-cells, --col-start, film
       // columns …) comes from the build-time container-query step table in
       // <head>, so it's right on the first paint and on every resize without
@@ -93,12 +148,15 @@ const gridCss = gridGeometryCss()
       // Exposed so scripts that reveal or add grids (view switches, My list)
       // can re-announce gridsync.
       (window as any).syncGrid = syncGrid;
-      syncGrid();
+      // Every page (a client navigation brings new grids, and gridsync is what
+      // makes every dependent script re-place against them).
+      onPage(syncGrid);
       window.addEventListener("resize", syncGrid);
       window.addEventListener("load", syncGrid);
     </script>
     <script>
       import { numberRows } from "@/lib/event-panel";
+      import { onPage } from "@/lib/page-lifecycle";
       // Time-aware agenda. Runs on load and whenever the tab is refocused, so a
       // page left open overnight self-corrects. Reasons in the same "logical
       // day" frame as src/lib/agenda.ts: the 05:00 boundary means events at
@@ -364,7 +422,7 @@ const gridCss = gridGeometryCss()
       // Expose so the film view toggle can re-place dots when it swaps views.
       (window as any).syncAgenda = syncAgenda;
 
-      syncAgenda();
+      onPage(() => syncAgenda());
       document.addEventListener("visibilitychange", () => {
         if (!document.hidden) syncAgenda();
       });

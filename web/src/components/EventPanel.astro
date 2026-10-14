@@ -60,8 +60,10 @@ const descriptionsJson = JSON.stringify(descriptions).replace(/</g, "\\u003c")
   import { NARROW_QUERY } from "@/lib/breakpoints"
   import { FAVOURITES_EVENT } from "@/lib/favourites"
   import { liveGrid } from "@/lib/grid-client"
+  import { onPage } from "@/lib/page-lifecycle"
 
-  const template = document.querySelector<HTMLTemplateElement>("[data-event-panel-template]")
+  // The current page's template; null on pages without event rows.
+  let template: HTMLTemplateElement | null = null
   const NARROW = window.matchMedia(NARROW_QUERY)
   const ACTIONS = 3
   // Description lines shown at most (matches -webkit-line-clamp in global.css).
@@ -83,6 +85,16 @@ const descriptionsJson = JSON.stringify(descriptions).replace(/</g, "\\u003c")
   // The open panel's row wrapper; null when closed.
   let row: HTMLElement | null = null
   let copiedTimer = 0
+
+  const currentTemplate = () => (template?.isConnected ? template : null)
+
+  // Each page brings its own template and descriptions, and no open panel.
+  onPage(() => {
+    template = document.querySelector<HTMLTemplateElement>("[data-event-panel-template]")
+    descriptions = null
+    row = null
+    window.clearTimeout(copiedTimer)
+  })
 
   const sectionOf = (r: HTMLElement) => r.closest<HTMLElement>("section.gridpaper")
   // Re-number the section's rows around the (changed) panel, and redraw its
@@ -117,7 +129,7 @@ const descriptionsJson = JSON.stringify(descriptions).replace(/</g, "\\u003c")
 
   function open(r: HTMLElement) {
     close()
-    const panel = template!.content.firstElementChild!.cloneNode(true) as HTMLElement
+    const panel = currentTemplate()!.content.firstElementChild!.cloneNode(true) as HTMLElement
     const desc = panel.querySelector<HTMLElement>("[data-panel-desc]")!
     const text = descriptionOf(r.dataset.id ?? "")
     if (text) desc.textContent = text
@@ -155,62 +167,63 @@ const descriptionsJson = JSON.stringify(descriptions).replace(/</g, "\\u003c")
   function showCopied(panel: HTMLElement) {
     const label = panel.querySelector<HTMLElement>("[data-panel-action=share] .cell-text")
     if (!label) return
-    const prev = template!.content.querySelector("[data-panel-action=share] .cell-text")?.textContent ?? ""
-    label.textContent = template!.dataset.copied ?? ""
+    const prev = template?.content.querySelector("[data-panel-action=share] .cell-text")?.textContent ?? ""
+    label.textContent = template?.dataset.copied ?? ""
     window.clearTimeout(copiedTimer)
     copiedTimer = window.setTimeout(() => (label.textContent = prev), 1500)
   }
 
-  if (template) {
-    document.addEventListener("click", async (e) => {
-      // Handled elsewhere: a favourite toggle (FavouriteToggle) claims its
-      // click with preventDefault.
-      if (!NARROW.matches || e.defaultPrevented) return
-      const target = e.target as Element | null
-      const panel = target?.closest<HTMLElement>("[data-event-panel]")
-      if (panel) {
-        // View is a plain link (new tab); the buttons act on the panel's row.
-        const action = target?.closest<HTMLElement>("[data-panel-action]")
-        const r = panel.closest<HTMLElement>("[data-event-row]")
-        if (!action || !r) return
-        const ev = eventOf(r)
-        if (action.dataset.panelAction === "share") {
-          const result = await shareEvent(ev, {
-            localeTag: template.dataset.localeTag ?? "en-GB",
-            template: template.dataset.template ?? "{title} — {when}, {venue}",
-          })
-          if (result === "copied") showCopied(panel)
-        } else {
-          addToCalendar(ev, template.dataset.timezone ?? "UTC")
-        }
-        return
+  // Document/window listeners: registered once per session, acting on the
+  // current page (inert where it has no template).
+  document.addEventListener("click", async (e) => {
+    // Handled elsewhere: a favourite toggle (FavouriteToggle) claims its
+    // click with preventDefault.
+    const template = currentTemplate()
+    if (!template || !NARROW.matches || e.defaultPrevented) return
+    const target = e.target as Element | null
+    const panel = target?.closest<HTMLElement>("[data-event-panel]")
+    if (panel) {
+      // View is a plain link (new tab); the buttons act on the panel's row.
+      const action = target?.closest<HTMLElement>("[data-panel-action]")
+      const r = panel.closest<HTMLElement>("[data-event-row]")
+      if (!action || !r) return
+      const ev = eventOf(r)
+      if (action.dataset.panelAction === "share") {
+        const result = await shareEvent(ev, {
+          localeTag: template.dataset.localeTag ?? "en-GB",
+          template: template.dataset.template ?? "{title} — {when}, {venue}",
+        })
+        if (result === "copied") showCopied(panel)
+      } else {
+        addToCalendar(ev, template.dataset.timezone ?? "UTC")
       }
-      const r = target?.closest<HTMLElement>("[data-event-row]")
-      if (!r) return
-      // The open row's heart favourites (FavouriteToggle) instead.
-      if (r === row && target?.closest(".fav-heart")) return
-      // Any other tap on the row — the title link included — toggles its
-      // panel rather than navigating (View does that).
-      e.preventDefault()
-      if (r === row) close()
-      else open(r)
-    })
+      return
+    }
+    const r = target?.closest<HTMLElement>("[data-event-row]")
+    if (!r) return
+    // The open row's heart favourites (FavouriteToggle) instead.
+    if (r === row && target?.closest(".fav-heart")) return
+    // Any other tap on the row — the title link included — toggles its
+    // panel rather than navigating (View does that).
+    e.preventDefault()
+    if (r === row) close()
+    else open(r)
+  })
 
-    // The grid re-flows on resize/rotation: the description may wrap to a
-    // different line count (re-size the panel), or the layout may have
-    // widened past the narrow breakpoint (no panels there: close).
-    window.addEventListener("gridsync", () => {
-      if (!row) return
-      if (!NARROW.matches) close()
-      else if (measure(row)) repack(row)
-    })
+  // The grid re-flows on resize/rotation: the description may wrap to a
+  // different line count (re-size the panel), or the layout may have
+  // widened past the narrow breakpoint (no panels there: close).
+  window.addEventListener("gridsync", () => {
+    if (!row) return
+    if (!NARROW.matches) close()
+    else if (measure(row)) repack(row)
+  })
 
-    // My list: un-favouriting the open row's venue filters the row out; take
-    // its panel with it.
-    window.addEventListener(FAVOURITES_EVENT, () =>
-      queueMicrotask(() => {
-        if (row?.hasAttribute("data-filtered")) close()
-      }),
-    )
-  }
+  // My list: un-favouriting the open row's venue filters the row out; take
+  // its panel with it.
+  window.addEventListener(FAVOURITES_EVENT, () =>
+    queueMicrotask(() => {
+      if (row?.hasAttribute("data-filtered")) close()
+    }),
+  )
 </script>

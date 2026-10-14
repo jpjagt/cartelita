@@ -97,14 +97,17 @@ const price = priceRowVars(displayPrice)
   // measureText in the font the browser actually picked. Latin pages skip it.
   import { cellSpan, PRICE_CELLS_DESKTOP, PRICE_CELLS_MOBILE } from "@/lib/price-fit"
   import { isNarrow, liveGrid, measureEm } from "@/lib/grid-client"
+  import { onPage } from "@/lib/page-lifecycle"
 
-  const rows = [...document.querySelectorAll<HTMLElement>("[data-event-row][data-measure]")]
+  // The current page's rows to correct (a client navigation brings new ones).
+  let rows: HTMLElement[] = []
   const emOf = (row: HTMLElement) => {
     const text = row.querySelector<HTMLElement>(".gc-price > .cell-text")
     return text ? measureEm(text) : 0
   }
 
   function fitPrices() {
+    if (!rows.length) return
     const g = liveGrid()
     if (!isNarrow()) {
       // The widest of the build-time-measured prices, and the re-measured ones.
@@ -122,9 +125,13 @@ const price = priceRowVars(displayPrice)
     }
   }
 
-  if (rows.length) {
+  // <html>'s --price-cells is the new page's build-time value after each
+  // navigation (the router copies <html>'s attributes over); correct it again.
+  onPage(() => {
+    rows = [...document.querySelectorAll<HTMLElement>("[data-event-row][data-measure]")]
+    if (!rows.length) return
     fitPrices()
-    window.addEventListener("gridsync", fitPrices)
     document.fonts?.ready.then(fitPrices)
-  }
+  })
+  window.addEventListener("gridsync", fitPrices)
 </script>

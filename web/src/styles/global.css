@@ -108,6 +108,20 @@ body {
 html {
   background-color: var(--background);
 }
+/* Client navigation (ClientRouter, Layout.astro): the browser cross-fades the
+   whole page — kept very short, since the gridpaper and navbar sit on the same
+   pixels and only content changes. Reduced motion: an instant swap. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 90ms;
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
 .gridpaper {
   --grid-line: var(--muted);
 

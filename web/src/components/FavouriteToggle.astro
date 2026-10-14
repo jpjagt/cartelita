@@ -48,6 +48,7 @@ const { venueSlug, venueName, label, variant } = Astro.props
     FAVOURITES_EVENT,
   } from "@/lib/favourites"
   import { NARROW_QUERY } from "@/lib/breakpoints"
+  import { onPage } from "@/lib/page-lifecycle"
 
   const store = browserStore()
   const NARROW = window.matchMedia(NARROW_QUERY)
@@ -63,10 +64,12 @@ const { venueSlug, venueName, label, variant } = Astro.props
       )
   }
 
-  paint(readFavourites(store))
+  // Every page's hearts (a client navigation brings new ones, unpainted).
+  onPage(() => paint(readFavourites(store)))
 
   // One delegated listener covers every toggle, including ones in views that
-  // were hidden at load.
+  // were hidden at load — and, registered once per session (module scripts run
+  // once under the ClientRouter), every page's.
   document.addEventListener("click", (e) => {
     const target = e.target as Element | null
     const btn = target?.closest<HTMLElement>("[data-fav-toggle]")

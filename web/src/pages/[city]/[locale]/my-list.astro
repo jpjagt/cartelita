@@ -106,14 +106,18 @@ const priceFit = pricePageFit(
       readFavourites,
       FAVOURITES_EVENT,
     } from "@/lib/favourites"
+    import { onPage } from "@/lib/page-lifecycle"
 
-    const root = document.querySelector<HTMLElement>('[data-view-root="my-list"]')
+    // The current page's My list root; null on every other page (this script
+    // stays loaded after a client navigation away, inert).
+    let root: HTMLElement | null = null
 
     // Mark rows from non-favourite venues; syncAgenda hides them, packs the
     // survivors and hides days left empty.
     function applyFilter(favs: Set<string>) {
+      if (!root) return
       root
-        ?.querySelectorAll<HTMLElement>("[data-event-row]")
+        .querySelectorAll<HTMLElement>("[data-event-row]")
         .forEach((row) =>
           row.toggleAttribute("data-filtered", !favs.has(row.dataset.venue ?? "")),
         )
@@ -131,11 +135,15 @@ const priceFit = pricePageFit(
       window.syncGrid?.()
     }
 
-    const views = initViewSwitch("my-list", "my-list-view", "events", updateEmpty)
-    const favs = readFavourites(browserStore())
-    applyFilter(favs)
-    // No favourites yet: open on the venue directory (without persisting it).
-    views?.show(favs.size ? views.stored() : "venues")
+    onPage(() => {
+      root = document.querySelector<HTMLElement>('[data-view-root="my-list"]')
+      if (!root) return
+      const views = initViewSwitch("my-list", "my-list-view", "events", updateEmpty)
+      const favs = readFavourites(browserStore())
+      applyFilter(favs)
+      // No favourites yet: open on the venue directory (without persisting it).
+      views?.show(favs.size ? views.stored() : "venues")
+    })
 
     window.addEventListener(FAVOURITES_EVENT, (e) =>
       applyFilter((e as CustomEvent<Set<string>>).detail),
