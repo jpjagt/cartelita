@@ -164,6 +164,7 @@ const gridCss = gridGeometryCss()
       import type { RowNumbering } from "@/lib/types";
       import { onPage } from "@/lib/page-lifecycle";
       import { dayOffsetOf, track } from "@/lib/track";
+      import { agendaClock } from "@/lib/today";
       // Time-aware agenda. Runs on load and whenever the tab is refocused, so a
       // page left open overnight self-corrects. Reasons in the same "logical
       // day" frame as src/lib/agenda.ts: the 05:00 boundary means events at
@@ -177,38 +178,23 @@ const gridCss = gridGeometryCss()
         return "2" + t;
       }
 
-      // Local yyyy-mm-dd (NOT toISOString, which shifts to UTC and can lose a
-      // day). Section data-date values are local calendar dates, so "now" must
-      // be expressed the same way.
-      function localDateStr(d: Date): string {
-        const y = d.getFullYear();
-        const m = String(d.getMonth() + 1).padStart(2, "0");
-        const day = String(d.getDate()).padStart(2, "0");
-        return `${y}-${m}-${day}`;
-      }
-
       // `only` limits the pass to one day section (an event panel opened or
       // closed there); listeners call it with no section, for every day.
       function syncAgenda(only?: HTMLElement) {
-        const now = new Date();
-        const hhmm = now.toTimeString().slice(0, 5);
-        const isPostMidnight = hhmm < "05:00";
-        // Logical "today": calendar date, rolled back one day before 05:00.
-        const nowLogicalDate = localDateStr(
-          new Date(now.getFullYear(), now.getMonth(), now.getDate() - (isPostMidnight ? 1 : 0)),
-        );
-        const nowKey = timeSortKey(hhmm);
+        // "Now" on the browser's wall clock — or, on a page that declares its
+        // city's time zone (data-agenda-timezone: Today), on the city's.
+        // Logical "today": the calendar date, rolled back one day before 05:00.
+        const tz = document.querySelector<HTMLElement>("[data-agenda-timezone]")?.dataset
+          .agendaTimezone;
+        // cutoffKey: the sort key for "2 hours ago" on that wall clock.
+        // timeSortKey maps it into the same logical-day ordering the rows use
+        // (post-midnight sorts last). Only applied to the current logical day,
+        // so a 23:00 cutoff after midnight never reaches into a future day's
+        // evening.
+        const { logicalDate: nowLogicalDate, nowKey, cutoffKey } = agendaClock(new Date(), tz);
 
         const scope: ParentNode = only ?? document;
         scope.querySelectorAll<HTMLElement>(".now-line").forEach((el) => el.remove());
-
-        // Sort key for "2 hours ago" on the wall clock. Subtracting on the Date
-        // wraps midnight correctly; timeSortKey then maps it into the same
-        // logical-day ordering the rows use (post-midnight sorts last). Only
-        // applied to the current logical day, so a 23:00 cutoff after midnight
-        // never reaches into a future day's evening.
-        const cutoff = new Date(now.getTime() - 2 * 60 * 60 * 1000);
-        const cutoffKey = timeSortKey(cutoff.toTimeString().slice(0, 5));
 
         const sections = only
           ? [only]
@@ -231,7 +217,14 @@ const gridCss = gridGeometryCss()
             section.hidden = true;
             return;
           }
-          if (!section.querySelector("[data-film-card]") && !packRows(section)) {
+          const isFilmDay = section.querySelector("[data-film-card]") !== null;
+          if (
+            isFilmDay
+              ? // Film cards place themselves; the day is empty when a page
+                // filter (Today) marked every card's title filtered.
+                !section.querySelector("[data-film-card] > [data-time]:not([data-filtered])")
+              : !packRows(section)
+          ) {
             // Every row filtered out: the day has nothing to show.
             section.hidden = true;
             return;

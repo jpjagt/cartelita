@@ -10,6 +10,8 @@ export interface CityConfig {
   defaultList: string;
   /** IANA time zone the city's wall-clock event times are in (calendar export). */
   timezone: string;
+  /** [lng, lat] the Today map centres on when no venue has coordinates. */
+  center: [number, number];
 }
 
 /** One option in a GridRadioButtons control. */
@@ -146,7 +148,8 @@ export type CellIconName =
   | "heart-filled"
   | "calendar"
   | "eye"
-  | "chevron";
+  | "chevron"
+  | "close";
 
 /** Where one agenda row lands (lib/event-panel.ts): its 0-based index (--ev)
     and the extra grid rows open event panels push in above it (--po). */

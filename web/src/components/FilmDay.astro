@@ -10,9 +10,12 @@ interface Props {
   /** First day of a switchable view: no breathing rows above it. syncAgenda
       re-marks it at runtime (a stale build's first day may be past). */
   first?: boolean
+  /** Heading instead of the date (Today: the films under the day's events
+      read "Film", not the date again). */
+  heading?: string
 }
 const { day, locale, genre, first = false } = Astro.props
-const heading = new Date(day.date + "T00:00:00").toLocaleDateString(localeTag(locale), {
+const heading = Astro.props.heading ?? new Date(day.date + "T00:00:00").toLocaleDateString(localeTag(locale), {
   weekday: "long", day: "numeric", month: "long",
 })
 ---

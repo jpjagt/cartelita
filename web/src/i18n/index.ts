@@ -21,6 +21,14 @@ interface Strings {
   city: string             // navbar: city selector label (aria)
   allCities: string        // city selector: back to the city picker
   eventsHidden: string     // a collapsed day's placeholder row
+  today: string            // navbar + Today page title
+  todayEmpty: string       // Today: nothing (left) today for the selection
+  viewList: string         // Today: list view
+  viewMap: string          // Today: map view
+  // Today map: venues with events today but no coordinates; {n} = count.
+  notOnMapOne: string
+  notOnMapMany: string
+  close: string            // Today map: close the venue panel (aria)
   // Share text: {title}, {when} (date[, time]) and {venue}; " (price)" is
   // appended when there is one (lib/share.ts).
   shareTemplate: string
@@ -51,6 +59,13 @@ const DICT: Record<Locale, Strings> = {
     city: "Ciutat",
     allCities: "Totes les ciutats",
     eventsHidden: "Esdeveniments amagats — clica per mostrar-los",
+    today: "Avui",
+    todayEmpty: "Avui no queda res.",
+    viewList: "Llista",
+    viewMap: "Mapa",
+    notOnMapOne: "1 espai no surt al mapa",
+    notOnMapMany: "{n} espais no surten al mapa",
+    close: "Tanca",
     shareTemplate: "{title} — {when} a {venue}",
     categories: {
       film: "Cinema",
@@ -89,6 +104,13 @@ const DICT: Record<Locale, Strings> = {
     city: "Ciudad",
     allCities: "Todas las ciudades",
     eventsHidden: "Eventos ocultos — haz clic para mostrarlos",
+    today: "Hoy",
+    todayEmpty: "Hoy ya no queda nada.",
+    viewList: "Lista",
+    viewMap: "Mapa",
+    notOnMapOne: "1 sala no aparece en el mapa",
+    notOnMapMany: "{n} salas no aparecen en el mapa",
+    close: "Cerrar",
     shareTemplate: "{title} — {when} en {venue}",
     categories: {
       film: "Cine",
@@ -127,6 +149,13 @@ const DICT: Record<Locale, Strings> = {
     city: "City",
     allCities: "All cities",
     eventsHidden: "Events hidden — click to show",
+    today: "Today",
+    todayEmpty: "Nothing left today.",
+    viewList: "List",
+    viewMap: "Map",
+    notOnMapOne: "1 venue not on the map",
+    notOnMapMany: "{n} venues not on the map",
+    close: "Close",
     shareTemplate: "{title} — {when} at {venue}",
     categories: {
       film: "Film",
@@ -165,6 +194,13 @@ const DICT: Record<Locale, Strings> = {
     city: "Քաղաք",
     allCities: "Բոլոր քաղաքները",
     eventsHidden: "Միջոցառումները թաքցված են — սեղմեք՝ ցուցադրելու համար",
+    today: "Այսօր",
+    todayEmpty: "Այսօր այլևս ոչինչ չկա։",
+    viewList: "Ցանկ",
+    viewMap: "Քարտեզ",
+    notOnMapOne: "1 վայր քարտեզում չէ",
+    notOnMapMany: "{n} վայր քարտեզում չեն",
+    close: "Փակել",
     shareTemplate: "{title} — {when}, {venue}",
     categories: {
       film: "Կինո",
@@ -203,6 +239,13 @@ const DICT: Record<Locale, Strings> = {
     city: "Город",
     allCities: "Все города",
     eventsHidden: "События скрыты — нажмите, чтобы показать",
+    today: "Сегодня",
+    todayEmpty: "На сегодня больше ничего нет.",
+    viewList: "Список",
+    viewMap: "Карта",
+    notOnMapOne: "1 площадка не на карте",
+    notOnMapMany: "Площадок не на карте: {n}",
+    close: "Закрыть",
     shareTemplate: "{title} — {when}, {venue}",
     categories: {
       film: "Кино",
@@ -241,6 +284,13 @@ const DICT: Record<Locale, Strings> = {
     city: "Stad",
     allCities: "Alle steden",
     eventsHidden: "Evenementen verborgen — klik om te tonen",
+    today: "Vandaag",
+    todayEmpty: "Vandaag niets meer.",
+    viewList: "Lijst",
+    viewMap: "Kaart",
+    notOnMapOne: "1 locatie niet op de kaart",
+    notOnMapMany: "{n} locaties niet op de kaart",
+    close: "Sluiten",
     shareTemplate: "{title} — {when} in {venue}",
     categories: {
       film: "Film",

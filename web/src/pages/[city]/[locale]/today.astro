@@ -1,0 +1,503 @@
+---
+import { getCategoryLists, getTodayAgenda } from "@/lib/queries"
+import { groupEventsByDay } from "@/lib/agenda"
+import { groupFilmDay } from "@/lib/film-agenda"
+import { CITIES, cityConfig, TODAY } from "@/lib/cities"
+import { FILM_LIST, navOrder } from "@/lib/genre-nav"
+import { addDays, cityToday, offeredGenres, TODAY_SHIP_DAYS } from "@/lib/today"
+import type { Locale } from "@/lib/types"
+import type { TodayEventMeta } from "@/types/today"
+import { t, categoryName } from "@/i18n"
+import Layout from "@/components/Layout.astro"
+import Navbar from "@/components/Navbar.astro"
+import AgendaDay from "@/components/AgendaDay.astro"
+import FilmDay from "@/components/FilmDay.astro"
+import ShareMenu from "@/components/ShareMenu.astro"
+import EventPanel from "@/components/EventPanel.astro"
+import OptionsPanel from "@/components/OptionsPanel.astro"
+import GridRadioButtons from "@/components/ui/GridRadioButtons.astro"
+import GridCheckButtons from "@/components/ui/GridCheckButtons.astro"
+import CellIcon from "@/components/ui/CellIcon.astro"
+import { displayPrice, pricePageFit } from "@/lib/price-css"
+
+export function getStaticPaths() {
+  return Object.values(CITIES).flatMap((city) =>
+    city.locales.map((locale) => ({ params: { city: city.slug, locale } })),
+  )
+}
+
+const city = Astro.params.city as string
+const locale = Astro.params.locale as Locale
+const strings = t(locale)
+const cfg = cityConfig(city)
+
+// Today, across the city's curated lists. The site is rebuilt nightly, so
+// the page ships TODAY_SHIP_DAYS logical days from the build's today (in the
+// city's zone) and the script below shows the one that is today when it
+// runs, and only what's still to come (lib/today.ts): a missed nightly build
+// still leaves a working page.
+const buildToday = cityToday(new Date(), cfg.timezone)
+const shipDates = Array.from({ length: TODAY_SHIP_DAYS }, (_, i) => addDays(buildToday, i))
+const { events, venues } = await getTodayAgenda(city, locale, buildToday, TODAY_SHIP_DAYS)
+const days = groupEventsByDay(events).filter((d) => shipDates.includes(d.date))
+// Per day: the events as rows, then the films as cards under a "Film" heading.
+const sections = days.map((d) => ({
+  date: d.date,
+  events: d.events.filter((e) => !e.isFilm),
+  films: groupFilmDay(d.date, d.events.filter((e) => e.isFilm)),
+}))
+
+// Genre filter options: the navbar's order (genres, then film); the script
+// offers those with events on the day it shows (here: the build's today).
+const lists = await getCategoryLists(city)
+const genreOrder = [
+  ...navOrder(lists.filter((l) => l.slug !== FILM_LIST)).map((l) => l.slug),
+  ...(lists.some((l) => l.slug === FILM_LIST) ? [FILM_LIST] : []),
+]
+const byId = new Map(events.map((e) => [e.id, e]))
+const todayEvents = days.find((d) => d.date === buildToday)?.events ?? []
+const offered = offeredGenres(genreOrder, todayEvents.map((e) => byId.get(e.id)?.lists ?? []))
+const genreOptions = genreOrder.map((slug) => ({ value: slug, label: categoryName(locale, slug) }))
+const hiddenGenres = offered.length > 1 ? genreOrder.filter((g) => !offered.includes(g)) : genreOrder
+
+// What the script needs per event (showtimes share an id) and per venue.
+const meta: Record<string, TodayEventMeta> = {}
+for (const e of events) {
+  meta[e.id] ??= {
+    t: e.title,
+    u: e.sourceUrl,
+    p: displayPrice(e.price, locale),
+    g: e.genre ?? "",
+    l: e.lists,
+    ed: e.endDate,
+    et: e.endTime,
+    m: e.multi,
+  }
+}
+const json = (v: unknown) => JSON.stringify(v).replace(/</g, "\\u003c")
+
+const priceFit = pricePageFit(events.map((e) => displayPrice(e.price, locale)))
+// Rows the map's height spans (cells): the map is placed on the page grid.
+---
+<Layout
+  locale={locale}
+  title={`${strings.today} — ${strings.siteTitle}`}
+  canonical={`/${city}/${locale}/${TODAY}`}
+  genre={TODAY}
+  city={city}
+  priceFit={priceFit}
+>
+  <Navbar city={city} locale={locale} activeList={TODAY} />
+  <main>
+    <div
+      data-view-root="today"
+      data-active-view="list"
+      data-today-root
+      data-agenda-timezone={cfg.timezone}
+      data-city={city}
+      data-center={JSON.stringify(cfg.center)}
+      data-genre-order={JSON.stringify(genreOrder)}
+    >
+      {/* Before the script runs, only the build's today shows (no flash of
+          tomorrow); afterwards the script decides (data-ready). */}
+      <style is:inline set:html={`[data-today-root]:not([data-ready]) section[data-date]:not([data-date="${buildToday}"]) { display: none }`} />
+      <OptionsPanel colspan={4}>
+        <GridRadioButtons
+          name="today"
+          value="list"
+          options={[
+            { value: "list", label: strings.viewList },
+            { value: "map", label: strings.viewMap },
+          ]}
+        />
+        {genreOrder.length > 0 && (
+          <GridCheckButtons
+            name="today-genres"
+            options={genreOptions}
+            hiddenValues={hiddenGenres}
+            baseRow={4}
+            genres
+          />
+        )}
+      </OptionsPanel>
+
+      <div data-view="list">
+        <div data-view-empty hidden class="gridpaper">
+          <p style="grid-row: 1" class="cell cell-truncate gc-full text-muted-foreground">
+            <span class="cell-text">{strings.todayEmpty}</span>
+          </p>
+        </div>
+        {sections.map((s, i) => (
+          <>
+            {s.events.length > 0 && (
+              <AgendaDay day={{ date: s.date, events: s.events }} locale={locale} genre={TODAY} first={i === 0} />
+            )}
+            {s.films.films.length > 0 && (
+              <FilmDay day={s.films} locale={locale} genre={FILM_LIST} heading={categoryName(locale, FILM_LIST)} />
+            )}
+          </>
+        ))}
+      </div>
+
+      <div data-view="map" hidden>
+        <div class="gridpaper today-map-grid">
+          {/* The map spans the band on whole cells (global.css .today-map);
+              the venue panel opens over it, on the same cells. */}
+          <div class="today-map" data-map>
+            <div class="today-map-canvas" data-map-canvas></div>
+            <div class="today-map-panel" data-map-panel hidden>
+              <div class="cell cell-truncate bg-muted font-medium map-panel-head">
+                <span class="cell-text" data-map-panel-name></span>
+              </div>
+              <button type="button" class="cell map-panel-close" data-map-panel-close aria-label={strings.close}
+                ><CellIcon icon="close" /></button>
+              <div class="map-panel-rows" data-map-panel-rows></div>
+            </div>
+          </div>
+          <p class="cell cell-truncate gc-full text-muted-foreground today-map-note" data-map-note hidden>
+            <span class="cell-text"></span>
+          </p>
+        </div>
+      </div>
+    </div>
+  </main>
+  <ShareMenu city={city} locale={locale} />
+  <EventPanel city={city} locale={locale} events={events} />
+  <script type="application/json" data-today-events set:html={json(meta)} />
+  <script type="application/json" data-today-venues set:html={json(venues)} />
+  <template
+    data-today-strings
+    data-empty={strings.todayEmpty}
+    data-not-on-map-one={strings.notOnMapOne}
+    data-not-on-map-many={strings.notOnMapMany}
+  ></template>
+
+  <script>
+    import { initViewSwitch } from "@/lib/view-switch"
+    import { onPage } from "@/lib/page-lifecycle"
+    import { browserStore } from "@/lib/favourites"
+    import { logicalDate } from "@/lib/agenda"
+    import { packCards } from "@/lib/masonry"
+    import { track } from "@/lib/track"
+    import {
+      effectiveSelection,
+      isRemaining,
+      mapVenues,
+      matchesGenres,
+      offeredGenres,
+      readGenreSelection,
+      TODAY_TICK_MS,
+      wallClock,
+      writeGenreSelection,
+    } from "@/lib/today"
+    import type { MapVenue, TodayPage, VisibleRow } from "@/types/today"
+    import type { GridCheckChange } from "@/types/grid-check"
+
+    // The Today page's client side. Everything about the current page lives
+    // in `page` (null on any other page: this module stays loaded after a
+    // client navigation away, inert). The minute timer and the map are torn
+    // down before every swap, so navigating away and back leaks neither.
+
+    let page: TodayPage | null = null
+
+    const ROWS = "[data-event-row], [data-film-showtime]"
+
+    function readJson<T>(selector: string, fallback: T): T {
+      try {
+        return JSON.parse(document.querySelector(selector)?.textContent ?? "") as T
+      } catch {
+        return fallback
+      }
+    }
+
+    /** Re-pack a film day's cards around their remaining showtimes (each
+        card shrinks to its visible screenings; empty cards drop out). */
+    function repackFilms(section: HTMLElement) {
+      const heights: number[] = []
+      const shown: HTMLElement[] = []
+      section.querySelectorAll<HTMLElement>("[data-film-card]").forEach((card) => {
+        let sr = 0
+        card.querySelectorAll<HTMLElement>("[data-film-showtime]").forEach((a) => {
+          if (!a.hasAttribute("data-filtered")) a.style.setProperty("--sr", String(sr++))
+        })
+        card.querySelector("h3[data-time]")?.toggleAttribute("data-filtered", sr === 0)
+        if (sr > 0) {
+          heights.push(1 + sr)
+          shown.push(card)
+        }
+      })
+      const layout = packCards(heights)
+      shown.forEach((card, i) => {
+        const p = layout.placements[i]
+        card.style.setProperty("--fcol", String(p.col3))
+        card.style.setProperty("--frow", String(p.row3))
+        card.style.setProperty("--fcol2", String(p.col2))
+        card.style.setProperty("--frow2", String(p.row2))
+        card.style.setProperty("--frow1", String(p.row1))
+      })
+      const spacer = section.querySelector<HTMLElement>(".gc-film-spacer")
+      spacer?.style.setProperty("--fmax", String(layout.rows3))
+      spacer?.style.setProperty("--fmax2", String(layout.rows2))
+      spacer?.style.setProperty("--fmax1", String(layout.rows1))
+    }
+
+    /** Apply the day, the time rule and the genre selection to every row;
+        then the empty state, the genre options and the map. */
+    function apply() {
+      const p = page
+      if (!p) return
+      const clock = wallClock(new Date(), p.tz)
+      const today = logicalDate(clock.date, clock.time)
+      const list = p.root.querySelector<HTMLElement>('[data-view="list"]')
+      if (!list) return
+      const rows = [...list.querySelectorAll<HTMLElement>(ROWS)]
+      const dayOf = (row: HTMLElement) => row.closest<HTMLElement>("section[data-date]")?.dataset.date
+      const metaOf = (row: HTMLElement) => p.events[row.dataset.id ?? ""]
+
+      // Genres on offer: those with events today (not time-filtered, so the
+      // options don't vanish one by one through the evening).
+      const todayRows = rows.filter((r) => dayOf(r) === today)
+      const offered = offeredGenres(p.order, todayRows.map((r) => metaOf(r)?.l ?? []))
+      syncGenreOptions(p, offered)
+      const selected = effectiveSelection(p.selection, offered)
+
+      const visible: VisibleRow[] = []
+      for (const row of todayRows) {
+        const meta = metaOf(row)
+        const show =
+          !!meta &&
+          matchesGenres(meta.l, selected) &&
+          isRemaining(
+            {
+              date: row.dataset.date ?? today,
+              time: row.dataset.time || null,
+              endDate: meta.ed,
+              endTime: meta.et,
+              multi: meta.m,
+            },
+            clock,
+          )
+        row.toggleAttribute("data-filtered", !show)
+        if (show) visible.push({ id: row.dataset.id ?? "", venue: row.dataset.venue ?? "", time: row.dataset.time ?? "" })
+      }
+      for (const row of rows) if (dayOf(row) !== today) row.setAttribute("data-filtered", "")
+      list.querySelectorAll<HTMLElement>("section[data-date]").forEach((s) => {
+        if (s.querySelector("[data-film-card]")) repackFilms(s)
+      })
+      window.syncAgenda?.()
+      const empty = list.querySelector<HTMLElement>("[data-view-empty]")
+      if (empty) empty.hidden = list.querySelector("section[data-date]:not([hidden])") !== null
+
+      p.lastMap = mapVenues(visible, p.events, p.venues)
+      renderMap(p)
+    }
+
+    /** Show the genre options that have events today (none when fewer than
+        two: one genre is nothing to choose between), checked as selected. */
+    function syncGenreOptions(p: TodayPage, offered: string[]) {
+      const group = p.root.querySelector<HTMLElement>("[data-grid-check]")
+      if (!group) return
+      let changed = false
+      group.querySelectorAll<HTMLElement>("[data-grid-check-option]").forEach((opt) => {
+        const value = opt.dataset.value ?? ""
+        const hide = offered.length < 2 || !offered.includes(value)
+        if (opt.hidden !== hide) {
+          opt.hidden = hide
+          changed = true
+        }
+        const on = p.selection.includes(value)
+        const input = opt.querySelector<HTMLInputElement>("input")
+        if (input) input.checked = on
+        opt.toggleAttribute("data-active", on)
+      })
+      if (changed) window.layoutGridChecks?.()
+    }
+
+    // ── Map ────────────────────────────────────────────────────────────
+
+    function renderMap(p: TodayPage) {
+      const note = p.root.querySelector<HTMLElement>("[data-map-note]")
+      const strings = document.querySelector<HTMLElement>("[data-today-strings]")?.dataset
+      if (note && strings) {
+        const n = p.lastMap.missing
+        note.hidden = n === 0 && p.lastMap.venues.length > 0
+        const text =
+          p.lastMap.venues.length === 0 && n === 0
+            ? (strings.empty ?? "")
+            : n === 1
+              ? (strings.notOnMapOne ?? "")
+              : (strings.notOnMapMany ?? "").replace("{n}", String(n))
+        const span = note.querySelector(".cell-text")
+        if (span) span.textContent = n === 0 && p.lastMap.venues.length > 0 ? "" : text
+      }
+      if (!p.map) return
+      p.map.update(p.lastMap)
+      const venue = p.lastMap.venues.find((v) => v.slug === p.selected) ?? null
+      if (p.selected && !venue) select(null)
+      else renderPanel(p, venue)
+    }
+
+    function select(slug: string | null) {
+      const p = page
+      if (!p) return
+      p.selected = slug
+      p.map?.select(slug)
+      const venue = p.lastMap.venues.find((v) => v.slug === slug) ?? null
+      renderPanel(p, venue)
+      if (venue) track("today_venue", { venue: venue.slug, events: venue.items.length })
+    }
+
+    /** The venue panel: its name, then one row per remaining event (time,
+        title linking to the event's page, price) — the agenda's row cells. */
+    function renderPanel(p: TodayPage, venue: MapVenue | null) {
+      const panel = p.root.querySelector<HTMLElement>("[data-map-panel]")
+      const rowsEl = panel?.querySelector<HTMLElement>("[data-map-panel-rows]")
+      if (!panel || !rowsEl) return
+      panel.hidden = !venue
+      if (!venue) return
+      panel.dataset.genre = venue.genre
+      panel.style.setProperty("--mp-rows", String(venue.items.length))
+      const name = panel.querySelector<HTMLElement>("[data-map-panel-name]")
+      if (name) name.textContent = venue.name
+      rowsEl.replaceChildren(
+        ...venue.items.map((item, i) => {
+          const a = document.createElement("a")
+          a.className = "map-panel-row cell-genre-hover no-underline hover:underline"
+          a.href = item.url
+          a.target = "_blank"
+          a.rel = "noopener"
+          a.dataset.mapEvent = ""
+          a.dataset.genre = item.genre
+          a.dataset.venue = venue.slug
+          a.dataset.position = String(i + 1)
+          a.style.setProperty("--mr", String(i))
+          const cell = (cls: string, text: string) => {
+            const span = document.createElement("span")
+            span.className = `cell cell-truncate ${cls}`
+            const inner = document.createElement("span")
+            inner.className = "cell-text"
+            inner.textContent = text
+            span.append(inner)
+            return span
+          }
+          a.append(
+            cell("map-panel-time text-muted-foreground", item.time),
+            cell("map-panel-title text-foreground", item.title),
+            cell("cell-right map-panel-price text-muted-foreground", item.price),
+          )
+          return a
+        }),
+      )
+      panel.removeAttribute("data-scroll")
+      // (A few px of slack: cell edge lines overhang the last row.)
+      panel.toggleAttribute("data-scroll", panel.scrollHeight > panel.clientHeight + 4)
+    }
+
+    async function ensureMap(p: TodayPage) {
+      if (p.map || p.mapLoading) {
+        p.map?.resize()
+        return
+      }
+      const container = p.root.querySelector<HTMLElement>("[data-map-canvas]")
+      if (!container) return
+      p.mapLoading = true
+      try {
+        const { createTodayMap } = await import("@/lib/today-map")
+        if (page !== p) return // navigated away meanwhile
+        const map = await createTodayMap({ container, center: p.center, onSelect: select })
+        if (page !== p) {
+          map.destroy()
+          return
+        }
+        p.map = map
+        renderMap(p)
+      } catch (err) {
+        console.error("today map:", err)
+      } finally {
+        p.mapLoading = false
+      }
+    }
+
+    function teardown() {
+      if (!page) return
+      window.clearInterval(page.timer)
+      page.map?.destroy()
+      page = null
+    }
+
+    onPage(() => {
+      teardown()
+      const root = document.querySelector<HTMLElement>("[data-today-root]")
+      if (!root) return
+      const city = root.dataset.city ?? ""
+      const p: TodayPage = {
+        root,
+        city,
+        tz: root.dataset.agendaTimezone ?? "",
+        center: readCenter(root),
+        order: parseList(root.dataset.genreOrder),
+        events: readJson("[data-today-events]", {}),
+        venues: readJson("[data-today-venues]", {}),
+        selection: readGenreSelection(browserStore(), city),
+        views: null,
+        timer: 0,
+        map: null,
+        mapLoading: false,
+        selected: null,
+        lastMap: { venues: [], missing: 0 },
+      }
+      page = p
+      apply()
+      root.setAttribute("data-ready", "")
+      p.views = initViewSwitch("today", "today-view", "list", (view) => {
+        if (view === "map" && page === p) ensureMap(p)
+        else if (view === "list") window.syncAgenda?.()
+      })
+      p.views?.show(p.views.stored())
+      p.timer = window.setInterval(apply, TODAY_TICK_MS)
+
+      root.querySelector("[data-map-panel-close]")?.addEventListener("click", () => select(null))
+      root.querySelector("[data-grid-check]")?.addEventListener("gridcheckchange", (e) => {
+        const { values, value, checked } = (e as CustomEvent<GridCheckChange>).detail
+        // Keep stored genres that aren't offered today; replace the offered ones.
+        const offeredNow = [...root.querySelectorAll<HTMLElement>("[data-grid-check-option]:not([hidden])")].map(
+          (o) => o.dataset.value ?? "",
+        )
+        p.selection = [...p.selection.filter((g) => !offeredNow.includes(g)), ...values]
+        writeGenreSelection(browserStore(), city, p.selection)
+        apply()
+        track("today_genre", { genre: value, state: checked ? "on" : "off", selected: values.length })
+      })
+    })
+
+    function parseList(raw: string | undefined): string[] {
+      try {
+        const v: unknown = JSON.parse(raw ?? "[]")
+        return Array.isArray(v) ? v.filter((s): s is string => typeof s === "string") : []
+      } catch {
+        return []
+      }
+    }
+
+    function readCenter(root: HTMLElement): [number, number] {
+      try {
+        const [lng, lat] = JSON.parse(root.dataset.center ?? "") as number[]
+        if (Number.isFinite(lng) && Number.isFinite(lat)) return [lng, lat]
+      } catch {
+        // fall through
+      }
+      return [0, 0]
+    }
+
+    // Once per session: tear the page down before any swap; re-apply when
+    // the tab comes back (timers are throttled in the background); Esc
+    // closes the venue panel.
+    document.addEventListener("astro:before-swap", teardown)
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) apply()
+    })
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && page?.selected) select(null)
+    })
+  </script>
+</Layout>

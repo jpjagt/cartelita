@@ -49,3 +49,22 @@ export function radioVars(
   });
   return out;
 }
+
+/** radioVars for the options `shown` (the others take no room): option i's
+    vars as if only the shown options were laid out, in order. Hidden
+    options get none (they're display:none). GridCheckButtons offers only
+    the genres a day has, which the client may change. */
+export function radioVarsShown(
+  ems: number[],
+  shown: boolean[],
+  opts: { baseRow: number; vertical: boolean; startOffset?: number },
+  g: GridGeometry,
+): CssDecls {
+  const idx = ems.map((_, i) => i).filter((i) => shown[i]);
+  const sub = radioVars(idx.map((i) => ems[i]), opts, g);
+  const out: CssDecls = {};
+  idx.forEach((i, j) => {
+    for (const k of ["c", "s", "r"]) out[`--r${i}${k}`] = sub[`--r${j}${k}`];
+  });
+  return out;
+}

@@ -1,0 +1,123 @@
+---
+import type { GridRadioOption } from "@/lib/types"
+import { measureText } from "@/lib/text-metrics"
+import { radioVarsShown } from "@/lib/radio-layout"
+import { gridGeometry } from "@/lib/grid-geometry"
+import { renderStepCss, stepTable } from "@/lib/step-table"
+interface Props {
+  /** Group id: data-grid-check on the group; it announces `gridcheckchange`
+      (detail: the checked values, in option order). */
+  name: string
+  options: GridRadioOption[]
+  /** Checked values at build time (the page script restores its own). */
+  value?: string[]
+  /** Values whose option is hidden at build time (a page script may show
+      them; the layout re-packs the shown ones). */
+  hiddenValues?: string[]
+  /** The host grid row the first option sits on. */
+  baseRow: number
+  /** Optional per-option data-genre (the checked square fills in it). */
+  genres?: boolean
+}
+const { name, options, value = [], hiddenValues = [], baseRow, genres = false } = Astro.props
+
+// The multi-select sibling of GridRadioButtons: the same square indicator +
+// label cells on the parent .gridpaper grid, packed by the same layout
+// (lib/radio-layout.ts), swept into a build-time step table over the
+// options shown at build time. Its script re-packs when a page shows or
+// hides options, and corrects labels the bundled font can't measure.
+const ems = options.map((o) => measureText(o.label))
+const shown = options.map((o) => !hiddenValues.includes(o.value))
+const css = renderStepCss(
+  `[data-grid-check="${name}"]`,
+  stepTable((width, narrow) =>
+    radioVarsShown(ems.map((m) => m.em), shown, { baseRow, vertical: false }, gridGeometry(width, narrow)),
+  ),
+)
+---
+<div data-grid-check={name} data-base-row={baseRow} role="group" class="grid-radio contents">
+  <style is:inline set:html={css} />
+  {options.map((opt, i) => (
+    <label
+      data-grid-check-option
+      data-grid-radio-option
+      data-value={opt.value}
+      data-active={value.includes(opt.value) ? "" : undefined}
+      hidden={!shown[i]}
+      class="grid-check-option contents cursor-pointer"
+    >
+      <input
+        type="checkbox"
+        name={name}
+        value={opt.value}
+        checked={value.includes(opt.value)}
+        class="sr-only"
+      />
+      <span
+        class="grid-radio-indicator cell"
+        aria-hidden="true"
+        data-genre={genres ? opt.value : undefined}
+        style={`grid-column: calc(var(--col-start) + var(--r${i}c)) / span 1; grid-row: var(--r${i}r)`}
+      />
+      <span
+        class="grid-radio-label cell cell-truncate text-foreground"
+        data-em={String(ems[i].em)}
+        data-measure={ems[i].covered ? undefined : ""}
+        style={`grid-column: calc(var(--col-start) + var(--r${i}c) + 1) / span var(--r${i}s); grid-row: var(--r${i}r)`}
+      >
+        <span class="cell-text">{opt.label}</span>
+      </span>
+    </label>
+  ))}
+</div>
+
+<script>
+  import { radioVarsShown } from "@/lib/radio-layout"
+  import { correctVars, liveGrid, measureEm } from "@/lib/grid-client"
+  import { onPage } from "@/lib/page-lifecycle"
+  import type { GridCheckChange } from "@/types/grid-check"
+
+  // Re-pack every check group for the options it currently shows. Writes
+  // nothing when the build-time table is already right.
+  function layoutGridChecks() {
+    const groups = document.querySelectorAll<HTMLElement>("[data-grid-check]")
+    if (!groups.length) return
+    const g = liveGrid()
+    groups.forEach((group) => {
+      const options = [...group.querySelectorAll<HTMLElement>("[data-grid-check-option]")]
+      const ems = options.map((opt) => {
+        const lbl = opt.querySelector<HTMLElement>(".grid-radio-label")
+        if (!lbl) return 0
+        return lbl.hasAttribute("data-measure")
+          ? measureEm(lbl.querySelector<HTMLElement>(".cell-text") ?? lbl)
+          : Number(lbl.dataset.em) || 0
+      })
+      const shown = options.map((opt) => !opt.hidden)
+      const baseRow = Number(group.dataset.baseRow) || 1
+      correctVars(group, radioVarsShown(ems, shown, { baseRow, vertical: false }, g))
+    })
+  }
+  // Exposed for pages that show / hide options.
+  window.layoutGridChecks = layoutGridChecks
+
+  // A checkbox toggled: mirror it into data-active (the indicator fill) and
+  // announce the group's checked values. Delegated, so it covers every page.
+  document.addEventListener("change", (e) => {
+    const input = e.target as HTMLInputElement | null
+    if (!input?.matches?.('[data-grid-check] input[type="checkbox"]')) return
+    const group = input.closest<HTMLElement>("[data-grid-check]")
+    input.closest<HTMLElement>("[data-grid-check-option]")?.toggleAttribute("data-active", input.checked)
+    if (!group) return
+    const values = [...group.querySelectorAll<HTMLInputElement>('input[type="checkbox"]')]
+      .filter((i) => i.checked)
+      .map((i) => i.value)
+    const detail: GridCheckChange = { values, value: input.value, checked: input.checked }
+    group.dispatchEvent(new CustomEvent("gridcheckchange", { detail, bubbles: true }))
+  })
+
+  window.addEventListener("gridsync", layoutGridChecks)
+  onPage(() => {
+    layoutGridChecks()
+    if (document.querySelector("[data-grid-check] [data-measure]")) document.fonts?.ready.then(layoutGridChecks)
+  })
+</script>

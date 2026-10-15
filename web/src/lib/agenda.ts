@@ -1,7 +1,7 @@
 import type { AgendaEvent, AgendaDay } from "@/lib/types";
 
 /** Events 00:00–04:59 belong to the previous calendar day (late night of that evening). */
-function logicalDate(startDate: string, startTime: string | null): string {
+export function logicalDate(startDate: string, startTime: string | null): string {
   if (startTime && startTime < "05:00") {
     const [y, m, d] = startDate.split("-").map(Number);
     return new Date(Date.UTC(y, m - 1, d - 1)).toISOString().slice(0, 10);

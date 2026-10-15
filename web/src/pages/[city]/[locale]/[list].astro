@@ -1,6 +1,6 @@
 ---
 import { getCategoryLists } from "@/lib/queries"
-import { CITIES } from "@/lib/cities"
+import { CITIES, RESERVED_LIST_SLUGS } from "@/lib/cities"
 import type { Locale } from "@/lib/types"
 import ListView from "@/layouts/ListView.astro"
 
@@ -10,6 +10,10 @@ export async function getStaticPaths() {
     const lists = await getCategoryLists(city.slug)
     for (const locale of city.locales) {
       for (const l of lists) {
+        // My list and Today live at /:city/:locale/<slug> too.
+        if (RESERVED_LIST_SLUGS.includes(l.slug)) {
+          throw new Error(`list slug ${JSON.stringify(l.slug)} in ${city.slug} collides with a page`)
+        }
         paths.push({ params: { city: city.slug, locale, list: l.slug } })
       }
     }

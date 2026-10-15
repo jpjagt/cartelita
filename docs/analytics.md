@@ -14,7 +14,7 @@ venues, use My list, and how far ahead they look.
 | `web/src/lib/analytics.ts` | Pure helpers: logical today, day offset, buckets, referrer kind, path → city/locale/list, navigation → event. Unit-tested in `web/tests/analytics.test.ts`. |
 | `web/src/lib/track.ts` | Browser side: `track(name, data)` (guarded — a no-op when Umami is blocked or not loaded), the page context, an event row's properties. |
 | `web/src/components/Analytics.astro` | Site-wide listeners (in `Layout.astro`): `landing`, navigation events, `event_open`, view switches, `scroll_depth`. |
-| `EventPanel`, `ShareMenu`, `FavouriteToggle`, `VenueDirectory`, `Layout` (show earlier, day toggles) | Component events, one `track(...)` call where the action happens. |
+| `EventPanel`, `ShareMenu`, `FavouriteToggle`, `VenueDirectory`, `Layout` (show earlier, day toggles), the Today page (genre filter, map markers) | Component events, one `track(...)` call where the action happens. |
 
 ### Page views (unchanged, not sent by us)
 
@@ -46,8 +46,8 @@ which carry their own from/to):
 | --- | --- |
 | `city` | `barcelona`, `amsterdam`, … (`""` on the bare `/` city picker) |
 | `locale` | `ca`, `es`, `en`, `nl`, `hy`, `ru` |
-| `list` | the genre tab (`jazz`, `club`, `film` …) or `my-list` (`""` on `/`) |
-| `view` | only on pages with a view switch: film `films`/`time`; My list `events`/`films`/`venues` |
+| `list` | the genre tab (`jazz`, `club`, `film` …), `my-list` or `today` (`""` on `/`) |
+| `view` | only on pages with a view switch: film `films`/`time`; My list `events`/`films`/`venues`; Today `list`/`map` |
 
 Per-event properties (on `event_open`, `event_panel`, `share`, `calendar_add`,
 `share_menu_open`):
@@ -69,7 +69,7 @@ No titles, descriptions, prices or other free text are ever sent.
 | `nav_tab` | `from_list`, `to_list`, `city`, `locale`, `via` | client navigation that changes the list | Which tabs do people move between, and how (`via`)? |
 | `locale_switch` | `from`, `to`, `city`, `list`, `via` | navigation that changes the locale | Who switches language, from which to which? |
 | `city_switch` | `from` / `to` (`none` = the `/` picker, e.g. "All cities"), `list`, `via` | navigation that changes the city | Which cities do people pick / hop between? |
-| `event_open` | `surface`: `row` (title link, wide layout) / `panel` (View in the narrow panel) / `film` (film card showtime); + per-event | outbound click (incl. middle-click) to the venue/ticket page | **The conversion.** Which lists, venues, days ahead, positions get opened? |
+| `event_open` | `surface`: `row` (title link, wide layout) / `panel` (View in the narrow panel) / `film` (film card showtime) / `map` (a row in the Today map's venue panel; `day_offset` 0, `position` within the venue); + per-event | outbound click (incl. middle-click) to the venue/ticket page | **The conversion.** Which lists, venues, days ahead, positions get opened? |
 | `event_panel` | `action`: `open`/`close`; + per-event | narrow layout (<760px) row tap | Do mobile visitors open the panel, and then View/Share? |
 | `share_menu_open` | per-event | wide layout share icon | Share menu discovery on desktop |
 | `share` | `surface`: `menu`/`panel`; `result`: `shared` (OS sheet) / `dismissed` (sheet closed) / `copied` (clipboard fallback); + per-event | Share action | Do people share, natively or by copying? |
@@ -77,6 +77,9 @@ No titles, descriptions, prices or other free text are ever sent.
 | `favourite` | `venue`, `state`: `on`/`off`, `surface`: `row` (wide event row) / `panel` (narrow panel heart) / `directory` (My list venue directory), `favourites`: count after the toggle | heart toggled | Which venues get favourited, from where; how big do lists get? |
 | `my_list_view` | `view`: `events`/`films`/`venues`, `favourites` (bucket) | My list view switch by the visitor | Which My list view do people use? |
 | `film_view` | `view`: `films` / `time` | film view switch | By film vs by time |
+| `today_view` | `view`: `list` / `map` | Today view switch by the visitor | Is the map used? |
+| `today_genre` | `genre` (the toggled genre), `state`: `on`/`off`, `selected`: genres selected after the toggle (0 = all shown) | a Today genre checkbox toggled | Which genres do people narrow "today" to, and how many at once? |
+| `today_venue` | `venue`, `events`: its events still to come today | a Today map marker opened (its venue panel) | Which venues get looked at on the map; does it lead to `event_open` `surface=map`? |
 | `show_earlier` | `hidden`: number of screenings revealed | film time view "show earlier screenings" | Is the early-hide in the way? |
 | `directory_card` | `category`, `state`: `collapsed`/`expanded` | My list venue directory card title | Directory card collapse use |
 | `day_toggle` | `state`: `collapsed`/`expanded`, `via`: `header`/`note` (the "events hidden" row), `day_offset` | a day header toggled | Do people collapse days (and which: today?) |

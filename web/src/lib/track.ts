@@ -58,13 +58,21 @@ export function dayOffsetOf(el: Element): number | undefined {
   return date ? dayOffset(date, logicalToday(new Date())) : undefined;
 }
 
-/** An event row's (or film showtime's) properties: its category, venue, day
+/** An event row's (film showtime's, Today map panel row's) properties: its category, venue, day
     offset and 1-based position among the day's visible rows (film cards for a
     showtime). No titles: venue slugs and genres only. */
 export function eventProps(el: Element): AnalyticsData {
   const data: AnalyticsData = {};
-  const row = el.closest<HTMLElement>("[data-event-row], [data-film-showtime]");
+  const row = el.closest<HTMLElement>("[data-event-row], [data-film-showtime], [data-map-event]");
   if (!row) return data;
+  if (row.matches("[data-map-event]")) {
+    // A Today map panel row: today, its position in the venue's list.
+    if (row.dataset.genre) data.category = row.dataset.genre;
+    if (row.dataset.venue) data.venue = row.dataset.venue;
+    data.day_offset = 0;
+    if (row.dataset.position) data.position = Number(row.dataset.position);
+    return data;
+  }
   const category = row.dataset.genre;
   if (category) data.category = category;
   if (row.dataset.venue) data.venue = row.dataset.venue;

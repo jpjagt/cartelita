@@ -7,6 +7,9 @@ interface Window {
   /** Re-run the time-aware agenda pass (row packing, now-dots/lines;
       Layout.astro) — for every day, or just `section`. */
   syncAgenda?: (section?: HTMLElement) => void
+  /** Re-pack every GridCheckButtons group for the options it now shows
+      (ui/GridCheckButtons.astro). */
+  layoutGridChecks?: () => void
   /** Umami's tracker (Layout.astro loads it deferred; absent when blocked).
       Only called through lib/track.ts. */
   umami?: {

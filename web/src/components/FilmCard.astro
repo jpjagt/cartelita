@@ -37,6 +37,8 @@ const priceOf = (price: string | null) =>
       data-time={s.startTime ?? ""}
       data-genre={genre}
       data-film-showtime
+      data-id={s.id}
+      data-date={s.startDate}
       data-venue={s.venueSlug}
       href={s.sourceUrl}
       target="_blank"

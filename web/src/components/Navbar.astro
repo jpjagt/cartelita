@@ -1,6 +1,6 @@
 ---
 import { getCategoryLists } from "@/lib/queries"
-import { CITIES, cityConfig, cityHref, MY_LIST, PICK_PARAM } from "@/lib/cities"
+import { CITIES, cityConfig, cityHref, MY_LIST, PICK_PARAM, TODAY } from "@/lib/cities"
 import { FILM_LIST, navOrder, tabbableCount, topLevelCount } from "@/lib/genre-nav"
 import type { Locale, NavModel } from "@/lib/types"
 import { t, categoryName } from "@/i18n"
@@ -22,8 +22,8 @@ const cityCfg = cityConfig(city)
 const LOCALES = cityCfg.locales // the locale switcher offers the CITY's locales
 
 // Genre tabs: the top-level genres busiest first, then the always-More ones
-// (lib/genre-nav.ts navOrder, TOP_LEVEL_GENRES); Film and My list are set
-// apart after them. Every genre renders both as a tab and as a More entry;
+// (lib/genre-nav.ts navOrder, TOP_LEVEL_GENRES); Today, Film and My list are
+// set apart after them. Every genre renders both as a tab and as a More entry;
 // the layout shows one of the two per width (display vars below).
 const lists = await getCategoryLists(city)
 // A genre with nothing upcoming in the nav window gets no tab or More entry
@@ -33,6 +33,7 @@ const genreLists = navOrder(
 )
 const genres = genreLists.map((l) => ({ slug: l.slug, label: categoryName(locale, l.slug) }))
 const fixed = [
+  { slug: TODAY, label: strings.today },
   ...(lists.some((l) => l.slug === FILM_LIST)
     ? [{ slug: FILM_LIST, label: categoryName(locale, FILM_LIST) }]
     : []),
@@ -159,7 +160,7 @@ const tabClass = (slug: string) =>
     </div>
   )}
 
-  {/* Film · My list, set apart at the end of the last tab row. */}
+  {/* Today · Film · My list, set apart at the end of the last tab row. */}
   {fixed.map((l, j) => (
     <a
       data-genre={l.slug}

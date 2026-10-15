@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { layoutRadios, radioVars } from "@/lib/radio-layout";
+import { layoutRadios, radioVars, radioVarsShown } from "@/lib/radio-layout";
 import { gridGeometry } from "@/lib/grid-geometry";
 
 describe("layoutRadios", () => {
@@ -47,5 +47,18 @@ describe("radioVars", () => {
     const v = radioVars([5, 5], { baseRow: 2, vertical: false, startOffset: 8 }, g);
     // Only 8 cells left: the second option wraps.
     expect(v["--r1r"]).toBe("3");
+  });
+});
+
+describe("radioVarsShown", () => {
+  it("lays out only the shown options, keeping their own indices", () => {
+    const g = gridGeometry(1300, false);
+    const opts = { baseRow: 4, vertical: false };
+    const shown = radioVarsShown([2, 3, 4], [true, false, true], opts, g);
+    const all = radioVars([2, 4], opts, g);
+    expect(shown["--r0c"]).toBe(all["--r0c"]);
+    expect(shown["--r2c"]).toBe(all["--r1c"]);
+    expect(shown["--r2r"]).toBe("4");
+    expect(shown["--r1c"]).toBeUndefined();
   });
 });

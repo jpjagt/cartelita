@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { cityConfig, cityHref, MY_LIST } from "@/lib/cities";
+import { cityConfig, cityHref, MY_LIST, TODAY } from "@/lib/cities";
 
 describe("cityHref", () => {
   const ams = cityConfig("amsterdam");
@@ -19,5 +19,9 @@ describe("cityHref", () => {
 
   it("keeps My list everywhere", () => {
     expect(cityHref(bcn, "en", MY_LIST, [])).toBe("/barcelona/en/my-list");
+  });
+
+  it("keeps Today everywhere", () => {
+    expect(cityHref(ams, "es", TODAY, [])).toBe("/amsterdam/nl/today");
   });
 });

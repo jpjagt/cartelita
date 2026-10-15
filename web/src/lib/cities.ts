@@ -13,6 +13,7 @@ export const CITIES: Record<string, CityConfig> = {
     defaultLocale: "ca",
     defaultList: "jazz",
     timezone: "Europe/Madrid",
+    center: [2.1734, 41.3851],
   },
   yerevan: {
     slug: "yerevan",
@@ -21,6 +22,7 @@ export const CITIES: Record<string, CityConfig> = {
     defaultLocale: "hy",
     defaultList: "jazz",
     timezone: "Asia/Yerevan",
+    center: [44.5152, 40.1872],
   },
   amsterdam: {
     slug: "amsterdam",
@@ -29,6 +31,7 @@ export const CITIES: Record<string, CityConfig> = {
     defaultLocale: "nl",
     defaultList: "jazz",
     timezone: "Europe/Amsterdam",
+    center: [4.9041, 52.3676],
   },
   rotterdam: {
     slug: "rotterdam",
@@ -37,6 +40,7 @@ export const CITIES: Record<string, CityConfig> = {
     defaultLocale: "nl",
     defaultList: "jazz",
     timezone: "Europe/Amsterdam",
+    center: [4.4777, 51.9244],
   },
   utrecht: {
     slug: "utrecht",
@@ -47,6 +51,7 @@ export const CITIES: Record<string, CityConfig> = {
     // De Helling, EKKO, dB's).
     defaultList: "pop",
     timezone: "Europe/Amsterdam",
+    center: [5.1214, 52.0907],
   },
   asuncion: {
     slug: "asuncion",
@@ -57,12 +62,21 @@ export const CITIES: Record<string, CityConfig> = {
     defaultList: "film",
     // Paraguay has been on permanent UTC−3 (no DST) since October 2024.
     timezone: "America/Asuncion",
+    center: [-57.5759, -25.2637],
   },
 };
 
 // Slug of the per-visitor favourites page, /:city/:locale/my-list. Lives beside
 // the category list routes, so no cartelera list may use this slug.
 export const MY_LIST = "my-list";
+
+// Slug of the city's Today page, /:city/:locale/today (lib/today.ts). Same
+// rule: no cartelera list may use it.
+export const TODAY = "today";
+
+/** Page slugs living beside the list routes; a list with one of these slugs
+    would collide with the page (the list route refuses to build it). */
+export const RESERVED_LIST_SLUGS: readonly string[] = [MY_LIST, TODAY];
 
 export const CITY_SLUGS = Object.keys(CITIES);
 
@@ -74,11 +88,12 @@ export function cityConfig(slug: string): CityConfig {
 
 /** Where the city selector sends a visitor reading `list` in `locale`:
     `target` in the same locale when it serves it (else its default locale),
-    on the same list when it has one by that slug (My list always exists),
+    on the same list when it has one by that slug (My list and Today always
+    exist),
     else its default list. `targetLists` are the target city's list slugs. */
 export function cityHref(target: CityConfig, locale: Locale, list: string, targetLists: string[]): string {
   const lc = target.locales.includes(locale) ? locale : target.defaultLocale;
-  const slug = list === MY_LIST || targetLists.includes(list) ? list : target.defaultList;
+  const slug = RESERVED_LIST_SLUGS.includes(list) || targetLists.includes(list) ? list : target.defaultList;
   return `/${target.slug}/${lc}/${slug}`;
 }
 

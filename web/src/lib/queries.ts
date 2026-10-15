@@ -8,6 +8,7 @@ import type {
   Locale,
   VenueGroup,
 } from "@/lib/types"
+import type { TodayEvent, TodayVenue } from "@/types/today"
 
 interface EventRow {
   id: number
@@ -194,6 +195,77 @@ export async function getCityEvents(
     genre: tint(r.list_slugs),
     isFilm: r.list_slugs.includes(FILM_LIST),
   }))
+}
+
+interface TodayEventRow extends CityEventRow {
+  end_date: Date | string | null
+  end_time: string | null
+  venue_lat: number | null
+  venue_lng: number | null
+}
+
+/** The Today page's agenda: every curated event in the city (the same rule
+    as getCityEvents; each event once, with all its lists) whose logical day
+    falls in [from, from + days) — the query takes a day either side, the
+    caller groups by logical day — plus its end and its venue's coordinates.
+    `from` is the city's logical today at build time (lib/today.ts). */
+export async function getTodayAgenda(
+  citySlug: string,
+  locale: Locale,
+  from: string,
+  days: number,
+): Promise<{ events: TodayEvent[]; venues: Record<string, TodayVenue> }> {
+  const rows = await sql<TodayEventRow[]>`
+    SELECT e.id, e.start_date, e.start_time, e.start_times, e.recurrence_hint,
+           e.end_date, e.end_time,
+           v.slug AS venue_slug, v.name AS venue_name, v.lat AS venue_lat, v.lng AS venue_lng,
+           e.price, e.language,
+           COALESCE(t.title, e.title)              AS title,
+           COALESCE(t.description, e.description)  AS description,
+           COALESCE(t.source_url, e.source_url)    AS source_url,
+           array_agg(DISTINCT l.slug)              AS list_slugs
+    FROM list l
+    JOIN city c ON c.id = l.city_id
+    JOIN list_venue lv ON lv.list_id = l.id
+    JOIN venue v ON v.id = lv.venue_id
+    JOIN event e ON e.venue_id = v.id
+      AND e.start_date >= ${from}::date
+      AND e.start_date <= ${from}::date + ${days}::int
+      AND e.hidden_at IS NULL
+    LEFT JOIN event_translation t ON t.event_id = e.id AND t.lang = ${locale}
+    WHERE c.slug = ${citySlug}
+      AND l.author = 'cartelera'
+      AND (
+        lv.whitelist_category_id IS NULL
+        OR EXISTS (
+          SELECT 1 FROM event_category ec
+          WHERE ec.event_id = e.id AND ec.category_id = lv.whitelist_category_id
+        )
+      )
+    GROUP BY e.id, v.slug, v.name, v.lat, v.lng, t.title, t.description, t.source_url
+    ORDER BY e.start_date, e.start_time NULLS FIRST, e.id`
+
+  const order = (await getCategoryLists(citySlug)).map((l) => l.slug)
+  const tint = (listSlugs: string[]) =>
+    order.find((s) => listSlugs.includes(s)) ?? [...listSlugs].sort()[0]
+  const venues: Record<string, TodayVenue> = {}
+  for (const r of rows) {
+    venues[r.venue_slug] = {
+      n: r.venue_name,
+      lat: r.venue_lat === null ? null : Number(r.venue_lat),
+      lng: r.venue_lng === null ? null : Number(r.venue_lng),
+    }
+  }
+  const events = expandShowtimes(rows, (r, base) => ({
+    ...base,
+    genre: tint(r.list_slugs),
+    isFilm: r.list_slugs.includes(FILM_LIST),
+    lists: [...r.list_slugs].sort(),
+    endDate: r.end_date === null ? null : toDateStr(r.end_date),
+    endTime: r.end_time ? String(r.end_time).slice(0, 5) : null,
+    multi: (r.start_times?.length ?? 0) > 1,
+  }))
+  return { events, venues }
 }
 
 export async function getVenueDirectory(citySlug: string): Promise<VenueGroup[]> {

@@ -1133,6 +1133,210 @@ section[data-collapsed] > .gc-film-spacer {
   }
 }
 
+/* ── Today map (pages/[city]/[locale]/today.astro; lib/today-map.ts) ─────
+     The map spans the content band on whole cells, starting just inside its
+     top/left gridlines so the graph paper frames it; the next cells' lines
+     draw its right and bottom edge. --map-rows cells tall. The venue panel
+     opens over it as a little grid of the page's own cells (texture and all)
+     in a dropdown's 2px frame: desktop one cell in from the map's top-left,
+     narrow as a sheet along its bottom. Markers are single cells. */
+.today-map-grid {
+  --map-rows: 18;
+}
+.today-map {
+  position: relative;
+  grid-column: var(--c-time) / var(--c-end);
+  grid-row: 1 / span var(--map-rows);
+  margin: 2px 0 0 2px;
+  background: var(--muted);
+}
+.today-map-canvas {
+  position: absolute;
+  inset: 0;
+}
+.today-map-note {
+  grid-row: calc(var(--map-rows) + 1);
+}
+/* One blank row under the map (and its note). */
+.today-map-grid::after {
+  content: "";
+  grid-column: var(--c-time) / var(--c-end);
+  grid-row: calc(var(--map-rows) + 2);
+}
+
+.map-marker {
+  appearance: none;
+  box-sizing: border-box;
+  width: calc(var(--cell) - 4px);
+  height: calc(var(--cell) - 4px);
+  padding: 0;
+  margin: 0;
+  border: 2px solid var(--foreground);
+  background: var(--background);
+  color: var(--foreground);
+  font-family: "Helvetica Neue", Helvetica, "TeX Gyre Heros", Arial, sans-serif;
+  font-size: calc(var(--font-size) * 0.85);
+  font-weight: 500;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.map-marker:hover,
+.map-marker:focus-visible,
+.map-marker[data-active] {
+  background: var(--genre-primary);
+  border-color: var(--genre-primary);
+  color: var(--genre-text);
+  outline: none;
+}
+.map-marker[data-active] {
+  z-index: 2;
+  box-shadow: 0 0 0 2px var(--background);
+}
+
+.today-map-panel {
+  position: absolute;
+  z-index: 3;
+  box-sizing: content-box;
+  left: calc(var(--cell) - 2px);
+  top: calc(var(--cell) - 2px);
+  width: calc(var(--cell) * 18);
+  max-width: calc(100% - var(--cell) * 2);
+  padding: 0 2px 2px 0;
+  max-height: calc(var(--cell) * (var(--map-rows) - 2));
+  /* A scroll container only when the venue's list is longer than that (the
+     page script sets data-scroll): an always-on one over the WebGL canvas
+     left a stray painted block in Chromium. */
+  overflow: visible;
+  display: grid;
+  grid-template-columns: calc(var(--cell) * 2) minmax(0, 1fr) calc(var(--cell) * var(--price-cells, 3));
+  grid-template-rows: var(--cell);
+  grid-auto-rows: var(--cell);
+  background-color: var(--background);
+  background-image:
+    linear-gradient(to right, var(--grid-line) 2px, transparent 2px),
+    linear-gradient(to bottom, var(--grid-line) 2px, transparent 2px);
+  background-size: var(--cell) var(--cell);
+  background-attachment: local;
+  box-shadow: inset 0 0 0 2px var(--muted-foreground);
+  font-size: var(--font-size);
+}
+.today-map-panel[data-scroll] {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.today-map-panel[hidden] {
+  display: none;
+}
+.map-panel-head {
+  grid-column: 1 / -1;
+  grid-row: 1;
+  padding-right: calc(var(--cell) + 3px);
+  --cell-top: var(--muted-foreground);
+  --cell-left: var(--muted-foreground);
+}
+.map-panel-close {
+  grid-column: 3;
+  grid-row: 1;
+  justify-self: end;
+  z-index: 1;
+  width: var(--cell);
+  appearance: none;
+  border: 0;
+  margin: 0;
+  background: transparent;
+  color: var(--muted-foreground);
+  cursor: pointer;
+}
+.map-panel-close:hover,
+.map-panel-close:focus-visible {
+  color: var(--foreground);
+}
+.map-panel-close:focus-visible {
+  outline: 2px solid var(--genre-primary);
+  outline-offset: -2px;
+}
+.map-panel-rows {
+  display: contents;
+}
+.map-panel-row {
+  grid-column: 1 / -1;
+  grid-row: calc(2 + var(--mr));
+  display: grid;
+  grid-template-columns: subgrid;
+  min-width: 0;
+}
+.map-panel-row:focus-visible {
+  outline: 2px solid var(--genre-primary);
+  outline-offset: -2px;
+}
+@media (hover: hover) {
+  .map-panel-row:hover .map-panel-time {
+    color: inherit;
+  }
+}
+
+/* MapLibre's controls as cells: square, flat, framed like the dropdowns. */
+.today-map .maplibregl-ctrl-top-right .maplibregl-ctrl {
+  margin: calc(var(--cell) - 2px) calc(var(--cell) - 2px) 0 0;
+}
+.today-map .maplibregl-ctrl-group {
+  border-radius: 0;
+  box-shadow: inset 0 0 0 2px var(--muted-foreground);
+  background: var(--background);
+  padding: 2px;
+}
+.today-map .maplibregl-ctrl-group button {
+  width: calc(var(--cell) - 2px);
+  height: calc(var(--cell) - 2px);
+  border-radius: 0;
+}
+.today-map .maplibregl-ctrl-group button + button {
+  border-top: 2px solid var(--muted);
+}
+.today-map .maplibregl-ctrl button:not(:disabled):hover {
+  background-color: var(--muted);
+}
+.dark .today-map .maplibregl-ctrl button .maplibregl-ctrl-icon {
+  filter: invert(1);
+}
+.today-map .maplibregl-ctrl-attrib {
+  border-radius: 0;
+  background-color: var(--background);
+  color: var(--muted-foreground);
+  font-family: "Helvetica Neue", Helvetica, "TeX Gyre Heros", Arial, sans-serif;
+}
+.today-map .maplibregl-ctrl-attrib a {
+  color: inherit;
+}
+.today-map .maplibregl-ctrl-attrib.maplibregl-compact {
+  min-height: 0;
+}
+.dark .today-map .maplibregl-ctrl-attrib-button {
+  filter: invert(1);
+}
+
+@media (max-width: 759.98px) {
+  .today-map-grid {
+    --map-rows: 20;
+  }
+  .today-map-panel {
+    top: auto;
+    left: -2px;
+    right: 0;
+    bottom: -2px;
+    width: auto;
+    max-width: none;
+    max-height: calc(var(--cell) * 8);
+    grid-template-columns: calc(var(--cell) * 2) minmax(0, 1fr) calc(var(--cell) * 3);
+  }
+  .today-map .maplibregl-ctrl-top-right .maplibregl-ctrl {
+    margin: calc(var(--cell) - 2px) calc(var(--cell) - 2px) 0 0;
+  }
+}
+
 /* Faux isometric extrusion. The ::before is the extruded block behind the
      cell, offset 20% toward bottom-right. Two-tone walls via conic-gradient:
      top wall = --wall-top, left wall = --wall-left. Only opacity + transform
