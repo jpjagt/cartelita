@@ -3,7 +3,7 @@ import datetime as dt
 from typing import Any
 from sqlalchemy import (
     Text, Date, Time, DateTime, ForeignKey, Table, Column, UniqueConstraint, func,
-    Integer, Boolean,
+    Integer, Boolean, Float,
 )
 from sqlalchemy.dialects.postgresql import ARRAY, JSONB
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
@@ -49,6 +49,10 @@ class Venue(Base):
     address: Mapped[str | None] = mapped_column(Text)
     site_url: Mapped[str | None] = mapped_column(Text)
     instagram_url: Mapped[str | None] = mapped_column(Text)
+    # Coordinates for the Today map (migration 0008); NULL = unknown.
+    lat: Mapped[float | None] = mapped_column(Float)
+    lng: Mapped[float | None] = mapped_column(Float)
+    geocoded_at: Mapped[dt.datetime | None] = mapped_column(DateTime(timezone=True))
     # The source that created this venue at run time (an opt-out aggregator,
     # see cartelera.discovery); NULL for venues defined in code.
     discovered_by: Mapped[str | None] = mapped_column(Text)
