@@ -686,12 +686,27 @@ def discover_venues(
     return venues
 
 
+# Explicit map coordinates for override venues the geocoder misses or places
+# wrong (cartelera.geocode): slug -> (lat, lng).
+COORDINATES: dict[str, tuple[float, float]] = {
+    # Diemen, just outside Watergraafsmeer; no street address (Europa Nostra)
+    "schuilkerk-de-hoop": (52.33878, 4.95958),
+    # Seinwezen, Kinderhuissingel 1, Haarlem — the only venue of that name (OSM)
+    "seinwezen": (52.38760, 4.62691),
+    # NDSM wharf, T.T. Neveritaweg 55 (OSM has no number there)
+    "treehouse-ndsm": (52.40123, 4.89564),
+}
+
+
 def _venue_definition(slug: str, name: str, address: str | None, cats: list[str]) -> VenueDefinition:
+    lat, lng = COORDINATES.get(slug, (None, None))
     return VenueDefinition(
         slug=slug,
         name=name,
         city_slug=CITY_SLUG,
         address=address,
+        lat=lat,
+        lng=lng,
         category_slugs=cats,
         list_memberships=[ListMembership(list_slug=c, whitelist_category_slug=c) for c in cats],
     )

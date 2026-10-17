@@ -56,13 +56,16 @@ def _key(name: str) -> str:
     return " ".join(name.split()).casefold()
 
 
-def _venue(slug: str, name: str, address: str | None, site_url: str | None) -> VenueDefinition:
+def _venue(slug: str, name: str, address: str | None, site_url: str | None,
+           lat: float | None = None, lng: float | None = None) -> VenueDefinition:
     return VenueDefinition(
         slug=slug,
         name=name,
         city_slug="rotterdam",
         address=address,
         site_url=site_url,
+        lat=lat,
+        lng=lng,
         category_slugs=["jazz"],
         list_memberships=[ListMembership(list_slug="jazz")],
     )
@@ -76,11 +79,13 @@ VENUES: list[VenueDefinition] = [
     _venue("batavierhuis", "Batavierhuis", "Pieter de Hoochweg 108, Rotterdam", "https://batavierhuis.nl"),
     _venue("de-fruitvis", "De Fruitvis", "Marconistraat 43, Rotterdam", "https://jazzindefruitvis.nl"),
     _venue("grounds", "Grounds", "Pieter de Hoochweg 125, Rotterdam", "https://www.grounds.nu"),
-    _venue("heerenhuys", "Heerenhuys", "Baden Powellaan 12, Rotterdam", "https://hetparkinrotterdam.nl"),
+    _venue("heerenhuys", "Heerenhuys", "Baden Powelllaan 12, Rotterdam", "https://hetparkinrotterdam.nl",
+           51.90678, 4.46846),  # the pavilion in Het Park (OSM: "Dudok in Het Park")
     _venue("de-machinist", "De Machinist", "Willem Buytewechstraat 45, Rotterdam", None),
     _venue("het-witte-paard", "Het Witte Paard", "Groenezoom 245, Rotterdam", "https://hetwittepaardrotterdam.nl"),
     _venue("hillegondakerk", "Hillegondakerk", None, None),
-    _venue("jazz-in-crooswijk", "Jazz in Crooswijk (Nivon)", None, None),
+    _venue("jazz-in-crooswijk", "Jazz in Crooswijk (Nivon)", "Dirk Smitsstraat 76, Rotterdam", None,
+           51.92857, 4.48592),  # the Nivon house in Crooswijk (OSM)
 ]
 
 # Location names as jazz010 spells them -> venue slug.

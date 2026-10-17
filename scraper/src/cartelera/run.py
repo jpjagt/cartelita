@@ -7,7 +7,7 @@ from collections.abc import Iterable
 from dataclasses import dataclass, field
 from sqlalchemy import select, or_
 from sqlalchemy.orm import Session
-from cartelera import health
+from cartelera import geocode, health
 from cartelera.github import IssueTracker, make_tracker
 from cartelera import health_ops
 from cartelera.health_ops import sync_issue, sync_degraded_venues, module_of
@@ -426,6 +426,30 @@ def _report(results: list[ScrapeResult]) -> None:
                       f"{c['events']} events")
 
 
+# Venues `cartelera run` geocodes afterwards, at most: new (discovered or
+# freshly defined) venues get coordinates the same night, and a backlog
+# (e.g. a first deploy) drains over several nights instead of stretching the
+# run. ~3 Nominatim requests a venue at 1/s → a few minutes at most.
+GEOCODE_AFTER_RUN_MAX = 50
+
+
+def _geocode_after_run(session: Session) -> None:
+    """Geocode pending venues after a run — bounded and non-fatal: a failure
+    is logged and never affects the run's exit code or health verdicts."""
+    try:
+        report = geocode.geocode_venues(session, max_venues=GEOCODE_AFTER_RUN_MAX)
+    except Exception:  # noqa: BLE001 - geocoding must never fail the run
+        session.rollback()
+        logger.exception("geocoding venues after the run failed")
+        return
+    if report.hits or report.misses:
+        left = f", {report.skipped} left for the next run" if report.skipped else ""
+        print(f"[geocode] {len(report.hits)} venue(s) located, {len(report.misses)} "
+              f"not found{left}")
+        for city, slug, name in report.misses:
+            print(f"         - {city}/{slug}: {name}")
+
+
 def _dry_run(module_name: str) -> int:
     """Run a single scraper standalone — no DB, no seed, no upsert.
 
@@ -497,12 +521,13 @@ def main() -> int:
     args = sys.argv[1:]
     cmd = args[0] if args else "help"
 
-    if cmd not in {"migrate", "seed", "run", "dry-run", "health"}:
+    if cmd not in {"migrate", "seed", "run", "dry-run", "health", "geocode"}:
         print(
             "usage: cartelera [migrate|seed|"
             "run [all|<slug>[,<slug>...]|:<city_slug>|-c <category_slug>]|"
             "dry-run <module_name>|"
-            "health [<source>|ack <source> [<venue>]|rekey <source> [--apply]]]",
+            "health [<source>|ack <source> [<venue>]|rekey <source> [--apply]]|"
+            "geocode [--city <slug>] [--force]]",
             file=sys.stderr,
         )
         return 1
@@ -538,6 +563,8 @@ def main() -> int:
             seed_db(session)
             print("seeded")
             return 0
+        if cmd == "geocode":
+            return geocode.main(session, args[1:])
         if cmd == "health":
             load_all()
             return health_ops.main(session, args[1:], make_tracker())
@@ -549,6 +576,7 @@ def main() -> int:
         tracker = make_tracker()
         results = [run_one(session, slug, tracker=tracker) for slug in slugs]
         _report(results)
+        _geocode_after_run(session)
         # Non-zero when any source's data could not be written (broken /
         # site_down). Degraded alone exits 0: its data was written and its
         # GitHub issue is the alert.

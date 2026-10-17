@@ -74,6 +74,12 @@ def _ensure_membership(
         session.add(ListVenue(list_id=list_id, venue_id=venue_id, whitelist_category_id=whitelist_category_id))
 
 
+def _forget_coordinates(venue: Venue) -> None:
+    """Clear a venue's geocoded position so the next geocode pass looks it up
+    again (its address changed)."""
+    venue.lat = venue.lng = venue.geocoded_at = None
+
+
 def _upsert_venue(
     session: Session, defn: VenueDefinition, city_id: int, cats: dict[str, Category],
     *, keep_extra_categories: bool = False,
@@ -89,10 +95,17 @@ def _upsert_venue(
         session.add(venue)
         session.flush()
     else:
+        if venue.address != defn.address and defn.lat is None:
+            _forget_coordinates(venue)  # moved: geocode the new address
         venue.name = defn.name
         venue.address = defn.address
         venue.site_url = defn.site_url
         venue.instagram_url = defn.instagram_url
+    if defn.lat is not None:
+        # Explicit coordinates win; geocoding skips code-defined venues that
+        # carry them. geocoded_at stays NULL, so dropping them from the
+        # definition later makes the next geocode pass look the venue up.
+        venue.lat, venue.lng, venue.geocoded_at = defn.lat, defn.lng, None
     code = [cats[s] for s in defn.category_slugs if s in cats]
     extra = ([c for c in venue.categories if c.slug not in defn.category_slugs]
              if keep_extra_categories else [])
@@ -152,6 +165,7 @@ def upsert_discovered_venue(session: Session, source_slug: str, defn: VenueDefin
         session.flush()
     elif venue.address is None and defn.address:
         venue.address = defn.address
+        _forget_coordinates(venue)  # retry geocoding with the address
     have = {c.slug for c in venue.categories}
     venue.categories = list(venue.categories) + [
         cats[s] for s in defn.category_slugs if s not in have]

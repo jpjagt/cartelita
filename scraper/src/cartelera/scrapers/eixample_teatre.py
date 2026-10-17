@@ -257,6 +257,9 @@ register(
         name="Eixample Teatre",
         city_slug="barcelona",
         address="C/ del Consell de Cent, 425, 08009 Barcelona",
+        # OSM lacks no. 425 (geocodes to the street); a few doors down from
+        # no. 435 (41.39726, 2.17373), same block.
+        lat=41.39685, lng=2.17320,
         site_url=BASE_URL,
         category_slugs=["theater", "kids"],
         list_memberships=[

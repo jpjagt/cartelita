@@ -567,6 +567,9 @@ register(
         name="Mercat de les Flors",
         city_slug="barcelona",
         address="Plaça de Margarida Xirgu, 1, 08004 Barcelona",
+        # OSM has no POI for the building (its name search lands on the
+        # Teatre Lliure next door); C/ Lleida 59 side of the square.
+        lat=41.37120, lng=2.15630,
         site_url="https://mercatflors.cat",
         category_slugs=["dance", "kids"],
         list_memberships=[

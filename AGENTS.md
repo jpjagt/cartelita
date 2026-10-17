@@ -93,6 +93,21 @@ single file. For *what Cartelera is and why*, read `MANIFESTO.md`. For dev setup
   (web + `queries.py`) are city-scoped. Yerevan's design doc:
   `docs/superpowers/specs/2026-08-18-multi-city-yerevan-design.md`; its
   venue/genre research: `docs/yerevan.md`.
+- **Venue coordinates** (`venue.lat`/`lng`, for the Today map; NULL = unknown,
+  the map leaves the venue out). Filled by `cartelera.geocode` (OSM Nominatim:
+  honest Cartelita UA, ≤1 req/s, cached in the DB — only venues with
+  `geocoded_at IS NULL` are looked up, misses are recorded too). Lookup:
+  address variants (free-form + structured) → "name, city" (only if the
+  place's own name shares a distinctive word with the venue's: name search
+  happily returns "Sala Apolo" for "Sala Montjuïc") → a street-level address
+  hit. A hit must be precise (Nominatim `place_rank` ≥ 26: street/building/
+  POI, never the city itself) and within 35 km of `geocode.CITY_CENTRES[city]`
+  — **a new city needs an entry there** (a test enforces it). **Explicit coordinates win:** a
+  `VenueDefinition(lat=…, lng=…)` is written by seed and never geocoded — that's
+  how a wrong/missing location is fixed. Seed clears the geocode when a venue's
+  address changes. `cartelera geocode [--city <slug>] [--force]` runs it by
+  hand; `cartelera run` geocodes up to 50 pending venues afterwards, non-fatal
+  (never affects the exit code or health).
 - Never add a `PUBLIC_`-prefixed DB var.
 - **Adding a category a scraper emits but seed doesn't define fails fast** with
   `unknown category slug '...'` — that's intentional. Add it to `seed.py`'s

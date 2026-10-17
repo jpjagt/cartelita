@@ -204,7 +204,8 @@ register(
         slug="graner",
         name="Graner",
         city_slug="barcelona",
-        address="C/ Bot, 5, Marina (Port)",
+        address="C/ Jane Addams, 14-16, 08038 Barcelona",  # granerbcn.cat
+        lat=41.36150, lng=2.13596,  # Jane Addams 14-16 (OSM)
         site_url="https://granerbcn.cat/",
         category_slugs=["dance"],
         list_memberships=[ListMembership(list_slug="dance", whitelist_category_slug="dance")],

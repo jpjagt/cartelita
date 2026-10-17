@@ -1,7 +1,7 @@
 from __future__ import annotations
 import datetime as dt
 from dataclasses import dataclass, field
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 
 @dataclass
@@ -89,6 +89,17 @@ class VenueDefinition(BaseModel):
     instagram_url: str | None = None
     category_slugs: list[str] = []
     list_memberships: list[ListMembership] = []
+    # Explicit map coordinates (WGS84). When set, seed writes them and
+    # geocoding never touches the venue — use this to fix a venue the
+    # geocoder misses or places wrong (see cartelera.geocode).
+    lat: float | None = None
+    lng: float | None = None
+
+    @model_validator(mode="after")
+    def _coords_together(self) -> "VenueDefinition":
+        if (self.lat is None) != (self.lng is None):
+            raise ValueError(f"venue {self.slug!r}: set both lat and lng, or neither")
+        return self
 
 
 class SourceDefinition(BaseModel):

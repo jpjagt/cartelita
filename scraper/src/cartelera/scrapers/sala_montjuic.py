@@ -180,6 +180,7 @@ register(
         name="Sala Montjuïc",
         city_slug="barcelona",
         address="Castell de Montjuïc, Carretera de Montjuïc, 66, 08038 Barcelona",
+        lat=41.36338, lng=2.16614,  # Montjuïc Castle (OSM)
         site_url="https://www.salamontjuic.org",
         category_slugs=["film"],
         list_memberships=[

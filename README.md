@@ -21,6 +21,7 @@ cp .env.example .env          # sets DATABASE_URL=postgresql://localhost:5432/ca
 uv run cartelera migrate
 uv run cartelera seed
 uv run cartelera run jamboree  # or: run all
+uv run cartelera geocode       # venue map coordinates (OSM Nominatim, cached)
 cd ../web && pnpm install && cp .env.example .env
 pnpm dev   # reads DATABASE_URL from .env; use pnpm build for a static build
 ```

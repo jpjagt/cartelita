@@ -50,6 +50,13 @@ scraper app:
   (`[ok]`, `[DEGRADED]`, `[FAIL]`, `[SITE DOWN]` lines). Exit code is non-zero
   when any source is broken or site_down (its data was not written); degraded
   alone exits 0 — its data was written and its GitHub issue is the alert.
+- After scraping, `run` geocodes up to 50 venues that have never been looked
+  up (`[geocode] …` line; new/discovered venues get map coordinates the same
+  night). Non-fatal: a geocoding failure is logged, never changes the exit code
+  or any verdict. `cartelera geocode [--city <slug>] [--force]` does a full
+  pass by hand (OSM Nominatim at ≤1 request/s, so ~1–3 s per venue; cached in
+  `venue.geocoded_at`, `--force` re-looks-up everything except venues with
+  explicit `lat`/`lng` in their definition). Prints `[hit]`/`[miss]` per venue.
 
 **Web redeploy (05:00).** The web app is a **static site**: Coolify serves the
 prebuilt `dist/` from the deploy-time image via its proxy. There is no live web

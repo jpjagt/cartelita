@@ -340,6 +340,7 @@ register_source(
                 name="Aram Khachaturian Concert Hall",
                 city_slug="yerevan",
                 address="46 Mashtots street, Yerevan, Armenia",
+                lat=40.18627, lng=44.51511,  # OSM POI "Aram Khachaturian Concert Hall"
                 site_url="https://apo.am",
                 category_slugs=["classical"],
                 list_memberships=[
@@ -372,6 +373,9 @@ register_source(
                 name="Hamazgayin State Theatre",
                 city_slug="yerevan",
                 address="3 Anri Vernoy St., Yerevan, Armenia",
+                # Not in OSM. It plays at the Yerevan State Institute of
+                # Theatre and Cinematography (Amiryan / Henri Verneuil corner).
+                lat=40.18247, lng=44.50625,
                 site_url="http://www.sostheatre.am",
                 category_slugs=["theater"],
                 list_memberships=[ListMembership(list_slug="theater")],

@@ -151,7 +151,9 @@ register(
         slug="la-poderosa",
         name="La Poderosa",
         city_slug="barcelona",
-        address="Gothic Quarter, Barcelona",
+        # The site's contact address (lapoderosa.es, checked 2026-10-17).
+        address="C/ Sant Adrià, 20, 08030 Barcelona (Fabra i Coats)",
+        lat=41.43303, lng=2.19067,  # Recinte Fabra i Coats (OSM)
         site_url="https://lapoderosa.es/",
         category_slugs=["dance"],
         list_memberships=[
