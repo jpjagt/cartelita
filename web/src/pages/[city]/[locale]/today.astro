@@ -391,6 +391,9 @@ const priceFit = pricePageFit(events.map((e) => displayPrice(e.price, locale)))
       panel.removeAttribute("data-scroll")
       // (A few px of slack: cell edge lines overhang the last row.)
       panel.toggleAttribute("data-scroll", panel.scrollHeight > panel.clientHeight + 4)
+      // On mobile the panel sits below the map: bring it into view.
+      const r = panel.getBoundingClientRect()
+      if (r.bottom > window.innerHeight) panel.scrollIntoView({ block: "nearest", behavior: "smooth" })
     }
 
     async function ensureMap(p: TodayPage) {
