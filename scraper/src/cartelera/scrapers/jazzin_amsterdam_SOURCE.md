@@ -82,11 +82,14 @@ No description, image, or genre tags. Film events never carry a price.
   - `toomler` feed (Comedytrain's Westergas halls: `Grote Zaal`, `Kleine
     Zaal`, `Comedytrain - Westergas - …`): junk titles like `20:30 uur`. The
     bare hall names are also denied by name.
-  - Outside the Amsterdam area (the `cva` feed lists the Conservatorium's
-    concerts elsewhere): `Stadsgehoorzaal Leiden`, `TivoliVredenburg`
-    (Utrecht), `Theater Het Klooster Woerden`, `Papagenohuis` (Laren), `De
-    Kulturele Raad` (Hillegom). Nearby towns (Aalsmeer, Amstelveen, Ankeveen,
-    Diemen, Duivendrecht, Weesp, Zaandam) are in, as overrides.
+  - **Outside Amsterdam** (decided 2026-10-18: the city proper only — no
+    suburbs, no Weesp). Any event whose feed address has a postcode outside
+    1000–1109 is dropped (`outside_amsterdam`; this covers Diemen 111x,
+    Amstelveen 118x, Weesp 138x, Aalsmeer, Laren, Leiden, …). Place names
+    alone aren't used (feed addresses say "Westpoort", "Noord Holland"), so
+    out-of-town venues whose address has no postcode are named in `DENIED`
+    (e.g. `Vermaning` Zaandam, `De Kleine Kerk` Duivendrecht, `Seinwezen`
+    Haarlem, `Muziekgebouw Eindhoven`).
   - Owned by a dedicated scraper: `Filmhuis Cavia` and `Nassaukerk` (Cavia's
     one-off "Cavia in Concert" screening there) — `filmhuis_cavia.py`, venue
     `filmhuis-cavia`.

@@ -15,6 +15,7 @@ from cartelera.scrapers.jazzin_amsterdam import (
     CALENDARS,
     DENIED,
     DENIED_FEEDS,
+    outside_amsterdam,
     SOURCE_SLUG,
     VENUES,
     VENUE_BY_KEY,
@@ -48,7 +49,12 @@ EXCLUDED = {"Grote Zaal", "Kleine Zaal", "Comedytrain - Westergas - Grote Zaal",
             # alternative calendar: own scraper / closed venue / non-venues
             "Filmhuis Cavia", "Nassaukerk", "Bar Bario", "Amsterdam",
             "Buikslotermeerplein", "Op de brug", "Jan van Galenstraat A10 snelweg",
-            "Fossil Free Culture NL"}
+            "Fossil Free Culture NL",
+            # outside Amsterdam (suburbs, Weesp, further out)
+            "Cultureel Café Bacchus", "De Kleine Kerk", "Jazzcafé NieuweMeer Aalsmeer",
+            "Plofhuis7 (Weesp)", "Schouwburg Amstelveen", "Schuilkerk De Hoop", "Seinwezen",
+            "Theater De Dillewijn (Ankeveen)", "Theater De Landing", "Theater de Omval",
+            "Van Houtenkerk", "Vermaning"}
 
 
 def test_fixture_covers_every_calendar():
@@ -57,7 +63,25 @@ def test_fixture_covers_every_calendar():
 
 def test_parses_most_of_the_feed():
     # ~6,700 raw items; duplicates and the excluded venues drop out.
-    assert len(EVENTS) > 5300
+    assert len(EVENTS) > 5100
+
+
+def test_outside_amsterdam_by_postcode():
+    assert outside_amsterdam("Uitermeer 3, 1381 HP Weesp")
+    assert outside_amsterdam("Gerberastraat 4, 1431 SG Aalsmeer")
+    assert outside_amsterdam("Ouddiemerlaan 104, 1111 HL Diemen")
+    assert not outside_amsterdam("Anton de Komplein 240, 1102 DR Amsterdam")
+    assert not outside_amsterdam("Zeedijk 40, Amsterdam, Netherlands 1012 AZ")
+    # no postcode = unknown = kept (named in DENIED when out of town)
+    assert not outside_amsterdam("Elementenstraat 16, Westpoort")
+    assert not outside_amsterdam(None)
+
+
+def test_out_of_town_feed_address_drops_even_an_unknown_venue():
+    item = {"venue": "Nieuw Dorpshuis", "address": "Dorpsstraat 1, 1713 HJ Obdam",
+            "title": "Concert", "date": "2026-11-01", "time": "20:00", "site": "https://x.nl"}
+    evs, discovered, denied = parse_events([("jazz", item)])
+    assert evs == [] and discovered == [] and denied == {"Nieuw Dorpshuis"}
 
 
 def test_only_deliberately_denied_venues_are_dropped():

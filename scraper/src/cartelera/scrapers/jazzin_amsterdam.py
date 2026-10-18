@@ -78,8 +78,6 @@ VENUES: list[tuple[str, str, str | None, list[str], list[str]]] = [
      ['Mezrab'], ['jazz', 'theater']),
     ('de-kleine-komedie', 'De Kleine Komedie', 'Amstel 56-58, 1017AC Amsterdam',
      ['De Kleine Komedie'], ['theater']),
-    ('theater-de-landing', 'Theater De Landing', 'Uilenstede 106, 1183 AM Amstelveen',
-     ['Theater De Landing'], ['theater']),
     ('bimhuis', 'Bimhuis', 'Piet Heinkade 3, 1019 BR Amsterdam',
      ['Bimhuis'], ['jazz']),
     ('cinema-the-pulse', 'Cinema The Pulse', 'Hildegard von Bingenstraat 4, 1081 LH Amsterdam',
@@ -92,8 +90,6 @@ VENUES: list[tuple[str, str, str | None, list[str], list[str]]] = [
      ['Theater de Griffioen'], ['jazz', 'theater']),
     ('podium-mozaiek', 'Podium Mozaïek', 'Bos en Lommerweg 191, 1055 DT Amsterdam',
      ['Podium Mozaïek'], ['classical', 'theater']),
-    ('theater-de-omval', 'Theater de Omval (Diemen)', 'Ouddiemerlaan 104, 1111 HL Diemen',
-     ['Theater de Omval'], ['jazz', 'theater']),
     ('t-zonnehuis', "'t Zonnehuis", 'Zonneplein 30, 1033 EK Amsterdam',
      ["'t Zonnehuis", 'Zonnehuis'], ['jazz', 'classical', 'theater', 'pop']),
     ('theater-bellevue', 'Theater Bellevue', 'Leidsekade 90, 1017 PN Amsterdam',
@@ -157,8 +153,6 @@ VENUES: list[tuple[str, str, str | None, list[str], list[str]]] = [
      ['Skatecafe Karin & Yvonne'], ['club']),
     ('chicago-social-club', 'Chicago Social Club', 'Leidseplein 12, 1017 PT Amsterdam',
      ['Chicago Social Club'], ['club']),
-    ('van-houtenkerk', 'Van Houtenkerk (Weesp)', None,
-     ['Van Houtenkerk'], ['classical']),
     ('tolhuistuin', 'Tolhuistuin', 'IJpromenade 2, 1031 KT Amsterdam',
      ['Tolhuistuin'], ['jazz', 'theater', 'pop', 'alternative']),
     ('posthoornkerk', 'Posthoornkerk', 'Haarlemmerstraat 124, 1013 EX Amsterdam',
@@ -179,8 +173,6 @@ VENUES: list[tuple[str, str, str | None, list[str], list[str]]] = [
      ['Dominicuskerk'], ['classical']),
     ('de-sloot', 'De Sloot', 'Rhoneweg 6-10, 1043 AH Amsterdam',
      ['De Sloot'], ['theater']),
-    ('schouwburg-amstelveen', 'Schouwburg Amstelveen', 'Uilenstede 106, 1183 AM Amstelveen',
-     ['Schouwburg Amstelveen'], ['theater']),
     ('club-up', 'Club Up', 'Korte Leidsedwarsstraat 26-1, Amsterdam, Nederland',
      ['Club Up'], ['club']),
     ('zaal-100', 'Zaal 100', 'De Wittenstraat 100, 1052 BA Amsterdam',
@@ -209,8 +201,6 @@ VENUES: list[tuple[str, str, str | None, list[str], list[str]]] = [
      ['Café Czaar'], ['jazz']),
     ('pianola-museum', 'Pianola Museum', 'Westerstraat 106, 1015 MN Amsterdam',
      ['Pianola Museum', 'Gelvinck Pianola Museum'], ['jazz', 'classical']),
-    ('de-kleine-kerk', 'De Kleine Kerk (Duivendrecht)', 'Rijksstraatweg 129, Duivendrecht, Netherlands',
-     ['De Kleine Kerk'], ['classical']),
     ('tillatec', 'TILLATEC', 'Doctor Jan van Breemenstraat 1; 1056 AB Amsterdam',
      ['TILLATEC'], ['club']),
     ('buiksloterkerk', 'Buiksloterkerk', 'Buiksloterkerkpad 10, 1034 VZ Amsterdam',
@@ -227,8 +217,6 @@ VENUES: list[tuple[str, str, str | None, list[str], list[str]]] = [
      ['Café Parisius'], ['jazz']),
     ('kamermuziek-in-de-koningszaal', 'Kamermuziek in de Koningszaal', 'Plantage Middenlaan 41-A, 1018 DC  Amsterdam',
      ['Kamermuziek in de Koningszaal'], ['classical']),
-    ('schuilkerk-de-hoop', 'Schuilkerk De Hoop', None,
-     ['Schuilkerk De Hoop'], ['classical', 'theater']),
     ('pianobar-maxim', 'Pianobar Maxim', 'Leidsekruisstraat 33, 1017 RG Amsterdam',
      ['Pianobar Maxim'], ['pop']),
     ('doka', 'Doka', 'Wibautstraat 150, 1091 GR Amsterdam',
@@ -237,10 +225,6 @@ VENUES: list[tuple[str, str, str | None, list[str], list[str]]] = [
      ['Parallel'], ['club']),
     ('the-movies', 'The Movies', 'Haarlemmerdijk 161, Amsterdam',
      ['The Movies'], ['film']),
-    ('plofhuis7', 'Plofhuis7 (Weesp)', 'Uitermeer 3, 1381 HP Weesp',
-     ['Plofhuis7 (Weesp)'], ['jazz', 'classical']),
-    ('seinwezen', 'Seinwezen', None,
-     ['Seinwezen'], ['classical']),
     ('midwest', 'Midwest', 'Cabralstraat 1, 1057 CD Amsterdam',
      ['Midwest'], ['theater', 'pop', 'alternative']),
     ('bitterzoet', 'Bitterzoet', 'Spuistraat 2, 1012 TS Amsterdam',
@@ -251,8 +235,6 @@ VENUES: list[tuple[str, str, str | None, list[str], list[str]]] = [
      ['murmur'], ['club']),
     ('huis-de-pinto', 'Huis de Pinto', 'St. Antoniesbreestraat 69, 1011 HB Amsterdam',
      ['Huis de Pinto'], ['jazz', 'classical']),
-    ('theater-de-dillewijn', 'Theater De Dillewijn (Ankeveen)', 'Stichts End 57, 1244 PL Ankeveen',
-     ['Theater De Dillewijn (Ankeveen)'], ['jazz']),
     ('torpedo-theater', 'Torpedo Theater', 'Sint Pieterspoortsteeg 33, 1012 HM Amsterdam',
      ['Torpedo Theater'], ['jazz', 'classical', 'theater']),
     ('tobacco-theater', 'TOBACCO Theater', 'Nes 75-87, 1012 KD Amsterdam',
@@ -299,8 +281,6 @@ VENUES: list[tuple[str, str, str | None, list[str], list[str]]] = [
      ['Schellingwouderkerk'], ['theater']),
     ('levenslang', 'Levenslang', 'H.J.E. Wenckebachweg 48, 1096AN, Amsterdam',
      ['Levenslang'], ['club']),
-    ('cultureel-cafe-bacchus', 'Cultureel Café Bacchus (Aalsmeer)', 'Gerberastraat 4, 1431 SG Aalsmeer',
-     ['Cultureel Café Bacchus'], ['jazz']),
     ('van-puffelen', 'Van Puffelen', 'Prinsengracht 375',
      ['Van Puffelen'], ['jazz']),
     ('elsas-cafe', "Elsa's Café", 'Middenweg 73, 1098 AE Amsterdam',
@@ -315,8 +295,6 @@ VENUES: list[tuple[str, str, str | None, list[str], list[str]]] = [
      ['Zuiderkerk'], ['classical']),
     ('concertgemaal', 'Concertgemaal', 'Landsmeerderdijk 213, 1035 PV Amsterdam',
      ['Concertgemaal'], ['classical']),
-    ('vermaning', 'Vermaning (Zaandam)', 'Westzijde 80, Zaandam',
-     ['Vermaning'], ['classical']),
     ('singelkerk', 'Singelkerk', 'Singel 452, Amsterdam, Noord-Holland, 1017 AW, Nederland',
      ['Singelkerk'], ['classical']),
     ('phono-lake', 'Phono Lake', 'Christoffel Plantijngracht 4, 1065 DA Amsterdam, The Netherlands',
@@ -345,8 +323,6 @@ VENUES: list[tuple[str, str, str | None, list[str], list[str]]] = [
      ['OBA Javaplein'], ['jazz']),
     ('hans-brinker-bar', 'Hans Brinker Bar', 'Kerkstraat 136',
      ['Hans Brinker Bar'], ['jazz']),
-    ('jazzcafe-nieuwemeer', 'Jazzcafé NieuweMeer (Aalsmeer)', 'Stommeerweg 2, Aalsmeer',
-     ['Jazzcafé NieuweMeer Aalsmeer'], ['jazz']),
     ('a-beautiful-mess', 'A Beautiful Mess', 'Oosterdokskade 227, 1011 DL Amsterdam',
      ['A Beautiful Mess'], ['jazz']),
     ('vreugdehof', 'Vreugdehof', 'De Klencke 111, 1083 HH Amsterdam Buitenveldert',
@@ -487,6 +463,24 @@ DENIED: dict[str, str] = {
     "Theater Het Klooster Woerden": "Woerden — outside the Amsterdam area",
     "Papagenohuis": "Laren — outside the Amsterdam area",
     "De Kulturele Raad": "Hillegom — outside the Amsterdam area",
+    # outside the city (decided 2026-10-18: Amsterdam proper only, no suburbs or
+    # Weesp); venues with an out-of-town postcode are dropped by
+    # outside_amsterdam, these are named because their feed address has none or
+    # they used to be overrides
+    "Theater De Landing": "Amstelveen — outside Amsterdam",
+    "Theater de Omval": "Diemen — outside Amsterdam",
+    "Van Houtenkerk": "Weesp — outside Amsterdam",
+    "Schouwburg Amstelveen": "Amstelveen — outside Amsterdam",
+    "De Kleine Kerk": "Duivendrecht — outside Amsterdam",
+    "Schuilkerk De Hoop": "Diemen — outside Amsterdam",
+    "Plofhuis7 (Weesp)": "Weesp — outside Amsterdam",
+    "Seinwezen": "Haarlem — outside Amsterdam",
+    "Theater De Dillewijn (Ankeveen)": "Ankeveen — outside Amsterdam",
+    "Cultureel Café Bacchus": "Aalsmeer — outside Amsterdam",
+    "Vermaning": "Zaandam — outside Amsterdam",
+    "Jazzcafé NieuweMeer Aalsmeer": "Aalsmeer — outside Amsterdam",
+    "Rosenstock-Huessy Huis": "Haarlem — outside Amsterdam (no address in the feed)",
+    "Muziekgebouw Eindhoven": "Eindhoven — outside Amsterdam (no postcode in the feed)",
 }
 DENIED_KEYS: frozenset[str] = frozenset(_venue_key(n) for n in DENIED)
 
@@ -494,6 +488,21 @@ DENIED_KEYS: frozenset[str] = frozenset(_venue_key(n) for n in DENIED)
 DENIED_FEEDS: dict[str, str] = {
     "toomler": "Comedytrain's halls (Westergas): junk titles like '20:30 uur'",
 }
+
+
+# Amsterdam's postcodes: 1000–1109 (incl. Noord, Nieuw-West, Zuidoost). The
+# suburbs and Weesp are outside it (Diemen 111x, Amstelveen 118x, Weesp 138x).
+AMSTERDAM_POSTCODES = range(1000, 1110)
+_POSTCODE_RE = re.compile(r"\b(\d{4}) ?[A-Z]{2}\b")
+
+
+def outside_amsterdam(address: str | None) -> bool:
+    """True when jazzin's address carries a Dutch postcode outside Amsterdam.
+    No postcode = unknown = kept (place names alone aren't reliable: feed
+    addresses say "Westpoort", "Noord Holland"); out-of-town venues without a
+    postcode are named in DENIED."""
+    m = _POSTCODE_RE.search(address or "")
+    return bool(m) and int(m.group(1)) not in AMSTERDAM_POSTCODES
 
 
 def slugify(name: str) -> str:
@@ -621,6 +630,8 @@ def parse_events(
     for category, item in sorted(items, key=lambda ci: ci[1].get("id") or 0):
         venue_name = re.sub(r"\s+", " ", item.get("venue") or "").strip()
         venue_slug = None if item.get("source") in DENIED_FEEDS else resolve_venue(venue_name)
+        if venue_slug is not None and outside_amsterdam(item.get("address")):
+            venue_slug = None
         if venue_slug is None:
             denied.add(venue_name)
             continue
@@ -689,10 +700,6 @@ def discover_venues(
 # Explicit map coordinates for override venues the geocoder misses or places
 # wrong (cartelera.geocode): slug -> (lat, lng).
 COORDINATES: dict[str, tuple[float, float]] = {
-    # Diemen, just outside Watergraafsmeer; no street address (Europa Nostra)
-    "schuilkerk-de-hoop": (52.33878, 4.95958),
-    # Seinwezen, Kinderhuissingel 1, Haarlem — the only venue of that name (OSM)
-    "seinwezen": (52.38760, 4.62691),
     # NDSM wharf, T.T. Neveritaweg 55 (OSM has no number there)
     "treehouse-ndsm": (52.40123, 4.89564),
 }
