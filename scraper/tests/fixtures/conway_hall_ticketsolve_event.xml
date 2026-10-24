@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<event id="428788203">
+  <name>
+    <![CDATA[01 Nov 2026 - 18:30 @ Conway Hall - (opening time 18:00) Sunday Concerts: Aida Piano Trio]]>
+  </name>
+  <event_number>428788203</event_number>
+  <date_time format="ISO 8601" zone="GMT">2026-11-01T18:30:00+00:00</date_time>
+  <opening_time format="ISO 8601" zone="GMT">2026-11-01T18:00:00+00:00</opening_time>
+  <duration>90</duration>
+  <comment>
+    <![CDATA[]]>
+  </comment>
+  <url>https://conwayhall.ticketsolve.com/shows/1173675508/events/428788203</url>
+  <status>available</status>
+  <available>381</available>
+  <capacity>398</capacity>
+  <onsale_time format="ISO 8601"/>
+  <transaction>
+    <fee currency="GBP">100%:2</fee>
+    <maximum_tickets>8</maximum_tickets>
+  </transaction>
+  <prices>
+    <price>
+      <type>Supporter</type>
+      <face_price currency="GBP">20.0</face_price>
+      <selling_price currency="GBP">20.0</selling_price>
+    </price>
+    <price>
+      <type>Standard</type>
+      <face_price currency="GBP">14.0</face_price>
+      <selling_price currency="GBP">14.0</selling_price>
+    </price>
+    <price>
+      <type>NHS Discount</type>
+      <face_price currency="GBP">9.0</face_price>
+      <selling_price currency="GBP">9.0</selling_price>
+    </price>
+    <price>
+      <type>Students</type>
+      <face_price currency="GBP">9.0</face_price>
+      <selling_price currency="GBP">9.0</selling_price>
+    </price>
+    <price>
+      <type>Living Support</type>
+      <face_price currency="GBP">6.0</face_price>
+      <selling_price currency="GBP">6.0</selling_price>
+    </price>
+    <price>
+      <type>Under 18s</type>
+      <face_price currency="GBP">0.0</face_price>
+      <selling_price currency="GBP">0.0</selling_price>
+    </price>
+  </prices>
+  <tags>
+  </tags>
+</event>

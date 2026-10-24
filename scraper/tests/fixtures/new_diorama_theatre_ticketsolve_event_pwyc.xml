@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<event id="428854480">
+  <name>
+    <![CDATA[14 Nov 2026 - 19:30 @ New Diorama Theatre - (opening time 19:30) ORLANDO: A PORNOBIOGRAPHY]]>
+  </name>
+  <event_number>428854480</event_number>
+  <date_time format="ISO 8601" zone="GMT">2026-11-14T19:30:00+00:00</date_time>
+  <opening_time format="ISO 8601" zone="GMT">2026-11-14T19:30:00+00:00</opening_time>
+  <duration/>
+  <comment>
+    <![CDATA[]]>
+  </comment>
+  <url>https://newdiorama-tickets.newdiorama.com/shows/1173687045/events/428854480</url>
+  <status>available</status>
+  <available>38</available>
+  <capacity>77</capacity>
+  <onsale_time format="ISO 8601"/>
+  <transaction>
+    <fee currency="GBP">0</fee>
+    <maximum_tickets>15</maximum_tickets>
+  </transaction>
+  <prices>
+    <price>
+      <type>Pay What You Can £25</type>
+      <face_price currency="GBP">25.0</face_price>
+      <selling_price currency="GBP">25.0</selling_price>
+    </price>
+    <price>
+      <type>Pay What You Can £19</type>
+      <face_price currency="GBP">19.0</face_price>
+      <selling_price currency="GBP">19.0</selling_price>
+    </price>
+    <price>
+      <type>Pay What You Can £14</type>
+      <face_price currency="GBP">14.0</face_price>
+      <selling_price currency="GBP">14.0</selling_price>
+    </price>
+    <price>
+      <type>Pay What You Can £10</type>
+      <face_price currency="GBP">10.0</face_price>
+      <selling_price currency="GBP">10.0</selling_price>
+    </price>
+    <price>
+      <type>Pay What You Can £5</type>
+      <face_price currency="GBP">5.0</face_price>
+      <selling_price currency="GBP">5.0</selling_price>
+    </price>
+  </prices>
+  <tags>
+    <tag>preview</tag>
+    <tag>pwyc</tag>
+  </tags>
+</event>

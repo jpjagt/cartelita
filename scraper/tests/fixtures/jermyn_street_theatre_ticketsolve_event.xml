@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<event id="428837682">
+  <name>
+    <![CDATA[14 Nov 2026 - 19:30 @ Jermyn Street Theatre - (opening time 19:10) Ghosts]]>
+  </name>
+  <event_number>428837682</event_number>
+  <date_time format="ISO 8601" zone="GMT">2026-11-14T19:30:00+00:00</date_time>
+  <opening_time format="ISO 8601" zone="GMT">2026-11-14T19:10:00+00:00</opening_time>
+  <duration>90</duration>
+  <comment>
+    <![CDATA[]]>
+  </comment>
+  <url>https://jermynstreettheatre.ticketsolve.com/shows/1173680861/events/428837682</url>
+  <status>available</status>
+  <available>41</available>
+  <capacity>59</capacity>
+  <onsale_time format="ISO 8601"/>
+  <transaction>
+    <fee currency="GBP">1</fee>
+    <maximum_tickets>8</maximum_tickets>
+  </transaction>
+  <prices>
+    <price>
+      <type>Full Price</type>
+      <face_price currency="GBP">40.0</face_price>
+      <selling_price currency="GBP">40.0</selling_price>
+    </price>
+    <price>
+      <type>Concession</type>
+      <face_price currency="GBP">35.0</face_price>
+      <selling_price currency="GBP">35.0</selling_price>
+    </price>
+  </prices>
+  <tags>
+    <tag>ghosts</tag>
+  </tags>
+</event>

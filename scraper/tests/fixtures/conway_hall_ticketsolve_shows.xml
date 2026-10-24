@@ -1,0 +1,1221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<venues>
+  <venue id="426563674">
+    <name>
+      <![CDATA[Conway Hall]]>
+    </name>
+    <shows>
+      <show id="1173675237">
+        <name>
+          <![CDATA[A History of Black People and Alternative Music]]>
+        </name>
+        <description>
+          <![CDATA[<span>There would be no alternative music without Black artists. Journalist and feminist punk musician </span><strong>Stephanie Phillips</strong><span> reclaims the past and future of rock &rsquo;n&rsquo; roll for the Black artists who tore up and re-wrote its rules.</span>]]>
+        </description>
+        <event_category>Talks &amp; Debates</event_category>
+        <production_company_name>Conway Hall Ethical Society</production_company_name>
+        <priority>0</priority>
+        <url>https://conwayhall.ticketsolve.com/shows/1173675237/events</url>
+        <version>100</version>
+        <tags>
+          <tag>autumnseason26</tag>
+          <tag>conwayhall</tag>
+          <tag>ethicalmatters</tag>
+          <tag>scott</tag>
+        </tags>
+        <images>
+          <image priority="0">
+            <url size="large">https://dm7lxewn39lms.cloudfront.net/as-assets/variants/tr8c7ilwhc5wevosy8r0o0u2vti0/a6206d8b8848d1f5f779dd436f25589e3a792fee204effd13dccee565e881abd</url>
+            <url size="medium">https://dm7lxewn39lms.cloudfront.net/as-assets/variants/tr8c7ilwhc5wevosy8r0o0u2vti0/6428308680a2820b32ca9af5ca523d295e68c5119095c3d9f4a769458f8227e4</url>
+            <url size="thumb">https://dm7lxewn39lms.cloudfront.net/as-assets/variants/tr8c7ilwhc5wevosy8r0o0u2vti0/7c367cff06fd518c1ca8f9254efb0ec25a25cd43a892ea5364918efafd429189</url>
+            <alt/>
+          </image>
+        </images>
+        <properties>
+        </properties>
+        <events>
+          <event id="428787670">
+            <name>
+              <![CDATA[08 Nov 2026 - 15:00 @ Conway Hall - (opening time 14:30) A History of Black People and Alternative Music]]>
+            </name>
+            <date_time_iso format="ISO 8601" zone="GMT">2026-11-08T15:00:00+00:00</date_time_iso>
+            <opening_time_iso format="ISO 8601" zone="GMT">2026-11-08T14:30:00+00:00</opening_time_iso>
+            <event_number>428787670</event_number>
+            <venue_layout>Brockway Room Seated</venue_layout>
+            <comment>
+              <![CDATA[]]>
+            </comment>
+            <event_attribute>In Person</event_attribute>
+            <url>https://conwayhall.ticketsolve.com/shows/1173675237/events/428787670</url>
+            <status>available</status>
+            <feed>
+              <url>https://conwayhall.ticketsolve.com/shows/1173675237/events/428787670.xml</url>
+            </feed>
+          </event>
+          <event id="428787671">
+            <name>
+              <![CDATA[08 Nov 2026 - 15:00 @ Conway Hall - (opening time 14:30) A History of Black People and Alternative Music]]>
+            </name>
+            <date_time_iso format="ISO 8601" zone="GMT">2026-11-08T15:00:00+00:00</date_time_iso>
+            <opening_time_iso format="ISO 8601" zone="GMT">2026-11-08T14:30:00+00:00</opening_time_iso>
+            <event_number>428787671</event_number>
+            <venue_layout>ONLINE</venue_layout>
+            <comment>
+              <![CDATA[]]>
+            </comment>
+            <event_attribute>Online</event_attribute>
+            <url>https://conwayhall.ticketsolve.com/shows/1173675237/events/428787671</url>
+            <status>available</status>
+            <feed>
+              <url>https://conwayhall.ticketsolve.com/shows/1173675237/events/428787671.xml</url>
+            </feed>
+          </event>
+        </events>
+        <status>available</status>
+      </show>
+      <show id="1173675240">
+        <name>
+          <![CDATA[AI and Online Disinformation]]>
+        </name>
+        <description>
+          <![CDATA[<span>Our social media feeds have been increasingly cannibalised by slop: low-quality content generated using AI text, image and video tools. Reporter </span><strong>Niamh McIntyre</strong><span> explores what it means when online political debate is manufactured for profit by people with zero commitment to the ideas they are promoting.</span>]]>
+        </description>
+        <event_category>Talks &amp; Debates</event_category>
+        <production_company_name>Conway Hall Ethical Society</production_company_name>
+        <priority>0</priority>
+        <url>https://conwayhall.ticketsolve.com/shows/1173675240/events</url>
+        <version>92</version>
+        <tags>
+          <tag>autumnseason26</tag>
+          <tag>conwayhall</tag>
+          <tag>ethicalmatters</tag>
+          <tag>scott</tag>
+        </tags>
+        <images>
+          <image priority="0">
+            <url size="large">https://dm7lxewn39lms.cloudfront.net/as-assets/variants/9mvfq81yqlvacb1f4a63c2qt35bo/a6206d8b8848d1f5f779dd436f25589e3a792fee204effd13dccee565e881abd</url>
+            <url size="medium">https://dm7lxewn39lms.cloudfront.net/as-assets/variants/9mvfq81yqlvacb1f4a63c2qt35bo/6428308680a2820b32ca9af5ca523d295e68c5119095c3d9f4a769458f8227e4</url>
+            <url size="thumb">https://dm7lxewn39lms.cloudfront.net/as-assets/variants/9mvfq81yqlvacb1f4a63c2qt35bo/7c367cff06fd518c1ca8f9254efb0ec25a25cd43a892ea5364918efafd429189</url>
+            <alt/>
+          </image>
+        </images>
+        <properties>
+        </properties>
+        <events>
+          <event id="428787675">
+            <name>
+              <![CDATA[29 Nov 2026 - 15:00 @ Conway Hall - (opening time 14:30) AI and Online Disinformation]]>
+            </name>
+            <date_time_iso format="ISO 8601" zone="GMT">2026-11-29T15:00:00+00:00</date_time_iso>
+            <opening_time_iso format="ISO 8601" zone="GMT">2026-11-29T14:30:00+00:00</opening_time_iso>
+            <event_number>428787675</event_number>
+            <venue_layout>Brockway Room Seated</venue_layout>
+            <comment>
+              <![CDATA[]]>
+            </comment>
+            <event_attribute>In Person</event_attribute>
+            <url>https://conwayhall.ticketsolve.com/shows/1173675240/events/428787675</url>
+            <status>available</status>
+            <feed>
+              <url>https://conwayhall.ticketsolve.com/shows/1173675240/events/428787675.xml</url>
+            </feed>
+          </event>
+          <event id="428787677">
+            <name>
+              <![CDATA[29 Nov 2026 - 15:00 @ Conway Hall - (opening time 14:30) AI and Online Disinformation]]>
+            </name>
+            <date_time_iso format="ISO 8601" zone="GMT">2026-11-29T15:00:00+00:00</date_time_iso>
+            <opening_time_iso format="ISO 8601" zone="GMT">2026-11-29T14:30:00+00:00</opening_time_iso>
+            <event_number>428787677</event_number>
+            <venue_layout>ONLINE</venue_layout>
+            <comment>
+              <![CDATA[]]>
+            </comment>
+            <event_attribute>Online</event_attribute>
+            <url>https://conwayhall.ticketsolve.com/shows/1173675240/events/428787677</url>
+            <status>available</status>
+            <feed>
+              <url>https://conwayhall.ticketsolve.com/shows/1173675240/events/428787677.xml</url>
+            </feed>
+          </event>
+        </events>
+        <status>available</status>
+      </show>
+      <show id="1173675354">
+        <name>
+          <![CDATA[Conway Hall News Club]]>
+        </name>
+        <description>
+          <![CDATA[<div>
+<span>Join </span><strong>Media Revolution</strong><span> and </span><strong>Conway Hall Ethical Society </strong><span>as we host our first Conway Hall News Club. News Clubs make media consumption a conscientious, collective, empowering community activity, where we can discuss and challenge the news we consume - together. By disrupting the doom-scroll and division and by strengthening media literacy, the News Clubs can help us reduce our susceptibility to disinformation and deepen our understanding of how powerful interests shape public opinion.</span>
+</div><div></div>]]>
+        </description>
+        <event_category></event_category>
+        <production_company_name>Conway Hall Ethical Society</production_company_name>
+        <priority>0</priority>
+        <url>https://conwayhall.ticketsolve.com/shows/1173675354/events</url>
+        <version>88</version>
+        <tags>
+          <tag>conwayhall</tag>
+          <tag>touchpaper</tag>
+        </tags>
+        <images>
+          <image priority="0">
+            <url size="large">https://dm7lxewn39lms.cloudfront.net/as-assets/variants/ry6hqtdgs6nnobewjfz8e5060llh/a6206d8b8848d1f5f779dd436f25589e3a792fee204effd13dccee565e881abd</url>
+            <url size="medium">https://dm7lxewn39lms.cloudfront.net/as-assets/variants/ry6hqtdgs6nnobewjfz8e5060llh/6428308680a2820b32ca9af5ca523d295e68c5119095c3d9f4a769458f8227e4</url>
+            <url size="thumb">https://dm7lxewn39lms.cloudfront.net/as-assets/variants/ry6hqtdgs6nnobewjfz8e5060llh/7c367cff06fd518c1ca8f9254efb0ec25a25cd43a892ea5364918efafd429189</url>
+            <alt/>
+          </image>
+        </images>
+        <properties>
+        </properties>
+        <events>
+          <event id="428787893">
+            <name>
+              <![CDATA[07 Nov 2026 - 14:00 @ Conway Hall - (opening time 13:30) Conway Hall News Club]]>
+            </name>
+            <date_time_iso format="ISO 8601" zone="GMT">2026-11-07T14:00:00+00:00</date_time_iso>
+            <opening_time_iso format="ISO 8601" zone="GMT">2026-11-07T13:30:00+00:00</opening_time_iso>
+            <event_number>428787893</event_number>
+            <venue_layout>Library</venue_layout>
+            <comment>
+              <![CDATA[]]>
+            </comment>
+            <event_attribute></event_attribute>
+            <url>https://conwayhall.ticketsolve.com/shows/1173675354/events/428787893</url>
+            <status>available</status>
+            <feed>
+              <url>https://conwayhall.ticketsolve.com/shows/1173675354/events/428787893.xml</url>
+            </feed>
+          </event>
+        </events>
+        <status>available</status>
+      </show>
+      <show id="1173675236">
+        <name>
+          <![CDATA[Ghibli and Goodness]]>
+        </name>
+        <description>
+          <![CDATA[<span>From </span><em>Laputa: Castle in the Sky</em><span>, via</span><em> Princess Mononok</em><span>e to </span><em>Grave of the Fireflies </em><span>and </span><em>Pom Poko</em><span>, Studio Ghibli tells tales of the horrors of conflict, the destruction of nature  and the goodness of being honest and earnest. Ghibli experts </span><strong>Prof Rayna Denison</strong><span> and </span><strong>Jake Cunningham </strong><span>discuss the ethical messages within these magical worlds.</span>]]>
+        </description>
+        <event_category>Talks &amp; Debates</event_category>
+        <production_company_name>Conway Hall Ethical Society</production_company_name>
+        <priority>0</priority>
+        <url>https://conwayhall.ticketsolve.com/shows/1173675236/events</url>
+        <version>96</version>
+        <tags>
+          <tag>autumnseason26</tag>
+          <tag>conwayhall</tag>
+          <tag>ethicalmatters</tag>
+          <tag>scott</tag>
+        </tags>
+        <images>
+          <image priority="0">
+            <url size="large">https://dm7lxewn39lms.cloudfront.net/as-assets/variants/rml290318uekym72r12sbv2hobkw/a6206d8b8848d1f5f779dd436f25589e3a792fee204effd13dccee565e881abd</url>
+            <url size="medium">https://dm7lxewn39lms.cloudfront.net/as-assets/variants/rml290318uekym72r12sbv2hobkw/6428308680a2820b32ca9af5ca523d295e68c5119095c3d9f4a769458f8227e4</url>
+            <url size="thumb">https://dm7lxewn39lms.cloudfront.net/as-assets/variants/rml290318uekym72r12sbv2hobkw/7c367cff06fd518c1ca8f9254efb0ec25a25cd43a892ea5364918efafd429189</url>
+            <alt/>
+          </image>
+        </images>
+        <properties>
+        </properties>
+        <events>
+          <event id="428787666">
+            <name>
+              <![CDATA[28 Oct 2026 - 18:30 @ Conway Hall - (opening time 18:00) Ghibli and Goodness]]>
+            </name>
+            <date_time_iso format="ISO 8601" zone="GMT">2026-10-28T18:30:00+00:00</date_time_iso>
+            <opening_time_iso format="ISO 8601" zone="GMT">2026-10-28T18:00:00+00:00</opening_time_iso>
+            <event_number>428787666</event_number>
+            <venue_layout>Brockway Room Seated</venue_layout>
+            <comment>
+              <![CDATA[]]>
+            </comment>
+            <event_attribute>In Person</event_attribute>
+            <url>https://conwayhall.ticketsolve.com/shows/1173675236/events/428787666</url>
+            <status>available</status>
+            <feed>
+              <url>https://conwayhall.ticketsolve.com/shows/1173675236/events/428787666.xml</url>
+            </feed>
+          </event>
+          <event id="428787667">
+            <name>
+              <![CDATA[28 Oct 2026 - 18:30 @ Conway Hall - (opening time 18:00) Ghibli and Goodness]]>
+            </name>
+            <date_time_iso format="ISO 8601" zone="GMT">2026-10-28T18:30:00+00:00</date_time_iso>
+            <opening_time_iso format="ISO 8601" zone="GMT">2026-10-28T18:00:00+00:00</opening_time_iso>
+            <event_number>428787667</event_number>
+            <venue_layout>ONLINE</venue_layout>
+            <comment>
+              <![CDATA[]]>
+            </comment>
+            <event_attribute>Online</event_attribute>
+            <url>https://conwayhall.ticketsolve.com/shows/1173675236/events/428787667</url>
+            <status>available</status>
+            <feed>
+              <url>https://conwayhall.ticketsolve.com/shows/1173675236/events/428787667.xml</url>
+            </feed>
+          </event>
+        </events>
+        <status>available</status>
+      </show>
+      <show id="1173677306">
+        <name>
+          <![CDATA[Intelligence Squared: Marina Litvinenko on Russia, Putin and Resistance]]>
+        </name>
+        <description>
+          <![CDATA[<div>Join <b>Marina Litvinenko </b>on November 9 with <b>Intelligence Squared&nbsp;</b>as she reflects on her life with former KGB agent Alexander Litvinenko, the events that led to his murder, and the extraordinary fight for justice that followed.</div><div>
+<p style="letter-spacing:0.5712px;margin:0px 0px 3rem;padding:0px;border-style:none;border-image:none;font-size:16px;vertical-align:baseline;background-image:initial;background-position:initial;background-size:initial;background-repeat:initial;background-attachment:initial;background-origin:initial;background-clip:initial;font-family:Geomanist, sans-serif;line-height:1.6em;color:rgb(51, 51, 51);"></p>
+<div><div></div></div>
+</div>]]>
+        </description>
+        <event_category>Talks &amp; Debates</event_category>
+        <production_company_name>Conway Hall Ethical Society</production_company_name>
+        <priority>0</priority>
+        <url>https://conwayhall.ticketsolve.com/shows/1173677306/events</url>
+        <version>38</version>
+        <tags>
+          <tag>conwayhall</tag>
+          <tag>intelligencesquared</tag>
+          <tag>venuehire</tag>
+        </tags>
+        <images>
+          <image priority="0">
+            <url size="large">https://dm7lxewn39lms.cloudfront.net/as-assets/variants/mo6eze484px9ofdm70scllz4n15y/a6206d8b8848d1f5f779dd436f25589e3a792fee204effd13dccee565e881abd</url>
+            <url size="medium">https://dm7lxewn39lms.cloudfront.net/as-assets/variants/mo6eze484px9ofdm70scllz4n15y/6428308680a2820b32ca9af5ca523d295e68c5119095c3d9f4a769458f8227e4</url>
+            <url size="thumb">https://dm7lxewn39lms.cloudfront.net/as-assets/variants/mo6eze484px9ofdm70scllz4n15y/7c367cff06fd518c1ca8f9254efb0ec25a25cd43a892ea5364918efafd429189</url>
+            <alt/>
+          </image>
+        </images>
+        <properties>
+        </properties>
+        <events>
+          <event id="428800295">
+            <name>
+              <![CDATA[09 Nov 2026 - 19:30 @ Conway Hall - (opening time 19:00) Intelligence Squared: Marina Litvinenko on Russia, Putin and Resistance]]>
+            </name>
+            <date_time_iso format="ISO 8601" zone="GMT">2026-11-09T19:30:00+00:00</date_time_iso>
+            <opening_time_iso format="ISO 8601" zone="GMT">2026-11-09T19:00:00+00:00</opening_time_iso>
+            <event_number>428800295</event_number>
+            <venue_layout>Main Hall</venue_layout>
+            <comment>
+              <![CDATA[]]>
+            </comment>
+            <event_attribute></event_attribute>
+            <url>https://conwayhall.ticketsolve.com/shows/1173677306/events/428800295</url>
+            <status>available</status>
+            <feed>
+              <url>https://conwayhall.ticketsolve.com/shows/1173677306/events/428800295.xml</url>
+            </feed>
+          </event>
+        </events>
+        <status>available</status>
+      </show>
+      <show id="1173677311">
+        <name>
+          <![CDATA[Intelligence Squared: The Threat of Capitalism without Democracy, with Martin Wolf]]>
+        </name>
+        <description>
+          <![CDATA[<div>
+<strong style="font-size:0.875rem;">Martin Wolf</strong><span style="font-size:0.875rem;">, the chief economics commentator at the Financial Times, comes to <b>Intelligence Squared</b> to mark the launch of an updated edition of his new book&nbsp;</span><i style="font-size:0.875rem;">The Crisis of Democratic Capitalism,&nbsp;</i><span style="font-size:0.875rem;">and make the case for why in 2026, the combination of both democracy and capitalism is needed more than ever.&nbsp;</span>
+</div>]]>
+        </description>
+        <event_category></event_category>
+        <production_company_name>Conway Hall Ethical Society</production_company_name>
+        <priority>0</priority>
+        <url>https://conwayhall.ticketsolve.com/shows/1173677311/events</url>
+        <version>42</version>
+        <tags>
+          <tag>conwayhall</tag>
+          <tag>intelligencesquared</tag>
+          <tag>venuehire</tag>
+        </tags>
+        <images>
+          <image priority="0">
+            <url size="large">https://dm7lxewn39lms.cloudfront.net/as-assets/variants/ralvk5b9agbx2specawrw5czlz5x/a6206d8b8848d1f5f779dd436f25589e3a792fee204effd13dccee565e881abd</url>
+            <url size="medium">https://dm7lxewn39lms.cloudfront.net/as-assets/variants/ralvk5b9agbx2specawrw5czlz5x/6428308680a2820b32ca9af5ca523d295e68c5119095c3d9f4a769458f8227e4</url>
+            <url size="thumb">https://dm7lxewn39lms.cloudfront.net/as-assets/variants/ralvk5b9agbx2specawrw5czlz5x/7c367cff06fd518c1ca8f9254efb0ec25a25cd43a892ea5364918efafd429189</url>
+            <alt/>
+          </image>
+        </images>
+        <properties>
+        </properties>
+        <events>
+          <event id="428800302">
+            <name>
+              <![CDATA[12 Nov 2026 - 19:00 @ Conway Hall - (opening time 18:30) Intelligence Squared: The Threat of Capitalism without Democracy, with Martin Wolf]]>
+            </name>
+            <date_time_iso format="ISO 8601" zone="GMT">2026-11-12T19:00:00+00:00</date_time_iso>
+            <opening_time_iso format="ISO 8601" zone="GMT">2026-11-12T18:30:00+00:00</opening_time_iso>
+            <event_number>428800302</event_number>
+            <venue_layout>Main Hall</venue_layout>
+            <comment>
+              <![CDATA[]]>
+            </comment>
+            <event_attribute></event_attribute>
+            <url>https://conwayhall.ticketsolve.com/shows/1173677311/events/428800302</url>
+            <status>available</status>
+            <feed>
+              <url>https://conwayhall.ticketsolve.com/shows/1173677311/events/428800302.xml</url>
+            </feed>
+          </event>
+        </events>
+        <status>available</status>
+      </show>
+      <show id="1173675458">
+        <name>
+          <![CDATA[Lunchtime Recitals: Edward Lloyd]]>
+        </name>
+        <description>
+          <![CDATA[<span>In a new collaborative series with the Royal Northern College of Music celebrating young and emerging artists, pianist <b>Edward Lloyd</b> performs one of Franz Liszt&apos;s most visionary, mystical cycles.</span>]]>
+        </description>
+        <event_category></event_category>
+        <production_company_name>Conway Hall Ethical Society</production_company_name>
+        <priority>0</priority>
+        <url>https://conwayhall.ticketsolve.com/shows/1173675458/events</url>
+        <version>93</version>
+        <tags>
+          <tag>autumnseason26</tag>
+          <tag>conwayhall</tag>
+          <tag>rncm</tag>
+          <tag>simon</tag>
+        </tags>
+        <images>
+          <image priority="0">
+            <url size="large">https://dm7lxewn39lms.cloudfront.net/as-assets/variants/j67h2zuo0j7nj9xpd3i7ihlawr94/a6206d8b8848d1f5f779dd436f25589e3a792fee204effd13dccee565e881abd</url>
+            <url size="medium">https://dm7lxewn39lms.cloudfront.net/as-assets/variants/j67h2zuo0j7nj9xpd3i7ihlawr94/6428308680a2820b32ca9af5ca523d295e68c5119095c3d9f4a769458f8227e4</url>
+            <url size="thumb">https://dm7lxewn39lms.cloudfront.net/as-assets/variants/j67h2zuo0j7nj9xpd3i7ihlawr94/7c367cff06fd518c1ca8f9254efb0ec25a25cd43a892ea5364918efafd429189</url>
+            <alt/>
+          </image>
+        </images>
+        <properties>
+        </properties>
+        <events>
+          <event id="428788135">
+            <name>
+              <![CDATA[18 Nov 2026 - 13:10 @ Conway Hall - (opening time 12:40) Lunchtime Recitals: Edward Lloyd]]>
+            </name>
+            <date_time_iso format="ISO 8601" zone="GMT">2026-11-18T13:10:00+00:00</date_time_iso>
+            <opening_time_iso format="ISO 8601" zone="GMT">2026-11-18T12:40:00+00:00</opening_time_iso>
+            <event_number>428788135</event_number>
+            <venue_layout>Main Hall</venue_layout>
+            <comment>
+              <![CDATA[]]>
+            </comment>
+            <event_attribute></event_attribute>
+            <url>https://conwayhall.ticketsolve.com/shows/1173675458/events/428788135</url>
+            <status>available</status>
+            <feed>
+              <url>https://conwayhall.ticketsolve.com/shows/1173675458/events/428788135.xml</url>
+            </feed>
+          </event>
+        </events>
+        <status>available</status>
+      </show>
+      <show id="1173675508">
+        <name>
+          <![CDATA[Sunday Concerts: Aida Piano Trio]]>
+        </name>
+        <description>
+          <![CDATA[Join the <b>Aida Piano Trio</b> for a beautifully balanced evening pairing the familiar with the unexpected, performed with real emotional range.]]>
+        </description>
+        <event_category>Sunday Concerts</event_category>
+        <production_company_name>Conway Hall Ethical Society</production_company_name>
+        <priority>0</priority>
+        <url>https://conwayhall.ticketsolve.com/shows/1173675508/events</url>
+        <version>98</version>
+        <tags>
+          <tag>autumnseason26</tag>
+          <tag>conwayhall</tag>
+          <tag>simon</tag>
+          <tag>sundayconcerts</tag>
+        </tags>
+        <images>
+          <image priority="0">
+            <url size="large">https://dm7lxewn39lms.cloudfront.net/as-assets/variants/jbit2ll4r0fa5eq563ah44e7ui2l/a6206d8b8848d1f5f779dd436f25589e3a792fee204effd13dccee565e881abd</url>
+            <url size="medium">https://dm7lxewn39lms.cloudfront.net/as-assets/variants/jbit2ll4r0fa5eq563ah44e7ui2l/6428308680a2820b32ca9af5ca523d295e68c5119095c3d9f4a769458f8227e4</url>
+            <url size="thumb">https://dm7lxewn39lms.cloudfront.net/as-assets/variants/jbit2ll4r0fa5eq563ah44e7ui2l/7c367cff06fd518c1ca8f9254efb0ec25a25cd43a892ea5364918efafd429189</url>
+            <alt/>
+          </image>
+        </images>
+        <properties>
+        </properties>
+        <events>
+          <event id="428788203">
+            <name>
+              <![CDATA[01 Nov 2026 - 18:30 @ Conway Hall - (opening time 18:00) Sunday Concerts: Aida Piano Trio]]>
+            </name>
+            <date_time_iso format="ISO 8601" zone="GMT">2026-11-01T18:30:00+00:00</date_time_iso>
+            <opening_time_iso format="ISO 8601" zone="GMT">2026-11-01T18:00:00+00:00</opening_time_iso>
+            <event_number>428788203</event_number>
+            <venue_layout>Main Hall</venue_layout>
+            <comment>
+              <![CDATA[]]>
+            </comment>
+            <event_attribute></event_attribute>
+            <url>https://conwayhall.ticketsolve.com/shows/1173675508/events/428788203</url>
+            <status>available</status>
+            <feed>
+              <url>https://conwayhall.ticketsolve.com/shows/1173675508/events/428788203.xml</url>
+            </feed>
+          </event>
+        </events>
+        <status>available</status>
+      </show>
+      <show id="1173675507">
+        <name>
+          <![CDATA[Sunday Concerts: Dvořák Piano Quartet]]>
+        </name>
+        <description>
+          <![CDATA[Granted the right to bear Dvoř&aacute;k&apos;s own name by his descendants, this celebrated Czech ensemble brings authentic idiomatic insight to two towering piano quartets.]]>
+        </description>
+        <event_category>Sunday Concerts</event_category>
+        <production_company_name>Conway Hall Ethical Society</production_company_name>
+        <priority>0</priority>
+        <url>https://conwayhall.ticketsolve.com/shows/1173675507/events</url>
+        <version>95</version>
+        <tags>
+          <tag>autumnseason26</tag>
+          <tag>conwayhall</tag>
+          <tag>simon</tag>
+          <tag>sundayconcerts</tag>
+        </tags>
+        <images>
+          <image priority="0">
+            <url size="large">https://dm7lxewn39lms.cloudfront.net/as-assets/variants/5md33in3s0w29bn120lxkpbpljd7/a6206d8b8848d1f5f779dd436f25589e3a792fee204effd13dccee565e881abd</url>
+            <url size="medium">https://dm7lxewn39lms.cloudfront.net/as-assets/variants/5md33in3s0w29bn120lxkpbpljd7/6428308680a2820b32ca9af5ca523d295e68c5119095c3d9f4a769458f8227e4</url>
+            <url size="thumb">https://dm7lxewn39lms.cloudfront.net/as-assets/variants/5md33in3s0w29bn120lxkpbpljd7/7c367cff06fd518c1ca8f9254efb0ec25a25cd43a892ea5364918efafd429189</url>
+            <alt/>
+          </image>
+        </images>
+        <properties>
+        </properties>
+        <events>
+          <event id="428788202">
+            <name>
+              <![CDATA[25 Oct 2026 - 18:30 @ Conway Hall - (opening time 18:00) Sunday Concerts: Dvořák Piano Quartet]]>
+            </name>
+            <date_time_iso format="ISO 8601" zone="GMT">2026-10-25T18:30:00+00:00</date_time_iso>
+            <opening_time_iso format="ISO 8601" zone="GMT">2026-10-25T18:00:00+00:00</opening_time_iso>
+            <event_number>428788202</event_number>
+            <venue_layout>Main Hall</venue_layout>
+            <comment>
+              <![CDATA[]]>
+            </comment>
+            <event_attribute></event_attribute>
+            <url>https://conwayhall.ticketsolve.com/shows/1173675507/events/428788202</url>
+            <status>available</status>
+            <feed>
+              <url>https://conwayhall.ticketsolve.com/shows/1173675507/events/428788202.xml</url>
+            </feed>
+          </event>
+        </events>
+        <status>available</status>
+      </show>
+      <show id="1173675509">
+        <name>
+          <![CDATA[Sunday Concerts: Greenwich Trio & Boris Bizjak]]>
+        </name>
+        <description>
+          <![CDATA[<b>Boris Bizjak</b> joins the <b>Greenwich Trio</b> for an evening of colour, charm and surprising juxtapositions.]]>
+        </description>
+        <event_category>Sunday Concerts</event_category>
+        <production_company_name>Conway Hall Ethical Society</production_company_name>
+        <priority>0</priority>
+        <url>https://conwayhall.ticketsolve.com/shows/1173675509/events</url>
+        <version>92</version>
+        <tags>
+          <tag>autumnseason26</tag>
+          <tag>conwayhall</tag>
+          <tag>simon</tag>
+          <tag>sundayconcerts</tag>
+        </tags>
+        <images>
+          <image priority="0">
+            <url size="large">https://dm7lxewn39lms.cloudfront.net/as-assets/variants/jcan1yiixuj4vum9fh2mj6qe6kzd/a6206d8b8848d1f5f779dd436f25589e3a792fee204effd13dccee565e881abd</url>
+            <url size="medium">https://dm7lxewn39lms.cloudfront.net/as-assets/variants/jcan1yiixuj4vum9fh2mj6qe6kzd/6428308680a2820b32ca9af5ca523d295e68c5119095c3d9f4a769458f8227e4</url>
+            <url size="thumb">https://dm7lxewn39lms.cloudfront.net/as-assets/variants/jcan1yiixuj4vum9fh2mj6qe6kzd/7c367cff06fd518c1ca8f9254efb0ec25a25cd43a892ea5364918efafd429189</url>
+            <alt/>
+          </image>
+        </images>
+        <properties>
+        </properties>
+        <events>
+          <event id="428788204">
+            <name>
+              <![CDATA[08 Nov 2026 - 18:30 @ Conway Hall - (opening time 18:00) Sunday Concerts: Greenwich Trio & Boris Bizjak]]>
+            </name>
+            <date_time_iso format="ISO 8601" zone="GMT">2026-11-08T18:30:00+00:00</date_time_iso>
+            <opening_time_iso format="ISO 8601" zone="GMT">2026-11-08T18:00:00+00:00</opening_time_iso>
+            <event_number>428788204</event_number>
+            <venue_layout>Main Hall</venue_layout>
+            <comment>
+              <![CDATA[]]>
+            </comment>
+            <event_attribute></event_attribute>
+            <url>https://conwayhall.ticketsolve.com/shows/1173675509/events/428788204</url>
+            <status>available</status>
+            <feed>
+              <url>https://conwayhall.ticketsolve.com/shows/1173675509/events/428788204.xml</url>
+            </feed>
+          </event>
+        </events>
+        <status>available</status>
+      </show>
+      <show id="1173675510">
+        <name>
+          <![CDATA[Sunday Concerts: Raphael Wallfisch & Simon Callaghan]]>
+        </name>
+        <description>
+          <![CDATA[One of the world&apos;s most recorded cellists joins Artistic Director <b>Simon Callaghan</b> to explore a fascinating byway of the repertoire]]>
+        </description>
+        <event_category>Sunday Concerts</event_category>
+        <production_company_name>Conway Hall Ethical Society</production_company_name>
+        <priority>0</priority>
+        <url>https://conwayhall.ticketsolve.com/shows/1173675510/events</url>
+        <version>103</version>
+        <tags>
+          <tag>autumnseason26</tag>
+          <tag>conwayhall</tag>
+          <tag>simon</tag>
+          <tag>sundayconcerts</tag>
+        </tags>
+        <images>
+          <image priority="0">
+            <url size="large">https://dm7lxewn39lms.cloudfront.net/as-assets/variants/gusa7b5vxuc8jnr4oqwkfg24ese5/a6206d8b8848d1f5f779dd436f25589e3a792fee204effd13dccee565e881abd</url>
+            <url size="medium">https://dm7lxewn39lms.cloudfront.net/as-assets/variants/gusa7b5vxuc8jnr4oqwkfg24ese5/6428308680a2820b32ca9af5ca523d295e68c5119095c3d9f4a769458f8227e4</url>
+            <url size="thumb">https://dm7lxewn39lms.cloudfront.net/as-assets/variants/gusa7b5vxuc8jnr4oqwkfg24ese5/7c367cff06fd518c1ca8f9254efb0ec25a25cd43a892ea5364918efafd429189</url>
+            <alt/>
+          </image>
+        </images>
+        <properties>
+        </properties>
+        <events>
+          <event id="428788205">
+            <name>
+              <![CDATA[15 Nov 2026 - 18:30 @ Conway Hall - (opening time 18:00) Sunday Concerts: Raphael Wallfisch & Simon Callaghan]]>
+            </name>
+            <date_time_iso format="ISO 8601" zone="GMT">2026-11-15T18:30:00+00:00</date_time_iso>
+            <opening_time_iso format="ISO 8601" zone="GMT">2026-11-15T18:00:00+00:00</opening_time_iso>
+            <event_number>428788205</event_number>
+            <venue_layout>Main Hall</venue_layout>
+            <comment>
+              <![CDATA[]]>
+            </comment>
+            <event_attribute></event_attribute>
+            <url>https://conwayhall.ticketsolve.com/shows/1173675510/events/428788205</url>
+            <status>available</status>
+            <feed>
+              <url>https://conwayhall.ticketsolve.com/shows/1173675510/events/428788205.xml</url>
+            </feed>
+          </event>
+        </events>
+        <status>available</status>
+      </show>
+      <show id="1173675515">
+        <name>
+          <![CDATA[Sunday Concerts: Ruth Rogers & Martin Cousin]]>
+        </name>
+        <description>
+          <![CDATA[<span><b>Ruth Rogers</b>, Leader of the London Mozart Players and the Brighton Philharmonic, and<b> Martin Cousin</b>, her partner in the Aquinas Piano Trio, bring four great violin sonatas to Conway Hall.&nbsp;</span>]]>
+        </description>
+        <event_category>Sunday Concerts</event_category>
+        <production_company_name>Conway Hall Ethical Society</production_company_name>
+        <priority>0</priority>
+        <url>https://conwayhall.ticketsolve.com/shows/1173675515/events</url>
+        <version>104</version>
+        <tags>
+          <tag>autumnseason26</tag>
+          <tag>conwayhall</tag>
+          <tag>simon</tag>
+          <tag>sundayconcerts</tag>
+        </tags>
+        <images>
+          <image priority="0">
+            <url size="large">https://dm7lxewn39lms.cloudfront.net/as-assets/variants/9vecjjizke9ezzku0qhp23tszp0w/a6206d8b8848d1f5f779dd436f25589e3a792fee204effd13dccee565e881abd</url>
+            <url size="medium">https://dm7lxewn39lms.cloudfront.net/as-assets/variants/9vecjjizke9ezzku0qhp23tszp0w/6428308680a2820b32ca9af5ca523d295e68c5119095c3d9f4a769458f8227e4</url>
+            <url size="thumb">https://dm7lxewn39lms.cloudfront.net/as-assets/variants/9vecjjizke9ezzku0qhp23tszp0w/7c367cff06fd518c1ca8f9254efb0ec25a25cd43a892ea5364918efafd429189</url>
+            <alt/>
+          </image>
+        </images>
+        <properties>
+        </properties>
+        <events>
+          <event id="428788211">
+            <name>
+              <![CDATA[29 Nov 2026 - 18:30 @ Conway Hall - (opening time 18:00) Sunday Concerts: Ruth Rogers & Martin Cousin]]>
+            </name>
+            <date_time_iso format="ISO 8601" zone="GMT">2026-11-29T18:30:00+00:00</date_time_iso>
+            <opening_time_iso format="ISO 8601" zone="GMT">2026-11-29T18:00:00+00:00</opening_time_iso>
+            <event_number>428788211</event_number>
+            <venue_layout>Main Hall</venue_layout>
+            <comment>
+              <![CDATA[]]>
+            </comment>
+            <event_attribute></event_attribute>
+            <url>https://conwayhall.ticketsolve.com/shows/1173675515/events/428788211</url>
+            <status>available</status>
+            <feed>
+              <url>https://conwayhall.ticketsolve.com/shows/1173675515/events/428788211.xml</url>
+            </feed>
+          </event>
+        </events>
+        <status>available</status>
+      </show>
+      <show id="1173675519">
+        <name>
+          <![CDATA[Sunday Concerts: Ryelandt Trio]]>
+        </name>
+        <description>
+          <![CDATA[The <b>Ryelandt Trio</b> close another riveting season in a programme which will blend Belgian rarities with beloved classics.]]>
+        </description>
+        <event_category>Sunday Concerts</event_category>
+        <production_company_name>Conway Hall Ethical Society</production_company_name>
+        <priority>0</priority>
+        <url>https://conwayhall.ticketsolve.com/shows/1173675519/events</url>
+        <version>98</version>
+        <tags>
+          <tag>autumnseason26</tag>
+          <tag>conwayhall</tag>
+          <tag>simon</tag>
+          <tag>sundayconcerts</tag>
+        </tags>
+        <images>
+          <image priority="0">
+            <url size="large">https://dm7lxewn39lms.cloudfront.net/as-assets/variants/stzzaqpxxrdyfwcyl99np8ve278f/a6206d8b8848d1f5f779dd436f25589e3a792fee204effd13dccee565e881abd</url>
+            <url size="medium">https://dm7lxewn39lms.cloudfront.net/as-assets/variants/stzzaqpxxrdyfwcyl99np8ve278f/6428308680a2820b32ca9af5ca523d295e68c5119095c3d9f4a769458f8227e4</url>
+            <url size="thumb">https://dm7lxewn39lms.cloudfront.net/as-assets/variants/stzzaqpxxrdyfwcyl99np8ve278f/7c367cff06fd518c1ca8f9254efb0ec25a25cd43a892ea5364918efafd429189</url>
+            <alt/>
+          </image>
+        </images>
+        <properties>
+        </properties>
+        <events>
+          <event id="428788218">
+            <name>
+              <![CDATA[13 Dec 2026 - 18:30 @ Conway Hall - (opening time 18:00) Sunday Concerts: Ryelandt Trio]]>
+            </name>
+            <date_time_iso format="ISO 8601" zone="GMT">2026-12-13T18:30:00+00:00</date_time_iso>
+            <opening_time_iso format="ISO 8601" zone="GMT">2026-12-13T18:00:00+00:00</opening_time_iso>
+            <event_number>428788218</event_number>
+            <venue_layout>Main Hall</venue_layout>
+            <comment>
+              <![CDATA[]]>
+            </comment>
+            <event_attribute></event_attribute>
+            <url>https://conwayhall.ticketsolve.com/shows/1173675519/events/428788218</url>
+            <status>available</status>
+            <feed>
+              <url>https://conwayhall.ticketsolve.com/shows/1173675519/events/428788218.xml</url>
+            </feed>
+          </event>
+        </events>
+        <status>available</status>
+      </show>
+      <show id="1173675516">
+        <name>
+          <![CDATA[Sunday Concerts: Tippett Quartet]]>
+        </name>
+        <description>
+          <![CDATA[<div>The <b>Tippett Quartet</b> return this Autumn with the launch of their 2026/27 explorations of Tippett&rsquo;s quartets at Conway Hall, paired with Beethoven&rsquo;s radiant &lsquo;Harp&rsquo; Quartet.</div>]]>
+        </description>
+        <event_category>Sunday Concerts</event_category>
+        <production_company_name>Conway Hall Ethical Society</production_company_name>
+        <priority>0</priority>
+        <url>https://conwayhall.ticketsolve.com/shows/1173675516/events</url>
+        <version>100</version>
+        <tags>
+          <tag>autumnseason26</tag>
+          <tag>conwayhall</tag>
+          <tag>simon</tag>
+          <tag>sundayconcerts</tag>
+        </tags>
+        <images>
+          <image priority="0">
+            <url size="large">https://dm7lxewn39lms.cloudfront.net/as-assets/variants/ae5i2leg249kzct84dlqgblebxic/a6206d8b8848d1f5f779dd436f25589e3a792fee204effd13dccee565e881abd</url>
+            <url size="medium">https://dm7lxewn39lms.cloudfront.net/as-assets/variants/ae5i2leg249kzct84dlqgblebxic/6428308680a2820b32ca9af5ca523d295e68c5119095c3d9f4a769458f8227e4</url>
+            <url size="thumb">https://dm7lxewn39lms.cloudfront.net/as-assets/variants/ae5i2leg249kzct84dlqgblebxic/7c367cff06fd518c1ca8f9254efb0ec25a25cd43a892ea5364918efafd429189</url>
+            <alt/>
+          </image>
+        </images>
+        <properties>
+        </properties>
+        <events>
+          <event id="428788213">
+            <name>
+              <![CDATA[06 Dec 2026 - 18:30 @ Conway Hall - (opening time 18:00) Sunday Concerts: Tippett Quartet]]>
+            </name>
+            <date_time_iso format="ISO 8601" zone="GMT">2026-12-06T18:30:00+00:00</date_time_iso>
+            <opening_time_iso format="ISO 8601" zone="GMT">2026-12-06T18:00:00+00:00</opening_time_iso>
+            <event_number>428788213</event_number>
+            <venue_layout>Main Hall</venue_layout>
+            <comment>
+              <![CDATA[]]>
+            </comment>
+            <event_attribute></event_attribute>
+            <url>https://conwayhall.ticketsolve.com/shows/1173675516/events/428788213</url>
+            <status>available</status>
+            <feed>
+              <url>https://conwayhall.ticketsolve.com/shows/1173675516/events/428788213.xml</url>
+            </feed>
+          </event>
+        </events>
+        <status>available</status>
+      </show>
+      <show id="1173675511">
+        <name>
+          <![CDATA[Sunday Concerts: Woolf Quartet]]>
+        </name>
+        <description>
+          <![CDATA[Already earning praise for their concentrated, communicative energy, the <b>Woolf Quartet</b> presents a programme of vivid works.]]>
+        </description>
+        <event_category>Sunday Concerts</event_category>
+        <production_company_name>Conway Hall Ethical Society</production_company_name>
+        <priority>0</priority>
+        <url>https://conwayhall.ticketsolve.com/shows/1173675511/events</url>
+        <version>103</version>
+        <tags>
+          <tag>autumnseason26</tag>
+          <tag>conwayhall</tag>
+          <tag>simon</tag>
+          <tag>sundayconcerts</tag>
+        </tags>
+        <images>
+          <image priority="0">
+            <url size="large">https://dm7lxewn39lms.cloudfront.net/as-assets/variants/u8wrs18r4jwrbohubs5wwpno7qt9/a6206d8b8848d1f5f779dd436f25589e3a792fee204effd13dccee565e881abd</url>
+            <url size="medium">https://dm7lxewn39lms.cloudfront.net/as-assets/variants/u8wrs18r4jwrbohubs5wwpno7qt9/6428308680a2820b32ca9af5ca523d295e68c5119095c3d9f4a769458f8227e4</url>
+            <url size="thumb">https://dm7lxewn39lms.cloudfront.net/as-assets/variants/u8wrs18r4jwrbohubs5wwpno7qt9/7c367cff06fd518c1ca8f9254efb0ec25a25cd43a892ea5364918efafd429189</url>
+            <alt/>
+          </image>
+        </images>
+        <properties>
+        </properties>
+        <events>
+          <event id="428788207">
+            <name>
+              <![CDATA[22 Nov 2026 - 18:30 @ Conway Hall - (opening time 18:00) Sunday Concerts: Woolf Quartet]]>
+            </name>
+            <date_time_iso format="ISO 8601" zone="GMT">2026-11-22T18:30:00+00:00</date_time_iso>
+            <opening_time_iso format="ISO 8601" zone="GMT">2026-11-22T18:00:00+00:00</opening_time_iso>
+            <event_number>428788207</event_number>
+            <venue_layout>Main Hall</venue_layout>
+            <comment>
+              <![CDATA[]]>
+            </comment>
+            <event_attribute></event_attribute>
+            <url>https://conwayhall.ticketsolve.com/shows/1173675511/events/428788207</url>
+            <status>available</status>
+            <feed>
+              <url>https://conwayhall.ticketsolve.com/shows/1173675511/events/428788207.xml</url>
+            </feed>
+          </event>
+        </events>
+        <status>available</status>
+      </show>
+      <show id="1173675359">
+        <name>
+          <![CDATA[The Golden Fountain]]>
+        </name>
+        <description>
+          <![CDATA[<div>
+<span>Conway Hall presents the UK premiere of</span><strong><em> The Golden Fountain</em></strong><span> &ndash; a new Climate Opera by composer and pianist </span><strong>Stefania Passamonte</strong><span>, inspired by Arabian mythology, desert folklore, and the enduring relationship between knowledge, water, and the natural world.</span>
+</div><div></div>]]>
+        </description>
+        <event_category>Music</event_category>
+        <production_company_name>Conway Hall Ethical Society</production_company_name>
+        <priority>0</priority>
+        <url>https://conwayhall.ticketsolve.com/shows/1173675359/events</url>
+        <version>94</version>
+        <tags>
+          <tag>autumnseason26</tag>
+          <tag>conwayhall</tag>
+          <tag>lpmam</tag>
+        </tags>
+        <images>
+          <image priority="0">
+            <url size="large">https://dm7lxewn39lms.cloudfront.net/as-assets/variants/16wxzfuirdv8mg0ndeznk6vuyc3h/a6206d8b8848d1f5f779dd436f25589e3a792fee204effd13dccee565e881abd</url>
+            <url size="medium">https://dm7lxewn39lms.cloudfront.net/as-assets/variants/16wxzfuirdv8mg0ndeznk6vuyc3h/6428308680a2820b32ca9af5ca523d295e68c5119095c3d9f4a769458f8227e4</url>
+            <url size="thumb">https://dm7lxewn39lms.cloudfront.net/as-assets/variants/16wxzfuirdv8mg0ndeznk6vuyc3h/7c367cff06fd518c1ca8f9254efb0ec25a25cd43a892ea5364918efafd429189</url>
+            <alt/>
+          </image>
+        </images>
+        <properties>
+        </properties>
+        <events>
+          <event id="428787908">
+            <name>
+              <![CDATA[05 Dec 2026 - 19:30 @ Conway Hall - (opening time 19:00) The Golden Fountain]]>
+            </name>
+            <date_time_iso format="ISO 8601" zone="GMT">2026-12-05T19:30:00+00:00</date_time_iso>
+            <opening_time_iso format="ISO 8601" zone="GMT">2026-12-05T19:00:00+00:00</opening_time_iso>
+            <event_number>428787908</event_number>
+            <venue_layout>Main Hall</venue_layout>
+            <comment>
+              <![CDATA[]]>
+            </comment>
+            <event_attribute></event_attribute>
+            <url>https://conwayhall.ticketsolve.com/shows/1173675359/events/428787908</url>
+            <status>available</status>
+            <feed>
+              <url>https://conwayhall.ticketsolve.com/shows/1173675359/events/428787908.xml</url>
+            </feed>
+          </event>
+        </events>
+        <status>available</status>
+      </show>
+      <show id="1173674866">
+        <name>
+          <![CDATA[The Haunted Landscape: Magic, Fairies and Old Gods]]>
+        </name>
+        <description>
+          <![CDATA[<div>This year The Haunted Landscape, our annual folklore all-dayer, delves into the realms of magic, fairies and old gods. We will entertain the Great God Pan with <b>Professor Ronald Hutton </b>and <b>Sara Hannant</b>, meet fairies new and old with<b> Francis Young</b> and <b>Jo Hickey-Hall</b>, discover witch trials with <b>Marion Gibson </b>and walk Britain&apos;s haunted lands with <b>Jeremy Harte </b>and <b>Fiona Robertson</b>.</div>]]>
+        </description>
+        <event_category>Talks &amp; Debates</event_category>
+        <production_company_name>London Fortean Society</production_company_name>
+        <priority>0</priority>
+        <url>https://conwayhall.ticketsolve.com/shows/1173674866/events</url>
+        <version>138</version>
+        <tags>
+          <tag>autumnseason26</tag>
+          <tag>conwayhall</tag>
+          <tag>londonforteansociety</tag>
+          <tag>scott</tag>
+        </tags>
+        <images>
+          <image priority="0">
+            <url size="large">https://dm7lxewn39lms.cloudfront.net/as-assets/variants/0csretwgplsjhdot58d7gs2ei9nz/a6206d8b8848d1f5f779dd436f25589e3a792fee204effd13dccee565e881abd</url>
+            <url size="medium">https://dm7lxewn39lms.cloudfront.net/as-assets/variants/0csretwgplsjhdot58d7gs2ei9nz/6428308680a2820b32ca9af5ca523d295e68c5119095c3d9f4a769458f8227e4</url>
+            <url size="thumb">https://dm7lxewn39lms.cloudfront.net/as-assets/variants/0csretwgplsjhdot58d7gs2ei9nz/7c367cff06fd518c1ca8f9254efb0ec25a25cd43a892ea5364918efafd429189</url>
+            <alt/>
+          </image>
+        </images>
+        <properties>
+        </properties>
+        <events>
+          <event id="428786335">
+            <name>
+              <![CDATA[21 Nov 2026 - 10:00 @ Conway Hall - (opening time 09:30) The Haunted Landscape: Magic, Fairies and Old Gods]]>
+            </name>
+            <date_time_iso format="ISO 8601" zone="GMT">2026-11-21T10:00:00+00:00</date_time_iso>
+            <opening_time_iso format="ISO 8601" zone="GMT">2026-11-21T09:30:00+00:00</opening_time_iso>
+            <event_number>428786335</event_number>
+            <venue_layout>Main Hall</venue_layout>
+            <comment>
+              <![CDATA[]]>
+            </comment>
+            <event_attribute>In Person</event_attribute>
+            <url>https://conwayhall.ticketsolve.com/shows/1173674866/events/428786335</url>
+            <status>available</status>
+            <feed>
+              <url>https://conwayhall.ticketsolve.com/shows/1173674866/events/428786335.xml</url>
+            </feed>
+          </event>
+          <event id="428786336">
+            <name>
+              <![CDATA[21 Nov 2026 - 10:00 @ Conway Hall - (opening time 09:45) The Haunted Landscape: Magic, Fairies and Old Gods]]>
+            </name>
+            <date_time_iso format="ISO 8601" zone="GMT">2026-11-21T10:00:00+00:00</date_time_iso>
+            <opening_time_iso format="ISO 8601" zone="GMT">2026-11-21T09:45:00+00:00</opening_time_iso>
+            <event_number>428786336</event_number>
+            <venue_layout>ONLINE</venue_layout>
+            <comment>
+              <![CDATA[]]>
+            </comment>
+            <event_attribute>Online</event_attribute>
+            <url>https://conwayhall.ticketsolve.com/shows/1173674866/events/428786336</url>
+            <status>available</status>
+            <feed>
+              <url>https://conwayhall.ticketsolve.com/shows/1173674866/events/428786336.xml</url>
+            </feed>
+          </event>
+        </events>
+        <status>available</status>
+      </show>
+      <show id="1173675457">
+        <name>
+          <![CDATA[Thinking in Frames: Can Fear Be Moral?]]>
+        </name>
+        <description>
+          <![CDATA[<span>What can horror teach us about morality? Join us at Conway Hall for a screening of Robert Wiene&rsquo;s landmark German horror film <i>The Cabinet of Dr. Caligari </i>(1920) for a deep dive into why horror continues to complicate our understanding of good and evil. </span>]]>
+        </description>
+        <event_category>Film &amp; Performance</event_category>
+        <production_company_name>Conway Hall Ethical Society</production_company_name>
+        <priority>0</priority>
+        <url>https://conwayhall.ticketsolve.com/shows/1173675457/events</url>
+        <version>97</version>
+        <tags>
+          <tag>autumnseason26</tag>
+          <tag>conwayhall</tag>
+          <tag>thinkinginframes</tag>
+        </tags>
+        <images>
+          <image priority="0">
+            <url size="large">https://dm7lxewn39lms.cloudfront.net/as-assets/variants/eux9z3jnsxrscrdctnjf7vyofip7/a6206d8b8848d1f5f779dd436f25589e3a792fee204effd13dccee565e881abd</url>
+            <url size="medium">https://dm7lxewn39lms.cloudfront.net/as-assets/variants/eux9z3jnsxrscrdctnjf7vyofip7/6428308680a2820b32ca9af5ca523d295e68c5119095c3d9f4a769458f8227e4</url>
+            <url size="thumb">https://dm7lxewn39lms.cloudfront.net/as-assets/variants/eux9z3jnsxrscrdctnjf7vyofip7/7c367cff06fd518c1ca8f9254efb0ec25a25cd43a892ea5364918efafd429189</url>
+            <alt/>
+          </image>
+        </images>
+        <properties>
+        </properties>
+        <events>
+          <event id="428788121">
+            <name>
+              <![CDATA[30 Oct 2026 - 18:30 @ Conway Hall - (opening time 18:00) Thinking in Frames: Can Fear Be Moral?]]>
+            </name>
+            <date_time_iso format="ISO 8601" zone="GMT">2026-10-30T18:30:00+00:00</date_time_iso>
+            <opening_time_iso format="ISO 8601" zone="GMT">2026-10-30T18:00:00+00:00</opening_time_iso>
+            <event_number>428788121</event_number>
+            <venue_layout>Library</venue_layout>
+            <comment>
+              <![CDATA[]]>
+            </comment>
+            <event_attribute></event_attribute>
+            <url>https://conwayhall.ticketsolve.com/shows/1173675457/events/428788121</url>
+            <status>available</status>
+            <feed>
+              <url>https://conwayhall.ticketsolve.com/shows/1173675457/events/428788121.xml</url>
+            </feed>
+          </event>
+        </events>
+        <status>available</status>
+      </show>
+      <show id="1173675351">
+        <name>
+          <![CDATA[Touch Paper: Launching a News Club Network]]>
+        </name>
+        <description>
+          <![CDATA[<span>Join keynote speaker </span><strong>Gail Bradbrook</strong><span>, Founder of Extinction Rebellion, along with an expert panel for an evening of discussion, community-building and an interactive introduction to how News Clubs work. </span>]]>
+        </description>
+        <event_category>Talks &amp; Debates</event_category>
+        <production_company_name>Conway Hall Ethical Society</production_company_name>
+        <priority>0</priority>
+        <url>https://conwayhall.ticketsolve.com/shows/1173675351/events</url>
+        <version>91</version>
+        <tags>
+          <tag>autumnseason26</tag>
+          <tag>conwayhall</tag>
+          <tag>touchpaper</tag>
+        </tags>
+        <images>
+          <image priority="0">
+            <url size="large">https://dm7lxewn39lms.cloudfront.net/as-assets/variants/j5mypje04syo9ow9zybc18c14crw/a6206d8b8848d1f5f779dd436f25589e3a792fee204effd13dccee565e881abd</url>
+            <url size="medium">https://dm7lxewn39lms.cloudfront.net/as-assets/variants/j5mypje04syo9ow9zybc18c14crw/6428308680a2820b32ca9af5ca523d295e68c5119095c3d9f4a769458f8227e4</url>
+            <url size="thumb">https://dm7lxewn39lms.cloudfront.net/as-assets/variants/j5mypje04syo9ow9zybc18c14crw/7c367cff06fd518c1ca8f9254efb0ec25a25cd43a892ea5364918efafd429189</url>
+            <alt/>
+          </image>
+        </images>
+        <properties>
+        </properties>
+        <events>
+          <event id="428787890">
+            <name>
+              <![CDATA[04 Nov 2026 - 18:30 @ Conway Hall - (opening time 18:00) Touch Paper: Launching a News Club Network]]>
+            </name>
+            <date_time_iso format="ISO 8601" zone="GMT">2026-11-04T18:30:00+00:00</date_time_iso>
+            <opening_time_iso format="ISO 8601" zone="GMT">2026-11-04T18:00:00+00:00</opening_time_iso>
+            <event_number>428787890</event_number>
+            <venue_layout>Main Hall</venue_layout>
+            <comment>
+              <![CDATA[]]>
+            </comment>
+            <event_attribute></event_attribute>
+            <url>https://conwayhall.ticketsolve.com/shows/1173675351/events/428787890</url>
+            <status>available</status>
+            <feed>
+              <url>https://conwayhall.ticketsolve.com/shows/1173675351/events/428787890.xml</url>
+            </feed>
+          </event>
+        </events>
+        <status>available</status>
+      </show>
+      <show id="1173675243">
+        <name>
+          <![CDATA[UnMasked: Neurodiversity and Performance]]>
+        </name>
+        <description>
+          <![CDATA[<span>Neurodivergent people create and perform. It could be our over-active minds, a need to carve out our own niche in the world, or a need to express ourselves in a world that doesn&rsquo;t get us. Join</span><span>&nbsp;multidisciplinary artists&nbsp;</span><strong>The Mollusc Dimension</strong><span>&nbsp;and <b>Xan Dye&nbsp;</b>in discussing performance and creativity.</span>]]>
+        </description>
+        <event_category>Talks &amp; Debates</event_category>
+        <production_company_name>Conway Hall Ethical Society</production_company_name>
+        <priority>0</priority>
+        <url>https://conwayhall.ticketsolve.com/shows/1173675243/events</url>
+        <version>96</version>
+        <tags>
+          <tag>autumnseason26</tag>
+          <tag>conwayhall</tag>
+          <tag>scott</tag>
+          <tag>unmasked</tag>
+        </tags>
+        <images>
+          <image priority="0">
+            <url size="large">https://dm7lxewn39lms.cloudfront.net/as-assets/variants/ly60q22so7x6fbwixgpl5lykbadr/a6206d8b8848d1f5f779dd436f25589e3a792fee204effd13dccee565e881abd</url>
+            <url size="medium">https://dm7lxewn39lms.cloudfront.net/as-assets/variants/ly60q22so7x6fbwixgpl5lykbadr/6428308680a2820b32ca9af5ca523d295e68c5119095c3d9f4a769458f8227e4</url>
+            <url size="thumb">https://dm7lxewn39lms.cloudfront.net/as-assets/variants/ly60q22so7x6fbwixgpl5lykbadr/7c367cff06fd518c1ca8f9254efb0ec25a25cd43a892ea5364918efafd429189</url>
+            <alt/>
+          </image>
+        </images>
+        <properties>
+        </properties>
+        <events>
+          <event id="428787679">
+            <name>
+              <![CDATA[26 Nov 2026 - 18:30 @ Conway Hall - (opening time 18:00) UnMasked: Neurodiversity and Performance]]>
+            </name>
+            <date_time_iso format="ISO 8601" zone="GMT">2026-11-26T18:30:00+00:00</date_time_iso>
+            <opening_time_iso format="ISO 8601" zone="GMT">2026-11-26T18:00:00+00:00</opening_time_iso>
+            <event_number>428787679</event_number>
+            <venue_layout>Brockway Room Seated</venue_layout>
+            <comment>
+              <![CDATA[]]>
+            </comment>
+            <event_attribute>In Person</event_attribute>
+            <url>https://conwayhall.ticketsolve.com/shows/1173675243/events/428787679</url>
+            <status>available</status>
+            <feed>
+              <url>https://conwayhall.ticketsolve.com/shows/1173675243/events/428787679.xml</url>
+            </feed>
+          </event>
+          <event id="428787680">
+            <name>
+              <![CDATA[26 Nov 2026 - 18:30 @ Conway Hall - (opening time 18:00) UnMasked: Neurodiversity and Performance]]>
+            </name>
+            <date_time_iso format="ISO 8601" zone="GMT">2026-11-26T18:30:00+00:00</date_time_iso>
+            <opening_time_iso format="ISO 8601" zone="GMT">2026-11-26T18:00:00+00:00</opening_time_iso>
+            <event_number>428787680</event_number>
+            <venue_layout>ONLINE</venue_layout>
+            <comment>
+              <![CDATA[]]>
+            </comment>
+            <event_attribute>Online</event_attribute>
+            <url>https://conwayhall.ticketsolve.com/shows/1173675243/events/428787680</url>
+            <status>available</status>
+            <feed>
+              <url>https://conwayhall.ticketsolve.com/shows/1173675243/events/428787680.xml</url>
+            </feed>
+          </event>
+        </events>
+        <status>available</status>
+      </show>
+      <show id="1173675239">
+        <name>
+          <![CDATA[Why Pubs Matter]]>
+        </name>
+        <description>
+          <![CDATA[<span>Pubs are an essential part of British culture in all its forms - they grow the social roots for communities and provide safe spaces for groups and gatherings.  Join sociologist</span><strong> Amit Singh</strong><span> and pub artist </span><strong>Lydia Wood</strong><span> as they discuss the need to recognise the importance of our pubs and what we can do to preserve them. </span>]]>
+        </description>
+        <event_category>Talks &amp; Debates</event_category>
+        <production_company_name>Conway Hall Ethical Society</production_company_name>
+        <priority>0</priority>
+        <url>https://conwayhall.ticketsolve.com/shows/1173675239/events</url>
+        <version>93</version>
+        <tags>
+          <tag>autumnseason26</tag>
+          <tag>conwayhall</tag>
+          <tag>ethicalmatters</tag>
+          <tag>scott</tag>
+        </tags>
+        <images>
+          <image priority="0">
+            <url size="large">https://dm7lxewn39lms.cloudfront.net/as-assets/variants/dkpayfeyhf18k1r718x99tlxo8sn/a6206d8b8848d1f5f779dd436f25589e3a792fee204effd13dccee565e881abd</url>
+            <url size="medium">https://dm7lxewn39lms.cloudfront.net/as-assets/variants/dkpayfeyhf18k1r718x99tlxo8sn/6428308680a2820b32ca9af5ca523d295e68c5119095c3d9f4a769458f8227e4</url>
+            <url size="thumb">https://dm7lxewn39lms.cloudfront.net/as-assets/variants/dkpayfeyhf18k1r718x99tlxo8sn/7c367cff06fd518c1ca8f9254efb0ec25a25cd43a892ea5364918efafd429189</url>
+            <alt/>
+          </image>
+        </images>
+        <properties>
+        </properties>
+        <events>
+          <event id="428787672">
+            <name>
+              <![CDATA[18 Nov 2026 - 18:30 @ Conway Hall - (opening time 18:00) Why Pubs Matter]]>
+            </name>
+            <date_time_iso format="ISO 8601" zone="GMT">2026-11-18T18:30:00+00:00</date_time_iso>
+            <opening_time_iso format="ISO 8601" zone="GMT">2026-11-18T18:00:00+00:00</opening_time_iso>
+            <event_number>428787672</event_number>
+            <venue_layout>Brockway Room Seated</venue_layout>
+            <comment>
+              <![CDATA[]]>
+            </comment>
+            <event_attribute>In Person</event_attribute>
+            <url>https://conwayhall.ticketsolve.com/shows/1173675239/events/428787672</url>
+            <status>available</status>
+            <feed>
+              <url>https://conwayhall.ticketsolve.com/shows/1173675239/events/428787672.xml</url>
+            </feed>
+          </event>
+          <event id="428787673">
+            <name>
+              <![CDATA[18 Nov 2026 - 18:30 @ Conway Hall - (opening time 18:00) Why Pubs Matter]]>
+            </name>
+            <date_time_iso format="ISO 8601" zone="GMT">2026-11-18T18:30:00+00:00</date_time_iso>
+            <opening_time_iso format="ISO 8601" zone="GMT">2026-11-18T18:00:00+00:00</opening_time_iso>
+            <event_number>428787673</event_number>
+            <venue_layout>ONLINE</venue_layout>
+            <comment>
+              <![CDATA[]]>
+            </comment>
+            <event_attribute>Online</event_attribute>
+            <url>https://conwayhall.ticketsolve.com/shows/1173675239/events/428787673</url>
+            <status>available</status>
+            <feed>
+              <url>https://conwayhall.ticketsolve.com/shows/1173675239/events/428787673.xml</url>
+            </feed>
+          </event>
+        </events>
+        <status>available</status>
+      </show>
+      <show id="1173675348">
+        <name>
+          <![CDATA[Winter Carols by Candlelight]]>
+        </name>
+        <description>
+          <![CDATA[<span>Join us for a festive feast of carols new and old in the candlelit chambers of historic Conway Hall. Raise your voices with the splendid singers of <b>Electric Voice Theatre</b>, and discover a rich history of secular hymns from composers such as Emily Josephine Troup and Eliza Flower, along with familiar favourites of the season. </span>]]>
+        </description>
+        <event_category>Music</event_category>
+        <production_company_name>Conway Hall Ethical Society</production_company_name>
+        <priority>0</priority>
+        <url>https://conwayhall.ticketsolve.com/shows/1173675348/events</url>
+        <version>118</version>
+        <tags>
+          <tag>autumnseason26</tag>
+          <tag>conwayhall</tag>
+          <tag>electricvoicetheatre</tag>
+        </tags>
+        <images>
+          <image priority="0">
+            <url size="large">https://dm7lxewn39lms.cloudfront.net/as-assets/variants/i9hq0pl4iolgk44088j3ygnl6mjr/a6206d8b8848d1f5f779dd436f25589e3a792fee204effd13dccee565e881abd</url>
+            <url size="medium">https://dm7lxewn39lms.cloudfront.net/as-assets/variants/i9hq0pl4iolgk44088j3ygnl6mjr/6428308680a2820b32ca9af5ca523d295e68c5119095c3d9f4a769458f8227e4</url>
+            <url size="thumb">https://dm7lxewn39lms.cloudfront.net/as-assets/variants/i9hq0pl4iolgk44088j3ygnl6mjr/7c367cff06fd518c1ca8f9254efb0ec25a25cd43a892ea5364918efafd429189</url>
+            <alt/>
+          </image>
+        </images>
+        <properties>
+        </properties>
+        <events>
+          <event id="428787887">
+            <name>
+              <![CDATA[10 Dec 2026 - 19:00 @ Conway Hall - (opening time 18:30) Winter Carols by Candlelight]]>
+            </name>
+            <date_time_iso format="ISO 8601" zone="GMT">2026-12-10T19:00:00+00:00</date_time_iso>
+            <opening_time_iso format="ISO 8601" zone="GMT">2026-12-10T18:30:00+00:00</opening_time_iso>
+            <event_number>428787887</event_number>
+            <venue_layout>Main Hall</venue_layout>
+            <comment>
+              <![CDATA[]]>
+            </comment>
+            <event_attribute></event_attribute>
+            <url>https://conwayhall.ticketsolve.com/shows/1173675348/events/428787887</url>
+            <status>available</status>
+            <feed>
+              <url>https://conwayhall.ticketsolve.com/shows/1173675348/events/428787887.xml</url>
+            </feed>
+          </event>
+        </events>
+        <status>available</status>
+      </show>
+    </shows>
+  </venue>
+</venues>
+
+<!-- __CACHE__ -->
