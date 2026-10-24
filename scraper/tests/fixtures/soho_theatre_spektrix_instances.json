@@ -1,0 +1,3070 @@
+[
+{
+"isOnSale": false,
+"planId": "2601AQNNVGDSDNTBVTJRRMQNTDRTBBNTQ",
+"priceList": {
+"id": "3749724ABBQSNRGVDVPTGVPHPMCMVGRRC"
+},
+"event": {
+"id": "734603AVBQKCVKGVLLQKPKPCGPQVLHNSR"
+},
+"start": "2026-10-24T15:00:00",
+"cancelled": false,
+"id": "1598806ARHJLQJBVGCDKGGBSRBLPPQTKC",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": false,
+"planId": "2601AQNNVGDSDNTBVTJRRMQNTDRTBBNTQ",
+"priceList": {
+"id": "3737324ARDTKDMVHJCKGCGSTCMQQMDHPL"
+},
+"event": {
+"id": "734603AVBQKCVKGVLLQKPKPCGPQVLHNSR"
+},
+"start": "2026-10-24T18:45:00",
+"cancelled": false,
+"id": "1599216AGDMTTKSHVDNMSBDRDMCVSPPHB",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": false,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693324ALHHHJDMJTNSSBJQPNDDVGJDHG"
+},
+"event": {
+"id": "405803ATCTSQBTBPQTMMDPNGPDKGNTSJT"
+},
+"start": "2026-10-24T19:00:00",
+"cancelled": false,
+"id": "1614405ACDSGRGLRRMVQQTPRLGJTCMBGS",
+"attribute_DiscountPercentage": "0",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": false,
+"planId": "21401ATBPGTQKVRDDCCQRVVVPPKQMSKBM",
+"priceList": {
+"id": "3725524ATCPCHNMTRLLSDKNTMVRLTLPRC"
+},
+"event": {
+"id": "742003AHPTGQDSNSTSDJJLMBBRTBLHBST"
+},
+"start": "2026-10-24T19:00:00",
+"cancelled": false,
+"id": "1613405ASDQBLCDQTQKLCQGGGTDHPJHLR",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": false,
+"planId": "28002AJQKLGCDRSJRKNDKMNMHDQCPPKNH",
+"priceList": {
+"id": "3749125AHBHBTTDRJCLMMTSRJQJHHGKQS"
+},
+"event": {
+"id": "734803AGDBSJVLJHSGCNKQTBGHQTMQRGH"
+},
+"start": "2026-10-24T19:15:00",
+"cancelled": false,
+"id": "1598207AHRTBSPHPHBHPSHKMHCVVGCJQD",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": false,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693124AVKDHKVDPKKGCJTTPQHJQSPBGN"
+},
+"event": {
+"id": "315805AJPQLVSBHKRQMRVQDGMMNGPTGDJ"
+},
+"start": "2026-10-24T19:15:00",
+"cancelled": false,
+"id": "1602408ALDVJCCDNHVRKPGMRTKJSJJSGJ",
+"attribute_DiscountPercentage": "0",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": false,
+"planId": "30401AVTJMSJLDVLNKKKDPCPPRDDJCLRT",
+"priceList": {
+"id": "3587724ASKKBLRJSGGDJNCDNRCHHKKGSR"
+},
+"event": {
+"id": "681403ABJRSHVHPNQNTGTGMRKSCKDVKBC"
+},
+"start": "2026-10-24T20:00:00",
+"cancelled": false,
+"id": "1529205ADKSMLRBNSQKLVPKKRRKQJSGLN",
+"attribute_DiscountPercentage": "0"
+},
+{
+"isOnSale": false,
+"planId": "28201ANLRQMDQPKBCRBQJSVDBPMCHQKNS",
+"priceList": {
+"id": "3214525AJQBLSSNCKKRSSCMCHCSNBTSQL"
+},
+"event": {
+"id": "706203AGTBRHTCRNQDQBLVKSRRMGSPQNG"
+},
+"start": "2026-10-24T20:00:00",
+"cancelled": false,
+"id": "1528406AKJMMGVTSKDTGPBPNNVSPSGDCC",
+"attribute_DiscountPercentage": "0",
+"attribute_PerTicketBookingFee": "4.00"
+},
+{
+"isOnSale": false,
+"planId": "2601AQNNVGDSDNTBVTJRRMQNTDRTBBNTQ",
+"priceList": {
+"id": "2806305ALNHMCBKJRLLPLSHNDKTVNDVQP"
+},
+"event": {
+"id": "747803AGQDHRQBCTTCHPQQSQRLPQDQPBH"
+},
+"start": "2026-10-24T20:30:00",
+"cancelled": false,
+"id": "1630005ACCSNVVVNNLLCHTBRBVGHSJJMR",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": false,
+"planId": "28002AJQKLGCDRSJRKNDKMNMHDQCPPKNH",
+"priceList": {
+"id": "3498724ANLNVBJRGLKKPPDCVQMCLHBMBH"
+},
+"event": {
+"id": "716203ALLBCCDKBRGVGVSTNSPSJDPKBBR"
+},
+"start": "2026-10-24T21:15:00",
+"cancelled": true,
+"id": "1555808ANPNSJGHCDGHKDHKVMJSMVDMTM",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00"
+},
+{
+"isOnSale": false,
+"planId": "28002AJQKLGCDRSJRKNDKMNMHDQCPPKNH",
+"priceList": {
+"id": "3754724ATQKNNNCLCRNJKKVPQPNBPDNKQ"
+},
+"event": {
+"id": "750403ATSPLLDSHLNDCVLQKJBDPLJSLNQ"
+},
+"start": "2026-10-24T21:15:00",
+"cancelled": false,
+"id": "1635008ANGQLNCMTJMBGRJPCPBPDKJJPC",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": false,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693124AVKDHKVDPKKGCJTTPQHJQSPBGN"
+},
+"event": {
+"id": "315805AJPQLVSBHKRQMRVQDGMMNGPTGDJ"
+},
+"start": "2026-10-24T21:15:00",
+"cancelled": false,
+"id": "1556014ADTBNPDSRKPTKSLSBHBMGBDMQK",
+"attribute_DiscountPercentage": "0"
+},
+{
+"isOnSale": false,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693124AVKDHKVDPKKGCJTTPQHJQSPBGN"
+},
+"event": {
+"id": "315805AJPQLVSBHKRQMRVQDGMMNGPTGDJ"
+},
+"start": "2026-10-24T21:15:00",
+"cancelled": false,
+"id": "1579446ALKLKGHGHGGRCDGCDDQCTGQLSH",
+"attribute_DiscountPercentage": "20"
+},
+{
+"isOnSale": false,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693124AVKDHKVDPKKGCJTTPQHJQSPBGN"
+},
+"event": {
+"id": "315805AJPQLVSBHKRQMRVQDGMMNGPTGDJ"
+},
+"start": "2026-10-24T21:15:00",
+"cancelled": false,
+"id": "1635806AMVLHVDJQNNNNJVJLSLDHQQMNT",
+"attribute_DiscountPercentage": "0",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": false,
+"planId": "2601AQNNVGDSDNTBVTJRRMQNTDRTBBNTQ",
+"priceList": {
+"id": "2475205ARDRJNTJMGTTLRVNNPMHSRKSGV"
+},
+"event": {
+"id": "752603AVSLGKDSJLQDSPMKGSLCDVCHSGG"
+},
+"start": "2026-10-24T22:15:00",
+"cancelled": false,
+"id": "1641206ADJGVGCQRDSGBTSDKHDKKLKHNV",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "28201ANLRQMDQPKBCRBQJSVDBPMCHQKNS",
+"priceList": {
+"id": "3205124ABKQTDSTPPDSRQTVNDHNNHCTLC"
+},
+"event": {
+"id": "694203AQBHGMRJGBDKRBQLPKCGJHVBSJK"
+},
+"start": "2026-10-25T20:00:00",
+"cancelled": false,
+"id": "1497203ABBTHPDSDKSRTHSKNDLSGLMPMR",
+"attribute_DiscountPercentage": "0",
+"attribute_PerTicketBookingFee": "4.00"
+},
+{
+"isOnSale": true,
+"planId": "30401AVTJMSJLDVLNKKKDPCPPRDDJCLRT",
+"priceList": {
+"id": "3587724ASKKBLRJSGGDJNCDNRCHHKKGSR"
+},
+"event": {
+"id": "681403ABJRSHVHPNQNTGTGMRKSCKDVKBC"
+},
+"start": "2026-10-26T18:00:00",
+"cancelled": false,
+"id": "1513003AKPSNGDQTTRMTMSQHCQQLCMGTK",
+"attribute_DiscountPercentage": "0"
+},
+{
+"isOnSale": true,
+"planId": "2601AQNNVGDSDNTBVTJRRMQNTDRTBBNTQ",
+"priceList": {
+"id": "3737124AVJNBCHCLRTGKPSRHQSDNDNHTS"
+},
+"event": {
+"id": "734603AVBQKCVKGVLLQKPKPCGPQVLHNSR"
+},
+"start": "2026-10-26T18:45:00",
+"cancelled": false,
+"id": "1598411AHTQSLRPTKJJPJVBDJDPMBRMJS",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693324ALHHHJDMJTNSSBJQPNDDVGJDHG"
+},
+"event": {
+"id": "405803ATCTSQBTBPQTMMDPNGPDKGNTSJT"
+},
+"start": "2026-10-26T19:00:00",
+"cancelled": false,
+"id": "1614406AMKHQCBLLVLMDGLTTNDPTRNMQL",
+"attribute_DiscountPercentage": "0",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "21401ATBPGTQKVRDDCCQRVVVPPKQMSKBM",
+"priceList": {
+"id": "3611324ARSBRSDPCQGHGVHTNTVCDPNTNG"
+},
+"event": {
+"id": "742003AHPTGQDSNSTSDJJLMBBRTBLHBST"
+},
+"start": "2026-10-26T19:00:00",
+"cancelled": false,
+"id": "1613603APDCQJQRSCPRKGDSGQJKMHVRGS",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "28002AJQKLGCDRSJRKNDKMNMHDQCPPKNH",
+"priceList": {
+"id": "3749524AMKMQQJQHQHQMGBDHMQBBQKLSV"
+},
+"event": {
+"id": "734803AGDBSJVLJHSGCNKQTBGHQTMQRGH"
+},
+"start": "2026-10-26T19:15:00",
+"cancelled": false,
+"id": "1599603APJJNCQTMQHSNBJSDLLSGBKCRT",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693124AVKDHKVDPKKGCJTTPQHJQSPBGN"
+},
+"event": {
+"id": "315805AJPQLVSBHKRQMRVQDGMMNGPTGDJ"
+},
+"start": "2026-10-26T19:15:00",
+"cancelled": false,
+"id": "1602409ANPKCBHLQLCQGBVJKBTRHJMTDK",
+"attribute_DiscountPercentage": "0",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "28201ANLRQMDQPKBCRBQJSVDBPMCHQKNS",
+"priceList": {
+"id": "3431725ASNLDTHGCCCSSBNLJHPQCSVHDP"
+},
+"event": {
+"id": "700403AGLNMQTQRVJBJLTMVGJJLRMRJLJ"
+},
+"start": "2026-10-26T19:30:00",
+"cancelled": false,
+"id": "1512803ASMMDBNPDJQLRTVKHCGSSRBGJC",
+"attribute_DiscountPercentage": "0",
+"attribute_PerTicketBookingFee": "4.00"
+},
+{
+"isOnSale": true,
+"planId": "2601AQNNVGDSDNTBVTJRRMQNTDRTBBNTQ",
+"priceList": {
+"id": "1283404APVJBBKJQHRSRGQLTMJCJMGNHD"
+},
+"event": {
+"id": "750603AHQLBHJVMKQMMPTSTBQTKJCCNLS"
+},
+"start": "2026-10-26T20:30:00",
+"cancelled": false,
+"id": "1636003AJTMDVDMPSMCKNNTDVVVGSLLDV",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693124AVKDHKVDPKKGCJTTPQHJQSPBGN"
+},
+"event": {
+"id": "315805AJPQLVSBHKRQMRVQDGMMNGPTGDJ"
+},
+"start": "2026-10-26T21:15:00",
+"cancelled": false,
+"id": "1612803AHCPRQHSLSHBMDNPJMNTRKJKRM",
+"attribute_DiscountPercentage": "0",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "28002AJQKLGCDRSJRKNDKMNMHDQCPPKNH",
+"priceList": {
+"id": "3149124ASTMCLMQVPNCBDTQPQKGBTJDLB"
+},
+"event": {
+"id": "741603APBPGHLRHQQGDJLBCNVKBGJLSTS"
+},
+"start": "2026-10-26T21:15:00",
+"cancelled": false,
+"id": "1612403APKNNNHCCVTMLDCBDSCQQBBDBG",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "30401AVTJMSJLDVLNKKKDPCPPRDDJCLRT",
+"priceList": {
+"id": "3587724ASKKBLRJSGGDJNCDNRCHHKKGSR"
+},
+"event": {
+"id": "681403ABJRSHVHPNQNTGTGMRKSCKDVKBC"
+},
+"start": "2026-10-27T18:00:00",
+"cancelled": false,
+"id": "1528003ALDRSCKSBKMNKQQNGLPBMCSPTH",
+"attribute_DiscountPercentage": "0"
+},
+{
+"isOnSale": true,
+"planId": "2601AQNNVGDSDNTBVTJRRMQNTDRTBBNTQ",
+"priceList": {
+"id": "3753724AMBCNKQHQNDTCKMDKRCVMDGRLV"
+},
+"event": {
+"id": "734603AVBQKCVKGVLLQKPKPCGPQVLHNSR"
+},
+"start": "2026-10-27T18:45:00",
+"cancelled": false,
+"id": "1598412AHVPQDTLQDKLCSLCRCLPQGNQJJ",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693324ALHHHJDMJTNSSBJQPNDDVGJDHG"
+},
+"event": {
+"id": "405803ATCTSQBTBPQTMMDPNGPDKGNTSJT"
+},
+"start": "2026-10-27T19:00:00",
+"cancelled": false,
+"id": "1614407ABPJLCKHPQGDKKTQGHHDKBTKML",
+"attribute_DiscountPercentage": "0",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "21401ATBPGTQKVRDDCCQRVVVPPKQMSKBM",
+"priceList": {
+"id": "3739326ANNBTPJBQVPMQTHHRVLDMCKRQJ"
+},
+"event": {
+"id": "742003AHPTGQDSNSTSDJJLMBBRTBLHBST"
+},
+"start": "2026-10-27T19:00:00",
+"cancelled": false,
+"id": "1613604ASLVTCMGLBHGJKLQGLTHDBLGBS",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "28002AJQKLGCDRSJRKNDKMNMHDQCPPKNH",
+"priceList": {
+"id": "3751524ABCKRCQQDQNTPSGPMPNDTQPVDN"
+},
+"event": {
+"id": "734803AGDBSJVLJHSGCNKQTBGHQTMQRGH"
+},
+"start": "2026-10-27T19:15:00",
+"cancelled": false,
+"id": "1599604AVNGQGBDJBMNVDSBVQGBMLPVPP",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693124AVKDHKVDPKKGCJTTPQHJQSPBGN"
+},
+"event": {
+"id": "315805AJPQLVSBHKRQMRVQDGMMNGPTGDJ"
+},
+"start": "2026-10-27T19:15:00",
+"cancelled": false,
+"id": "1602410ANSNRVGHLSHQLSLLLPKVSPVKCB",
+"attribute_DiscountPercentage": "0",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "2601AQNNVGDSDNTBVTJRRMQNTDRTBBNTQ",
+"priceList": {
+"id": "2475205ARDRJNTJMGTTLRVNNPMHSRKSGV"
+},
+"event": {
+"id": "750603AHQLBHJVMKQMMPTSTBQTKJCCNLS"
+},
+"start": "2026-10-27T20:30:00",
+"cancelled": false,
+"id": "1636004ASJNNVTSHNLSDJTGKDQVBPGVMG",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693124AVKDHKVDPKKGCJTTPQHJQSPBGN"
+},
+"event": {
+"id": "315805AJPQLVSBHKRQMRVQDGMMNGPTGDJ"
+},
+"start": "2026-10-27T21:15:00",
+"cancelled": false,
+"id": "1612804AMDQBLPJPRNLVQCTVBMDCNCLMN",
+"attribute_DiscountPercentage": "0",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "28002AJQKLGCDRSJRKNDKMNMHDQCPPKNH",
+"priceList": {
+"id": "3149124ASTMCLMQVPNCBDTQPQKGBTJDLB"
+},
+"event": {
+"id": "741603APBPGHLRHQQGDJLBCNVKBGJLSTS"
+},
+"start": "2026-10-27T21:15:00",
+"cancelled": false,
+"id": "1612404ASGLKMTJSNQVJTBHVNQNRMNGRJ",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "30401AVTJMSJLDVLNKKKDPCPPRDDJCLRT",
+"priceList": {
+"id": "3587724ASKKBLRJSGGDJNCDNRCHHKKGSR"
+},
+"event": {
+"id": "681403ABJRSHVHPNQNTGTGMRKSCKDVKBC"
+},
+"start": "2026-10-28T14:00:00",
+"cancelled": false,
+"id": "1621203ANLMCJBRKNRQTVLGVVLPNRRTPH",
+"attribute_DiscountPercentage": "0",
+"attribute_SohoTheatreWalthamstow": true
+},
+{
+"isOnSale": true,
+"planId": "28201ANLRQMDQPKBCRBQJSVDBPMCHQKNS",
+"priceList": {
+"id": "3643125ARDCBDPDNJNBDJKKQDVJTTNRLL"
+},
+"event": {
+"id": "744403ATQHJQTVMNTDHSLKJBCJCTDDCLB"
+},
+"start": "2026-10-28T14:00:00",
+"cancelled": false,
+"id": "1620603AMGJTNVGQNLSNVDRJBPTMCPLTB",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatreWalthamstow": true
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693324ALHHHJDMJTNSSBJQPNDDVGJDHG"
+},
+"event": {
+"id": "405803ATCTSQBTBPQTMMDPNGPDKGNTSJT"
+},
+"start": "2026-10-28T14:30:00",
+"cancelled": false,
+"id": "1620017AQGKNPPHQLKMGVDSNBNNRKHVDR",
+"attribute_DiscountPercentage": "0",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "30401AVTJMSJLDVLNKKKDPCPPRDDJCLRT",
+"priceList": {
+"id": "3587724ASKKBLRJSGGDJNCDNRCHHKKGSR"
+},
+"event": {
+"id": "681403ABJRSHVHPNQNTGTGMRKSCKDVKBC"
+},
+"start": "2026-10-28T18:00:00",
+"cancelled": false,
+"id": "1528004ANJHVGKVPPDLLCPQMBLBHKRHCC",
+"attribute_DiscountPercentage": "0"
+},
+{
+"isOnSale": true,
+"planId": "2601AQNNVGDSDNTBVTJRRMQNTDRTBBNTQ",
+"priceList": {
+"id": "3746924ANDTDLPMHRSLQPLPMCVDRRKHGM"
+},
+"event": {
+"id": "734603AVBQKCVKGVLLQKPKPCGPQVLHNSR"
+},
+"start": "2026-10-28T18:45:00",
+"cancelled": false,
+"id": "1599217ANBRGBMMKPMRVHBMJKJHNNBBQT",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693324ALHHHJDMJTNSSBJQPNDDVGJDHG"
+},
+"event": {
+"id": "405803ATCTSQBTBPQTMMDPNGPDKGNTSJT"
+},
+"start": "2026-10-28T19:00:00",
+"cancelled": false,
+"id": "1614408ASNDRLNCMMMQJLBNPGRLCBJHLG",
+"attribute_DiscountPercentage": "0",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "21401ATBPGTQKVRDDCCQRVVVPPKQMSKBM",
+"priceList": {
+"id": "3684924ALJNJBTDVKTRVQLDVRPMSGDDHC"
+},
+"event": {
+"id": "742003AHPTGQDSNSTSDJJLMBBRTBLHBST"
+},
+"start": "2026-10-28T19:00:00",
+"cancelled": false,
+"id": "1614203ARDTSQKKCCGCDVTNMVSVRRCPJB",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "28002AJQKLGCDRSJRKNDKMNMHDQCPPKNH",
+"priceList": {
+"id": "3751724ALKTCPGBSMLRRHGPJRQCKRNBQT"
+},
+"event": {
+"id": "734803AGDBSJVLJHSGCNKQTBGHQTMQRGH"
+},
+"start": "2026-10-28T19:15:00",
+"cancelled": false,
+"id": "1599605AKSMCPQRQNTJHJRRLNGKMGBGGS",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693124AVKDHKVDPKKGCJTTPQHJQSPBGN"
+},
+"event": {
+"id": "315805AJPQLVSBHKRQMRVQDGMMNGPTGDJ"
+},
+"start": "2026-10-28T19:15:00",
+"cancelled": false,
+"id": "1602411ADJPJPLCPPLDTBQDHGGHTHQCJV",
+"attribute_DiscountPercentage": "0",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "28201ANLRQMDQPKBCRBQJSVDBPMCHQKNS",
+"priceList": {
+"id": "3654724ALRKPGDPVSTDJVKTSPGQQNSHCL"
+},
+"event": {
+"id": "745403ASNHHNRPNLSRRPCBRBRQLLHGMPQ"
+},
+"start": "2026-10-28T19:30:00",
+"cancelled": false,
+"id": "1638803AJPRDPKMJHMSVSCJKLKPTCTPKQ",
+"attribute_DiscountPercentage": "0",
+"attribute_PerTicketBookingFee": "4.00"
+},
+{
+"isOnSale": true,
+"planId": "30401AVTJMSJLDVLNKKKDPCPPRDDJCLRT",
+"priceList": {
+"id": "3587724ASKKBLRJSGGDJNCDNRCHHKKGSR"
+},
+"event": {
+"id": "681403ABJRSHVHPNQNTGTGMRKSCKDVKBC"
+},
+"start": "2026-10-28T19:30:00",
+"cancelled": false,
+"id": "1639203AQJRPTSQQGMJNLGQPQNCBJTSMR",
+"attribute_DiscountPercentage": "0"
+},
+{
+"isOnSale": true,
+"planId": "2601AQNNVGDSDNTBVTJRRMQNTDRTBBNTQ",
+"priceList": {
+"id": "2475205ARDRJNTJMGTTLRVNNPMHSRKSGV"
+},
+"event": {
+"id": "750603AHQLBHJVMKQMMPTSTBQTKJCCNLS"
+},
+"start": "2026-10-28T20:30:00",
+"cancelled": false,
+"id": "1636005AKHCPJGMPTKVVVMQTTNNPQMNGD",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "18001AQNDJSHVVQBLCSKTRHMGHNPJGJTM",
+"priceList": {
+"id": "3741524ARBHPTCCGJBTVJQDJHDNBKSJHJ"
+},
+"event": {
+"id": "712403AHPKNVCNNBCDGPMNJPBPBDTJTSR"
+},
+"start": "2026-10-28T21:00:00",
+"cancelled": false,
+"id": "1629403ACDTSJGRQQPVBVMPQRBSJTCDJC",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693324ALHHHJDMJTNSSBJQPNDDVGJDHG"
+},
+"event": {
+"id": "405803ATCTSQBTBPQTMMDPNGPDKGNTSJT"
+},
+"start": "2026-10-28T21:00:00",
+"cancelled": false,
+"id": "1630604AVMCCHQJHVNHMQJTMKBNRHTGJH",
+"attribute_DiscountPercentage": "0",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693124AVKDHKVDPKKGCJTTPQHJQSPBGN"
+},
+"event": {
+"id": "315805AJPQLVSBHKRQMRVQDGMMNGPTGDJ"
+},
+"start": "2026-10-28T21:15:00",
+"cancelled": false,
+"id": "1579447AMKNJVCGJTMGTPDKRRVGBDKLJR",
+"attribute_DiscountPercentage": "20"
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693124AVKDHKVDPKKGCJTTPQHJQSPBGN"
+},
+"event": {
+"id": "315805AJPQLVSBHKRQMRVQDGMMNGPTGDJ"
+},
+"start": "2026-10-28T21:15:00",
+"cancelled": false,
+"id": "1612805AVBNGJVGRJLCSSTNSMCBGTBCRQ",
+"attribute_DiscountPercentage": "0",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "28002AJQKLGCDRSJRKNDKMNMHDQCPPKNH",
+"priceList": {
+"id": "3149124ASTMCLMQVPNCBDTQPQKGBTJDLB"
+},
+"event": {
+"id": "741603APBPGHLRHQQGDJLBCNVKBGJLSTS"
+},
+"start": "2026-10-28T21:15:00",
+"cancelled": false,
+"id": "1612405AVSLLHRLQJDKQJRMSSNRQDMVDM",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "26601APLTNSPSGDPBRQVGGSRDMVBVVNQK",
+"priceList": {
+"id": "3442724ADKLHVKMNKBDSDHMVNHGBSTRMM"
+},
+"event": {
+"id": "757003AHMKMRLLRRDJJPMRNQJVDHPPLRQ"
+},
+"start": "2026-10-29T10:30:00",
+"cancelled": false,
+"id": "1649803AHJNPPDVLDNJVTHCHKSMCMPQKQ",
+"attribute_DiscountPercentage": "0",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatreWalthamstow": true
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693324ALHHHJDMJTNSSBJQPNDDVGJDHG"
+},
+"event": {
+"id": "405803ATCTSQBTBPQTMMDPNGPDKGNTSJT"
+},
+"start": "2026-10-29T14:30:00",
+"cancelled": false,
+"id": "1614219ACKDQHHCSJGQKPDPSLHTGCBSGR",
+"attribute_DiscountPercentage": "0",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693324ALHHHJDMJTNSSBJQPNDDVGJDHG"
+},
+"event": {
+"id": "405803ATCTSQBTBPQTMMDPNGPDKGNTSJT"
+},
+"start": "2026-10-29T14:30:00",
+"cancelled": false,
+"id": "1620018AQDHSBJPJQRLGDTNTTKRSLCMTK",
+"attribute_DiscountPercentage": "0",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "2601AQNNVGDSDNTBVTJRRMQNTDRTBBNTQ",
+"priceList": {
+"id": "3737724APPTVGGSHJVMSCNNPDHTHGNDTH"
+},
+"event": {
+"id": "734603AVBQKCVKGVLLQKPKPCGPQVLHNSR"
+},
+"start": "2026-10-29T18:45:00",
+"cancelled": false,
+"id": "1599218AKHMGQHSSHBJGLSHRQCKVTMMNV",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693324ALHHHJDMJTNSSBJQPNDDVGJDHG"
+},
+"event": {
+"id": "405803ATCTSQBTBPQTMMDPNGPDKGNTSJT"
+},
+"start": "2026-10-29T19:00:00",
+"cancelled": false,
+"id": "1614409ARNNPQHSSNGSRHSRJMJVSDHDNN",
+"attribute_DiscountPercentage": "0",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "21401ATBPGTQKVRDDCCQRVVVPPKQMSKBM",
+"priceList": {
+"id": "3720724AJMHVTCHQKVQTQJSTSRCKDHRJT"
+},
+"event": {
+"id": "742003AHPTGQDSNSTSDJJLMBBRTBLHBST"
+},
+"start": "2026-10-29T19:00:00",
+"cancelled": false,
+"id": "1614204AJCSQHLKLMSNSBVLDVSLJTHGLK",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "28002AJQKLGCDRSJRKNDKMNMHDQCPPKNH",
+"priceList": {
+"id": "3751924ABSTMBDDRDLRMJRSGHDSGSVLPL"
+},
+"event": {
+"id": "734803AGDBSJVLJHSGCNKQTBGHQTMQRGH"
+},
+"start": "2026-10-29T19:15:00",
+"cancelled": false,
+"id": "1599606AHBLCQDMNCQTCLVCCRVPJGQHQS",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693124AVKDHKVDPKKGCJTTPQHJQSPBGN"
+},
+"event": {
+"id": "315805AJPQLVSBHKRQMRVQDGMMNGPTGDJ"
+},
+"start": "2026-10-29T19:15:00",
+"cancelled": false,
+"id": "1602412ALRGPGRJQJCGTMHKDTVNHBDQRV",
+"attribute_DiscountPercentage": "0",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "28201ANLRQMDQPKBCRBQJSVDBPMCHQKNS",
+"priceList": {
+"id": "3066924AVMHJVPBJKVJDMBLSBRDTTSDHG"
+},
+"event": {
+"id": "709603ADQRMDMNMCQJDBNLDMTGTMHHMQD"
+},
+"start": "2026-10-29T19:30:00",
+"cancelled": false,
+"id": "1546403AVSJPDNGBJGMCCMSNKTPSPSRQB",
+"attribute_DiscountPercentage": "0",
+"attribute_PerTicketBookingFee": "4.00"
+},
+{
+"isOnSale": true,
+"planId": "2601AQNNVGDSDNTBVTJRRMQNTDRTBBNTQ",
+"priceList": {
+"id": "425008APQPQQNSTCCJQCMTQHCMQRRMBMR"
+},
+"event": {
+"id": "749603ANVSVGGMCTBJJLBPNGVRSBMQLTM"
+},
+"start": "2026-10-29T20:30:00",
+"cancelled": false,
+"id": "1634203APJQGPNPBLCBRKKVDVGRKDNCCQ",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "18001AQNDJSHVVQBLCSKTRHMGHNPJGJTM",
+"priceList": {
+"id": "3739525AJCJVQRLSVSCSGMDPVDGGQJHJM"
+},
+"event": {
+"id": "712403AHPKNVCNNBCDGPMNJPBPBDTJTSR"
+},
+"start": "2026-10-29T21:00:00",
+"cancelled": false,
+"id": "1629603AQNPSQNMJDPSCGRJBPDKMRJJVP",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693324ALHHHJDMJTNSSBJQPNDDVGJDHG"
+},
+"event": {
+"id": "405803ATCTSQBTBPQTMMDPNGPDKGNTSJT"
+},
+"start": "2026-10-29T21:00:00",
+"cancelled": false,
+"id": "1630605ASPRBKLQPRQMJNDKBLCRTDBPCK",
+"attribute_DiscountPercentage": "0",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693124AVKDHKVDPKKGCJTTPQHJQSPBGN"
+},
+"event": {
+"id": "315805AJPQLVSBHKRQMRVQDGMMNGPTGDJ"
+},
+"start": "2026-10-29T21:15:00",
+"cancelled": false,
+"id": "1579448ADQLJBCTBQPKTRPMDMBPQGRCMB",
+"attribute_DiscountPercentage": "20"
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693124AVKDHKVDPKKGCJTTPQHJQSPBGN"
+},
+"event": {
+"id": "315805AJPQLVSBHKRQMRVQDGMMNGPTGDJ"
+},
+"start": "2026-10-29T21:15:00",
+"cancelled": false,
+"id": "1612806AQBLMDRQCHKBDDTVKLQLKCTMGN",
+"attribute_DiscountPercentage": "0",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "28002AJQKLGCDRSJRKNDKMNMHDQCPPKNH",
+"priceList": {
+"id": "3245724AHLVJRNLVGKQQKTSGPDKNRQHJJ"
+},
+"event": {
+"id": "741603APBPGHLRHQQGDJLBCNVKBGJLSTS"
+},
+"start": "2026-10-29T21:15:00",
+"cancelled": false,
+"id": "1612603ATVRRLKQNNMVLHSSMKJQMKNHDR",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "30401AVTJMSJLDVLNKKKDPCPPRDDJCLRT",
+"priceList": {
+"id": "3587724ASKKBLRJSGGDJNCDNRCHHKKGSR"
+},
+"event": {
+"id": "681403ABJRSHVHPNQNTGTGMRKSCKDVKBC"
+},
+"start": "2026-10-30T11:00:00",
+"cancelled": false,
+"id": "1621003ABQVBCCVSBNTJNVMHQQJKMNNMB",
+"attribute_DiscountPercentage": "0",
+"attribute_SohoTheatreWalthamstow": true
+},
+{
+"isOnSale": true,
+"planId": "28201ANLRQMDQPKBCRBQJSVDBPMCHQKNS",
+"priceList": {
+"id": "3643524AQSDMLLJMLJHQBRLSVDSLVMDNT"
+},
+"event": {
+"id": "744403ATQHJQTVMNTDHSLKJBCJCTDDCLB"
+},
+"start": "2026-10-30T11:00:00",
+"cancelled": false,
+"id": "1620803ADDNVKVDHMJGVQMMTCKGJTNPCN",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatreWalthamstow": true
+},
+{
+"isOnSale": true,
+"planId": "30401AVTJMSJLDVLNKKKDPCPPRDDJCLRT",
+"priceList": {
+"id": "3587724ASKKBLRJSGGDJNCDNRCHHKKGSR"
+},
+"event": {
+"id": "681403ABJRSHVHPNQNTGTGMRKSCKDVKBC"
+},
+"start": "2026-10-30T18:00:00",
+"cancelled": false,
+"id": "1537203AHHPMPHDLTBCJRDVDNLDMMNPKK",
+"attribute_DiscountPercentage": "0"
+},
+{
+"isOnSale": true,
+"planId": "2601AQNNVGDSDNTBVTJRRMQNTDRTBBNTQ",
+"priceList": {
+"id": "3747124ABCJHKDQJQMRKGPVSRMGDQNNHP"
+},
+"event": {
+"id": "734603AVBQKCVKGVLLQKPKPCGPQVLHNSR"
+},
+"start": "2026-10-30T18:45:00",
+"cancelled": false,
+"id": "1599219ARLMJNPLMLDLBHNJMLTSHKQNHM",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693324ALHHHJDMJTNSSBJQPNDDVGJDHG"
+},
+"event": {
+"id": "405803ATCTSQBTBPQTMMDPNGPDKGNTSJT"
+},
+"start": "2026-10-30T19:00:00",
+"cancelled": false,
+"id": "1614410ADTKVGCLDMTCCNHPNMHNDKNGTG",
+"attribute_DiscountPercentage": "0",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "21401ATBPGTQKVRDDCCQRVVVPPKQMSKBM",
+"priceList": {
+"id": "3752324ASQPNCDCRNDQQQBBRSRRTGBBPS"
+},
+"event": {
+"id": "742003AHPTGQDSNSTSDJJLMBBRTBLHBST"
+},
+"start": "2026-10-30T19:00:00",
+"cancelled": false,
+"id": "1614205APQHHJPLLLNVSNTRRNPKSCKNBB",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "28002AJQKLGCDRSJRKNDKMNMHDQCPPKNH",
+"priceList": {
+"id": "3726524ABMDBQRJGJLCVRQDPJPBNGGJGD"
+},
+"event": {
+"id": "734803AGDBSJVLJHSGCNKQTBGHQTMQRGH"
+},
+"start": "2026-10-30T19:15:00",
+"cancelled": false,
+"id": "1598208ATHPCDLKHRDNCNQHQNHTBKCSHJ",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693124AVKDHKVDPKKGCJTTPQHJQSPBGN"
+},
+"event": {
+"id": "315805AJPQLVSBHKRQMRVQDGMMNGPTGDJ"
+},
+"start": "2026-10-30T19:15:00",
+"cancelled": false,
+"id": "1602413ACHSBMRQCNKCKRPTLNJNQTRDVK",
+"attribute_DiscountPercentage": "0",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "28201ANLRQMDQPKBCRBQJSVDBPMCHQKNS",
+"priceList": {
+"id": "3066924AVMHJVPBJKVJDMBLSBRDTTSDHG"
+},
+"event": {
+"id": "709603ADQRMDMNMCQJDBNLDMTGTMHHMQD"
+},
+"start": "2026-10-30T19:30:00",
+"cancelled": false,
+"id": "1537003AHRNNGJNVHJHKNLGMSHJTBPGHG",
+"attribute_DiscountPercentage": "0",
+"attribute_PerTicketBookingFee": "4.00"
+},
+{
+"isOnSale": true,
+"planId": "2601AQNNVGDSDNTBVTJRRMQNTDRTBBNTQ",
+"priceList": {
+"id": "425008APQPQQNSTCCJQCMTQHCMQRRMBMR"
+},
+"event": {
+"id": "749603ANVSVGGMCTBJJLBPNGVRSBMQLTM"
+},
+"start": "2026-10-30T20:30:00",
+"cancelled": false,
+"id": "1634204AJLBBDSBKPDDGMTJSPJBGVHLNP",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "18001AQNDJSHVVQBLCSKTRHMGHNPJGJTM",
+"priceList": {
+"id": "3738925AJGNTRJKNLJBMTTQKBBMMLVRMQ"
+},
+"event": {
+"id": "712403AHPKNVCNNBCDGPMNJPBPBDTJTSR"
+},
+"start": "2026-10-30T21:00:00",
+"cancelled": false,
+"id": "1629604ARMVGJDHMQPTKGKPHCJVVBDPBR",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693324ALHHHJDMJTNSSBJQPNDDVGJDHG"
+},
+"event": {
+"id": "405803ATCTSQBTBPQTMMDPNGPDKGNTSJT"
+},
+"start": "2026-10-30T21:00:00",
+"cancelled": false,
+"id": "1630606AVKQTBTNTJRRRCQCQSJPKJTHRN",
+"attribute_DiscountPercentage": "0",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693124AVKDHKVDPKKGCJTTPQHJQSPBGN"
+},
+"event": {
+"id": "315805AJPQLVSBHKRQMRVQDGMMNGPTGDJ"
+},
+"start": "2026-10-30T21:15:00",
+"cancelled": false,
+"id": "1579449ALLKGSVPJPDMVCJTKJCQRTVTNR",
+"attribute_DiscountPercentage": "20"
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693124AVKDHKVDPKKGCJTTPQHJQSPBGN"
+},
+"event": {
+"id": "315805AJPQLVSBHKRQMRVQDGMMNGPTGDJ"
+},
+"start": "2026-10-30T21:15:00",
+"cancelled": false,
+"id": "1612807AMNMPJMQKNTJNHKQKJRHBHLGLB",
+"attribute_DiscountPercentage": "0",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "28002AJQKLGCDRSJRKNDKMNMHDQCPPKNH",
+"priceList": {
+"id": "3245724AHLVJRNLVGKQQKTSGPDKNRQHJJ"
+},
+"event": {
+"id": "741603APBPGHLRHQQGDJLBCNVKBGJLSTS"
+},
+"start": "2026-10-30T21:15:00",
+"cancelled": false,
+"id": "1612604APLRRHNHBCCVPVPBHSSGGNKQSP",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "2601AQNNVGDSDNTBVTJRRMQNTDRTBBNTQ",
+"priceList": {
+"id": "2869511AKSNVLHGVCJRRJNMGSTNQBKLQG"
+},
+"event": {
+"id": "751803ANGBNRSLGNPKCLKSQCCGTJTQNMS"
+},
+"start": "2026-10-30T22:15:00",
+"cancelled": false,
+"id": "1638603AJRJBTDKQBRSSCMPQLQBKTJNMD",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "30401AVTJMSJLDVLNKKKDPCPPRDDJCLRT",
+"priceList": {
+"id": "3587724ASKKBLRJSGGDJNCDNRCHHKKGSR"
+},
+"event": {
+"id": "681403ABJRSHVHPNQNTGTGMRKSCKDVKBC"
+},
+"start": "2026-10-31T11:00:00",
+"cancelled": false,
+"id": "1621004AHKBVBGQGJRLTSSVJGSSHTHHQH",
+"attribute_DiscountPercentage": "0",
+"attribute_SohoTheatreWalthamstow": true
+},
+{
+"isOnSale": true,
+"planId": "28201ANLRQMDQPKBCRBQJSVDBPMCHQKNS",
+"priceList": {
+"id": "3643724AMMVVHDCKQKKHCJVKBNPDBMMJS"
+},
+"event": {
+"id": "744403ATQHJQTVMNTDHSLKJBCJCTDDCLB"
+},
+"start": "2026-10-31T11:00:00",
+"cancelled": false,
+"id": "1620605AKJGNDVRRVNTBQCSGBHLSTRBTP",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatreWalthamstow": true
+},
+{
+"isOnSale": true,
+"planId": "30401AVTJMSJLDVLNKKKDPCPPRDDJCLRT",
+"priceList": {
+"id": "3587724ASKKBLRJSGGDJNCDNRCHHKKGSR"
+},
+"event": {
+"id": "681403ABJRSHVHPNQNTGTGMRKSCKDVKBC"
+},
+"start": "2026-10-31T14:00:00",
+"cancelled": false,
+"id": "1621204ATJCNKKLQKNNCDGPKNBVDQNPPM",
+"attribute_DiscountPercentage": "0",
+"attribute_SohoTheatreWalthamstow": true
+},
+{
+"isOnSale": true,
+"planId": "28201ANLRQMDQPKBCRBQJSVDBPMCHQKNS",
+"priceList": {
+"id": "3643924AGRCNNBNJHTMLSGLHBKBQDLTVB"
+},
+"event": {
+"id": "744403ATQHJQTVMNTDHSLKJBCJCTDDCLB"
+},
+"start": "2026-10-31T14:00:00",
+"cancelled": false,
+"id": "1620604AMPGGLCKLVPHPRKCSDCCKCGBHM",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatreWalthamstow": true
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693324ALHHHJDMJTNSSBJQPNDDVGJDHG"
+},
+"event": {
+"id": "405803ATCTSQBTBPQTMMDPNGPDKGNTSJT"
+},
+"start": "2026-10-31T14:30:00",
+"cancelled": false,
+"id": "1614220ABNSRMHLHKJMVQGCRNLCCNVCSP",
+"attribute_DiscountPercentage": "0",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "21401ATBPGTQKVRDDCCQRVVVPPKQMSKBM",
+"priceList": {
+"id": "3747724APSTMTTNGDSDJCBRQSGRLMBPMQ"
+},
+"event": {
+"id": "742003AHPTGQDSNSTSDJJLMBBRTBLHBST"
+},
+"start": "2026-10-31T14:30:00",
+"cancelled": false,
+"id": "1613803ACCDRRDCKRMCDSDCHRPVPNMDHR",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "2601AQNNVGDSDNTBVTJRRMQNTDRTBBNTQ",
+"priceList": {
+"id": "3752124APGQSQLVQBGLTSHLRLJLMMPQGV"
+},
+"event": {
+"id": "734603AVBQKCVKGVLLQKPKPCGPQVLHNSR"
+},
+"start": "2026-10-31T15:00:00",
+"cancelled": false,
+"id": "1598807ADLQKQDDTBRDLGKMNMKJLLLRBN",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "30401AVTJMSJLDVLNKKKDPCPPRDDJCLRT",
+"priceList": {
+"id": "3587724ASKKBLRJSGGDJNCDNRCHHKKGSR"
+},
+"event": {
+"id": "681403ABJRSHVHPNQNTGTGMRKSCKDVKBC"
+},
+"start": "2026-10-31T18:30:00",
+"cancelled": false,
+"id": "1533803AKSLBGNSQQKPVGGGJBVPQRPMDR",
+"attribute_DiscountPercentage": "0"
+},
+{
+"isOnSale": true,
+"planId": "2601AQNNVGDSDNTBVTJRRMQNTDRTBBNTQ",
+"priceList": {
+"id": "3749924ALGBCDHKNMNRJCLQDRQDBPNGSJ"
+},
+"event": {
+"id": "734603AVBQKCVKGVLLQKPKPCGPQVLHNSR"
+},
+"start": "2026-10-31T18:45:00",
+"cancelled": false,
+"id": "1599220AGMBLPJNGBKRNCMKHDLKPTGQCB",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693324ALHHHJDMJTNSSBJQPNDDVGJDHG"
+},
+"event": {
+"id": "405803ATCTSQBTBPQTMMDPNGPDKGNTSJT"
+},
+"start": "2026-10-31T19:00:00",
+"cancelled": false,
+"id": "1614411ABJKVVDCCRJPMQBLCDGRLCHBMP",
+"attribute_DiscountPercentage": "0",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "21401ATBPGTQKVRDDCCQRVVVPPKQMSKBM",
+"priceList": {
+"id": "3753924AKGCNMMSLLHQPMTMDSDHGMBBGH"
+},
+"event": {
+"id": "742003AHPTGQDSNSTSDJJLMBBRTBLHBST"
+},
+"start": "2026-10-31T19:00:00",
+"cancelled": false,
+"id": "1614206ASLKKQGBQVJCJNJLHVQSKBJRMR",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "28002AJQKLGCDRSJRKNDKMNMHDQCPPKNH",
+"priceList": {
+"id": "3718524AQKNSVLJHTBTJDHMSKGDBMHSHC"
+},
+"event": {
+"id": "734803AGDBSJVLJHSGCNKQTBGHQTMQRGH"
+},
+"start": "2026-10-31T19:15:00",
+"cancelled": false,
+"id": "1598209ACTVKCJLTCMMLRKJSVKHTGCSRQ",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693124AVKDHKVDPKKGCJTTPQHJQSPBGN"
+},
+"event": {
+"id": "315805AJPQLVSBHKRQMRVQDGMMNGPTGDJ"
+},
+"start": "2026-10-31T19:15:00",
+"cancelled": false,
+"id": "1602414ALNLPJPRRMVJVDLMMTJCVPMGCR",
+"attribute_DiscountPercentage": "0",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "28201ANLRQMDQPKBCRBQJSVDBPMCHQKNS",
+"priceList": {
+"id": "2985124AMCNMGRPKSTLSTKLBDVGQHKCDR"
+},
+"event": {
+"id": "708203AGNDKTCLBBGSPVKRSSLTTLQGHHM"
+},
+"start": "2026-10-31T20:00:00",
+"cancelled": false,
+"id": "1533603ASLSMSSJDNRQPJQQBNMMBHVPDD",
+"attribute_DiscountPercentage": "0",
+"attribute_PerTicketBookingFee": "4.00"
+},
+{
+"isOnSale": true,
+"planId": "2601AQNNVGDSDNTBVTJRRMQNTDRTBBNTQ",
+"priceList": {
+"id": "2521205AMMLBLDBNNGNNKVHGRSHRGGVTC"
+},
+"event": {
+"id": "749603ANVSVGGMCTBJJLBPNGVRSBMQLTM"
+},
+"start": "2026-10-31T20:30:00",
+"cancelled": false,
+"id": "1634205ACCTTNBCGBKPSSQNPDPQBBCPDH",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "18001AQNDJSHVVQBLCSKTRHMGHNPJGJTM",
+"priceList": {
+"id": "3740324AHLDNQNHKMGKQRSVGPMGQKSMCJ"
+},
+"event": {
+"id": "712403AHPKNVCNNBCDGPMNJPBPBDTJTSR"
+},
+"start": "2026-10-31T21:00:00",
+"cancelled": false,
+"id": "1629605ADLRTTSVSJRNLDTMJGDGVNVCQG",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693324ALHHHJDMJTNSSBJQPNDDVGJDHG"
+},
+"event": {
+"id": "405803ATCTSQBTBPQTMMDPNGPDKGNTSJT"
+},
+"start": "2026-10-31T21:00:00",
+"cancelled": false,
+"id": "1630607APBJHKSHKTJMBBRSNRVNVDMJPQ",
+"attribute_DiscountPercentage": "0",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693124AVKDHKVDPKKGCJTTPQHJQSPBGN"
+},
+"event": {
+"id": "315805AJPQLVSBHKRQMRVQDGMMNGPTGDJ"
+},
+"start": "2026-10-31T21:15:00",
+"cancelled": false,
+"id": "1579450ABBJPCTLLCDRRPJGTRPLQGTSQL",
+"attribute_DiscountPercentage": "20"
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693124AVKDHKVDPKKGCJTTPQHJQSPBGN"
+},
+"event": {
+"id": "315805AJPQLVSBHKRQMRVQDGMMNGPTGDJ"
+},
+"start": "2026-10-31T21:15:00",
+"cancelled": false,
+"id": "1612808ANRRTMQDHKLSCVKTTTVCBRRGTP",
+"attribute_DiscountPercentage": "0",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "28002AJQKLGCDRSJRKNDKMNMHDQCPPKNH",
+"priceList": {
+"id": "3597525ADKQNCMBRRSJNBSBHJVQLGDMTM"
+},
+"event": {
+"id": "741603APBPGHLRHQQGDJLBCNVKBGJLSTS"
+},
+"start": "2026-10-31T21:15:00",
+"cancelled": false,
+"id": "1612605AJGQNTVGLLKTRDKGTKKKRCDCVV",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "2601AQNNVGDSDNTBVTJRRMQNTDRTBBNTQ",
+"priceList": {
+"id": "2475205ARDRJNTJMGTTLRVNNPMHSRKSGV"
+},
+"event": {
+"id": "751803ANGBNRSLGNPKCLKSQCCGTJTQNMS"
+},
+"start": "2026-10-31T22:15:00",
+"cancelled": false,
+"id": "1638604AHGKNHMMSHRQLPKHDRHDSSKMLS",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "28201ANLRQMDQPKBCRBQJSVDBPMCHQKNS",
+"priceList": {
+"id": "3564924AGDBSDNCCSKVTLCNKVKHNTHMHT"
+},
+"event": {
+"id": "735603AHDPLQJTQHKQSJSMDHMSRTTVJBS"
+},
+"start": "2026-11-01T19:30:00",
+"cancelled": false,
+"id": "1600603ALJDDQGKHVBHJDLNNNHJBCTTNQ",
+"attribute_DiscountPercentage": "0",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatreWalthamstow": true
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693324ALHHHJDMJTNSSBJQPNDDVGJDHG"
+},
+"event": {
+"id": "405803ATCTSQBTBPQTMMDPNGPDKGNTSJT"
+},
+"start": "2026-11-02T19:00:00",
+"cancelled": false,
+"id": "1614412AKTLVBVVTNRVRLLPPSKLLTJJNG",
+"attribute_DiscountPercentage": "0",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "21401ATBPGTQKVRDDCCQRVVVPPKQMSKBM",
+"priceList": {
+"id": "3725724ARGKHQLPNMGRVNHTCQTGVPPLPD"
+},
+"event": {
+"id": "742003AHPTGQDSNSTSDJJLMBBRTBLHBST"
+},
+"start": "2026-11-02T19:00:00",
+"cancelled": false,
+"id": "1613605ASHPTDKMLJDDLJVKJGJGBCKPCV",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "28002AJQKLGCDRSJRKNDKMNMHDQCPPKNH",
+"priceList": {
+"id": "3137725AKPNNJJJHVJKDLCRTHCKHLDSHS"
+},
+"event": {
+"id": "681803ATGVKVQRCLDTVHSSQKSSRLVKPKN"
+},
+"start": "2026-11-02T19:15:00",
+"cancelled": false,
+"id": "1470803APQHGVGGSDHBDSLHSCKHTTVGBC",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00"
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693124AVKDHKVDPKKGCJTTPQHJQSPBGN"
+},
+"event": {
+"id": "315805AJPQLVSBHKRQMRVQDGMMNGPTGDJ"
+},
+"start": "2026-11-02T19:15:00",
+"cancelled": false,
+"id": "1471203ACMTRLMSNTTLCRSRMHGJSMLLTN",
+"attribute_DiscountPercentage": "0"
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693124AVKDHKVDPKKGCJTTPQHJQSPBGN"
+},
+"event": {
+"id": "315805AJPQLVSBHKRQMRVQDGMMNGPTGDJ"
+},
+"start": "2026-11-02T19:15:00",
+"cancelled": false,
+"id": "1602415ARQHTNDQGHPLCVTCHLDHTCRTBS",
+"attribute_DiscountPercentage": "0",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "30401AVTJMSJLDVLNKKKDPCPPRDDJCLRT",
+"priceList": {
+"id": "3587724ASKKBLRJSGGDJNCDNRCHHKKGSR"
+},
+"event": {
+"id": "681403ABJRSHVHPNQNTGTGMRKSCKDVKBC"
+},
+"start": "2026-11-02T20:00:00",
+"cancelled": false,
+"id": "1640403ALDMGNJPSCJDNNQVDCQMVGGKPS",
+"attribute_DiscountPercentage": "0",
+"attribute_SohoTheatreWalthamstow": true
+},
+{
+"isOnSale": true,
+"planId": "28201ANLRQMDQPKBCRBQJSVDBPMCHQKNS",
+"priceList": {
+"id": "3447924ARHSGVBGNTJBSTTTLGBTLHBGDC"
+},
+"event": {
+"id": "752403AMVNCRMGTDDGCQPPGMVLQKVVJLK"
+},
+"start": "2026-11-02T20:00:00",
+"cancelled": false,
+"id": "1640203AKKRGHMDPBHMKDCSDNTVVRKVPK",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatreWalthamstow": true
+},
+{
+"isOnSale": true,
+"planId": "2601AQNNVGDSDNTBVTJRRMQNTDRTBBNTQ",
+"priceList": {
+"id": "410405APMKCHDTQRSDVNVPDVLKTPJJJBB"
+},
+"event": {
+"id": "719203ADRGSSRGPQRQTGGPSBCTRPVRRJP"
+},
+"start": "2026-11-02T20:30:00",
+"cancelled": false,
+"id": "1561209AJSBTQPSSSRLVNNJSLLVTHPNCL",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00"
+},
+{
+"isOnSale": true,
+"planId": "18001AQNDJSHVVQBLCSKTRHMGHNPJGJTM",
+"priceList": {
+"id": "3738926ASLNDKJRDLSJKTDLBQSKCMNRCG"
+},
+"event": {
+"id": "712403AHPKNVCNNBCDGPMNJPBPBDTJTSR"
+},
+"start": "2026-11-02T21:00:00",
+"cancelled": false,
+"id": "1549003AHRRHVVKDNJRPMPGNSJNVSKHRN",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00"
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693324ALHHHJDMJTNSSBJQPNDDVGJDHG"
+},
+"event": {
+"id": "405803ATCTSQBTBPQTMMDPNGPDKGNTSJT"
+},
+"start": "2026-11-02T21:00:00",
+"cancelled": false,
+"id": "1549203ABMQRRLRBQNJBJCRCCCTNNCJHD",
+"attribute_DiscountPercentage": "20"
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693324ALHHHJDMJTNSSBJQPNDDVGJDHG"
+},
+"event": {
+"id": "405803ATCTSQBTBPQTMMDPNGPDKGNTSJT"
+},
+"start": "2026-11-02T21:00:00",
+"cancelled": false,
+"id": "1630608ANMVQJMBGMDSJLJHVDTDGJCCRL",
+"attribute_DiscountPercentage": "0",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693124AVKDHKVDPKKGCJTTPQHJQSPBGN"
+},
+"event": {
+"id": "315805AJPQLVSBHKRQMRVQDGMMNGPTGDJ"
+},
+"start": "2026-11-02T21:15:00",
+"cancelled": false,
+"id": "1612809AJCPCKLMLTTMKCMBQKKSTQDNGT",
+"attribute_DiscountPercentage": "0",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "28002AJQKLGCDRSJRKNDKMNMHDQCPPKNH",
+"priceList": {
+"id": "3026724AKQVBCDKQRHLDSBDKMLKSBLKGN"
+},
+"event": {
+"id": "741603APBPGHLRHQQGDJLBCNVKBGJLSTS"
+},
+"start": "2026-11-02T21:15:00",
+"cancelled": false,
+"id": "1612406ANPMRDGSQHQTHCJNCHDKDPNKVG",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "2601AQNNVGDSDNTBVTJRRMQNTDRTBBNTQ",
+"priceList": {
+"id": "193403ASDNTDHGTMDVQMMQTGSCMLNLBCH"
+},
+"event": {
+"id": "718603AHMTJMQJRBCHCCJPLVRJCDQTGTS"
+},
+"start": "2026-11-03T18:45:00",
+"cancelled": false,
+"id": "1560803AMRCBHVMNQLDHDTKMCDGSVSVTT",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00"
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693324ALHHHJDMJTNSSBJQPNDDVGJDHG"
+},
+"event": {
+"id": "405803ATCTSQBTBPQTMMDPNGPDKGNTSJT"
+},
+"start": "2026-11-03T19:00:00",
+"cancelled": false,
+"id": "1614413AGVNBQSHTNGNVJNVCTQMPMKKKK",
+"attribute_DiscountPercentage": "0",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "21401ATBPGTQKVRDDCCQRVVVPPKQMSKBM",
+"priceList": {
+"id": "3717724AGSKLGHCVVCNVKTSVRTSDPQQBS"
+},
+"event": {
+"id": "742003AHPTGQDSNSTSDJJLMBBRTBLHBST"
+},
+"start": "2026-11-03T19:00:00",
+"cancelled": false,
+"id": "1613606AQSSJVPTHNDRJNCMLSTRSGCGHP",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "28002AJQKLGCDRSJRKNDKMNMHDQCPPKNH",
+"priceList": {
+"id": "3137725AKPNNJJJHVJKDLCRTHCKHLDSHS"
+},
+"event": {
+"id": "681803ATGVKVQRCLDTVHSSQKSSRLVKPKN"
+},
+"start": "2026-11-03T19:15:00",
+"cancelled": false,
+"id": "1470804ADTCLGPHQMNQTGQSSCDLPQGPMV",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00"
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693124AVKDHKVDPKKGCJTTPQHJQSPBGN"
+},
+"event": {
+"id": "315805AJPQLVSBHKRQMRVQDGMMNGPTGDJ"
+},
+"start": "2026-11-03T19:15:00",
+"cancelled": false,
+"id": "1471204AQGSBPLSRJTKDSMSVLHKGCLHKH",
+"attribute_DiscountPercentage": "0"
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693124AVKDHKVDPKKGCJTTPQHJQSPBGN"
+},
+"event": {
+"id": "315805AJPQLVSBHKRQMRVQDGMMNGPTGDJ"
+},
+"start": "2026-11-03T19:15:00",
+"cancelled": false,
+"id": "1602416AMGHSSPJTSGMTVQTTRKVMJBGTT",
+"attribute_DiscountPercentage": "0",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "30401AVTJMSJLDVLNKKKDPCPPRDDJCLRT",
+"priceList": {
+"id": "3587724ASKKBLRJSGGDJNCDNRCHHKKGSR"
+},
+"event": {
+"id": "681403ABJRSHVHPNQNTGTGMRKSCKDVKBC"
+},
+"start": "2026-11-03T20:00:00",
+"cancelled": false,
+"id": "1640404AJMSPRTCVNRTHDNGGBLDCRPTCT",
+"attribute_DiscountPercentage": "0",
+"attribute_SohoTheatreWalthamstow": true
+},
+{
+"isOnSale": true,
+"planId": "28201ANLRQMDQPKBCRBQJSVDBPMCHQKNS",
+"priceList": {
+"id": "3447924ARHSGVBGNTJBSTTTLGBTLHBGDC"
+},
+"event": {
+"id": "752403AMVNCRMGTDDGCQPPGMVLQKVVJLK"
+},
+"start": "2026-11-03T20:00:00",
+"cancelled": false,
+"id": "1640204AGPPVNVVDCRKMTLDVJLNPCTRMS",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatreWalthamstow": true
+},
+{
+"isOnSale": true,
+"planId": "2601AQNNVGDSDNTBVTJRRMQNTDRTBBNTQ",
+"priceList": {
+"id": "1529004AKVNKDQVLLJTCSKHLRDVDGJTKK"
+},
+"event": {
+"id": "719203ADRGSSRGPQRQTGGPSBCTRPVRRJP"
+},
+"start": "2026-11-03T20:30:00",
+"cancelled": false,
+"id": "1561603ALGQNLGGMJQDNVGMTDMDSTNVVP",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00"
+},
+{
+"isOnSale": true,
+"planId": "18001AQNDJSHVVQBLCSKTRHMGHNPJGJTM",
+"priceList": {
+"id": "3740524AGSQQQJJSPQSPSSSRNQPNJDTPG"
+},
+"event": {
+"id": "712403AHPKNVCNNBCDGPMNJPBPBDTJTSR"
+},
+"start": "2026-11-03T21:00:00",
+"cancelled": false,
+"id": "1549004AQRGBKCTGLMLSNHSKTLLQCRBTG",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00"
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693324ALHHHJDMJTNSSBJQPNDDVGJDHG"
+},
+"event": {
+"id": "405803ATCTSQBTBPQTMMDPNGPDKGNTSJT"
+},
+"start": "2026-11-03T21:00:00",
+"cancelled": false,
+"id": "1549204AGKDMNKRNSMQBBHMQCHCLTRJTC",
+"attribute_DiscountPercentage": "20"
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693324ALHHHJDMJTNSSBJQPNDDVGJDHG"
+},
+"event": {
+"id": "405803ATCTSQBTBPQTMMDPNGPDKGNTSJT"
+},
+"start": "2026-11-03T21:00:00",
+"cancelled": false,
+"id": "1630609AHMTHSDKKKSKRQVMMKLPVDGQDD",
+"attribute_DiscountPercentage": "0",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693124AVKDHKVDPKKGCJTTPQHJQSPBGN"
+},
+"event": {
+"id": "315805AJPQLVSBHKRQMRVQDGMMNGPTGDJ"
+},
+"start": "2026-11-03T21:15:00",
+"cancelled": false,
+"id": "1612810AMLPTPSRJJPJCLJHVBTVSNCPHS",
+"attribute_DiscountPercentage": "0",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "28002AJQKLGCDRSJRKNDKMNMHDQCPPKNH",
+"priceList": {
+"id": "3149124ASTMCLMQVPNCBDTQPQKGBTJDLB"
+},
+"event": {
+"id": "741603APBPGHLRHQQGDJLBCNVKBGJLSTS"
+},
+"start": "2026-11-03T21:15:00",
+"cancelled": false,
+"id": "1612407ACGTLJJTNLBHKVRDQHNLDSGRRM",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693324ALHHHJDMJTNSSBJQPNDDVGJDHG"
+},
+"event": {
+"id": "405803ATCTSQBTBPQTMMDPNGPDKGNTSJT"
+},
+"start": "2026-11-04T14:30:00",
+"cancelled": false,
+"id": "1620019AGRQVTLMCSTVVQVDLQGVTSGQLK",
+"attribute_DiscountPercentage": "0",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "2601AQNNVGDSDNTBVTJRRMQNTDRTBBNTQ",
+"priceList": {
+"id": "2770696AGSHBRHKQTTBLHRRSRVSVDGJQJ"
+},
+"event": {
+"id": "718603AHMTJMQJRBCHCCJPLVRJCDQTGTS"
+},
+"start": "2026-11-04T18:45:00",
+"cancelled": false,
+"id": "1560406ARGJVJNCRMBKQJNKKLSPSBQGMH",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00"
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693324ALHHHJDMJTNSSBJQPNDDVGJDHG"
+},
+"event": {
+"id": "405803ATCTSQBTBPQTMMDPNGPDKGNTSJT"
+},
+"start": "2026-11-04T19:00:00",
+"cancelled": false,
+"id": "1614414AMMCSBNJBCBSLTRNBQLRPCRDRG",
+"attribute_DiscountPercentage": "0",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "21401ATBPGTQKVRDDCCQRVVVPPKQMSKBM",
+"priceList": {
+"id": "3720924ABPCTGJRGKHSTVVPLVPNCPKHJR"
+},
+"event": {
+"id": "742003AHPTGQDSNSTSDJJLMBBRTBLHBST"
+},
+"start": "2026-11-04T19:00:00",
+"cancelled": false,
+"id": "1614207ANSKJVHQDRHLHTTTDNJDGQSHVG",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "27401ARJLQPVGRGCMSLCMHMNMQVRHNDVC",
+"priceList": {
+"id": "1529204AGKLMBBTLCRKTRDKKJMNNDQLRG"
+},
+"event": {
+"id": "710203ABNJTJCNTTDNMGSJCCVHNLSVCCR"
+},
+"start": "2026-11-04T19:00:00",
+"cancelled": false,
+"id": "1539203AMLHTVVSRQBBJJKVBDMPJKDGQD",
+"attribute_DiscountPercentage": "0",
+"attribute_PerTicketBookingFee": "4.00"
+},
+{
+"isOnSale": true,
+"planId": "28002AJQKLGCDRSJRKNDKMNMHDQCPPKNH",
+"priceList": {
+"id": "3630524ARGTPGVQHGRSGKSSKVPSPJBPLB"
+},
+"event": {
+"id": "681803ATGVKVQRCLDTVHSSQKSSRLVKPKN"
+},
+"start": "2026-11-04T19:15:00",
+"cancelled": false,
+"id": "1471003APLPLRGDGCRDLLBHQSVRRHQDMG",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00"
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693124AVKDHKVDPKKGCJTTPQHJQSPBGN"
+},
+"event": {
+"id": "315805AJPQLVSBHKRQMRVQDGMMNGPTGDJ"
+},
+"start": "2026-11-04T19:15:00",
+"cancelled": false,
+"id": "1471205AMRBJBSBPBDSDCHLPNDJTPVQVM",
+"attribute_DiscountPercentage": "0"
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693124AVKDHKVDPKKGCJTTPQHJQSPBGN"
+},
+"event": {
+"id": "315805AJPQLVSBHKRQMRVQDGMMNGPTGDJ"
+},
+"start": "2026-11-04T19:15:00",
+"cancelled": false,
+"id": "1602417ASGJQGPJVLKDSDJTTNPMTKKSSK",
+"attribute_DiscountPercentage": "0",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "28201ANLRQMDQPKBCRBQJSVDBPMCHQKNS",
+"priceList": {
+"id": "3575724AHVCVBDLHVBKQLKKSJRCGJNBGS"
+},
+"event": {
+"id": "724203ASTBKBQKKBGPKBQPDRDTTMLDSDN"
+},
+"start": "2026-11-04T19:30:00",
+"cancelled": false,
+"id": "1574203AHTBCQLBMTGTLQQCLLDHLNMBJL",
+"attribute_DiscountPercentage": "0",
+"attribute_PerTicketBookingFee": "4.00"
+},
+{
+"isOnSale": true,
+"planId": "33001ATHPSRJLTTHKPJHTBJLTTSMCRPQH",
+"priceList": {
+"id": "3577324AMJBNNRQRDGPNDKKBGGVCPRDDT"
+},
+"event": {
+"id": "738603ALRNDHGDVBTTHJVLPTNQRJBCRJD"
+},
+"start": "2026-11-04T19:30:00",
+"cancelled": false,
+"id": "1606003AMGBLTRSMTGPDSDQBQPDNLPNTR",
+"attribute_DiscountPercentage": "0"
+},
+{
+"isOnSale": true,
+"planId": "30401AVTJMSJLDVLNKKKDPCPPRDDJCLRT",
+"priceList": {
+"id": "3587724ASKKBLRJSGGDJNCDNRCHHKKGSR"
+},
+"event": {
+"id": "681403ABJRSHVHPNQNTGTGMRKSCKDVKBC"
+},
+"start": "2026-11-04T19:30:00",
+"cancelled": false,
+"id": "1574403AGMRGLCCJMDNTQPTBGVGMHPJLT",
+"attribute_DiscountPercentage": "0"
+},
+{
+"isOnSale": true,
+"planId": "2601AQNNVGDSDNTBVTJRRMQNTDRTBBNTQ",
+"priceList": {
+"id": "1529004AKVNKDQVLLJTCSKHLRDVDGJTKK"
+},
+"event": {
+"id": "719203ADRGSSRGPQRQTGGPSBCTRPVRRJP"
+},
+"start": "2026-11-04T20:30:00",
+"cancelled": false,
+"id": "1561604AHHPSDKPRBCVJLNDVNQTCPTVKV",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00"
+},
+{
+"isOnSale": true,
+"planId": "18001AQNDJSHVVQBLCSKTRHMGHNPJGJTM",
+"priceList": {
+"id": "3690524ABCRKNNJBKRKQCTMCBDCKKLTBM"
+},
+"event": {
+"id": "712403AHPKNVCNNBCDGPMNJPBPBDTJTSR"
+},
+"start": "2026-11-04T21:00:00",
+"cancelled": false,
+"id": "1549005ANNMKCTDPCMPRNVRTCLCDRQTVK",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00"
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693324ALHHHJDMJTNSSBJQPNDDVGJDHG"
+},
+"event": {
+"id": "405803ATCTSQBTBPQTMMDPNGPDKGNTSJT"
+},
+"start": "2026-11-04T21:00:00",
+"cancelled": false,
+"id": "1549205ARRDLGKCHGQVMJPTVPRHRTQCCR",
+"attribute_DiscountPercentage": "0"
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693324ALHHHJDMJTNSSBJQPNDDVGJDHG"
+},
+"event": {
+"id": "405803ATCTSQBTBPQTMMDPNGPDKGNTSJT"
+},
+"start": "2026-11-04T21:00:00",
+"cancelled": false,
+"id": "1630610ABMQVCVHJBVRSLKGDVKVKTQCNM",
+"attribute_DiscountPercentage": "0",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693124AVKDHKVDPKKGCJTTPQHJQSPBGN"
+},
+"event": {
+"id": "315805AJPQLVSBHKRQMRVQDGMMNGPTGDJ"
+},
+"start": "2026-11-04T21:15:00",
+"cancelled": false,
+"id": "1579451AQHRKRVGCRDNVRPGPRHPNLVJSP",
+"attribute_DiscountPercentage": "20"
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693124AVKDHKVDPKKGCJTTPQHJQSPBGN"
+},
+"event": {
+"id": "315805AJPQLVSBHKRQMRVQDGMMNGPTGDJ"
+},
+"start": "2026-11-04T21:15:00",
+"cancelled": false,
+"id": "1612811AQCMCGPMSLNMRTKDMQLLLJJGKT",
+"attribute_DiscountPercentage": "0",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "28002AJQKLGCDRSJRKNDKMNMHDQCPPKNH",
+"priceList": {
+"id": "3026724AKQVBCDKQRHLDSBDKMLKSBLKGN"
+},
+"event": {
+"id": "741603APBPGHLRHQQGDJLBCNVKBGJLSTS"
+},
+"start": "2026-11-04T21:15:00",
+"cancelled": false,
+"id": "1612408ATSPVNVMJJJVHGNGQTVKPGJBSL",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693324ALHHHJDMJTNSSBJQPNDDVGJDHG"
+},
+"event": {
+"id": "405803ATCTSQBTBPQTMMDPNGPDKGNTSJT"
+},
+"start": "2026-11-05T14:30:00",
+"cancelled": false,
+"id": "1614221ABHPTKDSMDGTTLNSNTTQCDCDRV",
+"attribute_DiscountPercentage": "0",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693324ALHHHJDMJTNSSBJQPNDDVGJDHG"
+},
+"event": {
+"id": "405803ATCTSQBTBPQTMMDPNGPDKGNTSJT"
+},
+"start": "2026-11-05T14:30:00",
+"cancelled": false,
+"id": "1620020AKNRTBGNKMLPMVKLGGLBHNBNTQ",
+"attribute_DiscountPercentage": "0",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "2601AQNNVGDSDNTBVTJRRMQNTDRTBBNTQ",
+"priceList": {
+"id": "2516804APBDKBLLQVQGPVKHSCRHCSDTVQ"
+},
+"event": {
+"id": "718603AHMTJMQJRBCHCCJPLVRJCDQTGTS"
+},
+"start": "2026-11-05T15:00:00",
+"cancelled": false,
+"id": "1559015ACCQNJTGBRGGGCSVQLGGSJQNKN",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00"
+},
+{
+"isOnSale": true,
+"planId": "2601AQNNVGDSDNTBVTJRRMQNTDRTBBNTQ",
+"priceList": {
+"id": "2770696AGSHBRHKQTTBLHRRSRVSVDGJQJ"
+},
+"event": {
+"id": "718603AHMTJMQJRBCHCCJPLVRJCDQTGTS"
+},
+"start": "2026-11-05T18:45:00",
+"cancelled": false,
+"id": "1560804ACRBJCKQRBQPQLHRSLGHSDNBGC",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00"
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693324ALHHHJDMJTNSSBJQPNDDVGJDHG"
+},
+"event": {
+"id": "405803ATCTSQBTBPQTMMDPNGPDKGNTSJT"
+},
+"start": "2026-11-05T19:00:00",
+"cancelled": false,
+"id": "1614415AMRDLJBVMHKBLJTBKNBVGMSTDM",
+"attribute_DiscountPercentage": "0",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "21401ATBPGTQKVRDDCCQRVVVPPKQMSKBM",
+"priceList": {
+"id": "3754124ACJJBRMKPVPVJNNMSCSGKMBVMH"
+},
+"event": {
+"id": "742003AHPTGQDSNSTSDJJLMBBRTBLHBST"
+},
+"start": "2026-11-05T19:00:00",
+"cancelled": false,
+"id": "1614208AKRLJDKJMVMCPPPMJGGKPKHMNT",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "28002AJQKLGCDRSJRKNDKMNMHDQCPPKNH",
+"priceList": {
+"id": "3645524ALTSJDTVJQMCDCPHSVLPGGSLDJ"
+},
+"event": {
+"id": "681803ATGVKVQRCLDTVHSSQKSSRLVKPKN"
+},
+"start": "2026-11-05T19:15:00",
+"cancelled": false,
+"id": "1471004AQJGMSDGVJBNDHDRTDQJTSJBSV",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00"
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693124AVKDHKVDPKKGCJTTPQHJQSPBGN"
+},
+"event": {
+"id": "315805AJPQLVSBHKRQMRVQDGMMNGPTGDJ"
+},
+"start": "2026-11-05T19:15:00",
+"cancelled": false,
+"id": "1471206AQQQMSGLKPQMKBNNBBHDHMLKNT",
+"attribute_DiscountPercentage": "0"
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693124AVKDHKVDPKKGCJTTPQHJQSPBGN"
+},
+"event": {
+"id": "315805AJPQLVSBHKRQMRVQDGMMNGPTGDJ"
+},
+"start": "2026-11-05T19:15:00",
+"cancelled": false,
+"id": "1602418AVDDBJNBNCNMHHNNNPQMMRKTRV",
+"attribute_DiscountPercentage": "0",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "2601AQNNVGDSDNTBVTJRRMQNTDRTBBNTQ",
+"priceList": {
+"id": "2521205AMMLBLDBNNGNNKVHGRSHRGGVTC"
+},
+"event": {
+"id": "719203ADRGSSRGPQRQTGGPSBCTRPVRRJP"
+},
+"start": "2026-11-05T20:30:00",
+"cancelled": false,
+"id": "1559405APHRJDVNBDTMNLBKTCPPNDHRCB",
+"attribute_BlackOutNight": true,
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00"
+},
+{
+"isOnSale": true,
+"planId": "18001AQNDJSHVVQBLCSKTRHMGHNPJGJTM",
+"priceList": {
+"id": "3700924AHKHPCKNHVRJQHCCJLSLBMLTQK"
+},
+"event": {
+"id": "712403AHPKNVCNNBCDGPMNJPBPBDTJTSR"
+},
+"start": "2026-11-05T21:00:00",
+"cancelled": false,
+"id": "1548606APLTHRLMVMMPRGNVRRHMMRPRNG",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00"
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693324ALHHHJDMJTNSSBJQPNDDVGJDHG"
+},
+"event": {
+"id": "405803ATCTSQBTBPQTMMDPNGPDKGNTSJT"
+},
+"start": "2026-11-05T21:00:00",
+"cancelled": false,
+"id": "1549206ARHPPTKRQQLSQMKTKGQNVDCTPQ",
+"attribute_DiscountPercentage": "20"
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693324ALHHHJDMJTNSSBJQPNDDVGJDHG"
+},
+"event": {
+"id": "405803ATCTSQBTBPQTMMDPNGPDKGNTSJT"
+},
+"start": "2026-11-05T21:00:00",
+"cancelled": false,
+"id": "1630611AGRRRHLGPQRVNDDPHDRKJBMHMD",
+"attribute_DiscountPercentage": "0",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693124AVKDHKVDPKKGCJTTPQHJQSPBGN"
+},
+"event": {
+"id": "315805AJPQLVSBHKRQMRVQDGMMNGPTGDJ"
+},
+"start": "2026-11-05T21:15:00",
+"cancelled": false,
+"id": "1579452ACQMLNNHRNPHKHLVPSJLCTGLLP",
+"attribute_DiscountPercentage": "20"
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693124AVKDHKVDPKKGCJTTPQHJQSPBGN"
+},
+"event": {
+"id": "315805AJPQLVSBHKRQMRVQDGMMNGPTGDJ"
+},
+"start": "2026-11-05T21:15:00",
+"cancelled": false,
+"id": "1612812ABGCLBRCHVSSHDTNJJHPTBSVCK",
+"attribute_DiscountPercentage": "0",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "28002AJQKLGCDRSJRKNDKMNMHDQCPPKNH",
+"priceList": {
+"id": "3245724AHLVJRNLVGKQQKTSGPDKNRQHJJ"
+},
+"event": {
+"id": "741603APBPGHLRHQQGDJLBCNVKBGJLSTS"
+},
+"start": "2026-11-05T21:15:00",
+"cancelled": false,
+"id": "1612606AVNRBDLLKTRVTKLRVBHPHHGBNH",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "30401AVTJMSJLDVLNKKKDPCPPRDDJCLRT",
+"priceList": {
+"id": "3587724ASKKBLRJSGGDJNCDNRCHHKKGSR"
+},
+"event": {
+"id": "681403ABJRSHVHPNQNTGTGMRKSCKDVKBC"
+},
+"start": "2026-11-06T18:30:00",
+"cancelled": false,
+"id": "1524403AQMTQMLHCTGBLHPBBGRTPSNKHG",
+"attribute_DiscountPercentage": "0"
+},
+{
+"isOnSale": true,
+"planId": "2601AQNNVGDSDNTBVTJRRMQNTDRTBBNTQ",
+"priceList": {
+"id": "2475205ARDRJNTJMGTTLRVNNPMHSRKSGV"
+},
+"event": {
+"id": "758403APPMPRKKVBQVQDLLMKLVQCNLGJC"
+},
+"start": "2026-11-06T18:45:00",
+"cancelled": false,
+"id": "1653803AVMGNBLJTLMDCSMNCNPNCKSNJH",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693324ALHHHJDMJTNSSBJQPNDDVGJDHG"
+},
+"event": {
+"id": "405803ATCTSQBTBPQTMMDPNGPDKGNTSJT"
+},
+"start": "2026-11-06T19:00:00",
+"cancelled": false,
+"id": "1614416AHMHLLBDDDVQMHQMRSJDHLTLGM",
+"attribute_DiscountPercentage": "0",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "21401ATBPGTQKVRDDCCQRVVVPPKQMSKBM",
+"priceList": {
+"id": "3739724ADJCPBJDSNHNJHRDQRJDKPNMSC"
+},
+"event": {
+"id": "742003AHPTGQDSNSTSDJJLMBBRTBLHBST"
+},
+"start": "2026-11-06T19:00:00",
+"cancelled": false,
+"id": "1614209ARKGKKCLQHVBCRMNJVJRPHMTVL",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "28002AJQKLGCDRSJRKNDKMNMHDQCPPKNH",
+"priceList": {
+"id": "3675525ALGJVPQTRNQMNVDMLNBTRVBSSH"
+},
+"event": {
+"id": "681803ATGVKVQRCLDTVHSSQKSSRLVKPKN"
+},
+"start": "2026-11-06T19:15:00",
+"cancelled": false,
+"id": "1471005ADDQNLGKQGLKCLRCRMKPDMPVPT",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00"
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693124AVKDHKVDPKKGCJTTPQHJQSPBGN"
+},
+"event": {
+"id": "315805AJPQLVSBHKRQMRVQDGMMNGPTGDJ"
+},
+"start": "2026-11-06T19:15:00",
+"cancelled": false,
+"id": "1471207ATNMSCNBDTLRDRCTTVDTPRQRBN",
+"attribute_DiscountPercentage": "0"
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693124AVKDHKVDPKKGCJTTPQHJQSPBGN"
+},
+"event": {
+"id": "315805AJPQLVSBHKRQMRVQDGMMNGPTGDJ"
+},
+"start": "2026-11-06T19:15:00",
+"cancelled": false,
+"id": "1602419ALNSSSTBHBPQNCVRGNGDDJMBRS",
+"attribute_DiscountPercentage": "0",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "28201ANLRQMDQPKBCRBQJSVDBPMCHQKNS",
+"priceList": {
+"id": "3234924ANBHRKHGDJTKNJMVMJLVMSRRHB"
+},
+"event": {
+"id": "704203APLPCSSTTDGCTQHCLVNTVLCRJQB"
+},
+"start": "2026-11-06T20:00:00",
+"cancelled": false,
+"id": "1524203ACBMVVBJVQKKMTRCJSVLTSVGVM",
+"attribute_DiscountPercentage": "0",
+"attribute_PerTicketBookingFee": "4.00"
+},
+{
+"isOnSale": true,
+"planId": "2601AQNNVGDSDNTBVTJRRMQNTDRTBBNTQ",
+"priceList": {
+"id": "2521205AMMLBLDBNNGNNKVHGRSHRGGVTC"
+},
+"event": {
+"id": "719203ADRGSSRGPQRQTGGPSBCTRPVRRJP"
+},
+"start": "2026-11-06T20:30:00",
+"cancelled": false,
+"id": "1559406ASNNJNMBNNLPVGPLPKCHVMCSPV",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00"
+},
+{
+"isOnSale": true,
+"planId": "18001AQNDJSHVVQBLCSKTRHMGHNPJGJTM",
+"priceList": {
+"id": "3690924AVPJNPMJQJRGBTHVPLVJGQCSSQ"
+},
+"event": {
+"id": "712403AHPKNVCNNBCDGPMNJPBPBDTJTSR"
+},
+"start": "2026-11-06T21:00:00",
+"cancelled": false,
+"id": "1548607ADDCNHHJVRHRHJTNBLDBKVHLDR",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00"
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693324ALHHHJDMJTNSSBJQPNDDVGJDHG"
+},
+"event": {
+"id": "405803ATCTSQBTBPQTMMDPNGPDKGNTSJT"
+},
+"start": "2026-11-06T21:00:00",
+"cancelled": false,
+"id": "1549207ABHRMKCLVQMCCVCLPKHMSCDVCV",
+"attribute_DiscountPercentage": "20"
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693324ALHHHJDMJTNSSBJQPNDDVGJDHG"
+},
+"event": {
+"id": "405803ATCTSQBTBPQTMMDPNGPDKGNTSJT"
+},
+"start": "2026-11-06T21:00:00",
+"cancelled": false,
+"id": "1630612ALJLSSQPMJCBLKLJTTDMHVTKTB",
+"attribute_DiscountPercentage": "0",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693124AVKDHKVDPKKGCJTTPQHJQSPBGN"
+},
+"event": {
+"id": "315805AJPQLVSBHKRQMRVQDGMMNGPTGDJ"
+},
+"start": "2026-11-06T21:15:00",
+"cancelled": false,
+"id": "1579453ADJRDKSPMGMBNJKPCTKTMCTMLL",
+"attribute_DiscountPercentage": "20"
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693124AVKDHKVDPKKGCJTTPQHJQSPBGN"
+},
+"event": {
+"id": "315805AJPQLVSBHKRQMRVQDGMMNGPTGDJ"
+},
+"start": "2026-11-06T21:15:00",
+"cancelled": false,
+"id": "1612813AVPRVQCTHQMSNPPBMNQPVMBKNG",
+"attribute_DiscountPercentage": "0",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "28002AJQKLGCDRSJRKNDKMNMHDQCPPKNH",
+"priceList": {
+"id": "3245724AHLVJRNLVGKQQKTSGPDKNRQHJJ"
+},
+"event": {
+"id": "741603APBPGHLRHQQGDJLBCNVKBGJLSTS"
+},
+"start": "2026-11-06T21:15:00",
+"cancelled": false,
+"id": "1612607ASMNNCKKHMPPVQKKJRCGDBSRJR",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "2601AQNNVGDSDNTBVTJRRMQNTDRTBBNTQ",
+"priceList": {
+"id": "1283404APVJBBKJQHRSRGQLTMJCJMGNHD"
+},
+"event": {
+"id": "752803AHQLHGMTNGGHLKJJVNMLQQQHSGR"
+},
+"start": "2026-11-06T22:15:00",
+"cancelled": false,
+"id": "1654003AKJTJLRJDTDGSPRDCNJMDGBVLG",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "28201ANLRQMDQPKBCRBQJSVDBPMCHQKNS",
+"priceList": {
+"id": "3285724AGTJSKSDDSSGVRPBJPJNPCLHLN"
+},
+"event": {
+"id": "754003AQDRCKQNCRRMPVVNHGCTLHVRDQQ"
+},
+"start": "2026-11-07T12:00:00",
+"cancelled": false,
+"id": "1643403AHMHQDDNKMMMKSGRNSBDHGHLSB",
+"attribute_DiscountPercentage": "0",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatreWalthamstow": true
+},
+{
+"isOnSale": true,
+"planId": "30401AVTJMSJLDVLNKKKDPCPPRDDJCLRT",
+"priceList": {
+"id": "3587724ASKKBLRJSGGDJNCDNRCHHKKGSR"
+},
+"event": {
+"id": "681403ABJRSHVHPNQNTGTGMRKSCKDVKBC"
+},
+"start": "2026-11-07T12:00:00",
+"cancelled": false,
+"id": "1643603AVMQHDHQCHJLHMHVJSCNLPDLTD",
+"attribute_DiscountPercentage": "0"
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693324ALHHHJDMJTNSSBJQPNDDVGJDHG"
+},
+"event": {
+"id": "405803ATCTSQBTBPQTMMDPNGPDKGNTSJT"
+},
+"start": "2026-11-07T14:30:00",
+"cancelled": false,
+"id": "1614222AVDKKNHBKCRBQQGVJRLSDTHJDG",
+"attribute_DiscountPercentage": "0",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "21401ATBPGTQKVRDDCCQRVVVPPKQMSKBM",
+"priceList": {
+"id": "3747924AJNQVDNJBGMRCCQSJMCQPSBRVB"
+},
+"event": {
+"id": "742003AHPTGQDSNSTSDJJLMBBRTBLHBST"
+},
+"start": "2026-11-07T14:30:00",
+"cancelled": false,
+"id": "1613805AGSTJJGSGTDHCPPBDJGHDQCKCL",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "2601AQNNVGDSDNTBVTJRRMQNTDRTBBNTQ",
+"priceList": {
+"id": "1529004AKVNKDQVLLJTCSKHLRDVDGJTKK"
+},
+"event": {
+"id": "719203ADRGSSRGPQRQTGGPSBCTRPVRRJP"
+},
+"start": "2026-11-07T15:00:00",
+"cancelled": false,
+"id": "1560206AQDPDKDSBPMLHPBSJPLDDNRRCQ",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00"
+},
+{
+"isOnSale": true,
+"planId": "2601AQNNVGDSDNTBVTJRRMQNTDRTBBNTQ",
+"priceList": {
+"id": "2773909APRLNTTJLPMDBCQTSVLVRNBQND"
+},
+"event": {
+"id": "718603AHMTJMQJRBCHCCJPLVRJCDQTGTS"
+},
+"start": "2026-11-07T18:45:00",
+"cancelled": false,
+"id": "1560805AKHHHRVLKHJNSRVQTSBBTSJGBN",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00"
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693324ALHHHJDMJTNSSBJQPNDDVGJDHG"
+},
+"event": {
+"id": "405803ATCTSQBTBPQTMMDPNGPDKGNTSJT"
+},
+"start": "2026-11-07T19:00:00",
+"cancelled": false,
+"id": "1614417APCGVQSJPQKNPNKKCKQKJSLTLR",
+"attribute_DiscountPercentage": "0",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "21401ATBPGTQKVRDDCCQRVVVPPKQMSKBM",
+"priceList": {
+"id": "3734124ADMCHNBJBNTBVNRPLJKHDHGBSK"
+},
+"event": {
+"id": "742003AHPTGQDSNSTSDJJLMBBRTBLHBST"
+},
+"start": "2026-11-07T19:00:00",
+"cancelled": false,
+"id": "1614210AMJJDNNVSMLGKMQBKMJPVTCGTH",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "28002AJQKLGCDRSJRKNDKMNMHDQCPPKNH",
+"priceList": {
+"id": "3564124ASVTKMCBDTNBKLLPRRDGHPBNRV"
+},
+"event": {
+"id": "681803ATGVKVQRCLDTVHSSQKSSRLVKPKN"
+},
+"start": "2026-11-07T19:15:00",
+"cancelled": false,
+"id": "1471006ADMTCQHNTVKDMQSCBSMMTGHNBT",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00"
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693124AVKDHKVDPKKGCJTTPQHJQSPBGN"
+},
+"event": {
+"id": "315805AJPQLVSBHKRQMRVQDGMMNGPTGDJ"
+},
+"start": "2026-11-07T19:15:00",
+"cancelled": false,
+"id": "1471208AKGGNPPJBVKLLMGHGLRQLMHNPM",
+"attribute_DiscountPercentage": "0"
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693124AVKDHKVDPKKGCJTTPQHJQSPBGN"
+},
+"event": {
+"id": "315805AJPQLVSBHKRQMRVQDGMMNGPTGDJ"
+},
+"start": "2026-11-07T19:15:00",
+"cancelled": false,
+"id": "1602420AJPLHTHDTJJNTBBCSMKTTVDJGH",
+"attribute_DiscountPercentage": "0",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "28201ANLRQMDQPKBCRBQJSVDBPMCHQKNS",
+"priceList": {
+"id": "2860756AMHBNCNPGTQHCKQRCGRQTKMGMH"
+},
+"event": {
+"id": "681003AVBMCLTMQGCQJVHKDVNSTPKJQHV"
+},
+"start": "2026-11-07T20:00:00",
+"cancelled": false,
+"id": "1467603AHRJGBLQGSDPDJJKMHJKRVRLSB",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00"
+},
+{
+"isOnSale": true,
+"planId": "2601AQNNVGDSDNTBVTJRRMQNTDRTBBNTQ",
+"priceList": {
+"id": "2521205AMMLBLDBNNGNNKVHGRSHRGGVTC"
+},
+"event": {
+"id": "719203ADRGSSRGPQRQTGGPSBCTRPVRRJP"
+},
+"start": "2026-11-07T20:30:00",
+"cancelled": false,
+"id": "1559407AGGBNVKHNNLDKVDCCTSLKSQBMH",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00"
+},
+{
+"isOnSale": true,
+"planId": "18001AQNDJSHVVQBLCSKTRHMGHNPJGJTM",
+"priceList": {
+"id": "3740724ACVVHRQJTNHRQVKKBGNLVCLDGD"
+},
+"event": {
+"id": "712403AHPKNVCNNBCDGPMNJPBPBDTJTSR"
+},
+"start": "2026-11-07T21:00:00",
+"cancelled": false,
+"id": "1548608ARHJJSLQBJNRVDMCSNRTDSDMMB",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00"
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693324ALHHHJDMJTNSSBJQPNDDVGJDHG"
+},
+"event": {
+"id": "405803ATCTSQBTBPQTMMDPNGPDKGNTSJT"
+},
+"start": "2026-11-07T21:00:00",
+"cancelled": false,
+"id": "1549208AJTPJMVGHVPJSVNHNPMCTRKTMP",
+"attribute_DiscountPercentage": "20"
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693324ALHHHJDMJTNSSBJQPNDDVGJDHG"
+},
+"event": {
+"id": "405803ATCTSQBTBPQTMMDPNGPDKGNTSJT"
+},
+"start": "2026-11-07T21:00:00",
+"cancelled": false,
+"id": "1630613ATTNKVDQLMPSBGDBQGPTBCDVDK",
+"attribute_DiscountPercentage": "0",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693124AVKDHKVDPKKGCJTTPQHJQSPBGN"
+},
+"event": {
+"id": "315805AJPQLVSBHKRQMRVQDGMMNGPTGDJ"
+},
+"start": "2026-11-07T21:15:00",
+"cancelled": false,
+"id": "1579454AKGKKDMTNNCVTCTBKLSPGLGRRK",
+"attribute_DiscountPercentage": "20"
+},
+{
+"isOnSale": true,
+"planId": "14401ASTBHRJNMRVVCMLVMRRSGQMJPHLG",
+"priceList": {
+"id": "3693124AVKDHKVDPKKGCJTTPQHJQSPBGN"
+},
+"event": {
+"id": "315805AJPQLVSBHKRQMRVQDGMMNGPTGDJ"
+},
+"start": "2026-11-07T21:15:00",
+"cancelled": false,
+"id": "1612814ABKDPQMSGHHRTQCHHPRPNCHBRP",
+"attribute_DiscountPercentage": "0",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "28002AJQKLGCDRSJRKNDKMNMHDQCPPKNH",
+"priceList": {
+"id": "3245724AHLVJRNLVGKQQKTSGPDKNRQHJJ"
+},
+"event": {
+"id": "741603APBPGHLRHQQGDJLBCNVKBGJLSTS"
+},
+"start": "2026-11-07T21:15:00",
+"cancelled": false,
+"id": "1612608AVGGSLTBGDBTKDKLVLMLSCRDHG",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatre": true
+},
+{
+"isOnSale": true,
+"planId": "2601AQNNVGDSDNTBVTJRRMQNTDRTBBNTQ",
+"priceList": {
+"id": "1283404APVJBBKJQHRSRGQLTMJCJMGNHD"
+},
+"event": {
+"id": "752803AHQLHGMTNGGHLKJJVNMLQQQHSGR"
+},
+"start": "2026-11-07T22:15:00",
+"cancelled": false,
+"id": "1654004AQLVDBCSKGGJKBBTRVCTRNTCLB",
+"attribute_DiscountPercentage": "20",
+"attribute_PerTicketBookingFee": "4.00",
+"attribute_SohoTheatre": true
+}
+]
