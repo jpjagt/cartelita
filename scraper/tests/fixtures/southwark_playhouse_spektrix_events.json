@@ -1,0 +1,88 @@
+[
+ {
+  "id": "40401AJTHBLMVMBVCCLGRTCHHQHMCLTQK",
+  "name": "Black Writers Collective (2026/27)",
+  "webUrl": "",
+  "imageUrl": "",
+  "description": ""
+ },
+ {
+  "id": "50001ALBDLSVMDTDTMKNPPLMDQMDRBTLK",
+  "name": "Brixton Calling",
+  "webUrl": "",
+  "imageUrl": "https://system.spektrix.com/southwarkplayhouse/files/a5647483-c2b9-4ada-ba38-c42376603c03.jpg",
+  "description": ""
+ },
+ {
+  "id": "46401AJJTJHQJSQQVGTKDVGHPLJJBLHMJ",
+  "name": "Dog Mom",
+  "webUrl": "",
+  "imageUrl": "https://system.spektrix.com/southwarkplayhouse/files/ad95934b-f93a-4bad-94e5-bb977bc207f4.jpg",
+  "description": "",
+  "attribute_ProducerName": "EnActe Arts"
+ },
+ {
+  "id": "49401ADNVSTHMKTMHNKQJBMSHCJRPSGNV",
+  "name": "Fly, You Fools!",
+  "webUrl": "",
+  "imageUrl": "https://system.spektrix.com/southwarkplayhouse/files/93aa3f93-0289-47e9-a9da-c950a94af0a1.jpg",
+  "description": "",
+  "attribute_ProducerName": "Recent Cutbacks"
+ },
+ {
+  "id": "42601AHHMJKDLCSMPCMNQQTLCLBJSNVCP",
+  "name": "Jane Eyre",
+  "webUrl": "",
+  "imageUrl": "https://system.spektrix.com/southwarkplayhouse/files/75b4212c-09da-4a86-946c-12b29172f8d6.jpg",
+  "description": "",
+  "attribute_ProducerName": "Adam Blanshay"
+ },
+ {
+  "id": "47601ALRPQQGLMRHLJRSGRRTJGJKMNSGT",
+  "name": "Memoriam",
+  "webUrl": "",
+  "imageUrl": "https://system.spektrix.com/southwarkplayhouse/files/0fc489a0-6a52-43a9-880f-a269c29f52b4.jpg",
+  "description": "",
+  "attribute_ProducerName": "Tangram"
+ },
+ {
+  "id": "48201AHQBKMVGJSTQGDDLBHBMNSLMGSVN",
+  "name": "NERO",
+  "webUrl": "",
+  "imageUrl": "https://system.spektrix.com/southwarkplayhouse/files/fdf0125c-7676-4909-b930-17a31cf5f24c.jpg",
+  "description": "",
+  "attribute_ProducerName": "Seensee Company and Park Myung Sung"
+ },
+ {
+  "id": "47001AKGBPVRNLLTLGMHBTDTNRJQVNRCM",
+  "name": "Private Jones",
+  "webUrl": "",
+  "imageUrl": "https://system.spektrix.com/southwarkplayhouse/files/5e746da3-06bf-4b24-832b-ba53460d4967.jpg",
+  "description": "",
+  "attribute_ProducerName": "Hugo Six presents"
+ },
+ {
+  "id": "47801AQSJJVSSQJNMDHJPPGNDTMSTPTST",
+  "name": "Relative Motion",
+  "webUrl": "",
+  "imageUrl": "https://system.spektrix.com/southwarkplayhouse/files/4830a61d-3220-432e-8edd-817eeb602c01.jpg",
+  "description": "",
+  "attribute_ProducerName": "Very Rascals "
+ },
+ {
+  "id": "49801AVVVJQRDHHCHGRNLMSSLHRNCVBPM",
+  "name": "Sherlock's Last Tape",
+  "webUrl": "",
+  "imageUrl": "https://system.spektrix.com/southwarkplayhouse/files/ce32b139-0e29-43d1-bd9e-be524bccf2db.jpg",
+  "description": "",
+  "attribute_ProducerName": "Crag Pit Studios"
+ },
+ {
+  "id": "49601ASJBNVSCTNMSJHKPCGQLLJSNSJJN",
+  "name": "The Radium Girls",
+  "webUrl": "",
+  "imageUrl": "https://system.spektrix.com/southwarkplayhouse/files/5b34e8d2-e1fd-4a46-8c06-3d9a8dcb58bb.jpg",
+  "description": "",
+  "attribute_ProducerName": "High Octave Productions"
+ }
+]

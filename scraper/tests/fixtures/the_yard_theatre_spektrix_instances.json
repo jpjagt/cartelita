@@ -1,0 +1,93 @@
+[
+ {
+  "id": "149673AJJMKSHJQTSCMJNSJKMHPRNCKBR",
+  "event": {
+   "id": "86437AVGDTBPJMHSLQTLJJMCNDTHRLQKQ"
+  },
+  "start": "2026-10-30T17:00:00",
+  "cancelled": false,
+  "isOnSale": true,
+  "priceList": {
+   "id": "355749AHTRDCHNHNNKHQQSBHTSPJGHQKQ"
+  },
+  "planId": "6010ATSSNGRDNNRDDDNRQJKDQBNQMMLNT"
+ },
+ {
+  "id": "145274AGTMPMQPMRMDGCVRJSBKLDGTKKH",
+  "event": {
+   "id": "83436AJGHHQJMSMGNGCSMSMBTGNPCVLHT"
+  },
+  "start": "2026-11-17T19:30:00",
+  "cancelled": false,
+  "isOnSale": true,
+  "priceList": {
+   "id": "362349AJNHRCSKQSTNDPHDTBPJVLQHPGV"
+  },
+  "planId": "6010ATSSNGRDNNRDDDNRQJKDQBNQMMLNT"
+ },
+ {
+  "id": "149873AHKGVJKBBTSRLVGLQMDTRHNDQCP",
+  "event": {
+   "id": "86636ATRGJBJLGRHPNGLSMCBNGSRJGHPS"
+  },
+  "start": "2026-12-04T17:00:00",
+  "cancelled": false,
+  "isOnSale": true,
+  "priceList": {
+   "id": "355749AHTRDCHNHNNKHQQSBHTSPJGHQKQ"
+  },
+  "planId": "6010ATSSNGRDNNRDDDNRQJKDQBNQMMLNT"
+ },
+ {
+  "id": "151073ACNBPTSBQNNHRNRJVSHRNBNRPHJ",
+  "event": {
+   "id": "87636ATRQVKQRRTRNBVHHTMHJDDSHHKNL"
+  },
+  "start": "2026-12-09T18:00:00",
+  "cancelled": false,
+  "isOnSale": true,
+  "priceList": {
+   "id": "363749ABMRQBLGMLTBQSHLMDPPDKKLDGT"
+  },
+  "planId": "6010ATSSNGRDNNRDDDNRQJKDQBNQMMLNT"
+ },
+ {
+  "id": "150073ANPNGGHNSHVVQPHLLGNSHDGGNKL",
+  "event": {
+   "id": "86836AKVVHPGRHBDHJRPDKKVDPLCQGJSM"
+  },
+  "start": "2026-12-18T17:00:00",
+  "cancelled": false,
+  "isOnSale": true,
+  "priceList": {
+   "id": "355749AHTRDCHNHNNKHQQSBHTSPJGHQKQ"
+  },
+  "planId": "6010ATSSNGRDNNRDDDNRQJKDQBNQMMLNT"
+ },
+ {
+  "id": "146073ASTBNQDRVNKLBQBSMQSJJSGSCGL",
+  "event": {
+   "id": "83636AJHGQNGTJCSRNBDVQSJBJHKMMDMK"
+  },
+  "start": "2027-01-13T19:00:00",
+  "cancelled": false,
+  "isOnSale": true,
+  "priceList": {
+   "id": "344151ABPLTGKBDTSVSCPDLCMJJKBCPJR"
+  },
+  "planId": "6010ATSSNGRDNNRDDDNRQJKDQBNQMMLNT"
+ },
+ {
+  "id": "146873AGSTSNCKCGVKKDQDSCPJGTTKKDC",
+  "event": {
+   "id": "83836ADCPQMJVQDGGPTJPLBTHCLCVLQLQ"
+  },
+  "start": "2027-03-10T19:00:00",
+  "cancelled": false,
+  "isOnSale": true,
+  "priceList": {
+   "id": "345152AVNGSDDPSRRBCGMSKDMPJVSRRPM"
+  },
+  "planId": "6010ATSSNGRDNNRDDDNRQJKDQBNQMMLNT"
+ }
+]
