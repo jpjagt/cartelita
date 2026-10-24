@@ -1,0 +1,639 @@
+[
+ {
+  "isOnSale": false,
+  "planId": "27623AMPRKMQBMNHRLKHRTGPJBLQCHDRJ",
+  "priceList": {
+   "id": "811893ABQJHMMHCKHBTKTKJPDLCGQHLBH"
+  },
+  "event": {
+   "id": "575200ALDDNDNKLHCDJRKLGGNMBLTHHBB"
+  },
+  "start": "2026-10-24T17:30:00",
+  "startUtc": "2026-10-24T16:30:00",
+  "cancelled": false,
+  "id": "1266634ATJSHPPSPSBKVSBHPTSNNTKLRJ"
+ },
+ {
+  "isOnSale": false,
+  "planId": "3418ARKMDVHGCBDCGMMSKSVKDTCQCSCRR",
+  "priceList": {
+   "id": "806493ACLJJHCKDSSGQMBJPSQSPDDNJLK"
+  },
+  "event": {
+   "id": "575000ASLMNVGNMHSJKCVQLRQLSSLCSNT"
+  },
+  "start": "2026-10-24T19:30:00",
+  "startUtc": "2026-10-24T18:30:00",
+  "cancelled": false,
+  "id": "1266034AKKKSQTCTGDKMLTMTQQHKKRTJV",
+  "attribute_HasInterval": true
+ },
+ {
+  "isOnSale": false,
+  "planId": "6423ASNBSTSQCCQGNMTMQDLSJSJPSCSCL",
+  "priceList": {
+   "id": "685093ABVQPDTPKNMBKNCTLGCBJDVTBRR"
+  },
+  "event": {
+   "id": "102000AGDKKTVHBDBHTMNQDJBKGPPQPDR"
+  },
+  "start": "2026-10-24T19:30:00",
+  "startUtc": "2026-10-24T18:30:00",
+  "cancelled": false,
+  "id": "1266434AJLKKPBDGSKBKGTGRMNTTNSNNS",
+  "attribute_IgnoreVisit": true
+ },
+ {
+  "isOnSale": false,
+  "planId": "26423AHNHTRGBVHSMDRRRHSVPDNHTVBDL",
+  "priceList": {
+   "id": "721893ABLNQNDBMRQDNMMRBGTVRTRMSDT"
+  },
+  "event": {
+   "id": "531600AQHVSHMJLRRJRKBGHSKTSVLJJDT"
+  },
+  "start": "2026-10-24T19:30:00",
+  "startUtc": "2026-10-24T18:30:00",
+  "cancelled": false,
+  "id": "1266234AJJCNPSJCCHHHBMLKLSBTCJSDS",
+  "attribute_IgnoreVisit": true
+ },
+ {
+  "isOnSale": true,
+  "planId": "3418ARKMDVHGCBDCGMMSKSVKDTCQCSCRR",
+  "priceList": {
+   "id": "812693AGBGVPMPQNHJPVQRLLVKTMDJDLV"
+  },
+  "event": {
+   "id": "577600AJGHVJMRHVHQGRTNJNRKRJHCVCC"
+  },
+  "start": "2026-10-25T15:30:00",
+  "startUtc": "2026-10-25T15:30:00",
+  "cancelled": false,
+  "id": "1273234APHHLVSSVGPGLPVTCPRDPLLQGB",
+  "attribute_Location": "Auditorium"
+ },
+ {
+  "isOnSale": true,
+  "planId": "6423ASNBSTSQCCQGNMTMQDLSJSJPSCSCL",
+  "priceList": {
+   "id": "685093ABVQPDTPKNMBKNCTLGCBJDVTBRR"
+  },
+  "event": {
+   "id": "102000AGDKKTVHBDBHTMNQDJBKGPPQPDR"
+  },
+  "start": "2026-10-25T15:30:00",
+  "startUtc": "2026-10-25T15:30:00",
+  "cancelled": false,
+  "id": "1273834ABJKNBRKKPNKRLBMGNSHSNPKTJ",
+  "attribute_IgnoreVisit": true
+ },
+ {
+  "isOnSale": true,
+  "planId": "26423AHNHTRGBVHSMDRRRHSVPDNHTVBDL",
+  "priceList": {
+   "id": "721893ABLNQNDBMRQDNMMRBGTVRTRMSDT"
+  },
+  "event": {
+   "id": "531600AQHVSHMJLRRJRKBGHSKTSVLJJDT"
+  },
+  "start": "2026-10-25T15:30:00",
+  "startUtc": "2026-10-25T15:30:00",
+  "cancelled": false,
+  "id": "1273435AVTLDNHCJMGJDBNJSTJJLGMRDD",
+  "attribute_IgnoreVisit": true
+ },
+ {
+  "isOnSale": true,
+  "planId": "3418ARKMDVHGCBDCGMMSKSVKDTCQCSCRR",
+  "priceList": {
+   "id": "812693AGBGVPMPQNHJPVQRLLVKTMDJDLV"
+  },
+  "event": {
+   "id": "577600AJGHVJMRHVHQGRTNJNRKRJHCVCC"
+  },
+  "start": "2026-10-25T19:00:00",
+  "startUtc": "2026-10-25T19:00:00",
+  "cancelled": false,
+  "id": "1273434ATGQHJCNGDPNNPSNSHLLCHBLRP",
+  "attribute_Location": "Auditorium"
+ },
+ {
+  "isOnSale": true,
+  "planId": "6423ASNBSTSQCCQGNMTMQDLSJSJPSCSCL",
+  "priceList": {
+   "id": "685093ABVQPDTPKNMBKNCTLGCBJDVTBRR"
+  },
+  "event": {
+   "id": "102000AGDKKTVHBDBHTMNQDJBKGPPQPDR"
+  },
+  "start": "2026-10-25T19:00:00",
+  "startUtc": "2026-10-25T19:00:00",
+  "cancelled": false,
+  "id": "1274034AJQGNBSKQVDGTMPBQTTGRGQHBD",
+  "attribute_IgnoreVisit": true
+ },
+ {
+  "isOnSale": true,
+  "planId": "26423AHNHTRGBVHSMDRRRHSVPDNHTVBDL",
+  "priceList": {
+   "id": "721893ABLNQNDBMRQDNMMRBGTVRTRMSDT"
+  },
+  "event": {
+   "id": "531600AQHVSHMJLRRJRKBGHSKTSVLJJDT"
+  },
+  "start": "2026-10-25T19:00:00",
+  "startUtc": "2026-10-25T19:00:00",
+  "cancelled": false,
+  "id": "1273634ABLCNVMJRDDKLRHCTGBDMDCGJS",
+  "attribute_IgnoreVisit": true
+ },
+ {
+  "isOnSale": true,
+  "planId": "3418ARKMDVHGCBDCGMMSKSVKDTCQCSCRR",
+  "priceList": {
+   "id": "828493ARJSGBJTDLNDRGPCJRRKGNVVRBR"
+  },
+  "event": {
+   "id": "586600AGLMVHHKVTKRHCKLJNJRKLHHDJS"
+  },
+  "start": "2026-10-28T19:30:00",
+  "startUtc": "2026-10-28T19:30:00",
+  "cancelled": false,
+  "id": "1300634AGHLSBPGMTHPKRDKBJSQKQPHRJ",
+  "attribute_HasInterval": true,
+  "attribute_Location": "Auditorium"
+ },
+ {
+  "isOnSale": true,
+  "planId": "6423ASNBSTSQCCQGNMTMQDLSJSJPSCSCL",
+  "priceList": {
+   "id": "685093ABVQPDTPKNMBKNCTLGCBJDVTBRR"
+  },
+  "event": {
+   "id": "102000AGDKKTVHBDBHTMNQDJBKGPPQPDR"
+  },
+  "start": "2026-10-28T19:30:00",
+  "startUtc": "2026-10-28T19:30:00",
+  "cancelled": false,
+  "id": "1301034ARRQQRKRPLNPPHHLPNVRPPVQVH",
+  "attribute_IgnoreVisit": true
+ },
+ {
+  "isOnSale": true,
+  "planId": "26423AHNHTRGBVHSMDRRRHSVPDNHTVBDL",
+  "priceList": {
+   "id": "721893ABLNQNDBMRQDNMMRBGTVRTRMSDT"
+  },
+  "event": {
+   "id": "531600AQHVSHMJLRRJRKBGHSKTSVLJJDT"
+  },
+  "start": "2026-10-28T19:30:00",
+  "startUtc": "2026-10-28T19:30:00",
+  "cancelled": false,
+  "id": "1300834APHGDNLKVRTMLCGPVPHCMJTGBN",
+  "attribute_IgnoreVisit": true
+ },
+ {
+  "isOnSale": true,
+  "planId": "3418ARKMDVHGCBDCGMMSKSVKDTCQCSCRR",
+  "priceList": {
+   "id": "788493ARHTMLDQJQCGCBHPSGBMCRHBGTH"
+  },
+  "event": {
+   "id": "567400APGTSGSPBQBQQKCHQRRRGBKHBJT"
+  },
+  "start": "2026-10-29T19:30:00",
+  "startUtc": "2026-10-29T19:30:00",
+  "cancelled": false,
+  "id": "1243834ABQMDBTMRBLHGGVCBQHRRPLJQL",
+  "attribute_HasInterval": true
+ },
+ {
+  "isOnSale": true,
+  "planId": "3418ARKMDVHGCBDCGMMSKSVKDTCQCSCRR",
+  "priceList": {
+   "id": "755293ABPLKNCBMCNPDMMSTSGKTLJPSNK"
+  },
+  "event": {
+   "id": "550200ADHJGQMSHPBJPRHKSGCSCMHGMRR"
+  },
+  "start": "2026-10-30T19:30:00",
+  "startUtc": "2026-10-30T19:30:00",
+  "cancelled": false,
+  "id": "1195834AMLQPDLMDHDTVCRGNMSVRSLDSC",
+  "attribute_HasInterval": true,
+  "attribute_Location": "Auditorium"
+ },
+ {
+  "isOnSale": true,
+  "planId": "3418ARKMDVHGCBDCGMMSKSVKDTCQCSCRR",
+  "priceList": {
+   "id": "755293ABPLKNCBMCNPDMMSTSGKTLJPSNK"
+  },
+  "event": {
+   "id": "550200ADHJGQMSHPBJPRHKSGCSCMHGMRR"
+  },
+  "start": "2026-10-31T19:30:00",
+  "startUtc": "2026-10-31T19:30:00",
+  "cancelled": false,
+  "id": "1196034ATKQJTRNQHVSQKGGDJDNQKJPLL",
+  "attribute_HasInterval": true,
+  "attribute_Location": "Auditorium"
+ },
+ {
+  "isOnSale": true,
+  "planId": "3418ARKMDVHGCBDCGMMSKSVKDTCQCSCRR",
+  "priceList": {
+   "id": "847093APNGQMDTLVNHPLDLLHLNBKDLDNL"
+  },
+  "event": {
+   "id": "604000ABPTSNCQRCCRVHTJBRHSQPGGKQS"
+  },
+  "start": "2026-11-01T17:30:00",
+  "startUtc": "2026-11-01T17:30:00",
+  "cancelled": false,
+  "id": "1336834ATPMMKMNLRGGQCRRNLTBDJGLHD",
+  "attribute_HasInterval": true
+ },
+ {
+  "isOnSale": true,
+  "planId": "3418ARKMDVHGCBDCGMMSKSVKDTCQCSCRR",
+  "priceList": {
+   "id": "847893ANGTHMNVCJBJKBQNSBGJLGKVLJH"
+  },
+  "event": {
+   "id": "604600ANLCSNLGVJSSRDQDRMGLRPGQCRB"
+  },
+  "start": "2026-11-02T19:30:00",
+  "startUtc": "2026-11-02T19:30:00",
+  "cancelled": false,
+  "id": "1339434ACNRMVKQJHVVHJGHJDHQCBBTPR",
+  "attribute_HasInterval": true,
+  "attribute_InstanceInfo": "Venue doors, 6pm"
+ },
+ {
+  "isOnSale": true,
+  "planId": "10023AHHTNJDPMDHGPSRPLHTLVMNCBSSN",
+  "priceList": {
+   "id": "716293ARKNVVJHNTGCKQPPVSLHHGGQJCQ"
+  },
+  "event": {
+   "id": "525400ADTTMHBGPMPPNBKBVRBMNGQLSTN"
+  },
+  "start": "2026-11-03T19:30:00",
+  "startUtc": "2026-11-03T19:30:00",
+  "cancelled": false,
+  "id": "1316835ASQPLGHTVQCRHHBJNNQKGMDCKB",
+  "attribute_IgnoreVisit": true
+ },
+ {
+  "isOnSale": true,
+  "planId": "3418ARKMDVHGCBDCGMMSKSVKDTCQCSCRR",
+  "priceList": {
+   "id": "836493AGGGLGJKLNKVQDMJSLHGKJPPLSK"
+  },
+  "event": {
+   "id": "595200ADQGGJQBGJVJTRGRJMGCGHGBSRV"
+  },
+  "start": "2026-11-03T19:30:00",
+  "startUtc": "2026-11-03T19:30:00",
+  "cancelled": false,
+  "id": "1316434AQPDRBHDLQQVRMJHQKHBRJDVHR",
+  "attribute_HasInterval": true,
+  "attribute_Location": "Auditorium"
+ },
+ {
+  "isOnSale": true,
+  "planId": "3418ARKMDVHGCBDCGMMSKSVKDTCQCSCRR",
+  "priceList": {
+   "id": "805493ADTMLSHCCCMLCMVDRPHKPSDGVQJ"
+  },
+  "event": {
+   "id": "574400AJSLPKSJHPLRJNMBQSRBVVKBCHP"
+  },
+  "start": "2026-11-06T19:30:00",
+  "startUtc": "2026-11-06T19:30:00",
+  "cancelled": false,
+  "id": "1263834ACBMJNBMQKBVLPRRGQCSNLJNDG",
+  "attribute_HasInterval": true,
+  "attribute_Location": "Auditorium"
+ },
+ {
+  "isOnSale": true,
+  "planId": "3418ARKMDVHGCBDCGMMSKSVKDTCQCSCRR",
+  "priceList": {
+   "id": "859293ADQMDSNJMCCDJNVJNCHPLKTNKLS"
+  },
+  "event": {
+   "id": "609800ADKSSBSLKKKLGQTSCDMKPSPNLJJ"
+  },
+  "start": "2026-11-11T19:30:00",
+  "startUtc": "2026-11-11T19:30:00",
+  "cancelled": false,
+  "id": "1354434ACGQVJGQNDTDKTSJVLLLKQKHCP",
+  "attribute_HasInterval": true
+ },
+ {
+  "isOnSale": true,
+  "planId": "22226AGTQRPNHHSQHTBNRRPLRSKTGMMNR",
+  "priceList": {
+   "id": "837893AQSJSNVTPNNQGSBVSNQLPLKKKSG"
+  },
+  "event": {
+   "id": "613800AQQQQNQNGCPVCLDPDGMLLCJKVCN"
+  },
+  "start": "2026-11-16T12:00:00",
+  "startUtc": "2026-11-16T12:00:00",
+  "cancelled": false,
+  "id": "1365634AVMSHDCLBCGHPSMRCQJCMSTNVH",
+  "attribute_HasInterval": true
+ },
+ {
+  "isOnSale": true,
+  "planId": "22226AGTQRPNHHSQHTBNRRPLRSKTGMMNR",
+  "priceList": {
+   "id": "837893AQSJSNVTPNNQGSBVSNQLPLKKKSG"
+  },
+  "event": {
+   "id": "614000AKMNTBKBTSMVTNNRCKDDVKTNKKH"
+  },
+  "start": "2026-11-17T12:00:00",
+  "startUtc": "2026-11-17T12:00:00",
+  "cancelled": false,
+  "id": "1365834ASRHVMSLPGHRQHPPCRMQKSDMRM",
+  "attribute_HasInterval": true
+ },
+ {
+  "isOnSale": true,
+  "planId": "22226AGTQRPNHHSQHTBNRRPLRSKTGMMNR",
+  "priceList": {
+   "id": "837893AQSJSNVTPNNQGSBVSNQLPLKKKSG"
+  },
+  "event": {
+   "id": "614200AHMKMGNQNKRRTDMRTNLLVSNJJHJ"
+  },
+  "start": "2026-11-18T12:00:00",
+  "startUtc": "2026-11-18T12:00:00",
+  "cancelled": false,
+  "id": "1366034AGTMQGBKBLQKKNHQVMSDKLGVGH",
+  "attribute_HasInterval": true
+ },
+ {
+  "isOnSale": true,
+  "planId": "22226AGTQRPNHHSQHTBNRRPLRSKTGMMNR",
+  "priceList": {
+   "id": "837893AQSJSNVTPNNQGSBVSNQLPLKKKSG"
+  },
+  "event": {
+   "id": "614201ASMPKTRNPCTMLQTCGRHBBBJQNKT"
+  },
+  "start": "2026-11-19T12:00:00",
+  "startUtc": "2026-11-19T12:00:00",
+  "cancelled": false,
+  "id": "1366234AGQKMDLPCKPRLKCNLCBPNRPBLP",
+  "attribute_HasInterval": true
+ },
+ {
+  "isOnSale": true,
+  "planId": "22226AGTQRPNHHSQHTBNRRPLRSKTGMMNR",
+  "priceList": {
+   "id": "837893AQSJSNVTPNNQGSBVSNQLPLKKKSG"
+  },
+  "event": {
+   "id": "614400AMJBNGRGBTGSCGPCJQGTBNKBPJM"
+  },
+  "start": "2026-11-20T12:00:00",
+  "startUtc": "2026-11-20T12:00:00",
+  "cancelled": false,
+  "id": "1366434AKSJPHRPQKSKBRQGRCBLNGJPJT",
+  "attribute_HasInterval": true
+ },
+ {
+  "isOnSale": true,
+  "planId": "3418ARKMDVHGCBDCGMMSKSVKDTCQCSCRR",
+  "priceList": {
+   "id": "843493ARMMSCLMTJKSDNPQHMJHMGDGLVJ"
+  },
+  "event": {
+   "id": "601600ACLKMGJTGPMCDDRBDBBDHMPKVMP"
+  },
+  "start": "2026-11-21T19:30:00",
+  "startUtc": "2026-11-21T19:30:00",
+  "cancelled": false,
+  "id": "1331034ARLHGHTDSCHGQMQLLQCCSHNTLH",
+  "attribute_HasInterval": true,
+  "attribute_Location": "Auditorium"
+ },
+ {
+  "isOnSale": true,
+  "planId": "3418ARKMDVHGCBDCGMMSKSVKDTCQCSCRR",
+  "priceList": {
+   "id": "844693AKLGPBTDCJJRQSCHSBRNSBLMBGG"
+  },
+  "event": {
+   "id": "602800ANNMTLLLMCRDJDNCQRGTVPDPSPN"
+  },
+  "start": "2026-11-29T16:00:00",
+  "startUtc": "2026-11-29T16:00:00",
+  "cancelled": false,
+  "id": "1334634ALCPLVGGSCMSGGSQLDGMDBDSBC",
+  "attribute_HasInterval": true,
+  "attribute_InstanceInfo": "Venue doors, 2:30pm"
+ },
+ {
+  "isOnSale": true,
+  "planId": "3418ARKMDVHGCBDCGMMSKSVKDTCQCSCRR",
+  "priceList": {
+   "id": "866893ADBKNQGCTKVBPVGJMGDKSPJCKTJ"
+  },
+  "event": {
+   "id": "614600AGTRLMCCKCTLJQLVNCTVCPNKLVP"
+  },
+  "start": "2026-12-12T14:30:00",
+  "startUtc": "2026-12-12T14:30:00",
+  "cancelled": false,
+  "id": "1367034ACRSTJLQTLPLBMTPDPHCDLDQNS",
+  "attribute_HasInterval": true
+ },
+ {
+  "isOnSale": true,
+  "planId": "3418ARKMDVHGCBDCGMMSKSVKDTCQCSCRR",
+  "priceList": {
+   "id": "866893ADBKNQGCTKVBPVGJMGDKSPJCKTJ"
+  },
+  "event": {
+   "id": "614600AGTRLMCCKCTLJQLVNCTVCPNKLVP"
+  },
+  "start": "2026-12-12T19:30:00",
+  "startUtc": "2026-12-12T19:30:00",
+  "cancelled": false,
+  "id": "1367234ATRMQNPKJVMHBQKMVKGBVDHHTR",
+  "attribute_HasInterval": true
+ },
+ {
+  "isOnSale": true,
+  "planId": "3418ARKMDVHGCBDCGMMSKSVKDTCQCSCRR",
+  "priceList": {
+   "id": "837493ABNRBBHKRBRKPQLJDMMBGDJTMVD"
+  },
+  "event": {
+   "id": "596800AKHGHPNLHBBNCNJHCTHQQJKQQTC"
+  },
+  "start": "2026-12-18T19:30:00",
+  "startUtc": "2026-12-18T19:30:00",
+  "cancelled": false,
+  "id": "1321234ASLKLJBGJGLNGLQSPGGGDLJKHQ",
+  "attribute_HasInterval": true
+ },
+ {
+  "isOnSale": true,
+  "planId": "3418ARKMDVHGCBDCGMMSKSVKDTCQCSCRR",
+  "priceList": {
+   "id": "860493ASPKRHMNBVKRGKCKSPNMGLQKVVC"
+  },
+  "event": {
+   "id": "610600ANDMCSTVNTDSNVCRJTHVJVMVMGG"
+  },
+  "start": "2026-12-19T19:30:00",
+  "startUtc": "2026-12-19T19:30:00",
+  "cancelled": false,
+  "id": "1356434AVJGCQKSQJSQPSLCNNVBQNDPQT",
+  "attribute_HasInterval": true
+ },
+ {
+  "isOnSale": true,
+  "planId": "16623ANMJNBCSSKSRLJQMVKLRDRSGTMRV",
+  "priceList": {
+   "id": "752693ARTQCGPMKDQLLNLBDLLKMCCGJLC"
+  },
+  "event": {
+   "id": "549000ATVVCJTCBNTJTJCNGQSNSBTHQKJ"
+  },
+  "start": "2026-12-20T13:30:00",
+  "startUtc": "2026-12-20T13:30:00",
+  "cancelled": false,
+  "id": "1264634ABDTBLKBNDBMJCVLLBBJBDSBTP",
+  "attribute_IgnoreVisit": true
+ },
+ {
+  "isOnSale": true,
+  "planId": "3418ARKMDVHGCBDCGMMSKSVKDTCQCSCRR",
+  "priceList": {
+   "id": "803493ATPGCHBPNCBMKSNKQGLRKMQPPKG"
+  },
+  "event": {
+   "id": "573600ADHTSCTQPLCBTRSRHVLBVRGMMSV"
+  },
+  "start": "2026-12-20T13:30:00",
+  "startUtc": "2026-12-20T13:30:00",
+  "cancelled": false,
+  "id": "1261434AKDHNCKBBNPTGTLCBSMKRKTQQT",
+  "attribute_HasInterval": true
+ },
+ {
+  "isOnSale": true,
+  "planId": "16623ANMJNBCSSKSRLJQMVKLRDRSGTMRV",
+  "priceList": {
+   "id": "753293AKDVDDMGLPVNNKNBHBHCGTHMJPN"
+  },
+  "event": {
+   "id": "549200ALPVTDBTSTCNHHHJGGPSBDKCLLN"
+  },
+  "start": "2026-12-20T13:30:00",
+  "startUtc": "2026-12-20T13:30:00",
+  "cancelled": false,
+  "id": "1264234AQPNRNGQSVCLSLDHHSHNSJLVKN",
+  "attribute_IgnoreVisit": true
+ },
+ {
+  "isOnSale": true,
+  "planId": "16623ANMJNBCSSKSRLJQMVKLRDRSGTMRV",
+  "priceList": {
+   "id": "752693ARTQCGPMKDQLLNLBDLLKMCCGJLC"
+  },
+  "event": {
+   "id": "549000ATVVCJTCBNTJTJCNGQSNSBTHQKJ"
+  },
+  "start": "2026-12-20T16:30:00",
+  "startUtc": "2026-12-20T16:30:00",
+  "cancelled": false,
+  "id": "1264834AQSQTNCGSSKQJNDGCQTLTBJGQT",
+  "attribute_IgnoreVisit": true
+ },
+ {
+  "isOnSale": true,
+  "planId": "3418ARKMDVHGCBDCGMMSKSVKDTCQCSCRR",
+  "priceList": {
+   "id": "803493ATPGCHBPNCBMKSNKQGLRKMQPPKG"
+  },
+  "event": {
+   "id": "573600ADHTSCTQPLCBTRSRHVLBVRGMMSV"
+  },
+  "start": "2026-12-20T16:30:00",
+  "startUtc": "2026-12-20T16:30:00",
+  "cancelled": false,
+  "id": "1261634AGTMSGHPDJSDQGBSBNBDQMQTKR",
+  "attribute_HasInterval": true
+ },
+ {
+  "isOnSale": true,
+  "planId": "16623ANMJNBCSSKSRLJQMVKLRDRSGTMRV",
+  "priceList": {
+   "id": "753293AKDVDDMGLPVNNKNBHBHCGTHMJPN"
+  },
+  "event": {
+   "id": "549200ALPVTDBTSTCNHHHJGGPSBDKCLLN"
+  },
+  "start": "2026-12-20T16:30:00",
+  "startUtc": "2026-12-20T16:30:00",
+  "cancelled": false,
+  "id": "1264434ATSKJPKPPVCQKDJSJJNGMMTQQD",
+  "attribute_IgnoreVisit": true
+ },
+ {
+  "isOnSale": true,
+  "planId": "3418ARKMDVHGCBDCGMMSKSVKDTCQCSCRR",
+  "priceList": {
+   "id": "830693ACDRTLBBMMHJCLVMCTMSCNTMVKS"
+  },
+  "event": {
+   "id": "588200ALVKKJRJTGLCJKTLPGMMMDGNRMJ"
+  },
+  "start": "2027-02-06T19:30:00",
+  "startUtc": "2027-02-06T19:30:00",
+  "cancelled": false,
+  "id": "1304034AKHDHJGNKGLDRDQMMBDNSTSNQB",
+  "attribute_HasInterval": true
+ },
+ {
+  "isOnSale": true,
+  "planId": "3418ARKMDVHGCBDCGMMSKSVKDTCQCSCRR",
+  "priceList": {
+   "id": "810493ANVHKJBHTHSRGHBLVVQMJMLLBNG"
+  },
+  "event": {
+   "id": "577000ABKHKDRRKQMMCTRQGNCHKCGSVNT"
+  },
+  "start": "2027-02-14T16:30:00",
+  "startUtc": "2027-02-14T16:30:00",
+  "cancelled": false,
+  "id": "1270634APMRSCKKQMRMLMCHBKJVGGJSRS",
+  "attribute_HasInterval": true
+ },
+ {
+  "isOnSale": true,
+  "planId": "3418ARKMDVHGCBDCGMMSKSVKDTCQCSCRR",
+  "priceList": {
+   "id": "884693ATBSHSJQVLTDTQSHPCPSPDDKTJB"
+  },
+  "event": {
+   "id": "623600AKNQBCLCCQJBKKKQHCHVCPHBNMP"
+  },
+  "start": "2027-03-14T18:30:00",
+  "startUtc": "2027-03-14T18:30:00",
+  "cancelled": false,
+  "id": "1396634AMVLSRSGNRVMVRSSVVPTHBPJTC",
+  "attribute_HasInterval": true
+ }
+]
