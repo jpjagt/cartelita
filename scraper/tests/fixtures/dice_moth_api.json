@@ -1,0 +1,642 @@
+{
+"data": [
+{
+"id": "695f7c60042d050001fa63a7",
+"name": "For The Love Of Pop",
+"date": "2026-10-24T22:00:00Z",
+"date_end": "2026-10-25T02:00:00Z",
+"timezone": "Europe/London",
+"type_tags": [
+"music:dj"
+],
+"genre_tags": [
+"dj:pop"
+],
+"status": "on-sale",
+"sold_out": false,
+"ticket_types": [
+{
+"id": 1161985,
+"name": "General Admission",
+"price": {
+"total": 1360,
+"fees": 160,
+"face_value": 1200
+},
+"sold_out": false
+}
+],
+"hash": "av3oad",
+"perm_name": "for-the-love-of-pop-24th-oct-moth-club-london-tickets",
+"url": "https://link.dice.fm/v8691d6efc2d",
+"venues": [
+{
+"id": 43,
+"name": "MOTH Club"
+}
+],
+"event_images": {
+"landscape": "https://dice-media.imgix.net/attachments/2026-01-14/be02019b-454c-4288-b2fe-dbb3a8138d74.jpg?rect=0%2C200%2C1000%2C600"
+},
+"description": "Need that gold streamer, pink bathroom, dancing-on-stage realness on a Saturday night? Moth Club has got you covered. Smash through the glittered ceiling until 3am every other Saturday\n\nFrom the minds"
+},
+{
+"id": "6a1ec81e64755d0001c85b87",
+"name": "Ben Watt and Tracey Thorn ",
+"date": "2026-10-25T19:00:00Z",
+"date_end": "2026-10-25T23:00:00Z",
+"timezone": "Europe/London",
+"type_tags": [
+"music:gig"
+],
+"genre_tags": [
+"gig:indie",
+"gig:electronic"
+],
+"status": "on-sale",
+"sold_out": true,
+"ticket_types": [
+{
+"id": 1301429,
+"name": "General Admission",
+"price": {
+"total": 4260,
+"fees": 710,
+"face_value": 3550
+},
+"sold_out": true
+}
+],
+"hash": "pyb96w",
+"perm_name": "ben-watt-and-tracey-thorn-25th-oct-moth-club-london-tickets",
+"url": "https://link.dice.fm/X70d69ebf89d",
+"venues": [
+{
+"id": 43,
+"name": "MOTH Club"
+}
+],
+"event_images": {
+"landscape": "https://dice-media.imgix.net/attachments/2026-03-24/5f894849-5d65-49ba-8e08-41c76f66f287.jpg?rect=0%2C250%2C768%2C461"
+},
+"description": "Ben Watt and Tracey Thorn, best known together as Everything But The Girl, continue their longstanding residency at the MOTH Club, they will play 3 more intimate seated shows in October and 3 more sea"
+},
+{
+"id": "6a1ec8d23b58c90001dab372",
+"name": "Ben Watt and Tracey Thorn ",
+"date": "2026-10-26T19:00:00Z",
+"date_end": "2026-10-26T23:00:00Z",
+"timezone": "Europe/London",
+"type_tags": [
+"music:gig"
+],
+"genre_tags": [
+"gig:indie",
+"gig:electronic"
+],
+"status": "on-sale",
+"sold_out": true,
+"ticket_types": [
+{
+"id": 1301436,
+"name": "General Admission",
+"price": {
+"total": 4260,
+"fees": 710,
+"face_value": 3550
+},
+"sold_out": true
+}
+],
+"hash": "mx935v",
+"perm_name": "ben-watt-and-tracey-thorn-26th-oct-moth-club-london-tickets",
+"url": "https://link.dice.fm/o6d84cf83bd3",
+"venues": [
+{
+"id": 43,
+"name": "MOTH Club"
+}
+],
+"event_images": {
+"landscape": "https://dice-media.imgix.net/attachments/2026-03-24/5f894849-5d65-49ba-8e08-41c76f66f287.jpg?rect=0%2C250%2C768%2C461"
+},
+"description": "Ben Watt and Tracey Thorn, best known together as Everything But The Girl, continue their longstanding residency at the MOTH Club, they will play 3 more intimate seated shows in October and 3 more sea"
+},
+{
+"id": "6a1ec8fe1f0dfc0001d23cea",
+"name": "Ben Watt and Tracey Thorn ",
+"date": "2026-10-27T19:00:00Z",
+"date_end": "2026-10-27T23:00:00Z",
+"timezone": "Europe/London",
+"type_tags": [
+"music:gig"
+],
+"genre_tags": [
+"gig:indie",
+"gig:electronic"
+],
+"status": "on-sale",
+"sold_out": true,
+"ticket_types": [
+{
+"id": 1301437,
+"name": "General Admission",
+"price": {
+"total": 4260,
+"fees": 710,
+"face_value": 3550
+},
+"sold_out": true
+}
+],
+"hash": "yowagv",
+"perm_name": "ben-watt-and-tracey-thorn-27th-oct-moth-club-london-tickets",
+"url": "https://link.dice.fm/Na60292f700c",
+"venues": [
+{
+"id": 43,
+"name": "MOTH Club"
+}
+],
+"event_images": {
+"landscape": "https://dice-media.imgix.net/attachments/2026-03-24/5f894849-5d65-49ba-8e08-41c76f66f287.jpg?rect=0%2C250%2C768%2C461"
+},
+"description": "Ben Watt and Tracey Thorn, best known together as Everything But The Girl, continue their longstanding residency at the MOTH Club, they will play 3 more intimate seated shows in October and 3 more sea"
+},
+{
+"id": "6a2ad4a23e95de0001dfb50d",
+"name": " Knats",
+"date": "2026-10-28T19:30:00Z",
+"date_end": "2026-10-28T22:00:00Z",
+"timezone": "Europe/London",
+"type_tags": [
+"music:gig"
+],
+"genre_tags": [
+"gig:dance"
+],
+"status": "on-sale",
+"sold_out": true,
+"ticket_types": [
+{
+"id": 1311239,
+"name": "General Admission",
+"price": {
+"total": 1793,
+"fees": 393,
+"face_value": 1400
+},
+"sold_out": true
+}
+],
+"hash": "mx9wnv",
+"perm_name": "-knats-28th-oct-moth-club-london-tickets",
+"url": "https://link.dice.fm/m9e4384690c4",
+"venues": [
+{
+"id": 43,
+"name": "MOTH Club"
+}
+],
+"event_images": {
+"landscape": "https://dice-media.imgix.net/attachments/2026-05-08/7121008a-ee0d-46e2-9632-8bd3c1c200e4.jpg?rect=0%2C1270%2C3907%2C2344"
+},
+"description": "FORM Presents\n\nKNATS\n\n\\+ Special Guests\n\nPresented by FORM.\n\nThis is an 18+ event."
+},
+{
+"id": "6a16a422605f1c0001972f27",
+"name": "Formal Sppeedwear",
+"date": "2026-10-29T19:00:00Z",
+"date_end": "2026-10-29T23:00:00Z",
+"timezone": "Europe/London",
+"type_tags": [
+"music:gig"
+],
+"genre_tags": [
+"gig:postpunk",
+"gig:newwave",
+"gig:indie"
+],
+"status": "on-sale",
+"sold_out": false,
+"ticket_types": [
+{
+"id": 1294693,
+"name": "General Admission",
+"price": {
+"total": 1473,
+"fees": 173,
+"face_value": 1300
+},
+"sold_out": false
+}
+],
+"hash": "92kpm9",
+"perm_name": "formal-sppeedwear-29th-oct-moth-club-london-tickets",
+"url": "https://link.dice.fm/qe313880ab13",
+"venues": [
+{
+"id": 43,
+"name": "MOTH Club"
+}
+],
+"event_images": {
+"landscape": "https://dice-media.imgix.net/attachments/2026-05-26/a180be92-5988-4cff-88c7-a25c4c5e5537.jpg?rect=0%2C227%2C768%2C461"
+},
+"description": "JOY. Present\n\nFormal Sppeedwear\n\nPresented by JOY.\n\nThis is an 18+ event."
+},
+{
+"id": "69fdb7df983f4400015ba0b2",
+"name": " Knats",
+"date": "2026-10-30T19:00:00Z",
+"date_end": "2026-10-30T22:00:00Z",
+"timezone": "Europe/London",
+"type_tags": [
+"music:gig"
+],
+"genre_tags": [
+"gig:dance"
+],
+"status": "on-sale",
+"sold_out": true,
+"ticket_types": [
+{
+"id": 1278893,
+"name": "General Admission",
+"price": {
+"total": 1793,
+"fees": 393,
+"face_value": 1400
+},
+"sold_out": true
+}
+],
+"hash": "nvdrqq",
+"perm_name": "-knats-30th-oct-moth-club-london-tickets",
+"url": "https://link.dice.fm/Td17dd6c4c2d",
+"venues": [
+{
+"id": 43,
+"name": "MOTH Club"
+}
+],
+"event_images": {
+"landscape": "https://dice-media.imgix.net/attachments/2026-05-08/7121008a-ee0d-46e2-9632-8bd3c1c200e4.jpg?rect=0%2C1270%2C3907%2C2344"
+},
+"description": "FORM Presents\n\nKNATS\n\n\\+ Special Guests\n\nPresented by FORM.\n\nThis is an 18+ event."
+},
+{
+"id": "6a153fdf81607a00013f85a4",
+"name": "For The Love Of Pop - Halloween Special ♱‧",
+"date": "2026-10-30T23:00:00Z",
+"date_end": "2026-10-31T03:00:00Z",
+"timezone": "Europe/London",
+"type_tags": [
+"music:dj"
+],
+"genre_tags": [
+"dj:pop"
+],
+"status": "on-sale",
+"sold_out": false,
+"ticket_types": [
+{
+"id": 1294498,
+"name": "Tier 1 ",
+"price": {
+"total": 1906,
+"fees": 406,
+"face_value": 1500
+},
+"sold_out": true
+},
+{
+"id": 1294501,
+"name": "Tier 2 ",
+"price": {
+"total": 1700,
+"fees": 200,
+"face_value": 1500
+},
+"sold_out": false
+},
+{
+"id": 1410628,
+"name": "GA",
+"price": {
+"total": 1339,
+"fees": 339,
+"face_value": 1000
+},
+"sold_out": true
+}
+],
+"hash": "ryk62q",
+"perm_name": "for-the-love-of-pop-halloween-special-30th-oct-moth-club-london-tickets",
+"url": "https://link.dice.fm/t86bd2c2d407",
+"venues": [
+{
+"id": 43,
+"name": "MOTH Club"
+}
+],
+"event_images": {
+"landscape": "https://dice-media.imgix.net/attachments/2025-07-02/f1b1760f-f6e6-4ccd-9a94-42946ef955cf.jpg?rect=0%2C188%2C800%2C480"
+},
+"description": "**Halloween Special ! Come get spooky to your favourite popstars.**\n\nNeed that gold streamer, pink bathroom, dancing-on-stage realness on a Saturday night? Moth Club has got you covered. Smash through"
+},
+{
+"id": "6a429f650b534c000176320e",
+"name": "Mykki Blanco",
+"date": "2026-10-31T19:30:00Z",
+"date_end": "2026-10-31T22:30:00Z",
+"timezone": "Europe/London",
+"type_tags": [
+"music:gig"
+],
+"genre_tags": [
+"gig:rap",
+"gig:hiphop"
+],
+"status": "on-sale",
+"sold_out": false,
+"ticket_types": [
+{
+"id": 1328915,
+"name": "General Admission",
+"price": {
+"total": 2098,
+"fees": 248,
+"face_value": 1850
+},
+"sold_out": false
+}
+],
+"hash": "oe7w8m",
+"perm_name": "mykki-blanco-31st-oct-moth-club-london-tickets",
+"url": "https://link.dice.fm/kbba8f497c52",
+"venues": [
+{
+"id": 43,
+"name": "MOTH Club"
+}
+],
+"event_images": {
+"landscape": "https://dice-media.imgix.net/attachments/2026-07-01/dd85d975-096c-42e2-9277-f76cd431f499.jpg?rect=0%2C216%2C1080%2C648"
+},
+"description": "dollop presents:\n\nMykki Blanco\n\nPresented by dollop.\n\nThis is an 18+ event."
+},
+{
+"id": "6a1540e2b960410001e51ad5",
+"name": "Dancing In The Dark - Halloween Special",
+"date": "2026-10-31T23:00:00Z",
+"date_end": "2026-11-01T03:00:00Z",
+"timezone": "Europe/London",
+"type_tags": [
+"music:dj"
+],
+"genre_tags": [
+"dj:pop"
+],
+"status": "on-sale",
+"sold_out": true,
+"ticket_types": [
+{
+"id": 1294505,
+"name": "General Admission ",
+"price": {
+"total": 2133,
+"fees": 433,
+"face_value": 1700
+},
+"sold_out": true
+}
+],
+"hash": "mx9rb9",
+"perm_name": "dancing-in-the-dark-halloween-special-31st-oct-moth-club-london-tickets",
+"url": "https://link.dice.fm/G33a8f5e29fd",
+"venues": [
+{
+"id": 43,
+"name": "MOTH Club"
+}
+],
+"event_images": {
+"landscape": "https://dice-media.imgix.net/attachments/2024-06-10/a1ac023e-0994-4d8f-9697-c1448cbf5868.jpg?rect=0%2C150%2C2000%2C1200"
+},
+"description": "The '80s were a wild time, that most of you probably didn't get a chance to experience properly. Lucky for you here at Moth Club we're laying on a night dripping with nostalgia. Expect to hear: The Bu"
+},
+{
+"id": "6a6affe831a6220001b3063e",
+"name": "Tracey Nelson",
+"date": "2026-11-01T19:00:00Z",
+"date_end": "2026-11-01T23:00:00Z",
+"timezone": "Europe/London",
+"type_tags": [
+"music:gig"
+],
+"genre_tags": [],
+"status": "on-sale",
+"sold_out": false,
+"ticket_types": [
+{
+"id": 1355793,
+"name": "General Admission",
+"price": {
+"total": 2040,
+"fees": 240,
+"face_value": 1800
+},
+"sold_out": false
+}
+],
+"hash": "nvpq7q",
+"perm_name": "tracey-nelson-1st-nov-moth-club-london-tickets",
+"url": "https://link.dice.fm/E0c17fca68a8",
+"venues": [
+{
+"id": 43,
+"name": "MOTH Club"
+}
+],
+"event_images": {
+"landscape": "https://dice-media.imgix.net/attachments/2026-07-29/af8a1978-3bb6-4c17-a446-13f6ca3ae4e4.jpg?rect=0%2C238%2C800%2C480"
+},
+"description": "Live Nation presents Tracey Nelson. Plus Special Guests.\n\nPresented by Live Nation.\n\nThis is an 18+ event."
+},
+{
+"id": "6a0f3593a7ce6d0001a00c53",
+"name": "Horse Jumper Of Love + Jawdropped + Hammok",
+"date": "2026-11-02T19:30:00Z",
+"date_end": "2026-11-02T23:00:00Z",
+"timezone": "Europe/London",
+"type_tags": [
+"music:gig"
+],
+"genre_tags": [
+"gig:indie"
+],
+"status": "on-sale",
+"sold_out": false,
+"ticket_types": [
+{
+"id": 1291377,
+"name": "General Admission",
+"price": {
+"total": 2898,
+"fees": 398,
+"face_value": 2500
+},
+"sold_out": false
+}
+],
+"hash": "rykpa5",
+"perm_name": "horse-jumper-of-love-jawdropped-hammok-2nd-nov-moth-club-london-tickets",
+"url": "https://link.dice.fm/j43f07bfbff4",
+"venues": [
+{
+"id": 43,
+"name": "MOTH Club"
+}
+],
+"event_images": {
+"landscape": "https://dice-media.imgix.net/attachments/2026-06-12/b86da028-fe72-447b-9458-b1f2aefb50af.jpg?rect=0%2C127%2C3635%2C2181"
+},
+"description": "PITCHFORK LONDON SELECTS\n\nHORSE JUMPER OF LOVE\n\n\\+ JAWDROPPED + HAMMOK\n\nPresented by Pitchfork Festival London.\n\nThis is an 18+ event."
+},
+{
+"id": "69fddc2d38737e00014f5576",
+"name": "Greg Mendez + Asher White + villagerrr",
+"date": "2026-11-03T19:30:00Z",
+"date_end": "2026-11-03T23:00:00Z",
+"timezone": "Europe/London",
+"type_tags": [
+"music:gig"
+],
+"genre_tags": [
+"gig:indie",
+"gig:alternative"
+],
+"status": "on-sale",
+"sold_out": false,
+"ticket_types": [
+{
+"id": 1267586,
+"name": "General Admission",
+"price": {
+"total": 2318,
+"fees": 318,
+"face_value": 2000
+},
+"sold_out": false
+}
+],
+"hash": "6dkw77",
+"perm_name": "greg-mendez-asher-white-villagerrr-3rd-nov-moth-club-london-tickets",
+"url": "https://link.dice.fm/kb0d62564dc4",
+"venues": [
+{
+"id": 43,
+"name": "MOTH Club"
+}
+],
+"event_images": {
+"landscape": "https://dice-media.imgix.net/attachments/2026-04-27/53c6695b-3159-41a7-903b-ac56c79496b4.jpg?rect=0%2C104%2C3120%2C1872"
+},
+"description": "**Pitchfork Music Festival London Presents:**\n\n**Pitchfork London Selects**\n\nGreg Mendez\n\nAsher White\n\nvillagerrr\n\nPresented by Pitchfork Festival London.\n\nThis is an 18+ event."
+},
+{
+"id": "6a5f6f7f1378d1000112aafa",
+"name": "Rockie Rode + The Healing Power of Horses + Any Young Mechanic",
+"date": "2026-11-04T19:30:00Z",
+"date_end": "2026-11-04T23:00:00Z",
+"timezone": "Europe/London",
+"type_tags": [
+"music:gig"
+],
+"genre_tags": [
+"gig:rock",
+"gig:rnb",
+"gig:indie",
+"gig:folk",
+"gig:alternative"
+],
+"status": "on-sale",
+"sold_out": false,
+"ticket_types": [
+{
+"id": 1347848,
+"name": "General Admission",
+"price": {
+"total": 2318,
+"fees": 318,
+"face_value": 2000
+},
+"sold_out": false
+}
+],
+"hash": "yodyqv",
+"perm_name": "rockie-rode-the-healing-power-of-horses-any-young-mechanic-4th-nov-moth-club-london-tickets",
+"url": "https://link.dice.fm/x99bfe534947",
+"venues": [
+{
+"id": 43,
+"name": "MOTH Club"
+}
+],
+"event_images": {
+"landscape": "https://dice-media.imgix.net/attachments/2026-07-21/4b76cd50-b7e8-4467-9f67-7eceaf100ec1.jpg?rect=0%2C195%2C2592%2C1555"
+},
+"description": "**Pitchfork London Selects:**\n\n**Rockie Rode**\n\n\\+ The Healing Power of Horses + Any Young Mechanic\n\nPresented by Pitchfork Festival London.\n\nThis is an 18+ event."
+},
+{
+"id": "69fddc3a95ba0e0001b1c2bb",
+"name": "Colin Miller + lifepath99 + h pruz + Elijah Wolf",
+"date": "2026-11-05T19:30:00Z",
+"date_end": "2026-11-05T23:00:00Z",
+"timezone": "Europe/London",
+"type_tags": [
+"music:gig"
+],
+"genre_tags": [
+"gig:dream_pop",
+"gig:altpop",
+"gig:folkrock",
+"gig:folkpop",
+"gig:folk",
+"gig:indierock",
+"gig:progressiverock",
+"gig:indie",
+"gig:alternative"
+],
+"status": "on-sale",
+"sold_out": false,
+"ticket_types": [
+{
+"id": 1267529,
+"name": "General Admission",
+"price": {
+"total": 2030,
+"fees": 280,
+"face_value": 1750
+},
+"sold_out": false
+}
+],
+"hash": "7dgqo7",
+"perm_name": "colin-miller-lifepath99-h-pruz-elijah-wolf-5th-nov-moth-club-london-tickets",
+"url": "https://link.dice.fm/A66e5ee7ba88",
+"venues": [
+{
+"id": 43,
+"name": "MOTH Club"
+}
+],
+"event_images": {
+"landscape": "https://dice-media.imgix.net/attachments/2026-04-27/c52a18da-4a0d-4901-aa3b-3aef24161ba2.jpg?rect=0%2C200%2C6000%2C3600"
+},
+"description": "Pitchfork London Selects x Mtn Laurel Recording Co.\n\nColin Miller\n\nlifepath99\n\nh. pruz\n\nElijah Wolf\n\nPresented by Pitchfork London & Mtn Laurel Recording Co.\n\nThis is an 18+ event."
+}
+],
+"links": {}
+}

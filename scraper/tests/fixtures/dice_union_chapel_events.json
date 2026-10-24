@@ -1,0 +1,98 @@
+{
+ "69fcc2fd37854e0001188a49": {
+  "id": "69fcc2fd37854e0001188a49",
+  "name": "Ms. Ezra Furman Doing What She Wants",
+  "perm_name": "7dg5x9-ms-ezra-furman-doing-what-she-wants-26th-oct-union-chapel-london-tickets",
+  "status": "on-sale",
+  "tags_types": [
+   {
+    "name": "gig",
+    "value": "music:gig",
+    "title": "Gigs"
+   }
+  ],
+  "about": {
+   "description": "Parallel Lines Presents\n\nEzra Furman\n\nPlus Special Guests"
+  }
+ },
+ "6a06fe0d4d10be0001956aab": {
+  "id": "6a06fe0d4d10be0001956aab",
+  "name": "Perfume Genius",
+  "perm_name": "nv622l-perfume-genius-27th-oct-union-chapel-london-tickets",
+  "status": "sold-out",
+  "tags_types": [
+   {
+    "name": "gig",
+    "value": "music:gig",
+    "title": "Gigs"
+   }
+  ],
+  "about": {
+   "description": "Parallel Lines Presents\n\nPerfume Genius (Duo)\n\nSupport from Dan English"
+  }
+ },
+ "6a04ba1237148a000191d6bc": {
+  "id": "6a04ba1237148a000191d6bc",
+  "name": "Perfume Genius ",
+  "perm_name": "v3nevg-perfume-genius-28th-oct-union-chapel-london-tickets",
+  "status": "sold-out",
+  "tags_types": [
+   {
+    "name": "gig",
+    "value": "music:gig",
+    "title": "Gigs"
+   }
+  ],
+  "about": {
+   "description": "Parallel Lines Presents\n\nPerfume Genius (Duo)\n\nSupport from Dan English"
+  }
+ },
+ "696f7d764abf7c0001038f01": {
+  "id": "696f7d764abf7c0001038f01",
+  "name": "The Wellermen",
+  "perm_name": "yo66p2-the-wellermen-29th-oct-union-chapel-london-tickets",
+  "status": "on-sale",
+  "tags_types": [
+   {
+    "name": "gig",
+    "value": "music:gig",
+    "title": "Gigs"
+   }
+  ],
+  "about": {
+   "description": "DHP Presents :\n\nTHE WELLERMEN\n\n\\+ Ferester\n\nThe Wellermen are a transatlantic folk group known for their rich harmonies, dual bass foundation, and modern take on traditional sea shanty and folk influe"
+  }
+ },
+ "6a17fca23c4b05000161a471": {
+  "id": "6a17fca23c4b05000161a471",
+  "name": "Jasmine Jethwa",
+  "perm_name": "3oxygg-jasmine-jethwa-30th-oct-union-chapel-london-tickets",
+  "status": "on-sale",
+  "tags_types": [
+   {
+    "name": "gig",
+    "value": "music:gig",
+    "title": "Gigs"
+   }
+  ],
+  "about": {
+   "description": "Communion ONE Presents\n\nJasmine Jethwa\n\n& Len Blake"
+  }
+ },
+ "6a5a3f0a0793370001fcfe85": {
+  "id": "6a5a3f0a0793370001fcfe85",
+  "name": "Ghost House: Fern Brady, Tom Rosenthal & more",
+  "perm_name": "7dxd39-ghost-house-fern-brady-tom-rosenthal-more-31st-oct-union-chapel-london-tickets",
+  "status": "on-sale",
+  "tags_types": [
+   {
+    "name": "comedy",
+    "value": "culture:comedy",
+    "title": "Comedy"
+   }
+  ],
+  "about": {
+   "description": "The monthly spectacle at the stunning gothic Union Chapel returns with another extraordinary line up - a spooktacular Halloween special starring:\n\n**FERN BRADY  \nTOM ROSENTHAL  \nKIRAN SAGGU  \nHORATIO "
+  }
+ }
+}
