@@ -1,0 +1,529 @@
+[
+ {
+  "id": "346369ADNBTNLCNMGGRJNSNHTMRNSHGTJ",
+  "event": {
+   "id": "118056AKTSMRLCGMVPKPCRQTBNJSGPJQG"
+  },
+  "start": "2026-10-24T13:30:00",
+  "cancelled": false,
+  "isOnSale": false,
+  "priceList": {
+   "id": "369376AHQDPDVNHHTPCTTBPLTLCKGMBQB"
+  },
+  "planId": "9430AGRPNCCVKKRQVKHJBLPSDMLBNDDCC",
+  "attribute_Captioned": true,
+  "attribute_Concessions": true
+ },
+ {
+  "id": "347172AJPTNHSDLVCKGCNVNCCMNPSPSCR",
+  "event": {
+   "id": "118656AKHGTKJQNGMSNTVRQPNJDPNTCKB"
+  },
+  "start": "2026-10-24T14:00:00",
+  "cancelled": false,
+  "isOnSale": false,
+  "priceList": {
+   "id": "379975ACMTPLGJSVPDQTNVVNMMKQVSTGB"
+  },
+  "planId": "5026ABJSRTQMKCQNGDVCRHTKKMKTHLDJJ",
+  "attribute_Concessions": true
+ },
+ {
+  "id": "382167AJSDLMLGBMQJPJGMVCNLBCRGVKD",
+  "event": {
+   "id": "124656ABQMHGTVJRRSTLGJVRLKNVKQPKB"
+  },
+  "start": "2026-10-24T17:00:00",
+  "cancelled": false,
+  "isOnSale": false,
+  "priceList": {
+   "id": "383975ADSCHTPCKLNRCTPBSGPHDDGJBQB"
+  },
+  "planId": "13226ABGDPVJMKPKTTGQRCMTPCQDQBGMV",
+  "attribute_AudioDescribed": true
+ },
+ {
+  "id": "345773ACMQGDCTGBCSVRPPPJVKMMRPPNH",
+  "event": {
+   "id": "118056AKTSMRLCGMVPKPCRQTBNJSGPJQG"
+  },
+  "start": "2026-10-24T18:30:00",
+  "cancelled": false,
+  "isOnSale": false,
+  "priceList": {
+   "id": "369376AHQDPDVNHHTPCTTBPLTLCKGMBQB"
+  },
+  "planId": "9430AGRPNCCVKKRQVKHJBLPSDMLBNDDCC",
+  "attribute_Concessions": true
+ },
+ {
+  "id": "345975ACGPBJDRCDCNDQBLNHSSKRKSNCK",
+  "event": {
+   "id": "118656AKHGTKJQNGMSNTVRQPNJDPNTCKB"
+  },
+  "start": "2026-10-24T18:45:00",
+  "cancelled": false,
+  "isOnSale": false,
+  "priceList": {
+   "id": "379975ACMTPLGJSVPDQTNVVNMMKQVSTGB"
+  },
+  "planId": "5026ABJSRTQMKCQNGDVCRHTKKMKTHLDJJ",
+  "attribute_Concessions": true
+ },
+ {
+  "id": "399171AVVNJBNCGRGBQMTTKPSJJTBLSGJ",
+  "event": {
+   "id": "120656AMSVJNLHGCMRSBQSSBHLRNBGRLV"
+  },
+  "start": "2026-10-25T18:00:00",
+  "cancelled": false,
+  "isOnSale": false,
+  "priceList": {
+   "id": "392575ADJJLLVSHDQNGLQTKTBMPHQBLVT"
+  },
+  "planId": "9430AGRPNCCVKKRQVKHJBLPSDMLBNDDCC",
+  "attribute_Chilled": true
+ },
+ {
+  "id": "347577ADGNPVGDTRRQKRGTDSCNJSGVPJH",
+  "event": {
+   "id": "118656AKHGTKJQNGMSNTVRQPNJDPNTCKB"
+  },
+  "start": "2026-10-26T19:45:00",
+  "cancelled": false,
+  "isOnSale": false,
+  "priceList": {
+   "id": "377976ACHNPNPRSCHRDBSRKCMRGTVTRST"
+  },
+  "planId": "5026ABJSRTQMKCQNGDVCRHTKKMKTHLDJJ",
+  "attribute_Monday": true
+ },
+ {
+  "id": "344773AKRNDGRTRQHNRMHQPGKKTDPLVQR",
+  "event": {
+   "id": "118656AKHGTKJQNGMSNTVRQPNJDPNTCKB"
+  },
+  "start": "2026-10-27T19:45:00",
+  "cancelled": false,
+  "isOnSale": true,
+  "priceList": {
+   "id": "379375ADGQNCRVNCPMPMGSHSSGBHTJDNM"
+  },
+  "planId": "5026ABJSRTQMKCQNGDVCRHTKKMKTHLDJJ"
+ },
+ {
+  "id": "389167ALLNRKQVJHTVGJQPPDNDKQJRKVH",
+  "event": {
+   "id": "126256AKVDHSHQRRSCMGTQSKBKVLKVNGJ"
+  },
+  "start": "2026-10-28T14:00:00",
+  "cancelled": false,
+  "isOnSale": true,
+  "priceList": {
+   "id": "385375ATQHMSKTRGVKTKVCLNLNPSCMPKB"
+  },
+  "planId": "14230ADRKNQMBTPKVTSTDMVQTRVRNRBMN"
+ },
+ {
+  "id": "344774AGDNJRHBVPVPQDTMGPPTRVQBVMT",
+  "event": {
+   "id": "118656AKHGTKJQNGMSNTVRQPNJDPNTCKB"
+  },
+  "start": "2026-10-28T19:45:00",
+  "cancelled": false,
+  "isOnSale": true,
+  "priceList": {
+   "id": "379375ADGQNCRVNCPMPMGSHSSGBHTJDNM"
+  },
+  "planId": "5026ABJSRTQMKCQNGDVCRHTKKMKTHLDJJ"
+ },
+ {
+  "id": "344571ABNBBNNCBTGQSSPHDDRPDTQKTQD",
+  "event": {
+   "id": "118656AKHGTKJQNGMSNTVRQPNJDPNTCKB"
+  },
+  "start": "2026-10-29T15:00:00",
+  "cancelled": false,
+  "isOnSale": true,
+  "priceList": {
+   "id": "366375AHMLQMSRRSDRGKJVGVPQSGNSRHT"
+  },
+  "planId": "5026ABJSRTQMKCQNGDVCRHTKKMKTHLDJJ",
+  "attribute_AgeUK": true,
+  "attribute_Captioned": true
+ },
+ {
+  "id": "346370APDNMSHVCLDBLTCMKNRPHPDJTQG",
+  "event": {
+   "id": "118656AKHGTKJQNGMSNTVRQPNJDPNTCKB"
+  },
+  "start": "2026-10-29T19:45:00",
+  "cancelled": false,
+  "isOnSale": true,
+  "priceList": {
+   "id": "380175ARJLQMCGQKPBPMVTSGHSSRPDLDV"
+  },
+  "planId": "5026ABJSRTQMKCQNGDVCRHTKKMKTHLDJJ",
+  "attribute_Captioned": true,
+  "attribute_Concessions": true
+ },
+ {
+  "id": "344775AKLBQRGVQLRVTGGGTDBTRDGQDDQ",
+  "event": {
+   "id": "118656AKHGTKJQNGMSNTVRQPNJDPNTCKB"
+  },
+  "start": "2026-10-30T19:45:00",
+  "cancelled": false,
+  "isOnSale": true,
+  "priceList": {
+   "id": "379375ADGQNCRVNCPMPMGSHSSGBHTJDNM"
+  },
+  "planId": "5026ABJSRTQMKCQNGDVCRHTKKMKTHLDJJ"
+ },
+ {
+  "id": "345368ATBCNGMTMNCBNPLSQVSGDPSCDMK",
+  "event": {
+   "id": "118656AKHGTKJQNGMSNTVRQPNJDPNTCKB"
+  },
+  "start": "2026-10-31T14:00:00",
+  "cancelled": false,
+  "isOnSale": true,
+  "priceList": {
+   "id": "380175ARJLQMCGQKPBPMVTSGHSSRPDLDV"
+  },
+  "planId": "5026ABJSRTQMKCQNGDVCRHTKKMKTHLDJJ",
+  "attribute_Concessions": true
+ },
+ {
+  "id": "344572ASSLTRMKJDGDDPQJHPBMBKQDMHJ",
+  "event": {
+   "id": "118656AKHGTKJQNGMSNTVRQPNJDPNTCKB"
+  },
+  "start": "2026-10-31T18:45:00",
+  "cancelled": false,
+  "isOnSale": true,
+  "priceList": {
+   "id": "380175ARJLQMCGQKPBPMVTSGHSSRPDLDV"
+  },
+  "planId": "5026ABJSRTQMKCQNGDVCRHTKKMKTHLDJJ",
+  "attribute_Concessions": true
+ },
+ {
+  "id": "347578ADLDCVJDNLNKPHSJDVVMCMVPRTR",
+  "event": {
+   "id": "118656AKHGTKJQNGMSNTVRQPNJDPNTCKB"
+  },
+  "start": "2026-11-02T19:45:00",
+  "cancelled": false,
+  "isOnSale": false,
+  "priceList": {
+   "id": "377976ACHNPNPRSCHRDBSRKCMRGTVTRST"
+  },
+  "planId": "5026ABJSRTQMKCQNGDVCRHTKKMKTHLDJJ",
+  "attribute_Monday": true
+ },
+ {
+  "id": "390167AQMVRBCSGKHGCDVNGNCNBRQDKVC",
+  "event": {
+   "id": "120056AGRSMVCNNGQDRHHSBGTVCVHGMJR"
+  },
+  "start": "2026-11-03T13:00:00",
+  "cancelled": false,
+  "isOnSale": true,
+  "priceList": {
+   "id": "364175AGPLVGLNCHJNTNTVVBVNKHQDLJL"
+  },
+  "planId": "8226AKLNDRPSLKMJRMQLCJDQJLBHGRSSL"
+ },
+ {
+  "id": "344776ABGSSNSRLPGPBQLCNDKBVRLGHJJ",
+  "event": {
+   "id": "118656AKHGTKJQNGMSNTVRQPNJDPNTCKB"
+  },
+  "start": "2026-11-03T19:45:00",
+  "cancelled": false,
+  "isOnSale": true,
+  "priceList": {
+   "id": "379375ADGQNCRVNCPMPMGSHSSGBHTJDNM"
+  },
+  "planId": "5026ABJSRTQMKCQNGDVCRHTKKMKTHLDJJ",
+  "attribute_DirectorsNight": true
+ },
+ {
+  "id": "389367ANBDJMTRBBHQLNHCBVGTTLBNGHS",
+  "event": {
+   "id": "126456ALMLJVJJMRLSTGPSPDKCJCBSNPB"
+  },
+  "start": "2026-11-03T22:10:00",
+  "cancelled": false,
+  "isOnSale": true,
+  "priceList": {
+   "id": "364175AGPLVGLNCHJNTNTVVBVNKHQDLJL"
+  },
+  "planId": "2413APVJKJHSLBPJKNNLDBQNBHQLDRPRG",
+  "attribute_DirectorsNight": true
+ },
+ {
+  "id": "344777AVVSDDTVJGMCJTJKGSBKRLGJMCQ",
+  "event": {
+   "id": "118656AKHGTKJQNGMSNTVRQPNJDPNTCKB"
+  },
+  "start": "2026-11-04T19:45:00",
+  "cancelled": false,
+  "isOnSale": true,
+  "priceList": {
+   "id": "379375ADGQNCRVNCPMPMGSHSSGBHTJDNM"
+  },
+  "planId": "5026ABJSRTQMKCQNGDVCRHTKKMKTHLDJJ"
+ },
+ {
+  "id": "344969AJVVCCPPKNVPBHBDMLPJCNKBNPD",
+  "event": {
+   "id": "118656AKHGTKJQNGMSNTVRQPNJDPNTCKB"
+  },
+  "start": "2026-11-05T15:00:00",
+  "cancelled": false,
+  "isOnSale": true,
+  "priceList": {
+   "id": "366575ADGHQPVBRLPSTQNSLKNVSSPDHGC"
+  },
+  "planId": "5026ABJSRTQMKCQNGDVCRHTKKMKTHLDJJ",
+  "attribute_BabesInArms": true
+ },
+ {
+  "id": "388967AJCHVPTKQRSRPBPQHPBSHNCBKBG",
+  "event": {
+   "id": "126056ADJTBHTKBDDTHRQLLHDNSPMMCBG"
+  },
+  "start": "2026-11-05T18:30:00",
+  "cancelled": false,
+  "isOnSale": true,
+  "priceList": {
+   "id": "395175ASHNCPMGTCGSLMHVCTGHQCTPKGK"
+  },
+  "planId": "14426ATQPVPGRMVMLTKRDHDTSLKBCMTTL"
+ },
+ {
+  "id": "346371AKGSMCVKGNKMLNGLMQTNCJVJSJK",
+  "event": {
+   "id": "118656AKHGTKJQNGMSNTVRQPNJDPNTCKB"
+  },
+  "start": "2026-11-05T19:45:00",
+  "cancelled": false,
+  "isOnSale": true,
+  "priceList": {
+   "id": "380175ARJLQMCGQKPBPMVTSGHSSRPDLDV"
+  },
+  "planId": "5026ABJSRTQMKCQNGDVCRHTKKMKTHLDJJ",
+  "attribute_Concessions": true
+ },
+ {
+  "id": "344778ALNLTHRBHNHCKQRMNRRJTMCBQCC",
+  "event": {
+   "id": "118656AKHGTKJQNGMSNTVRQPNJDPNTCKB"
+  },
+  "start": "2026-11-06T19:45:00",
+  "cancelled": false,
+  "isOnSale": true,
+  "priceList": {
+   "id": "379375ADGQNCRVNCPMPMGSHSSGBHTJDNM"
+  },
+  "planId": "5026ABJSRTQMKCQNGDVCRHTKKMKTHLDJJ"
+ },
+ {
+  "id": "389767APHHGQVQRBSMMPQLJCHNHSHVNPJ",
+  "event": {
+   "id": "108256AQLHDNVDVQJLRQHDCLGPGNKTDTD"
+  },
+  "start": "2026-11-13T13:00:00",
+  "cancelled": false,
+  "isOnSale": true,
+  "priceList": {
+   "id": "361575ABVVQMBHGHJTRSJDPBMQNBTTVQB"
+  },
+  "planId": "8226AKLNDRPSLKMJRMQLCJDQJLBHGRSSL"
+ },
+ {
+  "id": "389967ANJGCJTCCRBCQBPQGNTRBQHJKLQ",
+  "event": {
+   "id": "119856AGKDCSCCJMKQNLDJSVPNVTJQTHH"
+  },
+  "start": "2026-11-13T15:00:00",
+  "cancelled": false,
+  "isOnSale": true,
+  "priceList": {
+   "id": "364175AGPLVGLNCHJNTNTVVBVNKHQDLJL"
+  },
+  "planId": "2413APVJKJHSLBPJKNNLDBQNBHQLDRPRG"
+ },
+ {
+  "id": "345976ALCKSBRCGDHNCHCTJVCHGJNCKHK",
+  "event": {
+   "id": "118256AVPJQPMKMHMRGNRSBHQGHNKJVPJ"
+  },
+  "start": "2026-11-14T18:30:00",
+  "cancelled": false,
+  "isOnSale": true,
+  "priceList": {
+   "id": "385575AJBCKDSGQPGCJQVCVJRNJTMHNVH"
+  },
+  "planId": "9430AGRPNCCVKKRQVKHJBLPSDMLBNDDCC",
+  "attribute_Concessions": true,
+  "attribute_Preview": true
+ },
+ {
+  "id": "390168AJKCKHLSKQSDCKJJRSSLQQVMLQT",
+  "event": {
+   "id": "108656ALCMBSVKGLJKRCSNHRHVHSJPHDH"
+  },
+  "start": "2026-11-19T08:00:00",
+  "cancelled": false,
+  "isOnSale": true,
+  "priceList": {
+   "id": "364175AGPLVGLNCHJNTNTVVBVNKHQDLJL"
+  },
+  "planId": "9626APBNHKNCJJSJSVCLGTHJPVQHKKDCD"
+ },
+ {
+  "id": "383367AVDMKKVHCJKCQKCJNHJLVNLKHDL",
+  "event": {
+   "id": "95856AHGGBSTHSGMJCVVPPCSKSBTJLCBN"
+  },
+  "start": "2026-11-25T11:30:00",
+  "cancelled": false,
+  "isOnSale": true,
+  "priceList": {
+   "id": "376975AQQNMTQLKPQTPVTGGMCGBLGNPPG"
+  },
+  "planId": "12226ARVVKTQHKCLHTHQDJDLKLGJHBNQM"
+ },
+ {
+  "id": "390367AJTKGNPBNHGQPLBDVSPQHGTHHMG",
+  "event": {
+   "id": "108056ARDJPVHBHVSCJNDPPHKVPHRGKLJ"
+  },
+  "start": "2026-11-27T14:00:00",
+  "cancelled": false,
+  "isOnSale": true,
+  "priceList": {
+   "id": "364175AGPLVGLNCHJNTNTVVBVNKHQDLJL"
+  },
+  "planId": "8226AKLNDRPSLKMJRMQLCJDQJLBHGRSSL"
+ },
+ {
+  "id": "390967AKNNRHKCPGBNHLVCGNMPPJCPRHN",
+  "event": {
+   "id": "108456APGJRCLTTRHJSPTPQCKVHGTLPVL"
+  },
+  "start": "2026-11-27T14:00:00",
+  "cancelled": false,
+  "isOnSale": true,
+  "priceList": {
+   "id": "364175AGPLVGLNCHJNTNTVVBVNKHQDLJL"
+  },
+  "planId": "9626APBNHKNCJJSJSVCLGTHJPVQHKKDCD"
+ },
+ {
+  "id": "333168AGJSTHHRPHCBRSVMQKLCJGQJPBG",
+  "event": {
+   "id": "118856ABBBLJKCPJBHPMJMMMVDVNBDGGJ"
+  },
+  "start": "2026-12-03T19:45:00",
+  "cancelled": false,
+  "isOnSale": true,
+  "priceList": {
+   "id": "371375ABSBKPGHTLCVRQQSTLBLVHSCHQL"
+  },
+  "planId": "5026ABJSRTQMKCQNGDVCRHTKKMKTHLDJJ",
+  "attribute_Concessions": true,
+  "attribute_Preview": true
+ },
+ {
+  "id": "389567APTRMTBPCPBJDRLVMNTQCVSNPMB",
+  "event": {
+   "id": "126656ATNGDMNBDRKJMGSSMJNTRCRLSPL"
+  },
+  "start": "2026-12-05T12:00:00",
+  "cancelled": false,
+  "isOnSale": true,
+  "priceList": {
+   "id": "383975ADSCHTPCKLNRCTPBSGPHDDGJBQB"
+  },
+  "planId": "13226ABGDPVJMKPKTTGQRCMTPCQDQBGMV",
+  "attribute_AudioDescribed": true
+ },
+ {
+  "id": "408367ANJGTJVCVSMRJJRLNDKQMRTSRLN",
+  "event": {
+   "id": "128256AJSHBDVSPHKKDRKDCPCRDRLHBMP"
+  },
+  "start": "2026-12-14T18:00:00",
+  "cancelled": false,
+  "isOnSale": true,
+  "priceList": {
+   "id": "394976ADPQMTPPRPMJDTQLMNMHCJBKGDB"
+  },
+  "planId": "14626AGBBMDTPNHMVNQKHPDQMHLBDMNQG"
+ },
+ {
+  "id": "391367AHKNQHNQNBPDQHNNGRSBNBLKCBP",
+  "event": {
+   "id": "126856AJPMDGDQBQGVVPNNNDKGQMJSGCR"
+  },
+  "start": "2027-01-16T18:30:00",
+  "cancelled": false,
+  "isOnSale": false,
+  "priceList": {
+   "id": "392775AGJVSLKLKLMKBCKGVKDRMGRJKVN"
+  },
+  "planId": "14230ADRKNQMBTPKVTSTDMVQTRVRNRBMN",
+  "attribute_Concessions": true,
+  "attribute_Preview": true
+ },
+ {
+  "id": "405368AGRGLJRRDJGGQGHCVRLVLGSSBST",
+  "event": {
+   "id": "127656ANVPBGDGHVHLHTSQMKMNVCVSBLD"
+  },
+  "start": "2027-02-18T19:45:00",
+  "cancelled": false,
+  "isOnSale": false,
+  "priceList": {
+   "id": "390176AVBJCMHKNVNQMSMCCPKQDHSBRJD"
+  },
+  "planId": "5026ABJSRTQMKCQNGDVCRHTKKMKTHLDJJ",
+  "attribute_Concessions": true,
+  "attribute_Preview": true
+ },
+ {
+  "id": "397769ARMSTTMQJRGMNDBSBQDSRSNRBKD",
+  "event": {
+   "id": "127056AQDCLGSMJRRRDSMRQKSNKMDBDSN"
+  },
+  "start": "2027-03-19T19:30:00",
+  "cancelled": false,
+  "isOnSale": false,
+  "priceList": {
+   "id": "392775AGJVSLKLKLMKBCKGVKDRMGRJKVN"
+  },
+  "planId": "14230ADRKNQMBTPKVTSTDMVQTRVRNRBMN",
+  "attribute_Concessions": true,
+  "attribute_Preview": true
+ },
+ {
+  "id": "409567ATDVDBSKSQHDPHMJPCBKNCKJHSH",
+  "event": {
+   "id": "127456ASGGVGVBDLHJNNKKQMHNNJMMMDG"
+  },
+  "start": "2027-04-22T19:45:00",
+  "cancelled": false,
+  "isOnSale": false,
+  "priceList": {
+   "id": "393575AMSQHVMSPPJQVLRVBNKSJLRSGSM"
+  },
+  "planId": "5026ABJSRTQMKCQNGDVCRHTKKMKTHLDJJ",
+  "attribute_Captioned": true,
+  "attribute_Concessions": true,
+  "attribute_Preview": true
+ }
+]

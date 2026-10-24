@@ -1,0 +1,134 @@
+[
+ {
+  "id": "6001AHTPDKPQHHKQPKDKSKRBSTJBCVNKB",
+  "name": "Assisted listening device (for hard of hearing)",
+  "imageUrl": "https://system.spektrix.com/youngvic/files/eab0bdf4-9d88-43e1-b38a-d8828cfe6323.jpeg",
+  "webUrl": "",
+  "attribute_Festival": "Shedinburgh",
+  "attribute_SupplementaryEvent": true
+ },
+ {
+  "id": "2001AHRPHKQVSMKGSDJKJQJCLGRKHBSVV",
+  "name": "Audio description Headset",
+  "imageUrl": "https://system.spektrix.com/youngvic/files/e4d9903e-f370-4466-94c6-6877df2439ff.jpg",
+  "webUrl": "",
+  "attribute_SupplementaryEvent": true
+ },
+ {
+  "id": "24601AQBNLBQCHKVGDVHQJVMMGKLGNBDJ",
+  "name": "DISSENT",
+  "imageUrl": "https://system.spektrix.com/youngvic/files/609048dc-a52e-4ba8-a5be-465512ac1684.jpg",
+  "webUrl": "",
+  "description": "Featuring Lashana Lynch, dissent is an explosive new play from debbie tucker green, one of the most distinctive and influential voices in contemporary British theatre. Running time: TBC.",
+  "attribute_Genre": "New writing - star casting",
+  "attribute_PriorityBookingFriendsStarts": "2026-10-06T00:00:00",
+  "attribute_PriorityBookingPatronsStarts": "2026-10-01T00:00:00",
+  "attribute_PriorityBookingSoulmatesStarts": "2026-10-05T00:00:00",
+  "attribute_Venue": "Main House"
+ },
+ {
+  "id": "26601APLTNSPSGDPBRQVGGSRDMVBVVNQK",
+  "name": "dissent programme",
+  "imageUrl": "https://system.spektrix.com/youngvic/files/a2420a8e-cb85-4797-aee6-cc563670d844.jpg",
+  "webUrl": "",
+  "attribute_Genre": "New writing - star casting",
+  "attribute_SupplementaryEvent": true,
+  "attribute_Venue": "Main House"
+ },
+ {
+  "id": "27401ARJLQPVGRGCMSLCMHMNMQVRHNDVC",
+  "name": "EULOGY",
+  "imageUrl": "https://system.spektrix.com/youngvic/files/b7710a8c-6c9c-48b4-ad3d-ffbd5c21a73c.jpg",
+  "webUrl": "",
+  "description": "A shipping container transports you to a labyrinthine hotel that exists entirely in your mind. An immersive 360-degree audio experience from DARKFIELD. Running time: 30 minutes.",
+  "attribute_PriorityBookingFriendsStarts": "2026-10-06T00:00:00",
+  "attribute_PriorityBookingPatronsStarts": "2026-10-01T00:00:00",
+  "attribute_PriorityBookingSoulmatesStarts": "2026-10-05T00:00:00",
+  "attribute_Venue": "Outside the Young Vic"
+ },
+ {
+  "id": "10601APSKMRRDLKDGKBKNPNLTDRGCSHLR",
+  "name": "EUROTRASH",
+  "imageUrl": "https://system.spektrix.com/youngvic/files/0808f9dd-9111-4c54-a614-a792d496c2a0.jpg",
+  "webUrl": "",
+  "description": "Starring Kathryn Hunter and Ben Whishaw, this production brings Christian Kracht’s internationally best-selling cult novel to the stage in a new adaptation by Colin Teevan. Running time: 2 hours including interval.",
+  "attribute_Venue": "Main House"
+ },
+ {
+  "id": "13201ACQQNNPSNRJMNQRQRCSJCCGPQLHJ",
+  "name": "Eurotrash programme",
+  "imageUrl": "https://system.spektrix.com/youngvic/files/d1ebbde7-9b15-42bf-9a86-691faad3a2a5.jpg",
+  "webUrl": "",
+  "attribute_Genre": "New writing",
+  "attribute_SupplementaryEvent": true
+ },
+ {
+  "id": "2002APLLRJQLLLDGLMSVTSPVTNQPBGKGL",
+  "name": "Free Touch Tour",
+  "imageUrl": "https://system.spektrix.com/youngvic/files/b64d08ad-f087-4ca5-80e6-9f9f176e4f25.jpg",
+  "webUrl": "",
+  "attribute_SupplementaryEvent": true
+ },
+ {
+  "id": "11001ATRSBGDJMQQMCVKRJSQJPSBBHRPT",
+  "name": "GIRLS",
+  "imageUrl": "https://system.spektrix.com/youngvic/files/3f025c38-c575-4f3f-ac93-d47a25c345b5.jpg",
+  "webUrl": "",
+  "description": "2hrs no interval - 12+ - Ewa Dina, winner of the 2026 JMK Award, directs Theresa Ikoko’s powerful and award-winning story of teenage friendship under fire in Nigeria.",
+  "attribute_Genre": "Studio",
+  "attribute_Venue": "The Maria Theatre"
+ },
+ {
+  "id": "27201ATMPGJCKNGLLLPMRKRVCVBLCMPLH",
+  "name": "Girls Playtext",
+  "imageUrl": "https://system.spektrix.com/youngvic/files/f69295a2-5ea9-4450-a386-7dbed9e3c557.jpg",
+  "webUrl": "",
+  "attribute_SupplementaryEvent": true
+ },
+ {
+  "id": "22401AHNCPNVTKJTRNRHMVHTTDRBJQHGK",
+  "name": "Girls Programme",
+  "imageUrl": "https://system.spektrix.com/youngvic/files/d258d381-cd03-47af-80eb-644728c403f0.jpg",
+  "webUrl": "",
+  "attribute_Genre": "New writing",
+  "attribute_SupplementaryEvent": true,
+  "attribute_Venue": "The Maria Theatre"
+ },
+ {
+  "id": "10201AJHJGJMTBHDNGMTSMTVVGPNSHHLL",
+  "name": "LA DISTANCE",
+  "imageUrl": "https://system.spektrix.com/youngvic/files/a98595d7-5097-407a-8381-2a582942c58e.jpg",
+  "webUrl": "",
+  "description": "Tiago Rodrigues’s La Distance is a breathtakingly beautiful and profoundly human production about separation, hope, and the bond between parent and child. Performed in French, with English surtitles. Running time: 1 hour 30 mins, no interval.",
+  "attribute_Genre": "New writing",
+  "attribute_Venue": "Main House"
+ },
+ {
+  "id": "23001ARCVCNHNNNCLVMBNCMRGPKGBRCSK",
+  "name": "Temporary Priority Test",
+  "imageUrl": "",
+  "webUrl": "",
+  "description": "This is a test event, built by PB 21st Aug 2026"
+ },
+ {
+  "id": "10002AQKQKGTBHTLKKJLJQCLNVNDPMJQV",
+  "name": "THELMA & LOUISE",
+  "imageUrl": "https://system.spektrix.com/youngvic/files/dc9e193c-6276-42b8-a164-a3b6b5823ab9.jpg",
+  "webUrl": "",
+  "description": "Running time 2hrs 30 including interval (TBC) Amy Lennox and Rachel Tucker take to the road in a brand‑new musical version of Callie Khouri’s iconic film. This electrifying production will be directed by Trip Cullman, with music and lyrics by Neko Case.",
+  "attribute_Genre": "Musical - star casting",
+  "attribute_Venue": "Main House"
+ },
+ {
+  "id": "25201ANDKMVTTJTBHCHVPRBNBQSNTLMKN",
+  "name": "WHAT'S THE F**KING POINT?",
+  "imageUrl": "https://system.spektrix.com/youngvic/files/22b4ec3d-475e-4b79-8991-839f183b23df.jpg",
+  "webUrl": "",
+  "description": "A dark comedy about three friends who are pulled into a spiral of medical bureaucracy. Directed by Josh Roche and Zoë Templeman-Young, and from award-winning disability led theatre company, FlawBored. Running time: approximately 70 minutes with no interval.",
+  "attribute_Genre": "Studio",
+  "attribute_PriorityBookingFriendsStarts": "2026-10-07T00:00:00",
+  "attribute_PriorityBookingPatronsStarts": "2026-10-01T00:00:00",
+  "attribute_PriorityBookingSoulmatesStarts": "2026-10-06T00:00:00",
+  "attribute_Venue": "The Maria Theatre"
+ }
+]
