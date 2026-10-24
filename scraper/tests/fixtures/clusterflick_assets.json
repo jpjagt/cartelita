@@ -1,0 +1,2645 @@
+{
+"princecharlescinema.com": [
+{
+"category": "multiple-movies",
+"overview": {
+"categories": [],
+"directors": [],
+"duration": 35160000,
+"year": "1984"
+},
+"performances": [
+{
+"accessibility": {},
+"bookingUrl": "https://princecharlescinema.com/prince-charles-cinema/booknow/31628497",
+"format": {},
+"notes": "",
+"status": {
+"soldOut": false
+},
+"time": 1797116400000
+}
+],
+"seen": 1790357184102,
+"showingId": "princecharlescinema.com-8606283",
+"themoviedbs": [
+{
+"id": 10437,
+"releaseDate": "1992-12-11",
+"summary": "A retelling of the classic Dickens tale of Ebenezer Scrooge, miser extraordinaire. He is held accountable for his dastardly ways during nighttime visitations by the Ghosts of Christmas Past, Present and Future.",
+"title": "The Muppet Christmas Carol"
+},
+{
+"id": 10719,
+"releaseDate": "2003-11-07",
+"summary": "When young Buddy falls into Santa's gift sack on Christmas Eve, he's transported back to the North Pole and raised as a toy-making elf by Santa's helpers. But as he grows into adulthood, he can't shake the nagging feeling that he doesn't belong. Buddy vows to visit Manhattan and find his real dad, a workaholic.",
+"title": "Elf"
+},
+{
+"id": 771,
+"releaseDate": "1990-11-16",
+"summary": "Eight-year-old Kevin McCallister makes the most of the situation after his family unwittingly leaves him behind when they go on Christmas vacation. When thieves try to break into his home, he puts up a fight like no other.",
+"title": "Home Alone"
+},
+{
+"id": 927,
+"releaseDate": "1984-06-08",
+"summary": "After receiving an exotic small animal as a Christmas gift, a young man inadvertently breaks three important rules concerning his new pet, which unleashes a horde of malevolently mischievous creatures on a small town.",
+"title": "Gremlins"
+},
+{
+"id": 562,
+"releaseDate": "1988-07-15",
+"summary": "High above the city of L.A. a team of terrorists has seized a building, taken hostages, and declared war. One man has manages to escape... An off-duty cop hiding somewhere inside. He's alone, tired... and the only chance anyone has got.",
+"title": "Die Hard"
+}
+],
+"title": "Christmas Pyjama Party",
+"url": "https://princecharlescinema.com/film/8606283/christmas-pyjama-party"
+},
+{
+"category": "multiple-movies",
+"overview": {
+"categories": [
+"Movie Marathons"
+],
+"classification": "18",
+"directors": [
+"John Carpenter",
+"William Friedkin",
+"Stanley Kubrick",
+"Wes Craven",
+"Tobe Hooper"
+],
+"duration": 31980000,
+"year": "1974"
+},
+"performances": [
+{
+"accessibility": {},
+"bookingUrl": "https://princecharlescinema.com/film/31616767/classic-horror-marathon",
+"format": {},
+"notes": "35mm / DCP",
+"status": {
+"soldOut": true
+},
+"time": 1792881000000
+}
+],
+"seen": 1787114383270,
+"showingId": "princecharlescinema.com-31616767",
+"themoviedbs": [
+{
+"id": 1091,
+"releaseDate": "1982-06-25",
+"summary": "A research team in Antarctica is hunted by a shape-shifting alien that assumes the appearance of its victims.",
+"title": "The Thing"
+},
+{
+"id": 9552,
+"releaseDate": "1973-12-26",
+"summary": "When a mysterious entity possesses a young girl, her mother seeks the help of two Catholic priests to save her life.",
+"title": "The Exorcist"
+},
+{
+"id": 694,
+"releaseDate": "1980-05-23",
+"summary": "Jack Torrance accepts a caretaker job at the Overlook Hotel, where he, along with his wife Wendy and their son Danny, must live isolated from the rest of the world for the winter. But they aren't prepared for the madness that lurks within.",
+"title": "The Shining"
+},
+{
+"id": 377,
+"releaseDate": "1984-11-09",
+"summary": "Teenagers in a small town are dropping like flies, apparently in the grip of mass hysteria causing their suicides. A cop's daughter, Nancy Thompson, traces the cause to child molester Fred Krueger, who was burned alive by angry parents many years before. Krueger has now come back in the dreams of his killers' children, claiming their lives as his revenge. Nancy and her boyfriend, Glen, must devise a plan to lure the monster out of the realm of nightmares and into the real world...",
+"title": "A Nightmare on Elm Street"
+},
+{
+"id": 30497,
+"releaseDate": "1974-10-11",
+"summary": "Five friends head out to rural Texas to visit the grave of a grandfather. On the way, they stumble across what appears to be a deserted house, only to discover something sinister within. Something armed with a chainsaw.",
+"title": "The Texas Chain Saw Massacre"
+}
+],
+"title": "Classic Horror Marathon",
+"url": "https://princecharlescinema.com/film/31616767/classic-horror-marathon"
+},
+{
+"category": "multiple-movies",
+"overview": {
+"categories": [
+"Movie Marathons"
+],
+"classification": "18",
+"directors": [
+"John Carpenter"
+],
+"duration": 37020000,
+"year": "1978"
+},
+"performances": [
+{
+"accessibility": {},
+"bookingUrl": "https://princecharlescinema.com/prince-charles-cinema/booknow/31627796",
+"format": {},
+"notes": "",
+"status": {
+"soldOut": false
+},
+"time": 1793488500000
+},
+{
+"accessibility": {},
+"bookingUrl": "https://princecharlescinema.com/prince-charles-cinema/booknow/31627518",
+"format": {},
+"notes": "",
+"status": {
+"soldOut": false
+},
+"time": 1793490300000
+}
+],
+"seen": 1784307943368,
+"showingId": "princecharlescinema.com-31617462",
+"themoviedbs": [
+{
+"id": 948,
+"releaseDate": "1978-10-25",
+"summary": "Fifteen years after murdering his sister on Halloween Night 1963, Michael Myers escapes from a mental hospital and returns to the small town of Haddonfield, Illinois to kill again.",
+"title": "Halloween"
+},
+{
+"id": 11281,
+"releaseDate": "1981-10-30",
+"summary": "After failing to kill stubborn survivor Laurie and taking a bullet or six from former psychiatrist Dr. Sam Loomis, Michael Myers has followed Laurie to the Haddonfield Memorial Hospital, where she's been admitted for Myers' attempt on her life. The institution proves to be particularly suited to serial killers, however, as Myers cuts, stabs and slashes his way through hospital staff to reach his favorite victim.",
+"title": "Halloween II"
+},
+{
+"id": 10676,
+"releaseDate": "1982-10-22",
+"summary": "After a terrified toy salesman is mysteriously attacked and brought to the hospital clutching the year's most popular Halloween mask, Dr. Daniel Challis sets out to investigate the strange events and finds himself thrust into a nightmarish conspiracy.",
+"title": "Halloween III: Season of the Witch"
+},
+{
+"id": 11357,
+"releaseDate": "1988-10-21",
+"summary": "Ten years after his original massacre, the invalid Michael Myers awakens on Halloween Eve and returns to Haddonfield to kill his seven-year-old niece.",
+"title": "Halloween 4: The Return of Michael Myers"
+},
+{
+"id": 11361,
+"releaseDate": "1989-10-12",
+"summary": "After lying in a coma for a year, Michael Myers awakens and stalks his way back to his small hometown in Illinois, intent on killing his niece, Jamie, who has been confined to a mental institution since his last attempt to slay her.",
+"title": "Halloween 5: The Revenge of Michael Myers"
+},
+{
+"id": 10987,
+"releaseDate": "1995-09-29",
+"summary": "Six years after being presumed dead in a fire, and just as the town prepares to finally celebrate Halloween again, Michael Myers returns to Haddonfield to continue his reign of terror.",
+"title": "Halloween: The Curse of Michael Myers"
+}
+],
+"title": "Halloween Marathon",
+"url": "https://princecharlescinema.com/film/31617462/halloween-marathon"
+},
+{
+"category": "shorts",
+"overview": {
+"categories": [
+"Skateboarding Video"
+],
+"classification": "18",
+"directors": [
+"Jamie Thomas",
+"Matt Eversole",
+"Kyle Camarillo"
+],
+"duration": 5700000,
+"year": "1996"
+},
+"performances": [
+{
+"accessibility": {},
+"bookingUrl": "https://princecharlescinema.com/film/31617534/have-a-gd-trip-presents-welcome-to-hell-bag-of-suck-double-feature",
+"format": {},
+"notes": "Intro",
+"status": {
+"soldOut": true
+},
+"time": 1794517200000
+}
+],
+"seen": 1788927580304,
+"showingId": "princecharlescinema.com-31617534",
+"themoviedbs": [
+{
+"id": 152707,
+"releaseDate": "1996-01-01",
+"summary": "Welcome to Hell featured parts from Mike Maldonado, Elissa Steamer, Brian Anderson, Satva Leung, Donny Barley, Ed Templeton and Jamie Thomas.",
+"title": "Toy Machine - Welcome To Hell"
+},
+{
+"id": 336988,
+"releaseDate": "2006-03-11",
+"summary": "The Bag Of Suck DVD from Enjoi Skateboards. Anything but sucky, this video features Jerry Hsu, Louie Barletta, Caswell Berry and the rest of the Enjoi team.",
+"title": "Enjoi - Bag of Suck"
+}
+],
+"title": "Have A Gd Trip presents Welcome To Hell & Bag of Suck Double Feature",
+"url": "https://princecharlescinema.com/film/31617534/have-a-gd-trip-presents-welcome-to-hell-bag-of-suck-double-feature"
+},
+{
+"category": "talk",
+"overview": {
+"categories": [
+"Music Video"
+],
+"classification": "18",
+"directors": [],
+"duration": 8100000
+},
+"performances": [
+{
+"accessibility": {},
+"bookingUrl": "https://princecharlescinema.com/prince-charles-cinema/booknow/31628378",
+"format": {},
+"notes": "",
+"status": {
+"soldOut": false
+},
+"time": 1795033500000
+}
+],
+"seen": 1789101794459,
+"showingId": "princecharlescinema.com-31617017",
+"title": "Music Video Preservation Society with special guest Tim Pope",
+"url": "https://princecharlescinema.com/film/31617017/music-video-preservation-society-with-special-guest-tim-pope"
+},
+{
+"category": "multiple-movies",
+"overview": {
+"categories": [
+"Movie Marathons"
+],
+"classification": "18",
+"directors": [],
+"duration": 30000000,
+"year": "1896"
+},
+"performances": [
+{
+"accessibility": {},
+"bookingUrl": "https://princecharlescinema.com/film/31617175/mystery-horror-movie-marathon",
+"format": {},
+"notes": "",
+"status": {
+"soldOut": true
+},
+"time": 1792879200000
+}
+],
+"seen": 1787114383270,
+"showingId": "princecharlescinema.com-31617175",
+"title": "Mystery Horror Movie Marathon",
+"url": "https://princecharlescinema.com/film/31617175/mystery-horror-movie-marathon"
+},
+{
+"category": "multiple-movies",
+"overview": {
+"categories": [
+"Movie Marathons"
+],
+"classification": "18",
+"directors": [],
+"duration": 30000000
+},
+"performances": [
+{
+"accessibility": {},
+"bookingUrl": "https://princecharlescinema.com/prince-charles-cinema/booknow/31628542",
+"format": {},
+"notes": "",
+"status": {
+"soldOut": false
+},
+"time": 1796514300000
+}
+],
+"seen": 1791568763490,
+"showingId": "princecharlescinema.com-7614149",
+"title": "Mystery Movie Marathon",
+"url": "https://princecharlescinema.com/film/7614149/mystery-movie-marathon"
+},
+{
+"category": "quiz",
+"overview": {
+"categories": [
+"Film Quiz"
+],
+"classification": "18",
+"directors": [
+"Chevy Mclaren"
+],
+"duration": 8400000,
+"year": "2024"
+},
+"performances": [
+{
+"accessibility": {},
+"bookingUrl": "https://princecharlescinema.com/prince-charles-cinema/booknow/31627852",
+"format": {},
+"notes": "",
+"status": {
+"soldOut": false
+},
+"time": 1793133000000
+},
+{
+"accessibility": {},
+"bookingUrl": "https://princecharlescinema.com/prince-charles-cinema/booknow/31627888",
+"format": {},
+"notes": "",
+"status": {
+"soldOut": false
+},
+"time": 1796157000000
+}
+],
+"seen": 1749373398159,
+"showingId": "princecharlescinema.com-31616848",
+"title": "Prince Charles Cinema Film Quiz",
+"url": "https://princecharlescinema.com/film/31616848/prince-charles-cinema-film-quiz"
+},
+{
+"category": "tv",
+"overview": {
+"categories": [
+"PCC Event"
+],
+"classification": "18",
+"directors": [],
+"duration": 7200000,
+"year": "1984"
+},
+"performances": [
+{
+"accessibility": {},
+"bookingUrl": "https://princecharlescinema.com/prince-charles-cinema/booknow/31627229",
+"format": {},
+"notes": "",
+"status": {
+"soldOut": false
+},
+"time": 1795725900000
+},
+{
+"accessibility": {},
+"bookingUrl": "https://princecharlescinema.com/prince-charles-cinema/booknow/31627230",
+"format": {},
+"notes": "",
+"status": {
+"soldOut": false
+},
+"time": 1797540300000
+}
+],
+"seen": 1749373398159,
+"showingId": "princecharlescinema.com-11246659",
+"title": "Solve Along A Murder She Wrote",
+"url": "https://princecharlescinema.com/film/11246659/solve-along-a-murder-she-wrote"
+},
+{
+"category": "multiple-movies",
+"overview": {
+"categories": [],
+"directors": [
+"Hayao Miyazaki",
+"Yoshifumi Kondô"
+],
+"duration": 33900000,
+"year": "1988"
+},
+"performances": [
+{
+"accessibility": {
+"subtitled": true
+},
+"bookingUrl": "https://princecharlescinema.com/prince-charles-cinema/booknow/31628489",
+"format": {},
+"notes": "",
+"status": {
+"soldOut": false
+},
+"time": 1795906800000
+}
+],
+"seen": 1790011242512,
+"showingId": "princecharlescinema.com-12010080",
+"themoviedbs": [
+{
+"id": 8392,
+"releaseDate": "1988-04-16",
+"summary": "Two sisters move to the country with their father in order to be closer to their hospitalized mother, and discover the surrounding trees are inhabited by Totoros, magical spirits of the forest. When the youngest runs away from home, the older sister seeks help from the spirits to find her.",
+"title": "My Neighbor Totoro"
+},
+{
+"id": 16859,
+"releaseDate": "1989-07-29",
+"summary": "A young witch, on her mandatory year of independent life, finds fitting into a new community difficult while she supports herself by running an air courier service.",
+"title": "Kiki's Delivery Service"
+},
+{
+"id": 4935,
+"releaseDate": "2004-09-09",
+"summary": "Sophie, a young milliner, is turned into an elderly woman by a witch who enters her shop and curses her. She encounters a wizard named Howl and gets caught up in his resistance to fighting for the king.",
+"title": "Howl's Moving Castle"
+},
+{
+"id": 128,
+"releaseDate": "1997-07-12",
+"summary": "Ashitaka, a prince of the disappearing Emishi people, is cursed by a demonized boar god and must journey to the west to find a cure. Along the way, he encounters San, a young human woman fighting to protect the forest, and Lady Eboshi, who is trying to destroy it. Ashitaka must find a way to bring balance to this conflict.",
+"title": "Princess Mononoke"
+},
+{
+"id": 129,
+"releaseDate": "2001-07-20",
+"summary": "A young girl, Chihiro, becomes trapped in a strange new world of spirits. When her parents undergo a mysterious transformation, she must call upon the courage she never knew she had to free her family.",
+"title": "Spirited Away"
+}
+],
+"title": "Studio Ghibli All-Nighter",
+"url": "https://princecharlescinema.com/film/12010080/studio-ghibli-allnighter"
+},
+{
+"category": "talk",
+"overview": {
+"categories": [
+"Live Podcast"
+],
+"classification": "15",
+"directors": [
+"Monkey Tennis"
+],
+"duration": 5400000,
+"year": "2026"
+},
+"performances": [
+{
+"accessibility": {},
+"bookingUrl": "https://princecharlescinema.com/prince-charles-cinema/booknow/31626392",
+"format": {},
+"notes": "",
+"status": {
+"soldOut": false
+},
+"time": 1795120200000
+}
+],
+"seen": 1777335583184,
+"showingId": "princecharlescinema.com-3505",
+"title": "Ten Years of Monkey Tennis (with Peter Serafinowicz)",
+"url": "https://princecharlescinema.com/film/3505/ten-years-of-monkey-tennis-with-peter-serafinowicz"
+},
+{
+"category": "multiple-movies",
+"overview": {
+"categories": [],
+"directors": [
+"Matt Johnson"
+],
+"duration": 30180000
+},
+"performances": [
+{
+"accessibility": {},
+"bookingUrl": "https://princecharlescinema.com/film/31617549/the-films-of-matt-johnson-marathon",
+"format": {},
+"notes": "",
+"status": {
+"soldOut": true
+},
+"time": 1795909500000
+},
+{
+"accessibility": {},
+"bookingUrl": "https://princecharlescinema.com/prince-charles-cinema/booknow/31628543",
+"format": {},
+"notes": "",
+"status": {
+"soldOut": false
+},
+"time": 1801350900000
+}
+],
+"seen": 1790832707428,
+"showingId": "princecharlescinema.com-31617549",
+"themoviedbs": [
+{
+"id": 159770,
+"releaseDate": "2013-10-04",
+"summary": "The line between reality and fiction starts to blur when two best friends start making a movie about getting revenge on bullies.",
+"title": "The Dirties"
+},
+{
+"id": 376453,
+"releaseDate": "2016-09-16",
+"summary": "In 1967, four undercover CIA agents were sent to NASA posing as a documentary film crew. What they discovered led to one of the biggest conspiracies in American history.",
+"title": "Operation Avalanche"
+},
+{
+"id": 1016084,
+"releaseDate": "2023-02-13",
+"summary": "Two mismatched entrepreneurs – egghead innovator Mike Lazaridis and cut-throat businessman Jim Balsillie – joined forces in an endeavour that was to become a worldwide hit in little more than a decade. The story of the meteoric rise and catastrophic demise of the world's first smartphone.",
+"title": "BlackBerry"
+},
+{
+"id": 1154538,
+"releaseDate": "2026-02-02",
+"summary": "When their plan to book a show at the Rivoli goes horribly wrong, Matt and Jay accidentally travel back to the year 2008.",
+"title": "Nirvanna the Band the Show the Movie"
+},
+{
+"id": 1329016,
+"releaseDate": "2026-08-07",
+"summary": "A 19-year-old Anthony Bourdain travels to Provincetown and stumbles into the chaotic world of a restaurant kitchen, setting off a summer that will shape the course of his life.",
+"title": "Tony"
+}
+],
+"title": "The Films of Matt Johnson Marathon",
+"url": "https://princecharlescinema.com/film/31617549/the-films-of-matt-johnson-marathon"
+},
+{
+"category": "multiple-movies",
+"overview": {
+"categories": [
+"Movie Marathons"
+],
+"classification": "12A",
+"directors": [
+"Peter Jackson"
+],
+"duration": 33480000,
+"year": "2001"
+},
+"performances": [
+{
+"accessibility": {},
+"bookingUrl": "https://princecharlescinema.com/prince-charles-cinema/booknow/31627837",
+"format": {
+"source": "35mm"
+},
+"notes": "",
+"status": {
+"soldOut": false
+},
+"time": 1796513400000
+},
+{
+"accessibility": {},
+"bookingUrl": "https://princecharlescinema.com/prince-charles-cinema/booknow/31627838",
+"format": {
+"source": "35mm"
+},
+"notes": "",
+"status": {
+"soldOut": false
+},
+"time": 1797118200000
+}
+],
+"seen": 1787005185417,
+"showingId": "princecharlescinema.com-3262426",
+"themoviedbs": [
+{
+"id": 120,
+"releaseDate": "2001-12-18",
+"summary": "Young hobbit Frodo Baggins, after inheriting a mysterious ring from his uncle Bilbo, must leave his home in order to keep it from falling into the hands of its evil creator. Along the way, a fellowship is formed to protect the ringbearer and make sure that the ring arrives at its final destination: Mt. Doom, the only place where it can be destroyed.",
+"title": "The Lord of the Rings: The Fellowship of the Ring"
+},
+{
+"id": 121,
+"releaseDate": "2002-12-18",
+"summary": "Frodo Baggins and the other members of the Fellowship continue on their sacred quest to destroy the One Ring--but on separate paths. Their destinies lie at two towers--Orthanc Tower in Isengard, where the corrupt wizard Saruman awaits, and Sauron's fortress at Barad-dur, deep within the dark lands of Mordor.",
+"title": "The Lord of the Rings: The Two Towers"
+},
+{
+"id": 122,
+"releaseDate": "2003-12-17",
+"summary": "As armies mass for a final battle that will decide the fate of the world--and powerful, ancient forces of Light and Dark compete to determine the outcome--one member of the Fellowship of the Ring is revealed as the noble heir to the throne of the Kings of Men. Yet, the sole hope for triumph over evil lies with a brave hobbit, Frodo, who, accompanied by his loyal friend Sam and the hideous, wretched Gollum, ventures deep into the very dark heart of Mordor on his seemingly impossible quest to destroy the Ring of Power.​",
+"title": "The Lord of the Rings: The Return of the King"
+}
+],
+"title": "The Lord of the Rings Trilogy [Theatrical Editions]",
+"url": "https://princecharlescinema.com/film/3262426/the-lord-of-the-rings-trilogy-theatrical-editions"
+},
+{
+"category": "movie",
+"overview": {
+"categories": [
+"Horror"
+],
+"classification": "15",
+"directors": [
+"Kane Parsons"
+],
+"duration": 7560000,
+"year": "2026"
+},
+"performances": [
+{
+"accessibility": {},
+"bookingUrl": "https://princecharlescinema.com/film/31617405/backrooms-everything-must-go-edition-with-bonus-footage",
+"format": {},
+"notes": "",
+"status": {
+"soldOut": true
+},
+"time": 1792960200000
+},
+{
+"accessibility": {},
+"bookingUrl": "https://princecharlescinema.com/prince-charles-cinema/booknow/31628536",
+"format": {},
+"notes": "",
+"status": {
+"soldOut": false
+},
+"time": 1798470000000
+},
+{
+"accessibility": {},
+"bookingUrl": "https://princecharlescinema.com/prince-charles-cinema/booknow/31628648",
+"format": {},
+"notes": "",
+"status": {
+"soldOut": false
+},
+"time": 1799355300000
+}
+],
+"seen": 1779476153051,
+"showingId": "princecharlescinema.com-31617405",
+"themoviedb": {
+"id": 1083381,
+"releaseDate": "2026-05-27",
+"summary": "A strange doorway appears in the basement of a furniture showroom.",
+"title": "Backrooms"
+},
+"title": "Backrooms: Everything Must Go Edition With Bonus Footage",
+"url": "https://princecharlescinema.com/film/31617405/backrooms-everything-must-go-edition-with-bonus-footage"
+},
+{
+"category": "movie",
+"overview": {
+"categories": [
+"Supernatural",
+"Horror"
+],
+"classification": "18",
+"directors": [
+"Stephen Norrington"
+],
+"duration": 7200000,
+"year": "1998"
+},
+"performances": [
+{
+"accessibility": {},
+"bookingUrl": "https://princecharlescinema.com/film/19477989/blade",
+"format": {
+"source": "35mm"
+},
+"notes": "",
+"status": {
+"soldOut": true
+},
+"time": 1793306700000
+}
+],
+"seen": 1784846211269,
+"showingId": "princecharlescinema.com-19477989",
+"themoviedb": {
+"id": 36647,
+"releaseDate": "1998-08-21",
+"summary": "The Daywalker known as \"Blade\" - a half-vampire, half-mortal man - becomes the protector of humanity against an underground army of vampires.",
+"title": "Blade"
+},
+"title": "Blade",
+"url": "https://princecharlescinema.com/film/19477989/blade"
+},
+{
+"category": "movie",
+"overview": {
+"categories": [
+"Science Fiction"
+],
+"classification": "15",
+"directors": [
+"Richard Kelly"
+],
+"duration": 6780000,
+"year": "2001"
+},
+"performances": [
+{
+"accessibility": {},
+"bookingUrl": "https://princecharlescinema.com/film/3639584/donnie-darko-theatrical-cut",
+"format": {},
+"notes": "",
+"status": {
+"soldOut": true
+},
+"time": 1793536200000
+}
+],
+"seen": 1784846211269,
+"showingId": "princecharlescinema.com-3639584",
+"themoviedb": {
+"id": 141,
+"releaseDate": "2001-01-19",
+"summary": "After narrowly escaping a bizarre accident, a troubled teenager is plagued by visions of a large bunny rabbit that manipulates him to commit a series of crimes.",
+"title": "Donnie Darko"
+},
+"title": "Donnie Darko [Theatrical Cut]",
+"url": "https://princecharlescinema.com/film/3639584/donnie-darko-theatrical-cut"
+},
+{
+"category": "movie",
+"overview": {
+"categories": [
+"Science Fiction"
+],
+"classification": "U",
+"directors": [
+"Stanley Kubrick"
+],
+"duration": 9600000,
+"year": "1968"
+},
+"performances": [
+{
+"accessibility": {},
+"bookingUrl": "https://princecharlescinema.com/prince-charles-cinema/booknow/31628436",
+"format": {
+"source": "70mm"
+},
+"notes": "",
+"status": {
+"soldOut": false
+},
+"time": 1798489200000
+},
+{
+"accessibility": {},
+"bookingUrl": "https://princecharlescinema.com/prince-charles-cinema/booknow/31628437",
+"format": {
+"source": "70mm"
+},
+"notes": "",
+"status": {
+"soldOut": false
+},
+"time": 1798554300000
+},
+{
+"accessibility": {},
+"bookingUrl": "https://princecharlescinema.com/prince-charles-cinema/booknow/31628438",
+"format": {
+"source": "70mm"
+},
+"notes": "",
+"status": {
+"soldOut": false
+},
+"time": 1798662000000
+}
+],
+"seen": 1751259925855,
+"showingId": "princecharlescinema.com-7260457",
+"themoviedb": {
+"id": 62,
+"releaseDate": "1968-04-02",
+"summary": "Humanity finds a mysterious object buried beneath the lunar surface and sets off to find its origins with the help of HAL 9000, the world's most advanced super computer.",
+"title": "2001: A Space Odyssey"
+},
+"title": "2001 : A Space Odyssey",
+"url": "https://princecharlescinema.com/film/7260457/2001-a-space-odyssey"
+},
+{
+"category": "movie",
+"overview": {
+"categories": [
+"Drama"
+],
+"classification": "15",
+"directors": [
+"Federico Fellini"
+],
+"duration": 8280000,
+"year": "1963"
+},
+"performances": [
+{
+"accessibility": {},
+"bookingUrl": "https://princecharlescinema.com/prince-charles-cinema/booknow/31628610",
+"format": {
+"source": "35mm"
+},
+"notes": "",
+"status": {
+"soldOut": false
+},
+"time": 1799181300000
+},
+{
+"accessibility": {},
+"bookingUrl": "https://princecharlescinema.com/prince-charles-cinema/booknow/31628739",
+"format": {
+"source": "35mm"
+},
+"notes": "",
+"status": {
+"soldOut": false
+},
+"time": 1800542700000
+}
+],
+"seen": 1792512250257,
+"showingId": "princecharlescinema.com-8002205",
+"themoviedb": {
+"id": 422,
+"releaseDate": "1963-02-14",
+"summary": "Guido Anselmi, a film director, finds himself creatively barren at the peak of his career. Urged by his doctors to rest, Anselmi heads for a luxurious resort, but a sorry group gathers—his producer, staff, actors, wife, mistress, and relatives—each one begging him to get on with the show. In retreat from their dependency, he fantasizes about past women and dreams of his childhood.",
+"title": "8½"
+},
+"title": "8 1/2",
+"url": "https://princecharlescinema.com/film/8002205/8-12"
+},
+{
+"category": "movie",
+"overview": {
+"categories": [
+"Musical",
+"Comedy"
+],
+"classification": "U",
+"directors": [
+"Brian Henson"
+],
+"duration": 5340000,
+"year": "1992"
+},
+"performances": [
+{
+"accessibility": {},
+"bookingUrl": "https://princecharlescinema.com/prince-charles-cinema/booknow/31627853",
+"format": {},
+"notes": "Sing Along",
+"status": {
+"soldOut": false
+},
+"time": 1795800600000
+},
+{
+"accessibility": {},
+"bookingUrl": "https://princecharlescinema.com/prince-charles-cinema/booknow/31627854",
+"format": {},
+"notes": "Sing Along",
+"status": {
+"soldOut": false
+},
+"time": 1795887900000
+},
+{
+"accessibility": {},
+"bookingUrl": "https://princecharlescinema.com/prince-charles-cinema/booknow/31627855",
+"format": {},
+"notes": "Sing Along",
+"status": {
+"soldOut": false
+},
+"time": 1795961700000
+}
+],
+"seen": 1787288144622,
+"showingId": "princecharlescinema.com-13427144",
+"themoviedb": {
+"id": 10437,
+"releaseDate": "1992-12-11",
+"summary": "A retelling of the classic Dickens tale of Ebenezer Scrooge, miser extraordinaire. He is held accountable for his dastardly ways during nighttime visitations by the Ghosts of Christmas Past, Present and Future.",
+"title": "The Muppet Christmas Carol"
+},
+"title": "The Muppet Christmas Carol",
+"url": "https://princecharlescinema.com/film/13427144/the-muppet-christmas-carol"
+},
+{
+"category": "movie",
+"overview": {
+"categories": [
+"Sing-a-long-a"
+],
+"classification": "15",
+"directors": [
+"Jim Sharman"
+],
+"duration": 6000000,
+"year": "1975"
+},
+"performances": [
+{
+"accessibility": {},
+"bookingUrl": "https://princecharlescinema.com/prince-charles-cinema/booknow/31628654",
+"format": {},
+"notes": "Sing Along",
+"status": {
+"soldOut": false
+},
+"time": 1801254600000
+},
+{
+"accessibility": {},
+"bookingUrl": "https://princecharlescinema.com/prince-charles-cinema/booknow/31628655",
+"format": {},
+"notes": "Sing Along",
+"status": {
+"soldOut": false
+},
+"time": 1803673800000
+},
+{
+"accessibility": {},
+"bookingUrl": "https://princecharlescinema.com/prince-charles-cinema/booknow/31628656",
+"format": {},
+"notes": "Sing Along",
+"status": {
+"soldOut": false
+},
+"time": 1806093000000
+}
+],
+"seen": 1792656081989,
+"showingId": "princecharlescinema.com-31617567",
+"themoviedb": {
+"id": 36685,
+"releaseDate": "1975-08-14",
+"summary": "After getting a flat tire in the middle of nowhere, newly engaged couple Brad and Janet encounter the eerie mansion of the flamboyant, seductive Dr Frank-N-Furter and a variety of eccentric characters. Through elaborate dance and rock music, the mad scientist unveils his latest creation: a perfect, muscular man.",
+"title": "The Rocky Horror Picture Show"
+},
+"title": "The Rocky Horror Picture Show: Sing Along",
+"url": "https://princecharlescinema.com/film/31617567/the-rocky-horror-picture-show-sing-along"
+},
+{
+"category": "movie",
+"overview": {
+"categories": [
+"Horror",
+"Drama"
+],
+"classification": "15",
+"directors": [
+"Jane Schoenbrun"
+],
+"duration": 6000000,
+"year": "2024"
+},
+"performances": [
+{
+"accessibility": {},
+"bookingUrl": "https://princecharlescinema.com/film/31616715/i-saw-the-tv-glow",
+"format": {},
+"notes": "",
+"status": {
+"soldOut": true
+},
+"time": 1792860300000
+}
+],
+"seen": 1784846211269,
+"showingId": "princecharlescinema.com-31616715",
+"themoviedb": {
+"id": 858017,
+"releaseDate": "2024-05-03",
+"summary": "In late-90s suburbia, a lonely teenager meets a girl at school who introduces him to a mysterious late-night T.V. show — a vision of a supernatural world pulsing beneath their own. As time goes on, however, questions begin to arise about why the show sometimes seems more real than their own lives. In the pale glow of the television, their view of reality begins to crack.",
+"title": "I Saw the TV Glow"
+},
+"title": "I Saw the TV Glow",
+"url": "https://princecharlescinema.com/film/31616715/i-saw-the-tv-glow"
+},
+{
+"category": "movie",
+"overview": {
+"categories": [
+"Anime"
+],
+"classification": "18",
+"directors": [
+"Satoshi Kon"
+],
+"duration": 4860000,
+"year": "1997"
+},
+"performances": [
+{
+"accessibility": {
+"subtitled": true
+},
+"bookingUrl": "https://princecharlescinema.com/prince-charles-cinema/booknow/31627638",
+"format": {},
+"notes": "4K",
+"status": {
+"soldOut": false
+},
+"time": 1792859400000
+},
+{
+"accessibility": {
+"subtitled": true
+},
+"bookingUrl": "https://princecharlescinema.com/prince-charles-cinema/booknow/31627658",
+"format": {},
+"notes": "4K",
+"status": {
+"soldOut": false
+},
+"time": 1793124000000
+},
+{
+"accessibility": {
+"subtitled": true
+},
+"bookingUrl": "https://princecharlescinema.com/prince-charles-cinema/booknow/31627688",
+"format": {},
+"notes": "4K",
+"status": {
+"soldOut": false
+},
+"time": 1793440800000
+},
+{
+"accessibility": {
+"subtitled": true
+},
+"bookingUrl": "https://princecharlescinema.com/prince-charles-cinema/booknow/31627697",
+"format": {},
+"notes": "",
+"status": {
+"soldOut": false
+},
+"time": 1793556300000
+}
+],
+"seen": 1754200693944,
+"showingId": "princecharlescinema.com-2168243",
+"themoviedb": {
+"id": 10494,
+"releaseDate": "1998-02-28",
+"summary": "Rising pop star Mima Kirigoe quits singing to pursue a career as an actress. After she takes up a role on a popular detective show, her handlers and collaborators begin turning up murdered. Harboring feelings of guilt and haunted by visions of her former self, Mima's reality and fantasy meld into a frenzied paranoia.",
+"title": "Perfect Blue"
+},
+"title": "Perfect Blue",
+"url": "https://princecharlescinema.com/film/2168243/perfect-blue"
+}
+],
+"bfi.org.uk-southbank": [
+{
+"category": "talk",
+"overview": {
+"categories": [],
+"directors": [],
+"duration": 3600000
+},
+"performances": [
+{
+"accessibility": {},
+"bookingUrl": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=9DBC4BA4-4304-4A91-A29F-6DCFF768D71E",
+"format": {},
+"notes": "Part of Almost Perfect: The Films of Billy Wilder",
+"screen": "Blue Room",
+"status": {
+"soldOut": true
+},
+"time": 1794250800000
+}
+],
+"seen": 1789492767076,
+"showingId": "bfi.org.uk-southbank-9DBC4BA4-4304-4A91-A29F-6DCFF768D71E",
+"title": "25 and Under: An Introduction to Billy Wilder",
+"url": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=9DBC4BA4-4304-4A91-A29F-6DCFF768D71E"
+},
+{
+"category": "tv",
+"overview": {
+"categories": [],
+"directors": [
+"Dee Koppang O’Leary"
+],
+"duration": 3600000,
+"year": "2026"
+},
+"performances": [
+{
+"accessibility": {},
+"bookingUrl": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=977DC012-F71B-4B60-AB92-185E17211245",
+"format": {},
+"notes": "",
+"screen": "1",
+"status": {
+"soldOut": true
+},
+"time": 1794334200000
+}
+],
+"seen": 1792689718440,
+"showingId": "bfi.org.uk-southbank-977DC012-F71B-4B60-AB92-185E17211245",
+"title": "An Evening with Radio Times – TV Preview: Rivals Series 2 + Q&A with cast and creatives",
+"url": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=977DC012-F71B-4B60-AB92-185E17211245"
+},
+{
+"category": "shorts",
+"overview": {
+"categories": [],
+"directors": [],
+"duration": 6000000
+},
+"performances": [
+{
+"accessibility": {},
+"bookingUrl": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=398501DA-F0DF-4D0F-9D68-EE276E57C1A2",
+"format": {},
+"notes": "",
+"screen": "3",
+"status": {
+"soldOut": true
+},
+"time": 1793211300000
+}
+],
+"seen": 1789492767076,
+"showingId": "bfi.org.uk-southbank-398501DA-F0DF-4D0F-9D68-EE276E57C1A2",
+"title": "Animated Shorts from the BFI Film Fund + Q&A with filmmakers and BFI Filmmaking Fund representatives",
+"url": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=398501DA-F0DF-4D0F-9D68-EE276E57C1A2"
+},
+{
+"category": "talk",
+"overview": {
+"categories": [],
+"directors": [],
+"duration": 5400000
+},
+"performances": [
+{
+"accessibility": {},
+"bookingUrl": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=CA704D92-581E-4B1B-AC77-63470BF01F03",
+"format": {},
+"notes": "",
+"screen": "3",
+"status": {
+"soldOut": false
+},
+"time": 1795026000000
+}
+],
+"seen": 1789492767076,
+"showingId": "bfi.org.uk-southbank-CA704D92-581E-4B1B-AC77-63470BF01F03",
+"title": "Behind the Scenes: Take It Or Leave It Remastering with Douglas Weir, BFI Content Remastering and Delivery Lead",
+"url": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=CA704D92-581E-4B1B-AC77-63470BF01F03"
+},
+{
+"category": "talk",
+"overview": {
+"categories": [],
+"directors": [],
+"duration": 5400000
+},
+"performances": [
+{
+"accessibility": {},
+"bookingUrl": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=680DA659-FF27-4430-A6A6-5C6A8B488A8B",
+"format": {},
+"notes": "Part of Almost Perfect: The Films of Billy Wilder",
+"screen": "1",
+"status": {
+"soldOut": false
+},
+"time": 1793816100000
+}
+],
+"seen": 1789492767076,
+"showingId": "bfi.org.uk-southbank-680DA659-FF27-4430-A6A6-5C6A8B488A8B",
+"title": "Billy Wilder: America’s Witness with season curator Ruby McGuigan, film writer Christina Newland and author of Mr Wilder & Me, novelist Jonathan Coe",
+"url": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=680DA659-FF27-4430-A6A6-5C6A8B488A8B"
+},
+{
+"category": "tv",
+"overview": {
+"categories": [],
+"directors": []
+},
+"performances": [
+{
+"accessibility": {},
+"bookingUrl": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=1A68D559-5F32-40E2-B815-98438A58F59B",
+"format": {},
+"notes": "",
+"screen": "1",
+"status": {
+"soldOut": false
+},
+"time": 1793448000000
+}
+],
+"seen": 1789492767076,
+"showingId": "bfi.org.uk-southbank-1A68D559-5F32-40E2-B815-98438A58F59B",
+"title": "Blake’s 7: Series 3 + Q&A with actors Jan Chappell, Richard Clifford and Michael Troughton",
+"url": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=1A68D559-5F32-40E2-B815-98438A58F59B"
+},
+{
+"category": "talk",
+"overview": {
+"categories": [],
+"directors": [],
+"duration": 5400000
+},
+"performances": [
+{
+"accessibility": {},
+"bookingUrl": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=93E1B261-CC5E-467D-B908-F3DE11555898",
+"format": {},
+"notes": "",
+"screen": "3",
+"status": {
+"soldOut": false
+},
+"time": 1793038500000
+}
+],
+"seen": 1789492767076,
+"showingId": "bfi.org.uk-southbank-93E1B261-CC5E-467D-B908-F3DE11555898",
+"title": "Fear of the Dark: Lola Young on Race, Gender and Sexuality in Cinema",
+"url": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=93E1B261-CC5E-467D-B908-F3DE11555898"
+},
+{
+"category": "talk",
+"overview": {
+"categories": [],
+"directors": [],
+"duration": 3600000
+},
+"performances": [
+{
+"accessibility": {},
+"bookingUrl": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=ED05FAB4-20EE-45BE-A646-F125292CE7B1",
+"format": {},
+"notes": "",
+"screen": "1",
+"status": {
+"soldOut": true
+},
+"time": 1792950600000
+}
+],
+"seen": 1792096087677,
+"showingId": "bfi.org.uk-southbank-ED05FAB4-20EE-45BE-A646-F125292CE7B1",
+"title": "Gillian Anderson in conversation",
+"url": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=ED05FAB4-20EE-45BE-A646-F125292CE7B1"
+},
+{
+"category": "talk",
+"overview": {
+"categories": [],
+"directors": [],
+"duration": 7200000
+},
+"performances": [
+{
+"accessibility": {},
+"bookingUrl": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=B03E4D85-AFA2-4373-96EB-862FC30A07A5",
+"format": {},
+"notes": "",
+"screen": "1",
+"status": {
+"soldOut": false
+},
+"time": 1795543200000
+}
+],
+"seen": 1789492767076,
+"showingId": "bfi.org.uk-southbank-B03E4D85-AFA2-4373-96EB-862FC30A07A5",
+"title": "Good Morning, Britain: TV-am Revisited",
+"url": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=B03E4D85-AFA2-4373-96EB-862FC30A07A5"
+},
+{
+"category": "talk",
+"overview": {
+"categories": [],
+"directors": [],
+"duration": 5400000
+},
+"performances": [
+{
+"accessibility": {},
+"bookingUrl": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=45C28BB4-99FC-4003-974F-358735A7C1C3",
+"format": {},
+"notes": "",
+"screen": "1",
+"status": {
+"soldOut": false
+},
+"time": 1794507600000
+}
+],
+"seen": 1789492767076,
+"showingId": "bfi.org.uk-southbank-45C28BB4-99FC-4003-974F-358735A7C1C3",
+"title": "Julie Corman in Conversation",
+"url": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=45C28BB4-99FC-4003-974F-358735A7C1C3"
+},
+{
+"category": "event",
+"overview": {
+"categories": [],
+"directors": []
+},
+"performances": [
+{
+"accessibility": {},
+"bookingUrl": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=FFFBFE7D-EC5D-4A00-9CEB-F10A8EFE6B19",
+"format": {},
+"notes": "",
+"screen": "BFI Reuben Library",
+"status": {
+"soldOut": false
+},
+"time": 1793098800000
+},
+{
+"accessibility": {},
+"bookingUrl": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=FFFBFE7D-EC5D-4A00-9CEB-F10A8EFE6B19",
+"format": {},
+"notes": "",
+"screen": "BFI Reuben Library",
+"status": {
+"soldOut": false
+},
+"time": 1793185200000
+}
+],
+"seen": 1763043388997,
+"showingId": "bfi.org.uk-southbank-FFFBFE7D-EC5D-4A00-9CEB-F10A8EFE6B19",
+"title": "Library Research Session",
+"url": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=FFFBFE7D-EC5D-4A00-9CEB-F10A8EFE6B19"
+},
+{
+"category": "talk",
+"overview": {
+"categories": [],
+"directors": []
+},
+"performances": [
+{
+"accessibility": {},
+"bookingUrl": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=5FD3B486-9EFE-4ADA-9590-27201CB64BE9",
+"format": {},
+"notes": "",
+"screen": "1",
+"status": {
+"soldOut": true
+},
+"time": 1794249000000
+}
+],
+"seen": 1789492767076,
+"showingId": "bfi.org.uk-southbank-5FD3B486-9EFE-4ADA-9590-27201CB64BE9",
+"title": "Mark Kermode Live in 3D at the BFI",
+"url": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=5FD3B486-9EFE-4ADA-9590-27201CB64BE9"
+},
+{
+"category": "talk",
+"overview": {
+"categories": [],
+"directors": [],
+"duration": 4500000
+},
+"performances": [
+{
+"accessibility": {},
+"bookingUrl": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=B2DCF0AE-AA94-4ECF-B713-32145A8779FF",
+"format": {},
+"notes": "",
+"screen": "1",
+"status": {
+"soldOut": true
+},
+"time": 1793212200000
+}
+],
+"seen": 1789492767076,
+"showingId": "bfi.org.uk-southbank-B2DCF0AE-AA94-4ECF-B713-32145A8779FF",
+"title": "Martin McDonagh in Conversation",
+"url": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=B2DCF0AE-AA94-4ECF-B713-32145A8779FF"
+},
+{
+"category": "event",
+"overview": {
+"categories": [],
+"directors": []
+},
+"performances": [
+{
+"accessibility": {},
+"bookingUrl": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=B6516B85-6002-4DB2-ABE2-2C89D206804A",
+"format": {},
+"notes": "",
+"screen": "4",
+"status": {
+"soldOut": true
+},
+"time": 1793007900000
+}
+],
+"seen": 1789492767076,
+"showingId": "bfi.org.uk-southbank-B6516B85-6002-4DB2-ABE2-2C89D206804A",
+"title": "Member Exclusive: BFI Southbank and BFI IMAX Tour",
+"url": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=B6516B85-6002-4DB2-ABE2-2C89D206804A"
+},
+{
+"category": "quiz",
+"overview": {
+"categories": [],
+"directors": []
+},
+"performances": [
+{
+"accessibility": {},
+"bookingUrl": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=9D3B5510-4DA9-41DF-960B-A49C07B8F051",
+"format": {},
+"notes": "",
+"status": {
+"soldOut": true
+},
+"time": 1793298600000
+}
+],
+"seen": 1789492767076,
+"showingId": "bfi.org.uk-southbank-9D3B5510-4DA9-41DF-960B-A49C07B8F051",
+"title": "Member Halloween Quiz",
+"url": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=9D3B5510-4DA9-41DF-960B-A49C07B8F051"
+},
+{
+"category": "talk",
+"overview": {
+"categories": [],
+"directors": [],
+"duration": 5400000
+},
+"performances": [
+{
+"accessibility": {},
+"bookingUrl": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=E92D1E81-98A5-46F6-B60A-E67E586B52AA",
+"format": {},
+"notes": "",
+"screen": "BFI Reuben Library",
+"status": {
+"soldOut": true
+},
+"time": 1793039400000
+}
+],
+"seen": 1789492767076,
+"showingId": "bfi.org.uk-southbank-E92D1E81-98A5-46F6-B60A-E67E586B52AA",
+"title": "New Writings: Screening Technology, Theorizing Posthumanism – Humanness and Embodiment in Science Fiction Film and Television with Liam Rogers",
+"url": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=E92D1E81-98A5-46F6-B60A-E67E586B52AA"
+},
+{
+"category": "talk",
+"overview": {
+"categories": [],
+"directors": [],
+"duration": 3600000
+},
+"performances": [
+{
+"accessibility": {},
+"bookingUrl": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=661030E8-9211-42BE-BA30-4607E5C1CB05",
+"format": {},
+"notes": "",
+"screen": "1",
+"status": {
+"soldOut": false
+},
+"time": 1793566200000
+}
+],
+"seen": 1792749093480,
+"showingId": "bfi.org.uk-southbank-661030E8-9211-42BE-BA30-4607E5C1CB05",
+"title": "Olivia Wilde in conversation",
+"url": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=661030E8-9211-42BE-BA30-4607E5C1CB05"
+},
+{
+"category": "event",
+"overview": {
+"categories": [],
+"directors": [],
+"duration": 16200000
+},
+"performances": [
+{
+"accessibility": {},
+"bookingUrl": "https://www.eventbrite.com/checkout-external?eid=1990784628414",
+"format": {},
+"notes": "",
+"status": {
+"soldOut": false
+},
+"time": 1795631400000
+}
+],
+"seen": 1780348304858,
+"showingId": "eventbrite.co.uk-1990784628414",
+"title": "Rory Peck Awards 2026",
+"url": "https://www.eventbrite.co.uk/e/rory-peck-awards-2026-tickets-1990784628414"
+},
+{
+"category": "workshop",
+"overview": {
+"categories": [],
+"directors": [],
+"duration": 7200000
+},
+"performances": [
+{
+"accessibility": {},
+"bookingUrl": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=75E70FAE-AE7B-464C-A35E-C8F438B2DF36",
+"format": {},
+"notes": "Part of Almost Perfect: The Films of Billy Wilder",
+"screen": "Blue Room",
+"status": {
+"soldOut": true
+},
+"time": 1795630500000
+}
+],
+"seen": 1789492767076,
+"showingId": "bfi.org.uk-southbank-75E70FAE-AE7B-464C-A35E-C8F438B2DF36",
+"title": "Thou Shalt Not Bore: How to Write Like Billy Wilder",
+"url": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=75E70FAE-AE7B-464C-A35E-C8F438B2DF36"
+},
+{
+"category": "tv",
+"overview": {
+"categories": [],
+"directors": [
+"Al Campbell"
+],
+"duration": 6000000
+},
+"performances": [
+{
+"accessibility": {},
+"bookingUrl": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=6762F82D-D910-4361-A12F-88812679E044",
+"format": {},
+"notes": "",
+"screen": "1",
+"status": {
+"soldOut": true
+},
+"time": 1793729700000
+}
+],
+"seen": 1789492767076,
+"showingId": "bfi.org.uk-southbank-6762F82D-D910-4361-A12F-88812679E044",
+"title": "TV Preview: Cunk on Cinema + Q&A with writer/creator Charlie Brooker and actor Diane Morgan",
+"url": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=6762F82D-D910-4361-A12F-88812679E044"
+},
+{
+"category": "talk",
+"overview": {
+"categories": [],
+"directors": [],
+"duration": 5400000
+},
+"performances": [
+{
+"accessibility": {},
+"bookingUrl": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=02985293-7051-4B21-A9D7-10C970FD1B7F",
+"format": {},
+"notes": "Part of Film50 at the BFI Reuben Library",
+"screen": "BFI Reuben Library",
+"status": {
+"soldOut": true
+},
+"time": 1796063400000
+}
+],
+"seen": 1789492767076,
+"showingId": "bfi.org.uk-southbank-02985293-7051-4B21-A9D7-10C970FD1B7F",
+"title": "UEA Film50: Creative Authorship and the James Bond Franchise, Past and Future",
+"url": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=02985293-7051-4B21-A9D7-10C970FD1B7F"
+},
+{
+"category": "talk",
+"overview": {
+"categories": [],
+"directors": [],
+"duration": 5400000
+},
+"performances": [
+{
+"accessibility": {},
+"bookingUrl": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=8AA94B5B-2E19-415F-A6F2-B318A723F3EA",
+"format": {},
+"notes": "Part of Film50 at the BFI Reuben Library",
+"screen": "BFI Reuben Library",
+"status": {
+"soldOut": false
+},
+"time": 1794853800000
+}
+],
+"seen": 1789492767076,
+"showingId": "bfi.org.uk-southbank-8AA94B5B-2E19-415F-A6F2-B318A723F3EA",
+"title": "UEA Film50: Film Feminisms from Norwich – Legacies and Lineages",
+"url": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=8AA94B5B-2E19-415F-A6F2-B318A723F3EA"
+},
+{
+"category": "talk",
+"overview": {
+"categories": [],
+"directors": [],
+"duration": 5400000
+},
+"performances": [
+{
+"accessibility": {},
+"bookingUrl": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=F2661EF1-7241-40D3-990D-06E70ACACC3A",
+"format": {},
+"notes": "Part of Film50 at the BFI Reuben Library",
+"screen": "BFI Reuben Library",
+"status": {
+"soldOut": false
+},
+"time": 1794249000000
+}
+],
+"seen": 1789492767076,
+"showingId": "bfi.org.uk-southbank-F2661EF1-7241-40D3-990D-06E70ACACC3A",
+"title": "UEA Film50: Revisiting Ealing Studios",
+"url": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=F2661EF1-7241-40D3-990D-06E70ACACC3A"
+},
+{
+"category": "talk",
+"overview": {
+"categories": [],
+"directors": [],
+"duration": 5400000
+},
+"performances": [
+{
+"accessibility": {},
+"bookingUrl": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=11DBBB57-394A-4300-AFAD-F3524A97C22B",
+"format": {},
+"notes": "Part of Film50 at the BFI Reuben Library",
+"screen": "BFI Reuben Library",
+"status": {
+"soldOut": false
+},
+"time": 1795458600000
+}
+],
+"seen": 1789492767076,
+"showingId": "bfi.org.uk-southbank-11DBBB57-394A-4300-AFAD-F3524A97C22B",
+"title": "UEA Film50: The Legacies and Futures of Doctor Who",
+"url": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=11DBBB57-394A-4300-AFAD-F3524A97C22B"
+},
+{
+"category": "talk",
+"overview": {
+"categories": [],
+"directors": [],
+"duration": 5400000
+},
+"performances": [
+{
+"accessibility": {},
+"bookingUrl": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=93F4E5D5-4261-47FD-8732-2A82E38E5F54",
+"format": {},
+"notes": "Part of Film50 at the BFI Reuben Library",
+"screen": "BFI Reuben Library",
+"status": {
+"soldOut": false
+},
+"time": 1793644200000
+}
+],
+"seen": 1789492767076,
+"showingId": "bfi.org.uk-southbank-93F4E5D5-4261-47FD-8732-2A82E38E5F54",
+"title": "UEA Film50: When Film Studies Was Young",
+"url": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=93F4E5D5-4261-47FD-8732-2A82E38E5F54"
+},
+{
+"category": "movie",
+"overview": {
+"categories": [],
+"classification": "PG",
+"directors": [
+"Joe Pytka"
+],
+"duration": 5220000,
+"year": "1996"
+},
+"performances": [
+{
+"accessibility": {},
+"bookingUrl": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=1FB128E4-4D1C-4F1C-B9F6-C1E99CA516A8",
+"format": {},
+"notes": "",
+"screen": "4",
+"status": {
+"soldOut": false
+},
+"time": 1793190000000
+},
+{
+"accessibility": {},
+"bookingUrl": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=1FB128E4-4D1C-4F1C-B9F6-C1E99CA516A8",
+"format": {},
+"notes": "",
+"screen": "2",
+"status": {
+"soldOut": false
+},
+"time": 1794053400000
+}
+],
+"seen": 1789492767076,
+"showingId": "bfi.org.uk-southbank-1FB128E4-4D1C-4F1C-B9F6-C1E99CA516A8",
+"themoviedb": {
+"id": 2300,
+"releaseDate": "1996-11-15",
+"summary": "With their freedom on the line, the Looney Tunes seek the help of NBA superstar Michael Jordan to win a basketball game against a team of moronic aliens.",
+"title": "Space Jam"
+},
+"title": "30th Anniversary: Space Jam",
+"url": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=1FB128E4-4D1C-4F1C-B9F6-C1E99CA516A8"
+},
+{
+"category": "movie",
+"overview": {
+"categories": [],
+"classification": "12A",
+"directors": [
+"Claire Denis"
+],
+"duration": 6060000,
+"year": "2008"
+},
+"performances": [
+{
+"accessibility": {
+"subtitled": true
+},
+"bookingUrl": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=A8B5BBC3-34D0-4AFF-87CA-A6070FA17481",
+"format": {
+"source": "35mm"
+},
+"notes": "Part of Fear of the Dark: Lola Young on Race, Gender and Sexuality in Cinema",
+"screen": "2",
+"status": {
+"soldOut": false
+},
+"time": 1794075000000
+},
+{
+"accessibility": {
+"subtitled": true
+},
+"bookingUrl": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=A8B5BBC3-34D0-4AFF-87CA-A6070FA17481",
+"format": {
+"source": "35mm"
+},
+"notes": "Part of Fear of the Dark: Lola Young on Race, Gender and Sexuality in Cinema",
+"screen": "2",
+"status": {
+"soldOut": false
+},
+"time": 1795812000000
+}
+],
+"seen": 1789492767076,
+"showingId": "bfi.org.uk-southbank-A8B5BBC3-34D0-4AFF-87CA-A6070FA17481",
+"themoviedb": {
+"id": 26191,
+"releaseDate": "2009-02-18",
+"summary": "A widower and his daughter witness the retirement of a colleague of his and the closing of her department at her university.",
+"title": "35 Shots of Rum"
+},
+"title": "35 Shots of Rum",
+"url": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=A8B5BBC3-34D0-4AFF-87CA-A6070FA17481"
+},
+{
+"category": "movie",
+"overview": {
+"categories": [],
+"classification": "12A",
+"directors": [
+"Roger Corman"
+],
+"duration": 3960000,
+"year": "1958"
+},
+"performances": [
+{
+"accessibility": {},
+"bookingUrl": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=902D92C5-3A15-402A-8BF6-C5384538C1D9",
+"format": {},
+"notes": "Part of Movie Maverick: 100 years of Roger Corman",
+"screen": "1",
+"status": {
+"soldOut": false
+},
+"time": 1795348800000
+}
+],
+"seen": 1789492767076,
+"showingId": "bfi.org.uk-southbank-902D92C5-3A15-402A-8BF6-C5384538C1D9",
+"themoviedb": {
+"id": 22642,
+"releaseDate": "1959-10-21",
+"summary": "Nerdy Walter Paisley, a maladroit busboy at a beatnik café who doesn't fit in with the cool scene around him, attempts to woo his beautiful co-worker, Carla, by making a bust of her. When his klutziness results in the death of his landlady's cat, he panics and hides its body under a layer of plaster. But when Carla and her friends enthuse over the resulting artwork, Walter decides to create some bigger and more elaborate pieces using the same artistic process.",
+"title": "A Bucket of Blood"
+},
+"title": "A Bucket of Blood",
+"url": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=902D92C5-3A15-402A-8BF6-C5384538C1D9"
+},
+{
+"category": "movie",
+"overview": {
+"categories": [],
+"classification": "12A",
+"directors": [
+"Roger Corman"
+],
+"duration": 3960000,
+"year": "1958"
+},
+"performances": [
+{
+"accessibility": {},
+"bookingUrl": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=9D71D4F2-464D-4D75-A9CD-E4724383479E",
+"format": {},
+"notes": "Part of Movie Maverick: 100 years of Roger Corman",
+"screen": "1",
+"status": {
+"soldOut": false
+},
+"time": 1794603000000
+}
+],
+"seen": 1789492767076,
+"showingId": "bfi.org.uk-southbank-9D71D4F2-464D-4D75-A9CD-E4724383479E",
+"themoviedb": {
+"id": 22642,
+"releaseDate": "1959-10-21",
+"summary": "Nerdy Walter Paisley, a maladroit busboy at a beatnik café who doesn't fit in with the cool scene around him, attempts to woo his beautiful co-worker, Carla, by making a bust of her. When his klutziness results in the death of his landlady's cat, he panics and hides its body under a layer of plaster. But when Carla and her friends enthuse over the resulting artwork, Walter decides to create some bigger and more elaborate pieces using the same artistic process.",
+"title": "A Bucket of Blood"
+},
+"title": "A Bucket of Blood + intro by Mary Corman, Roger Corman’s daughter",
+"url": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=9D71D4F2-464D-4D75-A9CD-E4724383479E"
+},
+{
+"category": "movie",
+"overview": {
+"categories": [],
+"classification": "15",
+"directors": [
+"Euzhan Palcy"
+],
+"duration": 6120000,
+"year": "1989"
+},
+"performances": [
+{
+"accessibility": {},
+"bookingUrl": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=10C647D3-6BB9-4A89-B7E8-2F9B0D602B38",
+"format": {},
+"notes": "",
+"screen": "4",
+"status": {
+"soldOut": false
+},
+"time": 1793643600000
+},
+{
+"accessibility": {},
+"bookingUrl": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=10C647D3-6BB9-4A89-B7E8-2F9B0D602B38",
+"format": {},
+"notes": "",
+"screen": "2",
+"status": {
+"soldOut": false
+},
+"time": 1795630200000
+}
+],
+"seen": 1789492767076,
+"showingId": "bfi.org.uk-southbank-10C647D3-6BB9-4A89-B7E8-2F9B0D602B38",
+"themoviedb": {
+"id": 32075,
+"releaseDate": "1989-09-20",
+"summary": "During the 1976 Soweto uprising, a white school teacher's life and values are threatened when he asks questions about the death of a young black boy who died in police custody.",
+"title": "A Dry White Season"
+},
+"title": "A Dry White Season",
+"url": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=10C647D3-6BB9-4A89-B7E8-2F9B0D602B38"
+},
+{
+"category": "movie",
+"overview": {
+"categories": [],
+"classification": "U",
+"directors": [
+"Billy Wilder"
+],
+"duration": 6960000,
+"year": "1948"
+},
+"performances": [
+{
+"accessibility": {},
+"bookingUrl": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=018D957E-DA0F-434E-B6BC-37028831B756",
+"format": {},
+"notes": "Part of Almost Perfect: The Films of Billy Wilder",
+"screen": "3",
+"status": {
+"soldOut": true
+},
+"time": 1794082800000
+},
+{
+"accessibility": {},
+"bookingUrl": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=018D957E-DA0F-434E-B6BC-37028831B756",
+"format": {},
+"notes": "Part of Almost Perfect: The Films of Billy Wilder",
+"screen": "3",
+"status": {
+"soldOut": true
+},
+"time": 1794852600000
+}
+],
+"seen": 1789492767076,
+"showingId": "bfi.org.uk-southbank-018D957E-DA0F-434E-B6BC-37028831B756",
+"themoviedb": {
+"id": 61650,
+"releaseDate": "1948-08-20",
+"summary": "In occupied Berlin, an army captain is torn between an ex-Nazi café singer and the US congresswoman investigating her.",
+"title": "A Foreign Affair"
+},
+"title": "A Foreign Affair",
+"url": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=018D957E-DA0F-434E-B6BC-37028831B756"
+},
+{
+"category": "movie",
+"overview": {
+"categories": [],
+"classification": "PG",
+"directors": [
+"Mahamat-Saleh Haroun"
+],
+"duration": 5460000,
+"year": "2010"
+},
+"performances": [
+{
+"accessibility": {
+"subtitled": true
+},
+"bookingUrl": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=3A0FA8EB-FED2-440B-A71C-6E7A2182DD5F",
+"format": {},
+"notes": "",
+"screen": "4",
+"status": {
+"soldOut": false
+},
+"time": 1793298000000
+},
+{
+"accessibility": {
+"subtitled": true
+},
+"bookingUrl": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=3A0FA8EB-FED2-440B-A71C-6E7A2182DD5F",
+"format": {},
+"notes": "",
+"screen": "3",
+"status": {
+"soldOut": false
+},
+"time": 1794948900000
+}
+],
+"seen": 1789492767076,
+"showingId": "bfi.org.uk-southbank-3A0FA8EB-FED2-440B-A71C-6E7A2182DD5F",
+"themoviedb": {
+"id": 57602,
+"releaseDate": "2010-09-29",
+"summary": "Adam Ousmane is a pool attendant at a local resort. When the new managers decide to downsize, Adam loses his job to his own son, Abdel. Shattered by the turn of events, Adam is pressured into contributing to the Chadian war effort. With no money to speak of, the only asset he can donate is his son.",
+"title": "A Screaming Man"
+},
+"title": "A Screaming Man",
+"url": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=3A0FA8EB-FED2-440B-A71C-6E7A2182DD5F"
+},
+{
+"category": "movie",
+"overview": {
+"categories": [],
+"classification": "PG",
+"directors": [
+"Billy Wilder"
+],
+"duration": 6660000,
+"year": "1951"
+},
+"performances": [
+{
+"accessibility": {},
+"bookingUrl": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=7425E511-5A42-43FE-9B0D-E811EBB39769",
+"format": {},
+"notes": "Part of Almost Perfect: The Films of Billy Wilder",
+"screen": "1",
+"status": {
+"soldOut": false
+},
+"time": 1795261200000
+},
+{
+"accessibility": {},
+"bookingUrl": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=7425E511-5A42-43FE-9B0D-E811EBB39769",
+"format": {},
+"notes": "Part of Almost Perfect: The Films of Billy Wilder",
+"screen": "3",
+"status": {
+"soldOut": false
+},
+"time": 1795639200000
+}
+],
+"seen": 1789492767076,
+"showingId": "bfi.org.uk-southbank-7425E511-5A42-43FE-9B0D-E811EBB39769",
+"themoviedb": {
+"id": 25364,
+"releaseDate": "1951-06-29",
+"summary": "An arrogant reporter exploits a story about a man trapped in a cave to revitalize his career.",
+"title": "Ace in the Hole"
+},
+"title": "Ace in the Hole",
+"url": "https://whatson.bfi.org.uk/Online/default.asp?doWork::WScontent::loadArticle=Load&BOparam::WScontent::loadArticle::article_id=7425E511-5A42-43FE-9B0D-E811EBB39769"
+}
+],
+"curzon.com-bloomsbury": [
+{
+"category": "movie",
+"overview": {
+"categories": [
+"Documentary"
+],
+"directors": [
+"Mehrdad Oskouei",
+"Soraya Akhlaghi"
+],
+"duration": 4560000
+},
+"performances": [
+{
+"accessibility": {},
+"bookingUrl": "https://www.curzon.com/ticketing/seats/BLO1-114321/",
+"format": {},
+"notes": "Programmed by Bertha Dochouse",
+"screen": "Bertha Dochouse",
+"status": {
+"soldOut": false
+},
+"time": 1794600000000
+},
+{
+"accessibility": {},
+"bookingUrl": "https://www.curzon.com/ticketing/seats/BLO1-114322/",
+"format": {},
+"notes": "Programmed by Bertha Dochouse",
+"screen": "Bertha Dochouse",
+"status": {
+"soldOut": false
+},
+"time": 1794681900000
+},
+{
+"accessibility": {},
+"bookingUrl": "https://www.curzon.com/ticketing/seats/BLO1-114323/",
+"format": {},
+"notes": "Programmed by Bertha Dochouse",
+"screen": "Bertha Dochouse",
+"status": {
+"soldOut": false
+},
+"time": 1794757500000
+}
+],
+"seen": 1792096063221,
+"showingId": "curzon.com-bloomsbury-HO00007475",
+"themoviedb": {
+"id": 951018,
+"releaseDate": "2026-12-02",
+"summary": "At just 16, Soraya is already creating stunning drawings and sculptures that are as beautiful as they are dark. This strong-willed Afghan sculptor and illustrator has been trying for five years to escape Iran and join her mother in Austria.",
+"title": "A Fox Under a Pink Moon"
+},
+"title": "DocHouse: A Fox Under a Pink Moon",
+"url": "https://www.curzon.com/films/dochouse-a-fox-under-a-pink-moon/HO00007475/?siteId=BLO1"
+},
+{
+"category": "movie",
+"overview": {
+"categories": [
+"Documentary"
+],
+"classification": "18",
+"directors": [
+"Poh Si Teng"
+],
+"duration": 5460000
+},
+"performances": [
+{
+"accessibility": {},
+"bookingUrl": "https://www.curzon.com/ticketing/seats/BLO1-114540/",
+"format": {},
+"notes": "Programmed by Bertha Dochouse",
+"screen": "Bertha Dochouse",
+"status": {
+"soldOut": false
+},
+"time": 1795881600000
+},
+{
+"accessibility": {},
+"bookingUrl": "https://www.curzon.com/ticketing/seats/BLO1-114541/",
+"format": {},
+"notes": "Programmed by Bertha Dochouse",
+"screen": "Bertha Dochouse",
+"status": {
+"soldOut": false
+},
+"time": 1795977000000
+}
+],
+"seen": 1792749061890,
+"showingId": "curzon.com-bloomsbury-HO00007487",
+"themoviedb": {
+"id": 1596332,
+"releaseDate": "2026-08-14",
+"summary": "United by a shared oath to save lives, three American doctors—Palestinian, Jewish, and Zoroastrian—work in a besieged hospital in Gaza in the middle of a genocide comitted by Israel, and return to the United States to fight for the patients and colleagues they left behind.",
+"title": "American Doctor"
+},
+"title": "DocHouse: American Doctor",
+"url": "https://www.curzon.com/films/dochouse-american-doctor/HO00007487/?siteId=BLO1"
+},
+{
+"category": "movie",
+"overview": {
+"categories": [
+"Documentary"
+],
+"classification": "12A",
+"directors": [
+"Ron Howard"
+],
+"duration": 6240000
+},
+"performances": [
+{
+"accessibility": {},
+"bookingUrl": "https://www.curzon.com/ticketing/seats/BLO1-114097/",
+"format": {},
+"notes": "Programmed by Bertha Dochouse",
+"screen": "Bertha Dochouse",
+"status": {
+"soldOut": false
+},
+"time": 1793996100000
+},
+{
+"accessibility": {},
+"bookingUrl": "https://www.curzon.com/ticketing/seats/BLO1-114098/",
+"format": {},
+"notes": "Programmed by Bertha Dochouse",
+"screen": "Bertha Dochouse",
+"status": {
+"soldOut": false
+},
+"time": 1794083400000
+},
+{
+"accessibility": {},
+"bookingUrl": "https://www.curzon.com/ticketing/seats/BLO1-114099/",
+"format": {},
+"notes": "Programmed by Bertha Dochouse",
+"screen": "Bertha Dochouse",
+"status": {
+"soldOut": false
+},
+"time": 1794152700000
+}
+],
+"seen": 1791607705322,
+"showingId": "curzon.com-bloomsbury-HO00007439",
+"themoviedb": {
+"id": 1666787,
+"releaseDate": "2026-11-06",
+"summary": "Richard Avedon’s photographs didn’t just reflect culture, they shaped it, and continue to do so. The feature documentary AVEDON traces the life and legacy of an artist who used fashion, portraiture, and commercial photography to explore identity, power, fear and beauty. With unprecedented access to Avedon’s archive, including never before seen photos, behind the scenes recordings, and interviews with those who knew him best, AVEDON is a visually stunning examination of the mind of an artist who shaped our collective image of the 20th century.",
+"title": "Avedon"
+},
+"title": "DocHouse: Avedon",
+"url": "https://www.curzon.com/films/dochouse-avedon/HO00007439/?siteId=BLO1"
+},
+{
+"category": "movie",
+"overview": {
+"categories": [
+"Documentary"
+],
+"classification": "15",
+"directors": [
+"James Dawson"
+],
+"duration": 5280000
+},
+"performances": [
+{
+"accessibility": {},
+"bookingUrl": "https://www.curzon.com/ticketing/seats/BLO1-114498/",
+"format": {},
+"notes": "Programmed by Bertha Dochouse",
+"screen": "Bertha Dochouse",
+"status": {
+"soldOut": false
+},
+"time": 1792931400000
+},
+{
+"accessibility": {},
+"bookingUrl": "https://www.curzon.com/ticketing/seats/BLO1-114499/",
+"format": {},
+"notes": "Programmed by Bertha Dochouse",
+"screen": "Bertha Dochouse",
+"status": {
+"soldOut": false
+},
+"time": 1793112000000
+}
+],
+"seen": 1790357152472,
+"showingId": "curzon.com-bloomsbury-HO00007408",
+"themoviedb": {
+"id": 1638280,
+"releaseDate": "2027-03-08",
+"summary": "The idyllic English countryside. An intensive dairy farmer called Derek. One day his neighbour, also called Derek, forsakes farming tradition and starts to turn his land over to wild nature. How does the community react when one of it’s own turns his back on their way of life?",
+"title": "Derek vs Derek"
+},
+"title": "DocHouse: Derek Vs Derek",
+"url": "https://www.curzon.com/films/dochouse-derek-vs-derek/HO00007408/?siteId=BLO1"
+},
+{
+"category": "movie",
+"overview": {
+"categories": [
+"Drama",
+"Comedy"
+],
+"classification": "15",
+"directors": [
+"Alejandro González Iñárritu"
+],
+"duration": 7740000,
+"trailer": "https://www.youtube.com/watch?v=AgiTnd6pwYQ"
+},
+"performances": [
+{
+"accessibility": {},
+"bookingUrl": "https://www.curzon.com/ticketing/seats/BLO1-114382/",
+"format": {},
+"notes": "",
+"screen": "Phoenix Screen",
+"status": {
+"soldOut": false
+},
+"time": 1792872000000
+},
+{
+"accessibility": {},
+"bookingUrl": "https://www.curzon.com/ticketing/seats/BLO1-114363/",
+"format": {},
+"notes": "",
+"screen": "Phoenix Screen",
+"status": {
+"soldOut": false
+},
+"time": 1792961100000
+},
+{
+"accessibility": {
+"hardOfHearing": true,
+"subtitled": true
+},
+"bookingUrl": "https://www.curzon.com/ticketing/seats/BLO1-114421/",
+"format": {},
+"notes": "",
+"screen": "Lumiere Screen",
+"status": {
+"soldOut": false
+},
+"time": 1793026800000
+}
+],
+"seen": 1789967537361,
+"showingId": "curzon.com-bloomsbury-HO00007361",
+"themoviedb": {
+"id": 1248832,
+"releaseDate": "2026-09-28",
+"summary": "The most powerful man in the world embarks on a frantic mission to prove he is humanity's savior before the disaster he's unleashed destroys everything.",
+"title": "Digger"
+},
+"title": "Digger",
+"url": "https://www.curzon.com/films/digger/HO00007361/?siteId=BLO1"
+},
+{
+"category": "movie",
+"overview": {
+"categories": [
+"Drama",
+"Romance"
+],
+"classification": "U",
+"directors": [
+"Georgia Oakley"
+],
+"duration": 7920000,
+"trailer": "https://www.youtube.com/watch?v=AFKIdPsFJyE"
+},
+"performances": [
+{
+"accessibility": {
+"hardOfHearing": true,
+"subtitled": true
+},
+"bookingUrl": "https://www.curzon.com/ticketing/seats/BLO1-114367/",
+"format": {},
+"notes": "",
+"screen": "Lumiere Screen",
+"status": {
+"soldOut": false
+},
+"time": 1792939500000
+},
+{
+"accessibility": {},
+"bookingUrl": "https://www.curzon.com/ticketing/seats/BLO1-114478/",
+"format": {},
+"notes": "",
+"screen": "Minema Screen",
+"status": {
+"soldOut": false
+},
+"time": 1793203800000
+},
+{
+"accessibility": {},
+"bookingUrl": "https://www.curzon.com/ticketing/seats/BLO1-114463/",
+"format": {},
+"notes": "",
+"screen": "Lumiere Screen",
+"status": {
+"soldOut": false
+},
+"time": 1793286600000
+}
+],
+"seen": 1790054111167,
+"showingId": "curzon.com-bloomsbury-HO00007316",
+"themoviedb": {
+"id": 1503762,
+"releaseDate": "2026-09-23",
+"summary": "A charming, witty, and deeply relatable story of love and sisterhood.",
+"title": "Sense and Sensibility"
+},
+"title": "Sense and Sensibility",
+"url": "https://www.curzon.com/films/sense-and-sensibility/HO00007316/?siteId=BLO1"
+},
+{
+"category": "movie",
+"overview": {
+"categories": [
+"Drama"
+],
+"classification": "15",
+"directors": [
+"Aaron Sorkin"
+],
+"duration": 6720000,
+"trailer": "https://www.youtube.com/watch?v=3RFFgrB9YlI"
+},
+"performances": [
+{
+"accessibility": {},
+"bookingUrl": "https://www.curzon.com/ticketing/seats/BLO1-114374/",
+"format": {},
+"notes": "",
+"screen": "Plaza Screen",
+"status": {
+"soldOut": false
+},
+"time": 1792859400000
+},
+{
+"accessibility": {},
+"bookingUrl": "https://www.curzon.com/ticketing/seats/BLO1-114356/",
+"format": {},
+"notes": "",
+"screen": "Minema Screen",
+"status": {
+"soldOut": false
+},
+"time": 1792929600000
+},
+{
+"accessibility": {},
+"bookingUrl": "https://www.curzon.com/ticketing/seats/BLO1-114355/",
+"format": {},
+"notes": "",
+"screen": "Plaza Screen",
+"status": {
+"soldOut": false
+},
+"time": 1792948500000
+}
+],
+"seen": 1791280860304,
+"showingId": "curzon.com-bloomsbury-HO00007368",
+"themoviedb": {
+"id": 1281331,
+"releaseDate": "2026-10-07",
+"summary": "Frances Haugen, a young Facebook engineer, enlists the help of Jeff Horwitz, a Wall Street Journal reporter, to go on a dangerous journey that ends up blowing the whistle on the social network's most guarded secrets.",
+"title": "The Social Reckoning"
+},
+"title": "The Social Reckoning",
+"url": "https://www.curzon.com/films/the-social-reckoning/HO00007368/?siteId=BLO1"
+}
+],
+"institut-francais.org.uk": [
+{
+"category": "movie",
+"overview": {
+"categories": [],
+"classification": "15",
+"directors": [
+"Alain Cavalier"
+],
+"duration": 5820000,
+"year": "1976"
+},
+"performances": [
+{
+"accessibility": {
+"subtitled": true
+},
+"bookingUrl": "https://cinelumiere.savoysystems.co.uk/CineLumiere.dll/TSelectItems.waSelectItemsPrompt.TcsWebMenuItem_600.TcsWebTab_601.TcsPerformance_6970684.TcsSection_3841519",
+"format": {},
+"notes": "Part of French Film Festival London",
+"screen": "Ciné Lumière II",
+"status": {},
+"time": 1795269600000
+},
+{
+"accessibility": {
+"subtitled": true
+},
+"bookingUrl": "https://cinelumiere.savoysystems.co.uk/CineLumiere.dll/TSelectItems.waSelectItemsPrompt.TcsWebMenuItem_600.TcsWebTab_601.TcsPerformance_6970686.TcsSection_3841519",
+"format": {},
+"notes": "Part of French Film Festival London",
+"screen": "Ciné Lumière II",
+"status": {},
+"time": 1795708800000
+}
+],
+"seen": 1790963138558,
+"showingId": "institut-francais.org.uk-57266",
+"themoviedb": {
+"id": 76410,
+"releaseDate": "1976-04-07",
+"summary": "When a young auto salesman is forced to give up a vacation with his wife in order to drive a big American car to its new owner who lives in Cannes, he makes the best of things. First, he gets and old friend to ride along with him. Then, the two of them are joined by another pair of men who want to ride south.",
+"title": "Fill 'er Up with Super"
+},
+"title": "Le Plein de Super",
+"url": "https://www.institut-francais.org.uk/cinema/le-plein-de-super-2/"
+},
+{
+"category": "movie",
+"overview": {
+"categories": [],
+"classification": "15",
+"directors": [
+"Alain Cavalier"
+],
+"duration": 5820000,
+"year": "1976"
+},
+"performances": [
+{
+"accessibility": {
+"subtitled": true
+},
+"bookingUrl": "https://cinelumiere.savoysystems.co.uk/CineLumiere.dll/TSelectItems.waSelectItemsPrompt.TcsWebMenuItem_600.TcsWebTab_601.TcsPerformance_6970684.TcsSection_3841519",
+"format": {},
+"notes": "Part of Nathalie Baye: A Hundred Lives",
+"screen": "Ciné Lumière II",
+"status": {},
+"time": 1795269600000
+},
+{
+"accessibility": {
+"subtitled": true
+},
+"bookingUrl": "https://cinelumiere.savoysystems.co.uk/CineLumiere.dll/TSelectItems.waSelectItemsPrompt.TcsWebMenuItem_600.TcsWebTab_601.TcsPerformance_6970686.TcsSection_3841519",
+"format": {},
+"notes": "Part of Nathalie Baye: A Hundred Lives",
+"screen": "Ciné Lumière II",
+"status": {},
+"time": 1795708800000
+}
+],
+"seen": 1784620974299,
+"showingId": "institut-francais.org.uk-56765",
+"themoviedb": {
+"id": 76410,
+"releaseDate": "1976-04-07",
+"summary": "When a young auto salesman is forced to give up a vacation with his wife in order to drive a big American car to its new owner who lives in Cannes, he makes the best of things. First, he gets and old friend to ride along with him. Then, the two of them are joined by another pair of men who want to ride south.",
+"title": "Fill 'er Up with Super"
+},
+"title": "Le Plein de Super",
+"url": "https://www.institut-francais.org.uk/cinema/le-plein-de-super/"
+},
+{
+"category": "shorts",
+"overview": {
+"categories": [],
+"directors": []
+},
+"performances": [
+{
+"accessibility": {},
+"bookingUrl": "https://cinelumiere.savoysystems.co.uk/CineLumiere.dll/TSelectItems.waSelectItemsPrompt.TcsWebMenuItem_600.TcsWebTab_601.TcsPerformance_7174586.TcsSection_6930861",
+"format": {},
+"notes": "+ intro\nPart of Fashion in Film Festival",
+"screen": "Ciné Lumière",
+"status": {},
+"time": 1796565600000
+}
+],
+"seen": 1792215082615,
+"showingId": "institut-francais.org.uk-57528",
+"title": "Animated into Being: First Dressed Bodies in Motion",
+"url": "https://www.institut-francais.org.uk/cinema/animated-into-being-first-dressed-bodies-in-motion/"
+},
+{
+"category": "shorts",
+"overview": {
+"categories": [],
+"directors": []
+},
+"performances": [
+{
+"accessibility": {},
+"bookingUrl": "https://cinelumiere.savoysystems.co.uk/CineLumiere.dll/TSelectItems.waSelectItemsPrompt.TcsWebMenuItem_600.TcsWebTab_601.TcsPerformance_7084403.TcsSection_3841519",
+"format": {},
+"notes": "+ Q&A\nUK Premieres\nPart of French Film Festival London",
+"screen": "Ciné Lumière II",
+"status": {},
+"time": 1795878000000
+}
+],
+"seen": 1790963138558,
+"showingId": "institut-francais.org.uk-57250",
+"themoviedbs": [
+{
+"id": 1633364,
+"releaseDate": "2026-03-23",
+"summary": "1980, following the election of Ronald Reagan, America rearms. Facing the war machine, two thousand women encircle the Pentagon and awaken another form of power, rooted in care and vulnerability.",
+"title": "With Love and Rage"
+},
+{
+"id": 930502,
+"releaseDate": "2025-08-16",
+"summary": "Filmed in Amazonas in 2021, on Estrada Fantasma BR-319, Transamazônica BR-230 and in the real city of Realidade, “Curupira and the Machine of Destiny” documents the encounter in the present time between a curupira and the incarnate ghost of Iracema, a character in the movie “Iracema – an amazon sex”. Open as wounds during the civic-military dictatorship that entangled Brazil in the cries of order and progress, the asphalt rebars that crisscross the country were built, destroyed and are now drowning in a process of reconstruction. Warm ruins of an addicted future. In love, Iracema ghost sets off at the crossroads of the straight roads of the Amazon to find Curupira and avenge the future.",
+"title": "Curupira and the Machine of the Destiny"
+}
+],
+"title": "Ecofeminisms",
+"url": "https://www.institut-francais.org.uk/cinema/ecofeminisms/"
+}
+]
+}
