@@ -16,10 +16,13 @@ def _load(name):
 
 def _scraped():
     events, instances = _load("events"), _load("instances")
-    venue = t503.venue_for({k: tuple(v) for k, v in _load("plans").items()})
+    plans = _load("plans")  # plan id → [plan name, client venue name]
+    for inst in instances:  # what spk.assign_plans gives each instance
+        name, venue_name = plans.get(inst.get("planId"), ("", ""))
+        inst["plan"], inst["venue"] = {"name": name}, {"name": venue_name}
     pages = spk.site_urls({u: set(ids) for u, ids in _load("site_ids").items()}, events, instances)
-    selected = spk.select(events, instances, t503.categorize, venue)
-    return spk.build(t503.CLIENT, selected, {}, url=lambda e: pages.get(e["id"]), venue=venue)
+    selected = spk.select(events, instances, t503.categorize, t503.venue)
+    return spk.build(t503.CLIENT, selected, {}, url=lambda e: pages.get(e["id"]), venue=t503.venue)
 
 
 def test_writers_programme_masterclasses_dropped():
@@ -32,11 +35,13 @@ def test_writers_programme_masterclasses_dropped():
 
 
 def test_other_venues_dropped():
-    venue = t503.venue_for({"p1": ("Cinema", "Battersea Power Station Cinema"),
-                            "p2": ("Theatre503", "Theatre503")})
-    assert venue({}, {"planId": "p1"}) is None
-    assert venue({}, {"planId": "p2"}) == "theatre503"
-    assert venue({}, {"planId": "unknown"}) is None
+    def inst(plan, venue):
+        return {"plan": {"name": plan}, "venue": {"name": venue}}
+
+    assert t503.venue({}, inst("Cinema", "Battersea Power Station Cinema")) is None
+    assert t503.venue({}, inst("Theatre503", "Theatre503")) == "theatre503"
+    assert t503.venue({}, inst("Theatre503 Writers' Programme", "Theatre503")) is None
+    assert t503.venue({}, {"plan": {}, "venue": {}}) is None
 
 
 def test_show_pages_joined():

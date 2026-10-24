@@ -192,3 +192,147 @@ def test_site_page_ids_follow_matching_links(monkeypatch):
     monkeypatch.setattr(spk, "fetch", lambda url, headers=None, impersonate=False: pages[url])
     got = spk.site_page_ids(spk.Site("https://v/whats-on/", r"https://v/event/[^/]+/"))
     assert got == {"https://v/event/a/": {"571766", "543497", "12345"}}
+
+
+def test_embedded_ids_booking_link_shapes():
+    page = (
+        '<a href="/book/instance/882636">'  # The Place
+        ' <a href="https://brixtonhouse.co.uk/book-online/41235">'  # Brixton House
+        " <button onclick=\"location.href='https://cptheatre.co.uk/tickets/351844'\">"  # CPT
+        ' <a href="/x/book/543497"> EventInstanceId=12345 id="571766ANTDSKQCCHPCLVTGGPTTCSBMVDV"'
+    )
+    assert spk.embedded_ids(page) == {"882636", "41235", "351844", "543497", "12345", "571766"}
+    # Not booking links: short numbers, other paths, digits run into words.
+    assert spk.embedded_ids('<a href="/tickets/12"> /tickets/info /ticketsx/123456 /book/123456789') == set()
+
+
+def test_listing_links_absolute_relative_and_sitemaps():
+    listing = ('<a href="https://v/event/a/">A</a> <a href="/event/b/">B</a> <a href="event/c/">C</a>'
+               ' <a href="/event/a/#dates">A again</a> <a href="/about/">About</a>')
+    assert spk.listing_links(listing, "https://v/whats-on", r"https://v/event/[^/]+/") == [
+        "https://v/event/a/", "https://v/event/b/", "https://v/event/c/",
+    ]
+    sitemap = "<urlset><url><loc>https://v/events/x</loc></url><url><loc>https://v/news/y</loc></url></urlset>"
+    assert spk.listing_links(sitemap, "https://v/sitemap.xml", r"https://v/events/[^/]+") == ["https://v/events/x"]
+
+
+def _fake_fetch(monkeypatch, pages):
+    def fetch(url, headers=None, impersonate=False):
+        if url not in pages:
+            raise httpx.HTTPStatusError("404", request=httpx.Request("GET", url),
+                                        response=httpx.Response(404))
+        return pages[url]
+
+    monkeypatch.setattr(spk, "fetch", fetch)
+
+
+def test_site_page_ids_several_listings_and_dead_pages(monkeypatch, caplog):
+    _fake_fetch(monkeypatch, {
+        "https://v/whats-on/": '<a href="/event/a/">A</a> <a href="/event/dead/">gone</a>',
+        "https://v/cinema/": '<a href="https://v/event/a/">A</a> <a href="/event/b/">B</a>',
+        "https://v/event/a/": '<a href="/book/1111">',
+        "https://v/event/b/": '<a href="/book/instance/2222">',
+    })
+    site = spk.Site(("https://v/whats-on/", "https://v/cinema/"), r"https://v/event/[^/]+/")
+    assert spk.site_page_ids(site) == {"https://v/event/a/": {"1111"}, "https://v/event/b/": {"2222"}}
+    assert "https://v/event/dead/" in caplog.text  # skipped, with a warning
+
+
+def test_site_page_ids_fail_when_a_listing_fails(monkeypatch):
+    _fake_fetch(monkeypatch, {"https://v/whats-on/": '<a href="/event/a/">A</a>'})
+    site = spk.Site(("https://v/whats-on/", "https://v/missing/"), r"https://v/event/[^/]+/")
+    try:
+        spk.site_page_ids(site)
+    except httpx.HTTPStatusError:
+        pass
+    else:
+        raise AssertionError("a failed listing must fail the run")
+
+
+def _band_price(band, amount, default=True):
+    return {"amount": amount, "isBandDefault": default, "priceBand": {"name": band}}
+
+
+def test_price_text_band_filter():
+    prices = {"prices": [_band_price("A", 74.5), _band_price("D", 25.0), _band_price("Standing", 0.1)]}
+    assert spk.price_text(prices) == "£0.10–74.50"
+    assert spk.price_text(prices, lambda p: spk.band(p) != "Standing") == "£25–74.50"
+    # A filter that keeps no paid price falls back to the whole list (a press
+    # night selling only 10p standing tickets is not "free").
+    assert spk.price_text({"prices": [_band_price("Y", 12.0)]}, lambda p: spk.band(p) != "Y") == "£12"
+    press_night = {"prices": [_band_price("Standing", 0.1), _band_price("A", 0.0)]}
+    assert spk.price_text(press_night, lambda p: spk.band(p) != "Standing") == "£0.10"
+    assert spk.band({"priceBand": {"name": "Standard "}}) == "Standard" and spk.band({}) == ""
+
+
+def test_access_annotations_flags_and_text_attributes():
+    inst = _inst("1X", attribute_CaptionedPerformance=True, attribute_Captioned=True,
+                 attribute_SignedBSLPerformance=True, attribute_PreviewPerformance=True,
+                 attribute_SchoolPerformance=True, attribute_InstanceInfo=" BSL   Performance ",
+                 attribute_Notes="")
+    assert spk.access_annotations(inst) == ["captioned", "BSL interpreted", "preview"]
+    assert spk.access_annotations(inst, ("InstanceInfo", "Notes", "Missing")) == [
+        "captioned", "BSL interpreted", "preview", "BSL Performance"]
+
+
+def test_build_annotation_attrs_and_finish():
+    ev = _event(Price="Free")
+    inst = _inst("5555BBBB", webInstanceId="77", attribute_AccessPerformance="Relaxed Performance")
+
+    def finish(scraped, event, instance):
+        scraped.source_url = f"https://venue/perf/{instance['webInstanceId']}"
+        scraped.price = scraped.price or spk.attr(event, "Price").lower()
+
+    [out] = spk.build(CLIENT, [(ev, inst, ["theater"])], {}, annotation_attrs=("AccessPerformance",),
+                      finish=finish)
+    assert out.annotations == ["Relaxed Performance"]
+    assert out.source_url == "https://venue/perf/77" and out.price == "free"
+
+
+def test_assign_plans_gives_venue_and_plan_name():
+    def handler(request: httpx.Request) -> httpx.Response:
+        if request.url.path.endswith("/venues"):
+            return httpx.Response(200, json=[{"id": "V1", "name": "Main", "address": "1 St"}])
+        plan_id = request.url.path.rsplit("/", 1)[-1]
+        venue = {"id": "V1"} if plan_id == "P1" else {"id": "V9"}
+        return httpx.Response(200, json={"id": plan_id, "name": f" Plan {plan_id} ", "venue": venue})
+
+    instances = [_inst("1X", planId="P1"), _inst("2X", planId="P2"), _inst("3X")]
+    with httpx.Client(transport=httpx.MockTransport(handler)) as http:
+        spk.assign_plans(CLIENT, instances, http)
+    assert instances[0]["venue"]["name"] == "Main" and instances[0]["plan"] == {"name": "Plan P1"}
+    assert instances[1]["venue"] == {} and instances[1]["plan"] == {"name": "Plan P2"}
+    assert instances[2]["venue"] == {} and instances[2]["plan"] == {}
+
+
+def test_scrape_pipeline_hooks(monkeypatch):
+    events = [_event("1000AAAA", "Play"), _event("2000BBBB", "Gig")]
+    instances = [_inst("1001" + "A" * 25, "1000AAAA", pl="PL1"), _inst("2001" + "B" * 25, "2000BBBB", pl="PL2")]
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        path = request.url.path
+        if path.endswith("/events"):
+            return httpx.Response(200, json=events)
+        if path.endswith("/instances"):
+            return httpx.Response(200, json=instances)
+        return httpx.Response(200, json={"prices": [_band_price("A", 30.0), _band_price("M", 5.0)]})
+
+    monkeypatch.setattr(spk, "http_client", lambda: httpx.Client(transport=httpx.MockTransport(handler)))
+    seen = []
+
+    def prepare(evs, insts):
+        seen.append((len(evs), len(insts)))
+        evs[1]["attribute_Type"] = "Show"  # e.g. a label copied from the instances
+
+    got = spk.scrape(
+        CLIENT, lambda e: ["theater"] if spk.attr(e, "Type") == "Show" else [],
+        today=dt.date(2026, 10, 24),
+        page_ids={"https://v/gig/": {"2001"}},
+        prepare=prepare,
+        price_bands=lambda p: spk.band(p) != "M",
+        finish=lambda s, e, i: s.annotations.append("finished"),
+    )
+    assert seen == [(2, 2)]
+    [gig] = got
+    assert gig.title == "Gig" and gig.source_url == "https://v/gig/"
+    assert gig.price == "£30" and gig.annotations == ["finished"]

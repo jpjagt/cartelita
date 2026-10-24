@@ -39,11 +39,16 @@ rows, but it doesn't drop tests or bar events; the room does.
 ## Quirks
 
 - Prices: the Downstairs price lists carry a **"Standing" band at £0.10**
-  (the Royal Court's 10p standing tickets) as a band default, so Downstairs
-  shows read "£0.10–74.50" where the site says "£15 - £74.50". The helper's
-  `price_text` has no band filter; left as is (it is a real ticket) and
-  reported as a helper gap. Monday performances are £15 throughout (the
-  site's "£15 Mondays") and come out as "£15".
+  (the Royal Court's 10p standing tickets, sold on the day) as a band
+  default. It is a real ticket, but the theatre's own price statement
+  leaves it out ("Tickets: £15 - £74.50" on the show page, 2026-10-24), so
+  the module does too (`price_bands=seated_band`): Downstairs shows read
+  e.g. "£25–74.50" (band D £25 – band A £74.50, plus the £25 "35 and
+  Under" band) instead of "£0.10–74.50". The site's £15 low end is the
+  Monday price: Monday performances are £15 throughout (the site's "£15
+  Mondays") and come out as "£15". A press night whose only paid ticket is
+  the standing one (seats go to press; access tickets £0) keeps "£0.10"
+  (the filter falls back to the whole list when it leaves no paid price).
 - A show page shows no booking ids on its last day / when sold out (Man to
   Man, 24 Oct): its remaining performances drop out with it.
 - One Monument performance (9 Dec, 19:00) has no price: its price list

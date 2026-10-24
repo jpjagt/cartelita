@@ -37,9 +37,12 @@ Machine (Jazz/Rock).
 - `source_url`: the event's `webUrl` (the hall's own show page; filled for
   ~75% of kept performances; stripped — one has a trailing space), else the
   Spektrix event page. Show pages do embed `/book/<instance id>`, but no
-  Site join: the what's-on page links dead show pages (e.g.
-  `/whats-on/colosseum-soft-machine/` → 404) and the shared join fails the
-  whole run on one 404 — and it would cost ~180 page requests per run.
+  Site join (reconsidered 2026-10-24): the what's-on page's dead show-page
+  links (e.g. `/whats-on/colosseum-soft-machine/` → 404) no longer fail the
+  shared join (it skips them), but the listing is paginated
+  (`/whats-on/page/<n>/`) and the join would fetch ~180 show pages per run
+  to link the ~17 performances without a webUrl (RPO and ZIOS concerts,
+  Ledisi…) — not worth it while webUrl covers ~75%.
 - Prices: seating bands A–E ("£18–60"); the site's "Prices from £34.50 (£30 +
   £4.50 transaction fee)" is the lowest band plus fee.
 

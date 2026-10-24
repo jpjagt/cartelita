@@ -10,10 +10,8 @@ Data: Spektrix client `tricycle` via `_spektrix.py` (see
 `https://kilntheatre.com/whats-on/` (theatre) and
 `https://kilntheatre.com/cinema-listings/` (films), both linking
 `https://kilntheatre.com/whats-on/<slug>/`; show pages link each performance
-as `…/book/<numeric instance id>`. `spk.scrape` takes one `Site`, so the
-module runs the helper's steps itself (`fetch_programme` → two
-`site_page_ids` → `site_urls` → `select` → `fetch_prices` → `build`). The
-website is behind Cloudflare but plain httpx gets 200.
+as `…/book/<numeric instance id>`. One `spk.Site` with both listing URLs.
+The website is behind Cloudflare but plain httpx gets 200.
 
 ## Curation
 
@@ -31,9 +29,11 @@ family films, NT Live / event cinema, Q&A screenings). Dropped:
 - Not joined (Spektrix event page instead): shows on their last day (TABLE
   17, Hadestown on 2026-10-24) and films not yet on the cinema listing (Hay
   Fever, January).
-- Access/screening type sits in the string instance attribute
-  `AccessPerformance` ("Captioned Screening", "Relaxed Performance", "Parent
-  and Baby Screening"); the helper surfaces only boolean flags.
+- `annotations`: access/screening type sits in the string instance
+  attribute `AccessPerformance` ("Captioned Screening", "Captioned Screening
+  (TBC)", "Relaxed Performance", "Parent and Baby Screening", "Alcohol-Free
+  Performance", "Post Show Q and A", "Audio Described Performance"…), taken
+  verbatim (`annotation_attrs`). The client has no boolean access flags.
 
 ## Verification
 

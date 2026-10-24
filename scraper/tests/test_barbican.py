@@ -159,21 +159,19 @@ def test_young_barbican_band_does_not_widen_the_range():
     squid = {"prices": [_band("A", 27.5), _band("B", 25.0), _band("C", 22.5),
                         _band("W", 27.5), _band("Y", 12.0),
                         _band("W", 27.5, False, "Wheelchair User")]}
-    assert barbican.public_price_text(squid) == "£27.50"
+    assert spk.price_text(squid, barbican.public_band) == "£27.50"
     bbc = {"prices": [_band("A", 50.0), _band("B", 42.0), _band("C", 34.0), _band("D", 25.0),
                       _band("E", 18.0), _band("W", 42.0), _band("Y", 12.0)]}
-    assert barbican.public_price_text(bbc) == "£18–50"
-    assert barbican.public_price_text({"prices": [_band("Y", 12.0)]}) is None
+    assert spk.price_text(bbc, barbican.public_band) == "£18–50"
+    # A Young Barbican-only performance: its band is the price.
+    assert spk.price_text({"prices": [_band("Y", 12.0)]}, barbican.public_band) == "£12"
 
 
 def test_page_content_fills_description_and_image():
     url = "https://www.barbican.org.uk/whats-on/2026/event/x"
     info = {"subtitle": "", "description": "A film.", "image": "https://img/x.avif"}
-    [event] = barbican.with_page_content(
-        [ScrapedEvent(title="X", start_date=dt.date(2026, 11, 1), source_url=url,
-                          category_slugs=["film"])],
-        {url: info},
-    )
+    event = ScrapedEvent(title="X", start_date=dt.date(2026, 11, 1), source_url=url, category_slugs=["film"])
+    barbican.page_content({url: info})(event, {}, {})
     assert (event.description, event.image_url) == ("A film.", "https://img/x.avif")
 
 

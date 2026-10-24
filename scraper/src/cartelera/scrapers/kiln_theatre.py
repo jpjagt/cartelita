@@ -8,13 +8,12 @@ incl. NT Live and event cinema, belong to this source, not Clusterflick);
 dropped. (`WebEventType` is not enough: the add-ons carry "Theatre" there.)
 
 Show pages are joined from two listings — the what's-on page links the
-theatre shows, the cinema-listings page the films — so this module runs the
-helper's steps itself instead of `spk.scrape` (which takes one listing).
+theatre shows, the cinema-listings page the films. The performance's
+`AccessPerformance` text ("Captioned Screening", "Relaxed Performance",
+"Parent and Baby Screening"…) becomes an annotation.
 """
 
 from __future__ import annotations
-
-import datetime as dt
 
 from cartelera.scrapers import _spektrix as spk
 from cartelera.scrapers import register
@@ -23,10 +22,9 @@ from cartelera.types import ListMembership, ScrapedEvent, VenueDefinition
 VENUE_SLUG = "kiln-theatre"
 CLIENT = spk.Client("tricycle")
 # Show pages link each performance as ".../book/<numeric instance id>".
-_SHOW_PAGE = r"https://kilntheatre\.com/whats-on/[^/]+/"
-SITES = (
-    spk.Site("https://kilntheatre.com/whats-on/", _SHOW_PAGE),
-    spk.Site("https://kilntheatre.com/cinema-listings/", _SHOW_PAGE),
+SITE = spk.Site(
+    ("https://kilntheatre.com/whats-on/", "https://kilntheatre.com/cinema-listings/"),
+    r"https://kilntheatre\.com/whats-on/[^/]+/",
 )
 TYPES: dict[str, str] = {"Theatre": "theater", "Cinema": "film"}
 
@@ -40,15 +38,7 @@ class KilnTheatreScraper:
     venue_slug = VENUE_SLUG
 
     def scrape(self) -> list[ScrapedEvent]:
-        with spk.http_client() as http:
-            events, instances = spk.fetch_programme(CLIENT, dt.date.today(), http)
-            page_ids: dict[str, set[str]] = {}
-            for site in SITES:
-                page_ids.update(spk.site_page_ids(site))
-            pages = spk.site_urls(page_ids, events, instances)
-            selected = spk.select(events, instances, categorize)
-            prices = spk.fetch_prices(CLIENT, [inst for _e, inst, _c in selected], http)
-        return spk.build(CLIENT, selected, prices, url=lambda event: pages.get(event["id"]))
+        return spk.scrape(CLIENT, categorize, site=SITE, annotation_attrs=("AccessPerformance",))
 
 
 register(

@@ -9,8 +9,10 @@ Data: Spektrix client `ovalhouse` via `_spektrix.py` (see
 building (client venues Theatre 1/2, Studio 4/5), so no venue split.
 Show pages (`https://brixtonhouse.co.uk/shows/<slug>/`, linked from
 `/whats-on/`) link each performance as **`/book-online/<numeric instance
-id>`** — not one of the helper's `Site` id patterns — so the module collects
-page ids itself and runs the helper's remaining steps.
+id>`**. The module fetches the show pages itself (they also give the price,
+below), takes their ids with `spk.embedded_ids` and hands them to
+`spk.scrape(page_ids=…)`; the show-page price is applied in its `finish`
+hook.
 
 ## Curation
 

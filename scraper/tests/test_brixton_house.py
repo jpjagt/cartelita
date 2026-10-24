@@ -21,9 +21,8 @@ def _programme(site=None):
     events, instances = _load()
     site = site or {}
     pages = spk.site_urls({u: ids for u, (ids, _p) in site.items()}, events, instances)
-    built = spk.build(bh.CLIENT, spk.select(events, instances, bh.categorize), {},
-                      title=bh.title, url=lambda e: pages.get(e["id"]))
-    return bh.with_site_prices(built, site)
+    return spk.build(bh.CLIENT, spk.select(events, instances, bh.categorize), {},
+                     title=bh.title, url=lambda e: pages.get(e["id"]), finish=bh.site_price(site))
 
 
 def test_artistic_season_new_writing_youth_and_family():
@@ -50,7 +49,7 @@ def test_drops_participation_hires_comedy_and_ancillaries():
 
 def test_show_page_gives_ids_and_full_price():
     html = (FIXTURES / "brixton_house_show.html").read_text()
-    ids = bh.page_ids(html)
+    ids = spk.embedded_ids(html)
     assert len(ids) == 16
     assert bh.page_price(html) == "£16"  # "Tickets: £16 / £12 concessions"
     events = _programme({PROVIDERS_PAGE: (ids, bh.page_price(html))})

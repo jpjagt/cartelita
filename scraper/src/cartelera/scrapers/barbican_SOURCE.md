@@ -20,10 +20,12 @@ Add Ons, Frobisher Rooms (Darbar workshops), the "Unknown" venue, and the
 `attribute_InstanceType = "wildcard"`). Instances with `InstanceType`
 `wildcard` or `streaming` (online ticket) are dropped wherever they sit.
 
-Data and pipeline: the shared `_spektrix.py` pieces (see
-`spektrix_SOURCE.md`) — fetch_programme, fetch_plan_venues, select, build —
-composed in `BarbicanScraper.scrape`, because two things don't fit
-`spk.scrape`: the paginated site join and a price-band filter.
+Data and pipeline: `spk.scrape` (see `spektrix_SOURCE.md`) with
+`plan_venues`, the `price_bands` filter (band Y, below) and a `finish` hook
+filling description/image from the show page — after the module's own
+barbican.org.uk join (paginated to an empty page, events named in each
+page's dataLayer, so not a `spk.Site`), which also supplies curation (films
+must be listed), titles and URLs.
 
 **Always send the date window**: unfiltered `/events` hangs. Six months =
 ~380 events / ~4,700 instances; `/instances` takes ~40 s (3,355 of the rows
@@ -72,10 +74,10 @@ concerts at the Hall). Then by `PrimaryArtForm` + `EventType`:
 | `start_date`/`start_time` | instance `start` |
 | `external_id` | instance `id` |
 | `source_url` | barbican.org.uk show page (site join); else the Spektrix event page `https://spektrix.barbican.org.uk/barbicancentre/website/EventDetails.aspx?EventId=<n>` (LSO St Luke's chamber series, rentals the Barbican doesn't list) |
-| `price` | price list band defaults **minus band "Y"** → `spk.price_text` (2x rule). Band Y is the Young Barbican allocation (16–29 scheme, sold as ticket type "Standard"; every checked show page says "Young Barbican £12"/"£10"/"£18" = its band-Y amount). Prices exclude the Barbican's transaction fee (£1.50 cinema, £4 Hall/Theatre) like the site's "(£25 + £4 transaction fee)". |
+| `price` | price list band defaults **minus band "Y"** (`price_bands=public_band`; a list whose only paid band is Y — a Young Barbican-only performance — keeps it) → `spk.price_text` (2x rule). Band Y is the Young Barbican allocation (16–29 scheme, sold as ticket type "Standard"; every checked show page says "Young Barbican £12"/"£10"/"£18" = its band-Y amount). Prices exclude the Barbican's transaction fee (£1.50 cinema, £4 Hall/Theatre) like the site's "(£25 + £4 transaction fee)". |
 | `description` | the box office has none for programme events (373/377 `htmlDescription` are an empty div); taken from the show page: dataLayer `subtitle` + `og:description` |
 | `image_url` | show page `og:image` (box office `imageUrl` is empty) |
-| `annotations` | instance access flags (AudioDescribed, Captioned, Relaxed). Barbican's BSL flag is `attribute_BSL`, which the helper's ACCESS_FLAGS (`BSLInterpreted`) doesn't know — none were true on 2026-10-24 |
+| `annotations` | instance access flags (AudioDescribed, Captioned, Relaxed, BSL, TouchTour, Preview — the helper's ACCESS_FLAGS) |
 | `venue_slug` | plan → room → building (table above) |
 
 ## The site join (barbican.org.uk)

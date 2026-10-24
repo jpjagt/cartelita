@@ -15,10 +15,12 @@ def _scraped():
     instances = json.loads((FIXTURES / "cecil_sharp_house_spektrix_instances.json").read_text())
     by_plan = json.loads((FIXTURES / "cecil_sharp_house_spektrix_plan_venues.json").read_text())
     items = csh.parse_listing((FIXTURES / "cecil_sharp_house_site_listing.html").read_text())
-    programme = csh.Programme(csh.join(events, instances, items))
+    programme = csh.Programme(items)
+    programme.prepare(events, instances)
     for inst in instances:
         inst["venue"] = by_plan.get(inst.get("planId"), {})
-    return csh.build(programme, spk.select(events, instances, programme.categorize, csh.venue), {})
+    selected = spk.select(events, instances, programme.categorize, csh.venue)
+    return spk.build(csh.CLIENT, selected, {}, title=programme.title, url=programme.url, venue=csh.venue)
 
 
 def test_gigs_and_dances_are_folk():

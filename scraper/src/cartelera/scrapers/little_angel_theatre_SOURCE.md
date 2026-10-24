@@ -27,8 +27,11 @@ Adult short/term course.
 
 - The website's per-show page states the building ("At Little Angel
   Studios"); it agrees with the plan → venue mapping.
-- Instance `attribute_InstanceInfo` carries free-text notes ("BSL
-  Performance") — not yet surfaced.
+- `annotations`: instance `attribute_InstanceInfo` carries the
+  performance's access note ("BSL Performance", "Relaxed Performance"),
+  taken verbatim (`annotation_attrs`; live values 2026-10-24 are only
+  these). `ConfirmationText` repeats it for the confirmation email — not
+  used.
 
 ## Verification
 

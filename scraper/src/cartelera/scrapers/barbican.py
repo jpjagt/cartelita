@@ -24,7 +24,10 @@ helper (see barbican_SOURCE.md). Curation uses the box office's own data:
 barbican.org.uk show pages carry their Spektrix event ids (a `dataLayer`
 `eventInfo` block), so events link to the Barbican's own page and take its
 title ("London Symphony Orchestra/Sir Antonio Pappano" rather than the box
-office's bare "London Symphony Orchestra").
+office's bare "London Symphony Orchestra"). This join is the module's own,
+not `spk.Site`: the listing is paged until a page comes back empty, the
+pages name their events in that dataLayer block (not booking links), and
+they also give descriptions and images.
 """
 
 from __future__ import annotations
@@ -35,8 +38,6 @@ import re
 from concurrent.futures import ThreadPoolExecutor
 from html import unescape
 from urllib.parse import urlencode
-
-import httpx
 
 from cartelera.scrapers import _spektrix as spk
 from cartelera.scrapers import register_source
@@ -252,74 +253,40 @@ def _norm(text: str) -> str:
 MEMBER_BANDS = {"Y"}
 
 
-def public_price_text(price_list: dict) -> str | None:
-    """spk.price_text without the Young Barbican band."""
-    prices = [p for p in price_list.get("prices") or []
-              if (p.get("priceBand") or {}).get("name") not in MEMBER_BANDS]
-    return spk.price_text({"prices": prices})
-
-
-def fetch_prices(instances: list[dict], http: httpx.Client) -> dict[str, str | None]:
-    """spk.fetch_prices (one request per price list, on-sale instances first,
-    404 = off sale → try the next) with public_price_text. The helper has no
-    price-list filter hook, hence this copy."""
-    candidates: dict[str, list[str]] = {}
-    for inst in sorted(instances, key=lambda i: not i.get("isOnSale")):
-        pl = (inst.get("priceList") or {}).get("id")
-        if pl and len(ids := candidates.setdefault(pl, [])) < spk.PRICE_ATTEMPTS:
-            ids.append(inst["id"])
-
-    def one(item: tuple[str, list[str]]) -> tuple[str, str | None]:
-        pl, inst_ids = item
-        for inst_id in inst_ids:
-            try:
-                resp = http.get(f"{CLIENT.api}/instances/{inst_id}/price-list")
-                if resp.status_code == 404:
-                    continue
-                resp.raise_for_status()
-                return pl, public_price_text(resp.json())
-            except (httpx.HTTPError, ValueError):
-                return pl, None
-        return pl, None
-
-    with ThreadPoolExecutor(max_workers=spk.MAX_CONCURRENCY) as pool:
-        return dict(pool.map(one, candidates.items()))
+def public_band(price: dict) -> bool:
+    """Price-list filter (spk.price_text): not the Young Barbican band."""
+    return spk.band(price) not in MEMBER_BANDS
 
 
 class BarbicanScraper:
     def scrape(self) -> list[ScrapedEvent]:
-        """spk.scrape's pipeline (programme → plan venues → curation →
-        prices → build), with the paginated site join and the member-band
-        price filter, which the helper's `scrape` can't take."""
+        """spk.scrape (plan venues → curation → prices → build) after the
+        paginated barbican.org.uk join, which also gives titles,
+        descriptions and images."""
         today = dt.date.today()
         infos = fetch_site(today)
         pages, titles = join_pages(infos)
-        with spk.http_client() as http:
-            events, instances = spk.fetch_programme(CLIENT, today, http)
-            by_plan = spk.fetch_plan_venues(CLIENT, instances, http)
-            for inst in instances:
-                inst["venue"] = by_plan.get(inst.get("planId"), {})
-            selected = spk.select(events, instances, curate(pages), venue)
-            prices = fetch_prices([inst for _e, inst, _c in selected], http)
-        built = spk.build(
-            CLIENT, selected, prices,
+        return spk.scrape(
+            CLIENT, curate(pages), today=today,
             title=lambda e: titles.get(e["id"]) or _norm(e["name"]),
             url=lambda e: pages.get(e["id"]),
-            venue=venue,
+            venue=venue, plan_venues=True,
+            price_bands=public_band,
+            finish=page_content(infos),
         )
-        return with_page_content(built, infos)
 
 
-def with_page_content(events: list[ScrapedEvent], infos: dict[str, dict]) -> list[ScrapedEvent]:
+def page_content(infos: dict[str, dict]) -> spk.Finish:
     """Fill description/image from the event's barbican.org.uk page where the
     box office has none (it almost never does)."""
-    for event in events:
+
+    def finish(event: ScrapedEvent, _raw: dict, _instance: dict) -> None:
         info = infos.get(event.source_url)
-        if not info:
-            continue
-        event.description = event.description or page_description(info)
-        event.image_url = event.image_url or info.get("image") or None
-    return events
+        if info:
+            event.description = event.description or page_description(info)
+            event.image_url = event.image_url or info.get("image") or None
+
+    return finish
 
 
 _MUSIC = ["classical", "jazz", "pop", "alternative", "folk"]

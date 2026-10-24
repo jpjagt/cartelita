@@ -62,7 +62,7 @@ def test_off_site_and_type_labels():
 def test_show_page_join_on_book_instance_links():
     events, instances = _load()
     page = "<a href='https://theplace.org.uk/book/instance/882636'>Book</a>"
-    ids = set(the_place._BOOK_INSTANCE.findall(page))
+    ids = spk.embedded_ids(page)
     url = "https://theplace.org.uk/events/autumn-winter-26-hang-time"
     pages = spk.site_urls({url: ids}, events, instances)
     hang_time = next(e for e in events if "Hang Time" in e["name"])
@@ -76,6 +76,6 @@ def test_price_from_standard_band_only():
         {"amount": 18.0, "isBandDefault": True, "priceBand": {"name": "Wheelchair spaces"}},
         {"amount": 18.0, "isBandDefault": False, "priceBand": {"name": "Standard "}},
     ]}
-    assert the_place.price_text(price_list) == "£22"
+    assert spk.price_text(price_list, the_place.standard_band) == "£22"
     no_standard = {"prices": [{"amount": 10.0, "isBandDefault": True, "priceBand": {"name": "Stalls"}}]}
-    assert the_place.price_text(no_standard) == "£10"
+    assert spk.price_text(no_standard, the_place.standard_band) == "£10"

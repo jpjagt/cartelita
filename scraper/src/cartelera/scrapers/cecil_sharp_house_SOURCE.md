@@ -5,9 +5,10 @@ NW1 7AY. Home of the English Folk Dance and Song Society; category `folk`
 (list `folk`).
 
 Data: Spektrix client `efdss` on `https://sales.efdss.org` via `_spektrix.py`
-(see `spektrix_SOURCE.md`), joined to the efdss.org what's-on listing. The
-module runs the helper pipeline itself (listing join → plan venues → select
-→ prices → build with title/url overrides).
+(see `spektrix_SOURCE.md`), joined to the efdss.org what's-on listing:
+`spk.scrape` with `plan_venues`, the listing join as its `prepare` hook
+(`Programme.prepare`, before curation) and title/url overrides from the
+joined item.
 
 ## The website listing
 

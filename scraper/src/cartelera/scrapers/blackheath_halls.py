@@ -29,7 +29,6 @@ through a WordPress id), so events link to the Spektrix event page.
 
 from __future__ import annotations
 
-import datetime as dt
 import re
 
 from cartelera.scrapers import _spektrix as spk
@@ -103,22 +102,15 @@ def fill_categories(events: list[dict], instances: list[dict]) -> None:
             event["attribute_Category"] = by_event[event["id"]]
 
 
-def build(selected: list[tuple[dict, dict, list[str]]], prices: dict[str, str | None]) -> list[ScrapedEvent]:
-    out = spk.build(CLIENT, selected, prices, venue=venue)
-    for scraped, (event, _inst, _cats) in zip(out, selected, strict=True):
-        if scraped.price is None and spk.attr(event, "Price").lower().startswith("free"):
-            scraped.price = "free"
-    return out
+def free_price(scraped: ScrapedEvent, event: dict, instance: dict) -> None:
+    """No price list price → the `Price` attribute's "free", if it says so."""
+    if scraped.price is None and spk.attr(event, "Price").lower().startswith("free"):
+        scraped.price = "free"
 
 
 class BlackheathHallsScraper:
     def scrape(self) -> list[ScrapedEvent]:
-        with spk.http_client() as http:
-            events, instances = spk.fetch_programme(CLIENT, dt.date.today(), http)
-            fill_categories(events, instances)
-            selected = spk.select(events, instances, categorize, venue)
-            prices = spk.fetch_prices(CLIENT, [inst for _e, inst, _c in selected], http)
-        return build(selected, prices)
+        return spk.scrape(CLIENT, categorize, venue=venue, prepare=fill_categories, finish=free_price)
 
 
 def _lists(*cats: str) -> list[ListMembership]:

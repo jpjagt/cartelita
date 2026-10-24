@@ -8,8 +8,7 @@ box office's own `Category`: Concert and Opera → classical. Masterclasses
 events and tours, talks, participatory courses and external hires are
 dropped.
 
-Two things the helper's one-call `scrape` doesn't do, so this module runs
-the pipeline itself:
+Beyond the category:
 
 - the building: a performance counts only when its seating plan's venue is
   at the College (address SW7 2BS — every hall and room); the client's other
@@ -18,12 +17,11 @@ the pipeline itself:
   `/events/details/?id=<webInstanceId>` (the what's-on page links them),
   and pay-what-you-can events (the box office's `AccountCode` says
   "PWYC"; the website says "Pay What You Can") get that as their price
-  instead of the £5 suggested ticket.
+  instead of the £5 suggested ticket (both set per performance by the
+  helper's `finish` hook).
 """
 
 from __future__ import annotations
-
-import datetime as dt
 
 from cartelera.scrapers import _spektrix as spk
 from cartelera.scrapers import register
@@ -51,30 +49,19 @@ def is_pwyc(event: dict) -> bool:
     return "PWYC" in spk.attr(event, "AccountCode")
 
 
-def build(selected: list[tuple[dict, dict, list[str]]], prices: dict[str, str | None]) -> list[ScrapedEvent]:
-    """The helper's ScrapedEvents, with the performance's own rcm.ac.uk page
-    and the pay-what-you-can price."""
-    out = spk.build(CLIENT, selected, prices, venue=venue)
-    for scraped, (event, inst, _cats) in zip(out, selected, strict=True):
-        if inst.get("webInstanceId"):
-            scraped.source_url = PAGE_URL.format(inst["webInstanceId"])
-        if is_pwyc(event):
-            scraped.price = PWYC_PRICE
-    return out
+def finish(scraped: ScrapedEvent, event: dict, instance: dict) -> None:
+    """The performance's own rcm.ac.uk page and the pay-what-you-can price."""
+    if instance.get("webInstanceId"):
+        scraped.source_url = PAGE_URL.format(instance["webInstanceId"])
+    if is_pwyc(event):
+        scraped.price = PWYC_PRICE
 
 
 class RoyalCollegeOfMusicScraper:
     venue_slug = VENUE_SLUG
 
     def scrape(self) -> list[ScrapedEvent]:
-        with spk.http_client() as http:
-            events, instances = spk.fetch_programme(CLIENT, dt.date.today(), http)
-            by_plan = spk.fetch_plan_venues(CLIENT, instances, http)
-            for inst in instances:
-                inst["venue"] = by_plan.get(inst.get("planId"), {})
-            selected = spk.select(events, instances, categorize, venue)
-            prices = spk.fetch_prices(CLIENT, [inst for _e, inst, _c in selected], http)
-        return build(selected, prices)
+        return spk.scrape(CLIENT, categorize, venue=venue, plan_venues=True, finish=finish)
 
 
 register(

@@ -5,9 +5,8 @@ Kensington SW7 2BS. Conservatoire concerts and opera; category `classical`
 (list `classical`).
 
 Data: Spektrix client `royalcollegeofmusic` on `https://tickets.rcm.ac.uk`
-via `_spektrix.py` (see `spektrix_SOURCE.md`). The module runs the helper's
-pipeline itself (fetch → plan venues → select → prices → build) because it
-adjusts URL and price per performance.
+via `_spektrix.py` (see `spektrix_SOURCE.md`): `spk.scrape` with
+`plan_venues` and a `finish` hook that sets URL and price per performance.
 
 ## Curation
 

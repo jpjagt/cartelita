@@ -12,8 +12,9 @@ each embeds the event's full Spektrix id.
 
 No genre/type attribute (`Writer`, `Director`… — credits only) and the
 website lists everything, masterclasses included, so `Site(required=True)`
-would not help. Curation uses the performance's **seating plan**:
-`GET /plans` (one request: every plan's name + venue id) and `GET /venues`.
+would not help. Curation uses the performance's **seating plan**
+(`plan_venues=True`: `GET /plans/{id}` per distinct plan → its name and
+venue id, `GET /venues` → the venue's name).
 
 - Plan named **"Theatre503 Writers' Programme"** → dropped: the writers'
   programme (online Zoom masterclasses and in-person masterclasses/courses).

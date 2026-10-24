@@ -11,8 +11,10 @@ Source slug: `blackheath-halls` (London), multi-venue:
 Data: Spektrix client `blackheathhalls` on `https://events.blackheathhalls.com`
 via `_spektrix.py` (see `spektrix_SOURCE.md`). One box office for Blackheath
 Halls and Trinity Laban (`OrganisationOrVenue`: Blackheath Halls / Trinity
-Laban / Laban Theatre / Trinity Music). The module runs the helper pipeline
-itself (it fills missing categories before selecting and patches prices).
+Laban / Laban Theatre / Trinity Music). One `spk.scrape` call: its
+`prepare` hook fills missing event categories from the instances
+(`fill_categories`), its `finish` hook the "free" price fallback
+(`free_price`).
 
 ## Curation
 

@@ -9,8 +9,7 @@ plain httpx — the API has no Cloudflare) via `_spektrix.py` (see
 (curl_cffi gets through), but its show pages carry no Spektrix ids — the
 performance list is loaded client-side from the site's own API
 (`/api/attendable/v1/instances/`, `booking_url` per instance) — and the
-what's-on page links shows relatively (`/whats-on/girls/`), which the
-helper's `Site` doesn't follow. Events link to the client's Spektrix event
+what's-on page sits behind Cloudflare for plain httpx. Events link to the client's Spektrix event
 page (`…/youngvic/website/EventDetails.aspx?EventId=<n>`, 200).
 
 ## Curation
@@ -36,10 +35,11 @@ page (`…/youngvic/website/EventDetails.aspx?EventId=<n>`, 200).
   helper yet).
 - Prices: each band's default includes a £12 "Lucky Dip" band, so Main House
   shows read "£12–80". The site shows no prices in its HTML.
-- Access needs live in string instance attributes (`Accessibility`,
-  `Accessibility2`: "Audio described", "Captioned", "BSL", "Relaxed";
-  `PerformanceInformation`: "English Surtitles"); the helper only surfaces
-  boolean flags, so no access annotations for now.
+- `annotations`: access needs live in string instance attributes
+  (`Accessibility`, `Accessibility2`: "Audio described", "Captioned", "BSL",
+  "Relaxed", "Touch Tour"; `PerformanceInformation`: "English Surtitles",
+  "Press Night", "£12 first preview"), taken verbatim (`annotation_attrs`).
+  The client has no boolean access flags.
 
 ## Verification
 

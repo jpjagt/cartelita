@@ -27,7 +27,6 @@ Zoom… which are dropped).
 
 from __future__ import annotations
 
-import datetime as dt
 import html as html_lib
 import json
 import re
@@ -86,10 +85,15 @@ def join(events: list[dict], instances: list[dict], items: list[dict]) -> dict[s
 
 
 class Programme:
-    """Curation, title and page of each Spektrix event, from the listing."""
+    """Curation, title and page of each Spektrix event, from the listing
+    (joined to the programme by `prepare`, before curation)."""
 
-    def __init__(self, listed: dict[str, dict]):
-        self.listed = listed
+    def __init__(self, items: list[dict]):
+        self.items = items
+        self.listed: dict[str, dict] = {}
+
+    def prepare(self, events: list[dict], instances: list[dict]) -> None:
+        self.listed = join(events, instances, self.items)
 
     def categorize(self, event: dict) -> list[str]:
         item = self.listed.get(event["id"])
@@ -109,25 +113,13 @@ def venue(event: dict, instance: dict) -> str | None:
     return VENUE_SLUG if (instance.get("venue") or {}).get("name") == CLIENT_VENUE else None
 
 
-def build(programme: Programme, selected: list[tuple[dict, dict, list[str]]],
-          prices: dict[str, str | None]) -> list[ScrapedEvent]:
-    return spk.build(CLIENT, selected, prices, title=programme.title, url=programme.url, venue=venue)
-
-
 class CecilSharpHouseScraper:
     venue_slug = VENUE_SLUG
 
     def scrape(self) -> list[ScrapedEvent]:
-        items = parse_listing(fetch(LISTING_URL, headers=CARTELITA_BROWSER_HEADERS))
-        with spk.http_client() as http:
-            events, instances = spk.fetch_programme(CLIENT, dt.date.today(), http)
-            programme = Programme(join(events, instances, items))
-            by_plan = spk.fetch_plan_venues(CLIENT, instances, http)
-            for inst in instances:
-                inst["venue"] = by_plan.get(inst.get("planId"), {})
-            selected = spk.select(events, instances, programme.categorize, venue)
-            prices = spk.fetch_prices(CLIENT, [inst for _e, inst, _c in selected], http)
-        return build(programme, selected, prices)
+        programme = Programme(parse_listing(fetch(LISTING_URL, headers=CARTELITA_BROWSER_HEADERS)))
+        return spk.scrape(CLIENT, programme.categorize, prepare=programme.prepare, title=programme.title,
+                          url=programme.url, venue=venue, plan_venues=True)
 
 
 register(

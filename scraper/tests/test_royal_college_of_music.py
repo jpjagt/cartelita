@@ -16,7 +16,8 @@ def _scraped(prices=None):
     by_plan = json.loads((FIXTURES / "royal_college_of_music_spektrix_plan_venues.json").read_text())
     for inst in instances:
         inst["venue"] = by_plan.get(inst.get("planId"), {})
-    return rcm.build(spk.select(events, instances, rcm.categorize, rcm.venue), prices or {})
+    selected = spk.select(events, instances, rcm.categorize, rcm.venue)
+    return spk.build(rcm.CLIENT, selected, prices or {}, venue=rcm.venue, finish=rcm.finish)
 
 
 def test_concerts_and_opera_only():

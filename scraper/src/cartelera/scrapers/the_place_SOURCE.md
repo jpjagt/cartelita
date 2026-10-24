@@ -6,9 +6,9 @@ Categories `dance` (list `dance`) and `kids` (list `kids`, Family Programme),
 each list whitelisted to its category.
 
 Data: Spektrix client `theplace` (system.spektrix.com) via `_spektrix.py`
-(see `spektrix_SOURCE.md` for endpoints and field mapping). The module
-composes the helper's pieces itself (fetch_programme → site join → select →
-prices → build) because of two venue quirks below.
+(see `spektrix_SOURCE.md` for endpoints and field mapping): one
+`spk.scrape` call with a site join, a title override and a `price_bands`
+filter (the two venue quirks below).
 
 ## Curation (the client's own labels)
 
@@ -32,19 +32,18 @@ info sessions too, and books touch tours from the show's own page.
 - `title`: event `name` minus the internal season prefix ("Autumn/ Winter 26: ",
   "Spring/Summer 2027: ", "Autumn/Winter 2026: " — regex `_SEASON`); display
   only. "Res 27: <artists>" (Resolution) is left as the venue names it.
-- `source_url`: show pages on theplace.org.uk book each performance as
-  `/book/instance/<numeric instance id>`, which the shared `Site` join's id
-  patterns don't match (`/book/<id>` only), so `site_page_ids()` here
-  follows the what's-on page's `/events/<slug>` links and collects those ids;
-  `spk.site_urls` picks each event's page. Shows not (yet) on the site —
+- `source_url`: show pages on theplace.org.uk (the what's-on page's
+  `/events/<slug>` links) book each performance as
+  `/book/instance/<numeric instance id>`; the shared `Site` join collects
+  those ids and picks each event's page. Shows not (yet) on the site —
   Resolution 2027, most of spring 2027 — and performances whose online
   booking has closed fall back to the Spektrix event page.
 - `price`: each price list has a "Standard" band beside concession bands that
   are also flagged `isBandDefault` ("LCDS Student" £5, "Wheelchair spaces"),
   so the shared rule gave "£5–22" where the site says "Standard £22, concs
-  £18". `price_text()` here uses the Standard band only (falls back to the
-  shared rule when there is none); `fetch_prices()` mirrors
-  `spk.fetch_prices` with that rule.
+  £18". `standard_band` (the helper's `price_bands` filter) keeps the
+  Standard band only; a price list without one falls back to the shared
+  rule.
 
 ## Verification
 

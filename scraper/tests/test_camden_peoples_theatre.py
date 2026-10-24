@@ -39,7 +39,7 @@ def test_partner_and_online_venues_dropped():
 
 
 def test_show_pages_joined_by_ticket_links():
-    assert cpt.page_ids("<button onclick=\"location.href='https://cptheatre.co.uk/tickets/351844'\">") == {"351844"}
+    assert spk.embedded_ids("<button onclick=\"location.href='https://cptheatre.co.uk/tickets/351844'\">") == {"351844"}
     by_title = {e.title: e.source_url for e in _scraped()}
     assert by_title["Sharp Edges"] == "https://cptheatre.co.uk/whatson/Sharp-Edges"
     # Sold out / off sale: no ticket links on its page → Spektrix event page.

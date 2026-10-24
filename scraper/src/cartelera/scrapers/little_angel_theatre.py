@@ -10,6 +10,9 @@ little_angel_theatre_SOURCE.md). Curation uses the box office's own data:
   playschemes and the adult courses are not;
 - the performance's seating plan → the client's venue: "Little Angel
   Theatre" or "Little Angel Studios" (online/off-site venues are dropped).
+
+The performance's `InstanceInfo` text ("BSL Performance", "Relaxed
+Performance") becomes an annotation.
 """
 
 from __future__ import annotations
@@ -41,7 +44,8 @@ def venue(event: dict, instance: dict) -> str | None:
 
 class LittleAngelTheatreScraper:
     def scrape(self) -> list[ScrapedEvent]:
-        return spk.scrape(CLIENT, categorize, site=SITE, venue=venue, plan_venues=True)
+        return spk.scrape(CLIENT, categorize, site=SITE, venue=venue, plan_venues=True,
+                          annotation_attrs=("InstanceInfo",))
 
 
 _COMMON = dict(

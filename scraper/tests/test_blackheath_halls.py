@@ -14,7 +14,8 @@ def _scraped(prices=None):
     events = json.loads((FIXTURES / "blackheath_halls_spektrix_events.json").read_text())
     instances = json.loads((FIXTURES / "blackheath_halls_spektrix_instances.json").read_text())
     bh.fill_categories(events, instances)
-    return bh.build(spk.select(events, instances, bh.categorize, bh.venue), prices or {})
+    selected = spk.select(events, instances, bh.categorize, bh.venue)
+    return spk.build(bh.CLIENT, selected, prices or {}, venue=bh.venue, finish=bh.free_price)
 
 
 def test_categories_from_the_website_filter_words():

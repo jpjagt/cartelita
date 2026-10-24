@@ -16,9 +16,11 @@ office's own genre labels, `Genre1` (main) and `Genre2` (qualifier):
   unlabelled Out to Lunch foyer gigs) are dropped.
 
 URLs: the event's `webUrl` (filled for most events; the hall's own show
-page), else the Spektrix event page. No Site join: the what's-on page links
-some dead show pages (404), which fail the shared join, and webUrl already
-covers ~80% of what we keep.
+page), else the Spektrix event page. No Site join: webUrl already covers
+~75% of what we keep, and the join would page through the what's-on
+listing and fetch ~180 show pages per run to link the remaining ~17
+performances (its dead show-page links no longer matter: the shared join
+skips them).
 """
 
 from __future__ import annotations

@@ -5,16 +5,12 @@ NW1 2PY. Fringe, devised, live art and work-in-progress → `theater` (list
 `theater`).
 
 Data: Spektrix client `camdenpeoplestheatre` (custom domain
-`tickets.cptheatre.co.uk`). Built from the `_spektrix.py` steps (see
-`spektrix_SOURCE.md`), run by the module itself because of one helper gap:
-CPT's show pages link performances as **`/tickets/<numeric instance id>`**
-(`location.href='https://cptheatre.co.uk/tickets/351844'`), a form
-`_spektrix._SITE_IDS` doesn't know. The module collects those ids from the
-show pages linked on `https://cptheatre.co.uk/Whats-On`
-(`…/whatson/<Slug>`), then uses `site_urls`, `fetch_plan_venues`, `select`,
-`fetch_prices`, `build` as `_spektrix.scrape` does. If the helper learns the
-`/tickets/` pattern, this collapses to a plain
+`tickets.cptheatre.co.uk`), via `_spektrix.py` (see `spektrix_SOURCE.md`):
 `spk.scrape(CLIENT, categorize, site=SITE, venue=venue, plan_venues=True)`.
+The site join follows the show pages linked on
+`https://cptheatre.co.uk/Whats-On` (`…/whatson/<Slug>`), which link
+performances as **`/tickets/<numeric instance id>`**
+(`location.href='https://cptheatre.co.uk/tickets/351844'`).
 
 ## Curation
 

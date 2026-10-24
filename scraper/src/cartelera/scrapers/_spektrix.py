@@ -26,10 +26,12 @@ Private module (leading underscore): skipped by `load_all()`.
 from __future__ import annotations
 
 import datetime as dt
+import logging
 import re
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
+from urllib.parse import urljoin
 
 import httpx
 from bs4 import BeautifulSoup
@@ -37,6 +39,8 @@ from bs4 import BeautifulSoup
 from cartelera.scrapers.http import CARTELITA_BROWSER_HEADERS, CARTELITA_COMPAT_UA, fetch
 from cartelera.scrapers.price import format_gbp_range
 from cartelera.types import ScrapedEvent
+
+logger = logging.getLogger(__name__)
 
 # Performances further out than this are left for later runs (theatre seasons
 # are announced ~6 months ahead; longer windows only add on-sale-later noise).
@@ -47,16 +51,40 @@ MAX_CONCURRENCY = 4
 PRICE_ATTEMPTS = 3
 TIMEOUT = 90
 
-# Instance-level boolean attributes worth surfacing as annotations. Names are
-# per client; these are the ones seen across London clients (2026-10).
+# Instance-level boolean attributes worth surfacing as annotations: access
+# provision and the kind of performance (preview, post-show talk) — never
+# box-office internals (press/writers' nights, schools, discounts). Names are
+# per client; these are the ones seen across the London clients (2026-10).
 ACCESS_FLAGS: dict[str, str] = {
     "Captioned": "captioned",
+    "CaptionedPerformance": "captioned",
+    "SLCaptioned": "captioned",  # Park Theatre's listing flags (SL…)
     "AudioDescribed": "audio described",
+    "AudioDescribedPerformance": "audio described",
+    "SLAudioDescribed": "audio described",
+    "BSL": "BSL interpreted",
     "BSLInterpreted": "BSL interpreted",
+    "BSLPerformance": "BSL interpreted",
+    "SignedBSLPerformance": "BSL interpreted",
+    "SLSigned": "BSL interpreted",
     "Relaxed": "relaxed performance",
     "RelaxedPerformance": "relaxed performance",
+    "RelaxedPerformanceInstance": "relaxed performance",
+    "RelaxedAndSensoryAdapted": "relaxed performance",
+    "SLRelaxed": "relaxed performance",
+    "SensoryAdapted": "sensory adapted",
+    "Chilled": "chilled performance",
+    "AutismFriendly": "autism friendly",
+    "DementiaFriendly": "dementia friendly",
+    "ParentAndBaby": "parent and baby",
+    "BabesInArms": "parent and baby",
+    "TouchTour": "touch tour",
     "Preview": "preview",
+    "PreviewPerformance": "preview",
+    "PreviewInstance": "preview",
+    "SLPreview": "preview",
     "PostShowTalk": "post-show talk",
+    "AfterShowTalk": "post-show talk",
 }
 
 # Event -> our categories; [] means "not programme" (dropped).
@@ -66,12 +94,27 @@ Categorize = Callable[[dict], list[str]]
 # client's own venue record, {"name", "address", "id"}) when venues were
 # looked up.
 VenueOf = Callable[[dict, dict], "str | None"]
+# A price-list entry ({"amount", "isBandDefault", "priceBand", "ticketType"})
+# -> whether it counts towards the price (see price_text).
+PriceBands = Callable[[dict], bool]
+# (events, instances) -> None: a venue's own pass over the whole programme
+# before curation (e.g. a join with its website, a label copied from the
+# instances to their event). May mutate the dicts.
+Prepare = Callable[[list[dict], list[dict]], None]
+# (scraped, event, instance) -> None: a venue's own per-performance touch
+# after the ScrapedEvent is built (a per-performance page, a price rule the
+# price list can't express). Mutates `scraped`.
+Finish = Callable[[ScrapedEvent, dict, dict], None]
 
 # Spektrix ids as venue websites embed them: full ids ("571766ANTDSK…"), and
-# the numeric ids of booking links ("/book/543497", "EventInstanceId=…").
+# the numeric ids of booking links ("/book/543497", "/book/instance/882636",
+# "/book-online/…", "/tickets/351844", "EventInstanceId=…").
 _SITE_IDS = (
     re.compile(r"\b(\d{4,8})A[A-Z]{20,40}\b"),
     re.compile(r"/book/(\d{4,8})\b"),
+    re.compile(r"/book/instance/(\d{4,8})\b"),
+    re.compile(r"/book-online/(\d{4,8})\b"),
+    re.compile(r"/tickets/(\d{4,8})\b"),
     re.compile(r"(?i)\bEvent(?:Instance)?Id=(\d{4,8})\b"),
 )
 
@@ -104,12 +147,20 @@ class Site:
     page) and, with `required`, doubles as curation for a client without a
     usable label: only events the venue lists publicly are kept.
 
-    `link_pattern` is a regex an absolute show-page URL must match."""
+    `listing_url` is one listing page or several (e.g. a theatre's what's-on
+    and its cinema listings); a `sitemap.xml` works as a listing too (its
+    `<loc>` URLs are absolute links). Show-page links are taken absolute or
+    relative (resolved against their listing page); `link_pattern` is a
+    regex the absolute show-page URL must match."""
 
-    listing_url: str
+    listing_url: str | tuple[str, ...]
     link_pattern: str
     required: bool = False
     impersonate: bool = False
+
+    @property
+    def listing_urls(self) -> tuple[str, ...]:
+        return (self.listing_url,) if isinstance(self.listing_url, str) else tuple(self.listing_url)
 
 
 def numeric_id(spektrix_id: str) -> str:
@@ -155,10 +206,10 @@ def fetch_programme(
     return events.json(), instances.json()
 
 
-def fetch_plan_venues(client: Client, instances: list[dict], http: httpx.Client) -> dict[str, dict]:
-    """Seating-plan id → the client's venue record ({"name", "address",
-    "id"}): `/plans/{id}` names the plan's venue, `/venues` describes it.
-    This is how a client that sells several buildings tells them apart."""
+def fetch_plans(client: Client, instances: list[dict], http: httpx.Client) -> dict[str, dict]:
+    """Seating-plan id → {"name": the plan's own name, "venue": the client's
+    venue record ({"name", "address", "id"}, {} when unknown)}:
+    `/plans/{id}` names the plan and its venue, `/venues` describes it."""
     resp = http.get(f"{client.api}/venues")
     resp.raise_for_status()
     venues = {v["id"]: v for v in resp.json()}
@@ -166,21 +217,53 @@ def fetch_plan_venues(client: Client, instances: list[dict], http: httpx.Client)
     for plan_id in dict.fromkeys(i["planId"] for i in instances if i.get("planId")):
         resp = http.get(f"{client.api}/plans/{plan_id}")
         resp.raise_for_status()
-        venue_id = (resp.json().get("venue") or {}).get("id")
-        if venue_id in venues:
-            out[plan_id] = venues[venue_id]
+        plan = resp.json()
+        venue_id = (plan.get("venue") or {}).get("id")
+        out[plan_id] = {"name": (plan.get("name") or "").strip(), "venue": venues.get(venue_id, {})}
     return out
 
 
-def price_text(price_list: dict) -> str | None:
+def fetch_plan_venues(client: Client, instances: list[dict], http: httpx.Client) -> dict[str, dict]:
+    """Seating-plan id → the client's venue record ({"name", "address",
+    "id"}). This is how a client that sells several buildings tells them
+    apart."""
+    return {pid: plan["venue"] for pid, plan in fetch_plans(client, instances, http).items() if plan["venue"]}
+
+
+def assign_plans(client: Client, instances: list[dict], http: httpx.Client) -> None:
+    """Give every instance its `venue` (the client's venue record, {} when
+    unknown) and `plan` ({"name"}, {} when unknown), from its seating plan."""
+    plans = fetch_plans(client, instances, http)
+    for inst in instances:
+        plan = plans.get(inst.get("planId"), {})
+        inst["venue"] = plan.get("venue", {})
+        inst["plan"] = {"name": plan["name"]} if plan else {}
+
+
+def band(price: dict) -> str:
+    """A price-list entry's seating band name, stripped ("" when absent)."""
+    return ((price.get("priceBand") or {}).get("name") or "").strip()
+
+
+def price_text(price_list: dict, bands: PriceBands | None = None) -> str | None:
     """A performance's price list → house convention.
 
     Uses each band's default ticket type (`isBandDefault`: the standard
     full-price ticket per seating band), so concession/member/access tiers
     don't widen the range; the 2x rule of `format_gbp_range` then decides
     between the top price and a "£lo–hi" range. All zero → "free"; no prices
-    → None."""
+    → None.
+
+    `bands` is a venue's filter on the entries, applied first, for a price
+    structure the band-default rule gets wrong (a membership allocation or a
+    concession band flagged band-default; e.g. `lambda p: band(p) != "Y"`).
+    When it keeps no paid price (nothing, or only £0 entries), the list
+    isn't the structure the filter is for, and the whole list is used."""
     prices = price_list.get("prices") or []
+    if bands:
+        kept = [p for p in prices if bands(p)]
+        if any((p.get("amount") or 0) > 0 for p in kept):
+            prices = kept
     amounts = [p.get("amount") for p in prices if p.get("isBandDefault")]
     if not amounts:
         amounts = [p.get("amount") for p in prices]
@@ -193,12 +276,14 @@ def price_text(price_list: dict) -> str | None:
     return format_gbp_range(min(paid), max(paid))
 
 
-def fetch_prices(client: Client, instances: list[dict], http: httpx.Client) -> dict[str, str | None]:
-    """Price text per price-list id, asked of one of its instances. An
-    instance that isn't on sale (online booking closed, not yet released)
-    answers 404, so on-sale instances are asked first, up to
-    PRICE_ATTEMPTS of them. A failed lookup is just an unknown price, never
-    a failed run."""
+def fetch_prices(
+    client: Client, instances: list[dict], http: httpx.Client, bands: PriceBands | None = None
+) -> dict[str, str | None]:
+    """Price text per price-list id (`price_text`, with the venue's `bands`
+    filter), asked of one of its instances. An instance that isn't on sale
+    (online booking closed, not yet released) answers 404, so on-sale
+    instances are asked first, up to PRICE_ATTEMPTS of them. A failed lookup
+    is just an unknown price, never a failed run."""
     candidates: dict[str, list[str]] = {}
     for inst in sorted(instances, key=lambda i: not i.get("isOnSale")):
         pl = (inst.get("priceList") or {}).get("id")
@@ -215,7 +300,7 @@ def fetch_prices(client: Client, instances: list[dict], http: httpx.Client) -> d
                 if resp.status_code == 404:
                     continue
                 resp.raise_for_status()
-                return pl, price_text(resp.json())
+                return pl, price_text(resp.json(), bands)
             except (httpx.HTTPError, ValueError):
                 return pl, None
         return pl, None
@@ -224,20 +309,40 @@ def fetch_prices(client: Client, instances: list[dict], http: httpx.Client) -> d
         return dict(pool.map(one, candidates.items()))
 
 
-def site_page_ids(site: Site) -> dict[str, set[str]]:
-    """Show-page URL → the numeric Spektrix ids found on it."""
-    listing = fetch(site.listing_url, headers=CARTELITA_BROWSER_HEADERS, impersonate=site.impersonate)
-    links = list(dict.fromkeys(
-        m.group(0) for m in re.finditer(r"https?://[^\s\"'<>#?]+", listing)
-        if re.fullmatch(site.link_pattern, m.group(0))
-    ))
+def embedded_ids(html: str) -> set[str]:
+    """The numeric Spektrix ids a page embeds (see _SITE_IDS)."""
+    return {m.group(1) for pattern in _SITE_IDS for m in pattern.finditer(html)}
 
-    def ids(url: str) -> tuple[str, set[str]]:
-        page = fetch(url, headers=CARTELITA_BROWSER_HEADERS, impersonate=site.impersonate)
-        return url, {m.group(1) for pattern in _SITE_IDS for m in pattern.finditer(page)}
+
+def listing_links(listing: str, listing_url: str, link_pattern: str) -> list[str]:
+    """Show-page URLs a listing page links, in order: absolute URLs anywhere
+    in the text (also a sitemap's `<loc>`s), then relative `href`s resolved
+    against the listing's URL — each kept when it fully matches
+    `link_pattern`."""
+    absolute = (m.group(0) for m in re.finditer(r"https?://[^\s\"'<>#?]+", listing))
+    relative = (urljoin(listing_url, h) for h in re.findall(r"""href\s*=\s*["']([^"'#?\s]+)""", listing))
+    return [u for u in dict.fromkeys([*absolute, *relative]) if re.fullmatch(link_pattern, u)]
+
+
+def site_page_ids(site: Site) -> dict[str, set[str]]:
+    """Show-page URL → the numeric Spektrix ids found on it. A listing that
+    can't be fetched fails the run (the join, maybe curation, depends on it);
+    a show page that can't (a dead link) is skipped with a warning."""
+    links: list[str] = []
+    for listing_url in site.listing_urls:
+        listing = fetch(listing_url, headers=CARTELITA_BROWSER_HEADERS, impersonate=site.impersonate)
+        links += [u for u in listing_links(listing, listing_url, site.link_pattern) if u not in links]
+
+    def ids(url: str) -> tuple[str, set[str] | None]:
+        try:
+            page = fetch(url, headers=CARTELITA_BROWSER_HEADERS, impersonate=site.impersonate)
+        except Exception as exc:  # one dead show page isn't a broken source
+            logger.warning("spektrix site join: skipping %s (%s)", url, exc)
+            return url, None
+        return url, embedded_ids(page)
 
     with ThreadPoolExecutor(max_workers=MAX_CONCURRENCY) as pool:
-        return dict(pool.map(ids, links))
+        return {url: found for url, found in pool.map(ids, links) if found is not None}
 
 
 def site_urls(page_ids: dict[str, set[str]], events: list[dict], instances: list[dict]) -> dict[str, str]:
@@ -270,8 +375,13 @@ def description(event: dict) -> str | None:
     return text or None
 
 
-def access_annotations(instance: dict) -> list[str]:
-    return [label for name, label in ACCESS_FLAGS.items() if instance.get(f"attribute_{name}") is True]
+def access_annotations(instance: dict, text_attrs: tuple[str, ...] = ()) -> list[str]:
+    """The labels of the instance's true ACCESS_FLAGS, then the text of its
+    `text_attrs` (a client's free-text access/performance attributes, e.g.
+    "BSL Performance", "Captioned Screening"), in order, without repeats."""
+    labels = [label for name, label in ACCESS_FLAGS.items() if instance.get(f"attribute_{name}") is True]
+    labels += [re.sub(r"\s+", " ", attr(instance, name)) for name in text_attrs]
+    return [label for label in dict.fromkeys(labels) if label]
 
 
 def select(
@@ -308,31 +418,37 @@ def build(
     title: Callable[[dict], str] | None = None,
     url: Callable[[dict], str | None] | None = None,
     venue: VenueOf | None = None,
+    annotation_attrs: tuple[str, ...] = (),
+    finish: Finish | None = None,
 ) -> list[ScrapedEvent]:
     """One ScrapedEvent per selected performance. `title`/`url` let a venue
     override the event name (e.g. strip internal season prefixes) and point
     at its own website page instead of the Spektrix event page. `venue` is
     for a client serving several of our venues (a multi-venue source): the
-    venue slug of a performance, from the client's own venue/room data."""
+    venue slug of a performance, from the client's own venue/room data.
+    `annotation_attrs` names the client's free-text instance attributes to
+    annotate with (see access_annotations); `finish` is a per-performance
+    touch-up (see Finish)."""
     events: list[ScrapedEvent] = []
     for event, inst, cats in selected:
         start = dt.datetime.fromisoformat(inst["start"])
         name = title(event) if title else re.sub(r"\s+", " ", event["name"]).strip()
-        events.append(
-            ScrapedEvent(
-                title=name,
-                start_date=start.date(),
-                start_time=start.time(),
-                source_url=(url(event) if url else None) or event.get("webUrl") or client.booking_url(event),
-                category_slugs=list(cats),
-                price=prices.get((inst.get("priceList") or {}).get("id")),
-                description=description(event),
-                image_url=event.get("imageUrl") or None,
-                external_id=inst["id"],
-                annotations=access_annotations(inst),
-                venue_slug=venue(event, inst) if venue else None,
-            )
+        scraped = ScrapedEvent(
+            title=name,
+            start_date=start.date(),
+            start_time=start.time(),
+            source_url=(url(event) if url else None) or event.get("webUrl") or client.booking_url(event),
+            category_slugs=list(cats),
+            price=prices.get((inst.get("priceList") or {}).get("id")),
+            description=description(event),
+            image_url=event.get("imageUrl") or None,
+            external_id=inst["id"],
+            annotations=access_annotations(inst, annotation_attrs),
+            venue_slug=venue(event, inst) if venue else None,
         )
+        if finish:
+            finish(scraped, event, inst)
+        events.append(scraped)
     return events
 
 
@@ -342,34 +458,51 @@ def scrape(
     *,
     today: dt.date | None = None,
     site: Site | None = None,
+    page_ids: Mapping[str, set[str]] | None = None,
     title: Callable[[dict], str] | None = None,
     url: Callable[[dict], str | None] | None = None,
     venue: VenueOf | None = None,
     plan_venues: bool = False,
+    prepare: Prepare | None = None,
+    price_bands: PriceBands | None = None,
+    annotation_attrs: tuple[str, ...] = (),
+    finish: Finish | None = None,
 ) -> list[ScrapedEvent]:
-    """The whole pipeline for one client: programme → (site join) → curation
-    → prices (only for the performances kept) → ScrapedEvents. With
-    `plan_venues`, each instance gets its `venue` record (see
-    fetch_plan_venues) before `venue` is asked."""
+    """The whole pipeline for one client: programme → (plan venues) →
+    (prepare) → (site join) → curation → prices (only for the performances
+    kept) → ScrapedEvents → (finish).
+
+    - `plan_venues`: each instance gets its `venue` record and `plan` name
+      (see assign_plans) before `venue` is asked;
+    - `site`: the Site join; `page_ids` instead, when the module fetched the
+      show pages itself (because it reads more from them than ids): show-page
+      URL → its numeric Spektrix ids (`embedded_ids`), joined the same way,
+      for links only;
+    - `prepare`, `finish`: the venue's own passes (see Prepare, Finish);
+    - `price_bands`: the venue's price-list filter (see price_text);
+    - `annotation_attrs`: free-text instance attributes to annotate with."""
     today = today or dt.date.today()
     with http_client() as http:
         events, instances = fetch_programme(client, today, http)
+        if plan_venues:
+            assign_plans(client, instances, http)
+        if prepare:
+            prepare(events, instances)
         pages: dict[str, str] = {}
         if site:
             pages = site_urls(site_page_ids(site), events, instances)
             if site.required:
                 categorize = _listed_only(categorize, pages)
-        if plan_venues:
-            by_plan = fetch_plan_venues(client, instances, http)
-            for inst in instances:
-                inst["venue"] = by_plan.get(inst.get("planId"), {})
+        elif page_ids is not None:
+            pages = site_urls(page_ids, events, instances)
         selected = select(events, instances, categorize, venue)
-        prices = fetch_prices(client, [inst for _e, inst, _c in selected], http)
+        prices = fetch_prices(client, [inst for _e, inst, _c in selected], http, price_bands)
 
     def page_url(event: dict) -> str | None:
         return (url(event) if url else None) or pages.get(event["id"])
 
-    return build(client, selected, prices, title=title, url=page_url, venue=venue)
+    return build(client, selected, prices, title=title, url=page_url, venue=venue,
+                 annotation_attrs=annotation_attrs, finish=finish)
 
 
 def _listed_only(categorize: Categorize, pages: dict[str, str]) -> Categorize:

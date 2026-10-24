@@ -13,6 +13,11 @@ client has no genre/type attribute, so curation is two structural signals:
   talks and writers' sessions (Book Club, First Words, Writers' Card),
   backstage tours (the whole building), Zoom sessions and off-site parties
   and screenings — none of them performances.
+
+Prices leave out the "Standing" band: the Jerwood Downstairs' 10p standing
+tickets (sold on the day) are a real ticket, but the theatre's own price
+statement ("Tickets: £15 - £74.50") leaves them out, and a "£0.10–74.50"
+range would misstate what a seat costs.
 """
 
 from __future__ import annotations
@@ -32,17 +37,22 @@ SITE = spk.Site(
     required=True,
 )
 ROOMS = {"Jerwood Theatre Downstairs", "Jerwood Theatre Upstairs"}
+STANDING_BAND = "Standing"
 
 
 def categorize(event: dict) -> list[str]:
     return ["theater"] if spk.attr(event, "TicketVenue1") in ROOMS else []
 
 
+def seated_band(price: dict) -> bool:
+    return spk.band(price) != STANDING_BAND
+
+
 class RoyalCourtTheatreScraper:
     venue_slug = VENUE_SLUG
 
     def scrape(self) -> list[ScrapedEvent]:
-        return spk.scrape(CLIENT, categorize, site=SITE)
+        return spk.scrape(CLIENT, categorize, site=SITE, price_bands=seated_band)
 
 
 register(

@@ -10,6 +10,11 @@ young_vic_SOURCE.md). Curation uses the box office's own attributes:
   event without a room (the "Temporary Priority Test" box-office test) is
   dropped.
 
+The performance's own text labels — `Accessibility`/`Accessibility2`
+("Audio described", "Captioned", "BSL", "Relaxed", "Touch Tour") and
+`PerformanceInformation` ("English Surtitles", "Press Night") — become
+annotations.
+
 No site join: youngvic.org's show pages load their performances from the
 site's own API (no Spektrix ids in the HTML) and link shows relatively, so
 events link to the client's Spektrix event page.
@@ -24,6 +29,7 @@ from cartelera.types import ListMembership, ScrapedEvent, VenueDefinition
 VENUE_SLUG = "young-vic"
 CLIENT = spk.Client("youngvic")
 ROOMS = {"Main House", "The Maria Theatre", "The Clare", "Outside the Young Vic"}
+ANNOTATION_ATTRS = ("Accessibility", "Accessibility2", "PerformanceInformation")
 
 
 def categorize(event: dict) -> list[str]:
@@ -36,7 +42,7 @@ class YoungVicScraper:
     venue_slug = VENUE_SLUG
 
     def scrape(self) -> list[ScrapedEvent]:
-        return spk.scrape(CLIENT, categorize)
+        return spk.scrape(CLIENT, categorize, annotation_attrs=ANNOTATION_ATTRS)
 
 
 register(
