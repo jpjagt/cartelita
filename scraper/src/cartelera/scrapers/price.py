@@ -181,3 +181,68 @@ def pyg_price(text: str | None) -> str | None:
     if not amounts:
         return None
     return format_pyg_range(min(amounts), max(amounts))
+
+
+# --- Pound sterling amounts (London venues) ---------------------------------
+#
+# UK sites state prices as "£17 / £15 Adv", "£12.50", "£9 - 22 advance";
+# ticketing APIs (Spektrix, DICE) give decimal pounds or pence. House display
+# convention follows UK usage rather than the €-style: the symbol first —
+# "£12", "£12.50" (pence only when not whole), range "£10–25" (2x rule, see
+# above), zero → "free".
+
+# A £-marked amount ("£17", "£ 12.50", "£1,250"), optionally followed by a
+# dash range whose high end shares the sign ("£9 - 22").
+_GBP = re.compile(
+    r"£\s*(\d{1,3}(?:,\d{3})+|\d+)(?:\.(\d{2}))?"
+    r"(?:\s*[-–]\s*£?\s*(\d+)(?:\.(\d{2}))?(?![\d:]))?"
+)
+
+
+def _gbp_num(whole: str, pence: str) -> float:
+    value = int(whole.replace(",", ""))
+    return value + int(pence) / 100 if pence else value
+
+
+def format_gbp(value: float) -> str:
+    """12 → "£12", 12.5 → "£12.50", 0 → "free"."""
+    if value <= 0:
+        return "free"
+    pence = round(value * 100)
+    if pence % 100 == 0:
+        return f"£{pence // 100}"
+    return f"£{pence // 100}.{pence % 100:02d}"
+
+
+def format_gbp_range(lo: float, hi: float) -> str:
+    """Pound price from its bounds, with the 2x-spread rule of
+    format_eur_range: one price (the high) unless hi >= 2*lo, then a
+    "£lo–hi" range. A zero low (a free tier) is not a range."""
+    if hi <= 0:
+        return "free"
+    if lo <= 0 or lo == hi or hi < _RANGE_FACTOR * lo:
+        return format_gbp(hi)
+    return f"{format_gbp(lo)}–{format_gbp(hi)[1:]}"
+
+
+def gbp_amounts(text: str) -> list[float]:
+    """Every £-marked amount in `text`, in order (a "£9 - 22" range gives
+    both ends). Bare numbers are never prices ("Sat 31 Oct 11:00")."""
+    out: list[float] = []
+    for whole, pence, hi_whole, hi_pence in _GBP.findall(text):
+        out.append(_gbp_num(whole, pence))
+        if hi_whole:
+            out.append(_gbp_num(hi_whole, hi_pence))
+    return out
+
+
+def gbp_price(text: str | None) -> str | None:
+    """Normalize a pound price statement to the price convention: the
+    highest amount, or a range when the spread is >= 2x; zero → "free"; no
+    £ amount → None (callers handle "Free"/"Sold out" wording)."""
+    if not text:
+        return None
+    amounts = gbp_amounts(text)
+    if not amounts:
+        return None
+    return format_gbp_range(min(amounts), max(amounts))

@@ -99,6 +99,7 @@ CITY_CENTRES: dict[str, CityCentre] = {
     "rotterdam": CityCentre(51.9225, 4.4792, "nl"),
     "utrecht": CityCentre(52.0907, 5.1214, "nl"),
     "asuncion": CityCentre(-25.2637, -57.5759, "py"),
+    "london": CityCentre(51.5074, -0.1278, "gb"),
 }
 
 

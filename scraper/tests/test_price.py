@@ -4,6 +4,10 @@ from cartelera.scrapers.price import (
     eur_to_float,
     format_eur,
     format_eur_range,
+    format_gbp,
+    format_gbp_range,
+    gbp_amounts,
+    gbp_price,
     format_pyg,
     format_pyg_range,
     pyg_amounts,
@@ -134,3 +138,39 @@ def test_pyg_price_convention():
     assert pyg_price("Gratuito") is None  # wording is the caller's call
     assert pyg_price("") is None
     assert pyg_price(None) is None
+
+
+def test_format_gbp_symbol_first_pence_only_when_needed():
+    assert format_gbp(12) == "£12"
+    assert format_gbp(12.5) == "£12.50"
+    assert format_gbp(9.99) == "£9.99"
+    assert format_gbp(0) == "free"
+
+
+def test_format_gbp_range_two_x_rule():
+    assert format_gbp_range(15, 15) == "£15"
+    assert format_gbp_range(15, 25) == "£25"  # < 2x: highest
+    assert format_gbp_range(10, 25) == "£10–25"
+    assert format_gbp_range(7.5, 20) == "£7.50–20"
+    assert format_gbp_range(0, 0) == "free"
+    assert format_gbp_range(0, 12) == "£12"  # a free tier is no range
+
+
+def test_gbp_amounts_need_a_pound_sign():
+    assert gbp_amounts("£17 / £15 Adv / £10 members") == [17, 15, 10]
+    assert gbp_amounts("Standard £25 / Members £23") == [25, 23]
+    assert gbp_amounts("£ 12.50") == [12.5]
+    assert gbp_amounts("£9 - 22 advance") == [9, 22]  # a dash range shares the sign
+    assert gbp_amounts("£12 / 8 concession") == [12]  # the bare 8 is not a price
+    assert gbp_amounts("Sat 31 Oct 11:00") == []
+    assert gbp_amounts("£1,250") == [1250]
+
+
+def test_gbp_price_convention():
+    assert gbp_price("£18") == "£18"
+    assert gbp_price("£17 / £15 Adv / £10 members") == "£17"
+    assert gbp_price("£10, £15, £25") == "£10–25"
+    assert gbp_price("£0") == "free"
+    assert gbp_price("Free") is None  # wording is the caller's call
+    assert gbp_price("") is None
+    assert gbp_price(None) is None
