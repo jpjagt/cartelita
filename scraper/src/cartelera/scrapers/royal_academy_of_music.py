@@ -6,10 +6,12 @@ Spektrix client `royalacademyofmusic` on ticketing.ram.ac.uk, via the shared
 event attribute is `Venue` (the room: Duke's Hall, Angela Burgess Recital
 Hall, Susie Sainsbury Theatre, Concert Room…), which doesn't separate the
 programme from ancillaries ("Programme": printed programmes sold per opera
-performance). So curation is the Academy's own website: only events whose
-page on ram.ac.uk embeds their Spektrix ids are kept (`Site(required=True)`).
-The what's-on page renders its list by script, so the listing is the
-sitemap, which links every event page (`/events/<slug>`).
+performance). So curation is the Academy's own website: only events the
+site lists are kept. The what's-on page renders its list by script from the
+site's search index (Typesense; `spk.SearchIndex`), whose event documents
+carry the event page (`/events/<slug>`) and the Spektrix id the page was
+imported from — the join, without fetching ram.ac.uk itself (Cloudflare
+challenges the production server there).
 
 The building comes from the seating plan → the client's venue: only "Royal
 Academy of Music" is kept (the client also sells at Wigmore Hall, St John's
@@ -24,11 +26,7 @@ from cartelera.types import ListMembership, ScrapedEvent, VenueDefinition
 
 VENUE_SLUG = "royal-academy-of-music"
 CLIENT = spk.Client("royalacademyofmusic", "https://ticketing.ram.ac.uk")
-SITE = spk.Site(
-    "https://www.ram.ac.uk/sitemap.xml",
-    r"https://www\.ram\.ac\.uk/events/[^/]+",
-    required=True,
-)
+INDEX = spk.SearchIndex("ram_main_production", "https://www.ram.ac.uk")
 CLIENT_VENUE = "Royal Academy of Music"
 
 
@@ -44,7 +42,9 @@ class RoyalAcademyOfMusicScraper:
     venue_slug = VENUE_SLUG
 
     def scrape(self) -> list[ScrapedEvent]:
-        return spk.scrape(CLIENT, categorize, site=SITE, venue=venue, plan_venues=True)
+        page_ids = spk.search_page_ids(spk.search_events(INDEX), INDEX)
+        return spk.scrape(CLIENT, categorize, page_ids=page_ids, listed_only=True,
+                          venue=venue, plan_venues=True)
 
 
 register(

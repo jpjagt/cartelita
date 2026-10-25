@@ -40,3 +40,17 @@ Gardner Conducts The Dream of Gerontius 2027-04-24 — site JSON-LD
 "2027-04-24T19:30:00+01:00", lowPrice 24 / highPrice 86, Royal Festival
 Hall, pill "Classical music" → ours 19:30, "£24–86", classical. Alceu
 Valença 2026-11-07 19:30 RFH £36–56 → "£56" (2x rule), pop.
+
+## Production (Hetzner IP), 2026-10-25 — does not work
+Cloudflare challenges the production server (`cf-mitigated: challenge`,
+httpx / curl_cffi / headless browser alike, no clearance) on every path
+except the first page of `/whats-on/` (with any query, e.g. each
+`?artform-filter=…`): listing pages 2+ (`/whats-on/page/N/…`), every event
+page and the sitemaps answer 403. The first page per filter gives 12 cards
+(title, primary artform, date range, hall) — no performances, times or
+prices; the per-performance data is only on event pages (JSON-LD). Not
+date-filterable either (`start-date`/`end-date` ignore the artform filter).
+TNEW (`secure.southbankcentre.co.uk`) is an Imperva-tarpitted Tessitura host
+(see tnew_SOURCE.md). Nothing open carries the programme, so the module is
+unchanged and fails in production (the run's "intermittent" 403 was the
+first paginated listing page).

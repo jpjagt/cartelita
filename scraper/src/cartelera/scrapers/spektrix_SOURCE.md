@@ -64,15 +64,43 @@ Polka) or the numeric ids of booking links — `/book/<id>` (Little Angel),
 `/book/instance/<id>` (The Place), `/book-online/<id>` (Brixton House),
 `/tickets/<id>` (CPT), `EventInstanceId=…`. An event's page is the one
 carrying the most of its event/instance ids (a page's "you may also like"
-links never outnumber its own). Costs one request per show page. A listing
-that fails fails the run; a show page that fails (a dead link) is skipped
-with a warning. `required=True` makes the join curation: only listed events
-are kept. A module that fetches the show pages itself (because it reads
+links never outnumber its own). Costs one request per show page. A show page
+that fails (a dead link) is skipped with a warning. A listing that fails
+fails the run only with `required=True` (the join is curation: only listed
+events are kept); a links-only join skips it with a warning and its events
+link to the Spektrix event page (The Place in production: theplace.org.uk
+challenges the server's IP). A module that fetches the show pages itself (because it reads
 more from them, e.g. Brixton House's stated price) passes `page_ids=`
 (page URL → `embedded_ids(html)`) instead. A site whose pages embed no
 Spektrix ids (Soho Theatre) can't be joined; its events link to the
 Spektrix event page. A paginated listing of unknown length isn't a `Site`
 (Barbican pages its own).
+
+## Site search index (`SearchIndex`)
+
+Some venue sites (one web agency's Craft "Event Manager" builds:
+ram.ac.uk, royalcourttheatre.com, donmarwarehouse.com) render what's-on and
+search from a **Typesense Cloud** index, and challenge datacenter IPs
+(Cloudflare managed challenge, no clearance for the headless browser) — the
+production server can't fetch them at all. The index answers it:
+
+- `GET https://4mhq18ugp9j5ne0ap-{1,2,3}.a1.typesense.net/collections/<collection>/documents/search?q=*&query_by=title&filter_by=type:=events&per_page=250&page=N`
+  with header `X-TYPESENSE-API-KEY: oCYigX2SDWO7wrA4yuKEBgODQDl4cWP2` — the
+  public search-only key the sites embed (`<event-search search-key=…
+  search-index=…>` on /whats-on, `<site-search …>` on /search). Collections:
+  `ram_main_production`, `royalcourttheatre_main_production`,
+  `donmar_main_production`.
+- Documents: `title`, `uri` (`/events/<slug>`), `type`, …; RAM's also
+  `emImportData.importId` (the numeric Spektrix id the page was imported
+  from) and `eventCategories`.
+- `search_events(index)` (all pages; raises on failure or an empty index);
+  `search_page_ids(docs, index)` → `page_ids` (when documents carry
+  `importId`; with `scrape(..., listed_only=True)` it is curation, like
+  `Site(required=True)`); `search_title_pages(docs, index)` → `title_key` →
+  page, for indexes without ids (the join is the exact name: case and
+  spacing only, never fuzzy).
+- A rotated key or renamed collection fails loudly (401/404 / empty); the
+  current values are in the sites' HTML.
 
 ## Hooks (`spk.scrape` keyword arguments)
 
@@ -94,10 +122,10 @@ Spektrix event page. A paginated listing of unknown length isn't a `Site`
 | `little_angel_theatre.py` | `littleangeltheatre` | `EventType` = In-house show → kids; plan venue Theatre / Studios; site join |
 | `soho_theatre.py` | `sohotheatre` | `Venue` room → Dean Street / Walthamstow; `WebsiteFilterCategory1` Theatre → theater, Family → kids |
 | `barbican.py` | `barbicancentre` | `PrimaryArtForm` + `EventType` (+ `EventGenre` for non-classical music) minus supp/add-on/members-only and Raymond Gubbay; films only if on barbican.org.uk; plan venue → Barbican / Milton Court / Guildhall / LSO St Luke's |
-| `royal_court_theatre.py` | `royalcourt` | listed on royalcourttheatre.com (sitemap, `required`) and `TicketVenue1` = a Jerwood auditorium → theater |
+| `royal_court_theatre.py` | `royalcourt` | listed on royalcourttheatre.com (search index, exact-name join) and `TicketVenue1` = a Jerwood auditorium → theater |
 | `young_vic.py` | `youngvic` | not `SupplementaryEvent` and `Venue` room in the four stages → theater |
 | `bush_theatre.py` | `bushtheatre` | `WebsiteCategorisation` = Production → theater; site join |
-| `donmar_warehouse.py` | `donmarwarehouse` | `Website` = Performance → theater; site join |
+| `donmar_warehouse.py` | `donmarwarehouse` | `Website` = Performance → theater; pages from the search index (exact name, links only) |
 | `kiln_theatre.py` | `tricycle` | `Type` Theatre → theater, Cinema → film; site join (two listings) |
 | `brixton_house.py` | `ovalhouse` | `Season` = "Season N" and `Genre` New Writing / Youth Theatre → theater, Family Events → kids |
 | `arcola_theatre.py` | `arcolatheatre` | `Genre` = Theatre at plan venue "Arcola Theatre"; `Festival` Grimeborn → classical, else theater |
@@ -112,7 +140,7 @@ Spektrix event page. A paginated listing of unknown length isn't a `Site`
 | `st_martin_in_the_fields.py` | `stmartininthefields` | `Category` Music with a `Genre`, `SubCategories` in the concert series → classical (Family → + kids) |
 | `cadogan_hall.py` | `cadoganhall` | `Genre1` (+ `Genre2` exclusions) → classical / jazz / folk / film / classical + kids |
 | `royal_college_of_music.py` | `royalcollegeofmusic` | `Category` Concert / Opera → classical; plan venue at SW7 2BS |
-| `royal_academy_of_music.py` | `royalacademyofmusic` | listed on ram.ac.uk (sitemap, `required`) with a `Venue` → classical; plan venue "Royal Academy of Music" |
+| `royal_academy_of_music.py` | `royalacademyofmusic` | listed on ram.ac.uk (search index `importId`s, `listed_only`) with a `Venue` → classical; plan venue "Royal Academy of Music" |
 | `blackheath_halls.py` | `blackheathhalls` | `Category` words (event, else instance) → classical / jazz / kids / dance / theater, minus exhibition/talks/take part; `Location` (or postcode) → Halls / ORNC Chapel / Laban Theatre |
 | `cecil_sharp_house.py` | `efdss` | efdss.org what's-on section Gigs / Dances → folk; plan venue "Cecil Sharp House" |
 | `unicorn_theatre.py` | `unicorntheatre` | `EventType` production types → kids; instance `Owner` Public / Press Night and `Location` in the two auditoria |

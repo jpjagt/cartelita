@@ -61,3 +61,43 @@ def test_has_next_page():
 def test_title_from_the_website_card():
     rns = next(e for e in _scraped() if "Royal Northern Sinfonia" in e.title)
     assert rns.title.startswith("Vivaldi")  # box office: "Royal Northern Sinfonia"
+
+
+def test_listing_client_passes_a_403_with_the_browser_cookie(monkeypatch):
+    calls = []
+
+    class Gate(Exception):
+        response = type("R", (), {"status_code": 403})()
+
+    def fetch(url, headers=None, impersonate=False):
+        calls.append((url, impersonate, (headers or {}).get("Cookie")))
+        if impersonate:
+            raise Gate("403 Forbidden")
+        return "ok"
+
+    page = type("P", (), {"user_agent": "UA", "cookie_header": "__cf_bm=x"})()
+    monkeypatch.setattr(kp, "fetch", fetch)
+    monkeypatch.setattr(kp, "browser_page", lambda url, **kw: page)
+    client = kp.ListingClient()
+    assert client.get(kp.LISTING_URL) == "ok"
+    assert client.get(f"{kp.LISTING_URL}page/2/") == "ok"
+    # curl_cffi once, then plain HTTP with the browser's cookie throughout.
+    assert calls == [(kp.LISTING_URL, True, None), (kp.LISTING_URL, False, "__cf_bm=x"),
+                     (f"{kp.LISTING_URL}page/2/", False, "__cf_bm=x")]
+
+
+def test_listing_client_other_errors_fail(monkeypatch):
+    class NotFound(Exception):
+        response = type("R", (), {"status_code": 404})()
+
+    def fetch(url, headers=None, impersonate=False):
+        raise NotFound("404")
+
+    monkeypatch.setattr(kp, "fetch", fetch)
+    monkeypatch.setattr(kp, "browser_page", lambda url, **kw: (_ for _ in ()).throw(AssertionError("no browser")))
+    try:
+        kp.ListingClient().get(kp.LISTING_URL)
+    except NotFound:
+        pass
+    else:
+        raise AssertionError("a 404 is not a bot check")

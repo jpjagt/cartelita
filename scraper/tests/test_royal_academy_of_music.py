@@ -1,5 +1,6 @@
 """Royal Academy of Music on the shared Spektrix helper, against saved API
-responses and the event pages' Spektrix ids (captured 2026-10-24)."""
+responses (captured 2026-10-24) and the site's search-index event documents
+(captured 2026-10-25)."""
 
 import json
 from pathlib import Path
@@ -14,11 +15,11 @@ def _scraped():
     events = json.loads((FIXTURES / "royal_academy_of_music_spektrix_events.json").read_text())
     instances = json.loads((FIXTURES / "royal_academy_of_music_spektrix_instances.json").read_text())
     by_plan = json.loads((FIXTURES / "royal_academy_of_music_spektrix_plan_venues.json").read_text())
-    page_ids = json.loads((FIXTURES / "royal_academy_of_music_spektrix_site_ids.json").read_text())
+    docs = json.loads((FIXTURES / "royal_academy_of_music_search.json").read_text())
     for inst in instances:
         inst["venue"] = by_plan.get(inst.get("planId"), {})
-    pages = spk.site_urls({u: set(ids) for u, ids in page_ids.items()}, events, instances)
-    # Site(required=True): only events with a page on ram.ac.uk.
+    pages = spk.site_urls(spk.search_page_ids(docs, ram.INDEX), events, instances)
+    # listed_only: only events the site lists (by their imported Spektrix id).
     def listed(event):
         return ram.categorize(event) if event["id"] in pages else []
 

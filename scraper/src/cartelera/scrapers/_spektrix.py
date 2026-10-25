@@ -163,6 +163,32 @@ class Site:
         return (self.listing_url,) if isinstance(self.listing_url, str) else tuple(self.listing_url)
 
 
+# The search index behind a venue site's own what's-on and search pages:
+# Typesense Cloud, one cluster for the Craft "Event Manager" sites of one
+# web agency (ram.ac.uk, royalcourttheatre.com, donmarwarehouse.com). The
+# key is the public search-only key each site embeds in its pages
+# (`<event-search search-key=… search-index=…>` on /whats-on, `<site-search
+# …>` on /search). The sites themselves challenge datacenter IPs (Cloudflare),
+# so the production server can't fetch them; the index answers it.
+SEARCH_NODES = (
+    "4mhq18ugp9j5ne0ap-1.a1.typesense.net",
+    "4mhq18ugp9j5ne0ap-2.a1.typesense.net",
+    "4mhq18ugp9j5ne0ap-3.a1.typesense.net",
+)
+SEARCH_KEY = "oCYigX2SDWO7wrA4yuKEBgODQDl4cWP2"
+
+
+@dataclass(frozen=True)
+class SearchIndex:
+    """A venue site's search index: its Typesense collection, and the site
+    its documents' `uri`s are relative to. Each event document carries the
+    site's `title` and page `uri`; some sites' documents also carry the
+    Spektrix id they were imported from (see search_page_ids)."""
+
+    collection: str
+    site: str
+
+
 def numeric_id(spektrix_id: str) -> str:
     """"118056AKTSMRLCGMVPKPCRQTBNJSGPJQG" → "118056" (the id the Spektrix
     web pages use)."""
@@ -325,12 +351,22 @@ def listing_links(listing: str, listing_url: str, link_pattern: str) -> list[str
 
 
 def site_page_ids(site: Site) -> dict[str, set[str]]:
-    """Show-page URL → the numeric Spektrix ids found on it. A listing that
-    can't be fetched fails the run (the join, maybe curation, depends on it);
-    a show page that can't (a dead link) is skipped with a warning."""
+    """Show-page URL → the numeric Spektrix ids found on it. A show page that
+    can't be fetched (a dead link) is skipped with a warning. A listing that
+    can't be fetched fails the run when the join is curation
+    (`site.required`); otherwise it only costs links — it's skipped with a
+    warning and its events link to the Spektrix event page (e.g. a venue
+    site that challenges the production server's IP)."""
     links: list[str] = []
     for listing_url in site.listing_urls:
-        listing = fetch(listing_url, headers=CARTELITA_BROWSER_HEADERS, impersonate=site.impersonate)
+        try:
+            listing = fetch(listing_url, headers=CARTELITA_BROWSER_HEADERS, impersonate=site.impersonate)
+        except Exception as exc:
+            if site.required:
+                raise
+            logger.warning("spektrix site join: listing %s unavailable (%s); its events link to "
+                           "the Spektrix event page", listing_url, exc)
+            continue
         links += [u for u in listing_links(listing, listing_url, site.link_pattern) if u not in links]
 
     def ids(url: str) -> tuple[str, set[str] | None]:
@@ -343,6 +379,67 @@ def site_page_ids(site: Site) -> dict[str, set[str]]:
 
     with ThreadPoolExecutor(max_workers=MAX_CONCURRENCY) as pool:
         return {url: found for url, found in pool.map(ids, links) if found is not None}
+
+
+def title_key(name: str) -> str:
+    """An event name as an exact-match join key: whitespace collapsed,
+    casefolded ("ILFORD BOY" = "Ilford Boy"). Never fuzzy."""
+    return re.sub(r"\s+", " ", name).strip().casefold()
+
+
+def search_events(index: SearchIndex) -> list[dict]:
+    """Every event document (`type` = events) of the venue's site search
+    index. Raises when the index can't be read or holds no events (a renamed
+    index or rotated key must fail loudly, not empty the venue)."""
+    docs: list[dict] = []
+    with httpx.Client(headers={"X-TYPESENSE-API-KEY": SEARCH_KEY, "User-Agent": CARTELITA_COMPAT_UA},
+                      timeout=TIMEOUT) as http:
+        for page in range(1, 41):
+            resp = None
+            for node in SEARCH_NODES:
+                try:
+                    resp = http.get(
+                        f"https://{node}/collections/{index.collection}/documents/search",
+                        params={"q": "*", "query_by": "title", "filter_by": "type:=events",
+                                "per_page": 250, "page": page},
+                    )
+                    resp.raise_for_status()
+                    break
+                except httpx.HTTPError:
+                    if node == SEARCH_NODES[-1]:
+                        raise
+            data = resp.json()
+            hits = [h["document"] for h in data.get("hits") or []]
+            docs += hits
+            if not hits or len(docs) >= (data.get("found") or 0):
+                break
+    if not docs:
+        raise ValueError(f"search index {index.collection}: no event documents")
+    return docs
+
+
+def search_page_ids(docs: list[dict], index: SearchIndex) -> dict[str, set[str]]:
+    """Event page URL → the numeric Spektrix id its document was imported
+    from (`emImportData.importId`: an instance id, or the event id) — the
+    `page_ids` of the site join, without fetching the pages."""
+    out: dict[str, set[str]] = {}
+    for doc in docs:
+        imported = doc.get("emImportData")
+        import_id = str(imported.get("importId") or "") if isinstance(imported, dict) else ""
+        if doc.get("uri") and import_id.isdigit():
+            out.setdefault(urljoin(index.site + "/", doc["uri"]), set()).add(import_id)
+    return out
+
+
+def search_title_pages(docs: list[dict], index: SearchIndex) -> dict[str, str]:
+    """`title_key(title)` → event page URL, for an index whose documents
+    carry no Spektrix id (the event's name on the site is then the only
+    join key)."""
+    out: dict[str, str] = {}
+    for doc in docs:
+        if doc.get("uri") and doc.get("title"):
+            out.setdefault(title_key(doc["title"]), urljoin(index.site + "/", doc["uri"]))
+    return out
 
 
 def site_urls(page_ids: dict[str, set[str]], events: list[dict], instances: list[dict]) -> dict[str, str]:
@@ -459,6 +556,7 @@ def scrape(
     today: dt.date | None = None,
     site: Site | None = None,
     page_ids: Mapping[str, set[str]] | None = None,
+    listed_only: bool = False,
     title: Callable[[dict], str] | None = None,
     url: Callable[[dict], str | None] | None = None,
     venue: VenueOf | None = None,
@@ -477,7 +575,8 @@ def scrape(
     - `site`: the Site join; `page_ids` instead, when the module fetched the
       show pages itself (because it reads more from them than ids): show-page
       URL → its numeric Spektrix ids (`embedded_ids`), joined the same way,
-      for links only;
+      for links only — or, with `listed_only`, as curation too (as
+      `Site(required=True)`: only events joined to a page are kept);
     - `prepare`, `finish`: the venue's own passes (see Prepare, Finish);
     - `price_bands`: the venue's price-list filter (see price_text);
     - `annotation_attrs`: free-text instance attributes to annotate with."""
@@ -495,6 +594,8 @@ def scrape(
                 categorize = _listed_only(categorize, pages)
         elif page_ids is not None:
             pages = site_urls(page_ids, events, instances)
+            if listed_only:
+                categorize = _listed_only(categorize, pages)
         selected = select(events, instances, categorize, venue)
         prices = fetch_prices(client, [inst for _e, inst, _c in selected], http, price_bands)
 

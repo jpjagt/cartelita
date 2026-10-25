@@ -1,10 +1,10 @@
-"""National Theatre: TNEW joined to the production pages (fixtures
-captured 2026-10-25)."""
+"""National Theatre: the date-picker API joined to the production pages
+(fixtures captured 2026-10-25)."""
 
+import datetime as dt
 import json
 from pathlib import Path
 
-from cartelera.scrapers import _tnew as tnew
 from cartelera.scrapers import national_theatre as nt
 
 FIXTURES = Path(__file__).parent / "fixtures"
@@ -14,11 +14,14 @@ def _read(name):
     return (FIXTURES / name).read_text()
 
 
+TODAY = dt.date(2026, 10, 25)
+
+
 def _events():
-    perfs = tnew.performances(json.loads(_read("national_theatre_tnew.json"))["productions"])
+    perfs, rooms = nt.picker_performances(json.loads(_read("national_theatre_picker_95888.json")), TODAY)
     pages = [nt.parse_production(_read(f"national_theatre_{s}.html"), f"{nt.SITE}/productions/{s}/")
              for s in ("cloud-9", "hadestown")]
-    return perfs, nt.build(perfs, pages)
+    return perfs, nt.build(perfs, pages, rooms)
 
 
 def test_listing_links_production_pages_only():
@@ -27,10 +30,22 @@ def test_listing_links_production_pages_only():
     assert all("/productions/" in u for u in links)
 
 
-def test_keeps_auditorium_performances_drops_tours_and_training():
+def test_picker_performances():
+    perfs, rooms = nt.picker_performances(json.loads(_read("national_theatre_picker_95888.json")), TODAY)
+    assert perfs and all(p.production_id == "95888" for p in perfs)
+    first = perfs[0]
+    # TNEW ids; "…Z" times → London wall time.
+    assert (first.performance_id, first.start) == ("95986", dt.datetime(2026, 11, 2, 19, 30))
+    assert first.url == "https://tickets.nationaltheatre.org.uk/95888/95986"
+    assert set(rooms.values()) == {"Lyttelton Theatre"}
+    assert [p.performance_id for p in perfs if p.sold_out] == ["95993"]  # the picker's "soldout"
+    assert len({p.performance_id for p in perfs}) == len(perfs)
+
+
+def test_keeps_auditorium_performances():
     perfs, events = _events()
     assert {e.title for e in events} == {"Cloud 9"}
-    assert len(events) == sum(p.production_id == "95888" for p in perfs)
+    assert len(events) == len(perfs)
     assert all(e.annotations == ["Lyttelton"] and e.category_slugs == ["theater"] for e in events)
     assert len({e.external_id for e in events}) == len(events)
 

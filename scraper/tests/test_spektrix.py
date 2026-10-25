@@ -238,15 +238,88 @@ def test_site_page_ids_several_listings_and_dead_pages(monkeypatch, caplog):
     assert "https://v/event/dead/" in caplog.text  # skipped, with a warning
 
 
-def test_site_page_ids_fail_when_a_listing_fails(monkeypatch):
+def test_site_page_ids_fail_when_a_required_listing_fails(monkeypatch):
     _fake_fetch(monkeypatch, {"https://v/whats-on/": '<a href="/event/a/">A</a>'})
-    site = spk.Site(("https://v/whats-on/", "https://v/missing/"), r"https://v/event/[^/]+/")
+    site = spk.Site(("https://v/whats-on/", "https://v/missing/"), r"https://v/event/[^/]+/", required=True)
     try:
         spk.site_page_ids(site)
     except httpx.HTTPStatusError:
         pass
     else:
-        raise AssertionError("a failed listing must fail the run")
+        raise AssertionError("a failed listing must fail the run when the join is curation")
+
+
+def test_site_page_ids_skip_a_failed_listing_when_links_only(monkeypatch, caplog):
+    _fake_fetch(monkeypatch, {
+        "https://v/whats-on/": '<a href="/event/a/">A</a>',
+        "https://v/event/a/": '<a href="/book/1111">',
+    })
+    site = spk.Site(("https://v/missing/", "https://v/whats-on/"), r"https://v/event/[^/]+/")
+    assert spk.site_page_ids(site) == {"https://v/event/a/": {"1111"}}
+    assert "https://v/missing/" in caplog.text  # skipped, with a warning
+
+
+def test_scrape_without_the_site_links_the_spektrix_page(monkeypatch):
+    # A links-only Site whose listing is unreachable (Cloudflare challenging
+    # the production IP): same programme, Spektrix event pages.
+    _fake_fetch(monkeypatch, {})
+    events = [_event("100AAAA")]
+    instances = [_inst("101" + "A" * 25, "100AAAA")]
+    monkeypatch.setattr(spk, "fetch_programme", lambda client, today, http: (events, instances))
+    monkeypatch.setattr(spk, "fetch_prices", lambda client, insts, http, bands=None: {})
+    out = spk.scrape(spk.Client("v"), lambda e: ["theater"], site=spk.Site("https://v/whats-on/", r"https://v/e/.+"))
+    assert [e.source_url for e in out] == ["https://system.spektrix.com/v/website/EventDetails.aspx?EventId=100"]
+
+
+SEARCH_DOCS = [
+    {"title": "Capriccio", "uri": "/events/capriccio", "type": "events",
+     "emImportData": {"importId": "131401", "importUrl": "https://ticketing.v/client"}},
+    {"title": "Trio  Avant", "uri": "/events/trio-avant", "type": "events", "emImportData": []},
+    {"title": "No page", "type": "events"},
+]
+
+
+def test_search_page_ids_and_title_pages():
+    index = spk.SearchIndex("v_main_production", "https://www.v.org")
+    assert spk.search_page_ids(SEARCH_DOCS, index) == {"https://www.v.org/events/capriccio": {"131401"}}
+    assert spk.search_title_pages(SEARCH_DOCS, index) == {
+        "capriccio": "https://www.v.org/events/capriccio",
+        "trio avant": "https://www.v.org/events/trio-avant",
+    }
+    assert spk.title_key("  TRIO\tAvant ") == "trio avant"
+
+
+def _search_transport(pages, calls):
+    def handler(request):
+        calls.append(request)
+        assert request.headers["X-TYPESENSE-API-KEY"] == spk.SEARCH_KEY
+        assert request.url.params["filter_by"] == "type:=events"
+        page = int(request.url.params["page"])
+        return httpx.Response(200, json={"found": sum(len(p) for p in pages),
+                                         "hits": [{"document": d} for d in pages[page - 1]]})
+    return httpx.MockTransport(handler)
+
+
+def test_search_events_pages_through_the_index(monkeypatch):
+    calls = []
+    transport = _search_transport([SEARCH_DOCS[:2], SEARCH_DOCS[2:]], calls)
+    real = httpx.Client
+    monkeypatch.setattr(spk.httpx, "Client", lambda **kw: real(transport=transport, **kw))
+    assert spk.search_events(spk.SearchIndex("v_main_production", "https://www.v.org")) == SEARCH_DOCS
+    assert [c.url.params["page"] for c in calls] == ["1", "2"]
+    assert calls[0].url.path == "/collections/v_main_production/documents/search"
+
+
+def test_search_events_fails_on_an_empty_index(monkeypatch):
+    transport = _search_transport([[]], [])
+    real = httpx.Client
+    monkeypatch.setattr(spk.httpx, "Client", lambda **kw: real(transport=transport, **kw))
+    try:
+        spk.search_events(spk.SearchIndex("gone", "https://www.v.org"))
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("an empty index must fail the run")
 
 
 def _band_price(band, amount, default=True):

@@ -16,7 +16,9 @@ is the curation:
   doesn't list (test events, "Secure My Booking", the restaurant).
 
 The listing (`/whats-on/`, paged `/whats-on/page/N/`; Cloudflare 403s httpx,
-curl_cffi passes) renders one card per performance: `data-id` is the
+curl_cffi passes from a home IP; from the production server's IP the host's
+JavaScript bot check needs one headless-browser pass for its cookie — see
+`ListingClient`) renders one card per performance: `data-id` is the
 Spektrix instance id (or, for some, the event id), and the card links the
 event page; title and page come from the card (the box office's names are
 terser: "Royal Northern Sinfonia" for the site's "Vivaldi's Four Seasons,
@@ -26,14 +28,18 @@ fetching.
 
 from __future__ import annotations
 
+import logging
 import re
 
 from bs4 import BeautifulSoup
 
 from cartelera.scrapers import _spektrix as spk
 from cartelera.scrapers import register
+from cartelera.scrapers.browser import browser_page
 from cartelera.scrapers.http import CARTELITA_BROWSER_HEADERS, fetch
 from cartelera.types import ListMembership, ScrapedEvent, VenueDefinition
+
+logger = logging.getLogger(__name__)
 
 VENUE_SLUG = "kings-place"
 CLIENT = spk.Client("kingsplace", "https://ticketing.purchase.kingsplace.co.uk")
@@ -69,11 +75,35 @@ def has_next_page(page: str, number: int) -> bool:
     return f"/whats-on/page/{number + 1}/" in page
 
 
+class ListingClient:
+    """GETs listing pages: curl_cffi (`impersonate`) — enough from a home
+    IP — and, once the site answers 403 (from the production server's IP
+    its host runs a JavaScript bot check), one headless-browser pass for the
+    check's cookie, then plain HTTP with that cookie and the browser's
+    User-Agent (the AGENTS.md gate pattern; see `browser.py`)."""
+
+    def __init__(self) -> None:
+        self.gate: dict[str, str] | None = None  # headers carrying the cookie
+
+    def get(self, url: str) -> str:
+        if self.gate is None:
+            try:
+                return fetch(url, headers=CARTELITA_BROWSER_HEADERS, impersonate=True)
+            except Exception as exc:
+                if getattr(getattr(exc, "response", None), "status_code", None) != 403:
+                    raise
+                logger.info("kingsplace.co.uk: 403 (%s); passing the bot check in a browser", exc)
+                page = browser_page(url, locale="en-GB")
+                self.gate = {"User-Agent": page.user_agent, "Cookie": page.cookie_header}
+        return fetch(url, headers=self.gate)
+
+
 def fetch_cards() -> list[dict]:
     cards: list[dict] = []
+    client = ListingClient()
     for number in range(1, MAX_PAGES + 1):
         url = LISTING_URL if number == 1 else f"{LISTING_URL}page/{number}/"
-        page = fetch(url, headers=CARTELITA_BROWSER_HEADERS, impersonate=True)
+        page = client.get(url)
         cards += parse_cards(page)
         if not has_next_page(page, number):
             break

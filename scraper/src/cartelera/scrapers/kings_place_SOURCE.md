@@ -15,7 +15,14 @@ before curation) and title/url overrides from the joined card.
 `https://www.kingsplace.co.uk/whats-on/` and `/whats-on/page/N/` (9 pages,
 24 cards each, 203 cards on 2026-10-25; follow while the page links
 `/page/N+1/`). **Cloudflare 403s httpx; curl_cffi (`impersonate=True`)
-gets 200.** One card per performance: `.grid-item[data-id]` where
+gets 200** — from a home IP. From the production server's IP the host
+(Kinsta edge, `ki-edge`) answers curl_cffi too with a 403 "Checking your
+browser…" JavaScript check. `ListingClient` then does one headless pass
+(`browser.browser_page`, the AGENTS.md gate pattern): the browser's
+`__cf_bm` cookie, sent over plain HTTP with the browser's User-Agent, gets
+every listing page (the browser's own page is still the check page — don't
+read it). A plain cookie jar doesn't pass (the cookie must come from the
+JS). One card per performance: `.grid-item[data-id]` where
 `data-id` is the full Spektrix **instance** id (140 cards) or **event**
 id (14 cards); card classes = genre + series slugs (`online-events` marks
 streams); `.grid-item__title`; the "More info" link
@@ -53,3 +60,9 @@ Venue: Hall One, Price: £21" → scraper folk, 5 Nov 20:00 "£21"; Royal
 Northern Sinfonia — "Sun 25 Oct, 3pm, £28-£35" → classical 15:00 "£35";
 Bill Laurance (jazz) "£25/£40" → "£40". Cold-start DB: rows = scraper
 output (see the batch report).
+
+## Production (Hetzner IP), 2026-10-25
+Verified from prod with the new code (twice): 112 performances in ~26 s
+(the browser pass ~15 s), identical to the local run. The browser helper's
+28 KB page in the earlier diagnosis was the challenge page, not the
+listing.

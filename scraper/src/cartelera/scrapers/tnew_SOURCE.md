@@ -1,10 +1,19 @@
 # Tessitura TNEW v7 (shared helper `_tnew.py`)
 
 London box offices on TNEW (probed 2026-10-25, all open to plain httpx with
-the Cartelita browser UA): `tickets.nationaltheatre.org.uk`,
+the Cartelita browser UA **from a home IP**): `tickets.nationaltheatre.org.uk`,
 `my.sadlerswells.com`, `secure.southbankcentre.co.uk`,
 `ticketing.almeida.co.uk`, `my.hampsteadtheatre.com`,
 `basket.shakespearesglobe.com`, `my.oldvictheatre.com`.
+
+**Not from the production server (Hetzner).** The Tessitura-hosted hosts
+(`<client>-tnew-prod.tnhs.cloud`, Imperva 45.60.x: NT, Globe, Old Vic,
+Southbank) complete the TLS handshake and then never answer a request —
+httpx, curl_cffi and the headless browser alike, 45+ s (port 80 answers its
+https redirect instantly): an IP-reputation tarpit. So no module may depend
+on the feed for production: NT reads its date-picker API, the Globe its
+show pages; the Old Vic has no other per-performance source (see
+old_vic_SOURCE.md).
 
 ## Endpoint
 1. `GET https://<host>/events` — session cookies only (ASP.NET, Incapsula,

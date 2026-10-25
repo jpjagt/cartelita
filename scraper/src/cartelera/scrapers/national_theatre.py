@@ -1,20 +1,25 @@
 """National Theatre (Olivier, Lyttelton, Dorfman) — South Bank.
 
-TNEW box office `tickets.nationaltheatre.org.uk` joined to the website's
-what's-on (see national_theatre_SOURCE.md and the shared `_tnew` helper):
+The NT's "date picker" API (`events.nationaltheatre.org.uk/api/v1`, the
+booking calendar its "Dates & tickets" button opens; TNEW ids) joined to the
+website's what's-on (see national_theatre_SOURCE.md and the shared `_tnew`
+helper):
 
-- TNEW gives every performance (date, time, sold-out status). Its feed also
-  sells guided tours, backstage tours, archive tours and "Theatreworks"
-  corporate training, which have no production page.
+- The picker gives every performance of a TNEW production (`/events/<id>`:
+  TNEW performance id, start, auditorium, booking status incl. sold out).
+  It replaces the TNEW feed of `tickets.nationaltheatre.org.uk`, which (an
+  Imperva-fronted Tessitura host) never answers the production server's IP.
+  Guided tours, backstage tours, archive tours and "Theatreworks" corporate
+  training are TNEW products without a production page, so never asked.
 - The website's what's-on (`/whats-on/`) links the production pages
   (`/productions/<slug>/`). A production page links its TNEW production
   ("Dates & tickets" → `events.nationaltheatre.org.uk/events/<id>`), carries
   one JSON-LD `Event` per performance whose `location.name` is the
   auditorium, and a "Ticket prices" ladder in prose.
-- Curation: a TNEW performance is kept when its production is linked from a
+- Curation: a performance is kept when its production is linked from a
   production page the what's-on lists AND it plays in one of the three NT
-  auditoriums (JSON-LD location of that performance, else the page's
-  "The event location is" block). That drops NT work playing elsewhere —
+  auditoriums (the picker's venue of that performance, else the page's
+  JSON-LD location, else its "The event location is" block). That drops NT work playing elsewhere —
   West End transfers (Hadestown at the Lyric, The History Boys at the
   Haymarket, Pride at the Bridge), Broadway (Inter Alia), UK tours — whose
   pages are listed but locate elsewhere (they aren't sold on the NT's TNEW
@@ -27,13 +32,15 @@ import datetime as dt
 import json
 import logging
 import re
+from collections.abc import Iterable
 from dataclasses import dataclass, field
 
+import httpx
 from bs4 import BeautifulSoup
 
 from cartelera.scrapers import _tnew as tnew
 from cartelera.scrapers import register
-from cartelera.scrapers.http import CARTELITA_BROWSER_HEADERS, fetch
+from cartelera.scrapers.http import CARTELITA_BROWSER_HEADERS, CARTELITA_COMPAT_UA, fetch
 from cartelera.types import ListMembership, ScrapedEvent, VenueDefinition
 
 logger = logging.getLogger(__name__)
@@ -42,6 +49,8 @@ VENUE_SLUG = "national-theatre"
 HOST = "tickets.nationaltheatre.org.uk"
 # The website's "Dates & tickets" button links this alias of the TNEW host.
 BOOKING_HOSTS = (HOST, "events.nationaltheatre.org.uk")
+# The booking calendar behind "Dates & tickets" (CloudFront, open).
+PICKER_API = "https://events.nationaltheatre.org.uk/api/v1"
 SITE = "https://www.nationaltheatre.org.uk"
 LISTING_URL = f"{SITE}/whats-on/"
 PRODUCTION_LINK = re.compile(r"https://www\.nationaltheatre\.org\.uk/productions/[a-z0-9-]+/")
@@ -129,7 +138,71 @@ def parse_production(html: str, url: str) -> ProductionPage:
     )
 
 
-def build(perfs: list[tnew.Performance], pages: list[ProductionPage]) -> list[ScrapedEvent]:
+def picker_performances(
+    data: dict, today: dt.date
+) -> tuple[list[tnew.Performance], dict[str, str]]:
+    """A picker `/events/<id>` response → (its performances in [today, today
+    + WINDOW_DAYS), in start order; performance id → auditorium). One per
+    (production, start), as the TNEW feed."""
+    horizon = today + dt.timedelta(days=tnew.WINDOW_DAYS)
+    prod_id = str(data["_id"])
+    title = tnew.plain(data.get("title"))
+    perfs: list[tnew.Performance] = []
+    rooms: dict[str, str] = {}
+    seen: set[dt.datetime] = set()
+    for inst in data.get("instances") or []:
+        try:
+            start = dt.datetime.fromisoformat(inst["datetime"]).astimezone(tnew.LONDON).replace(tzinfo=None)
+        except (KeyError, TypeError, ValueError):
+            continue
+        if not (today <= start.date() < horizon) or start in seen:
+            continue
+        seen.add(start)
+        status = str(inst.get("bookingStatus") or "").lower()
+        perf = tnew.Performance(
+            production_id=prod_id,
+            performance_id=str(inst["_id"]),
+            production_title=title,
+            title=title,
+            start=start,
+            on_sale=status not in ("notonsale", "soldout"),
+            status="Sold out" if status == "soldout" else "",
+            product_type_id=0,
+            product_type_name="",
+            url=inst.get("bookingURL") or "",
+            image_url=data.get("thumbnail") or None,
+        )
+        perfs.append(perf)
+        rooms[perf.performance_id] = tnew.plain(inst.get("venue"))
+    return sorted(perfs, key=lambda p: p.start), rooms
+
+
+def fetch_picker(production_ids: Iterable[str], today: dt.date) -> tuple[list[tnew.Performance], dict[str, str]]:
+    """Every picker performance of `production_ids` (see picker_performances).
+    A production the picker doesn't know (404) is skipped with a warning;
+    any other failure fails the run."""
+    perfs: list[tnew.Performance] = []
+    rooms: dict[str, str] = {}
+    with httpx.Client(headers={"User-Agent": CARTELITA_COMPAT_UA, "Accept": "application/json"},
+                      follow_redirects=True, timeout=tnew.TIMEOUT) as http:
+        for prod_id in sorted(set(production_ids)):
+            resp = http.get(f"{PICKER_API}/events/{prod_id}")
+            if resp.status_code == 404:
+                logger.warning("national theatre: picker has no production %s", prod_id)
+                continue
+            resp.raise_for_status()
+            found, found_rooms = picker_performances(resp.json(), today)
+            perfs += found
+            rooms.update(found_rooms)
+    return sorted(perfs, key=lambda p: (p.start, p.production_id)), rooms
+
+
+def build(
+    perfs: list[tnew.Performance], pages: list[ProductionPage], rooms: dict[str, str] | None = None
+) -> list[ScrapedEvent]:
+    """`rooms`: performance id → auditorium (the picker's), ahead of the
+    page's JSON-LD / venue block."""
+    rooms = rooms or {}
     by_production: dict[str, ProductionPage] = {}
     for page in pages:
         for prod in page.productions:
@@ -139,7 +212,7 @@ def build(perfs: list[tnew.Performance], pages: list[ProductionPage]) -> list[Sc
         page = by_production.get(perf.production_id)
         if page is None:
             continue
-        room = page.locations.get(perf.start) or page.location
+        room = rooms.get(perf.performance_id) or page.locations.get(perf.start) or page.location
         if room not in AUDITORIUMS:
             continue
         events.append(tnew.event(
@@ -159,10 +232,11 @@ class NationalTheatreScraper:
     venue_slug = VENUE_SLUG
 
     def scrape(self, today: dt.date | None = None) -> list[ScrapedEvent]:
-        perfs = tnew.fetch_performances(HOST, today)
+        today = today or dt.date.today()
         links = listing_links(fetch(LISTING_URL, headers=CARTELITA_BROWSER_HEADERS))
         pages = [parse_production(html, url) for url, html in tnew.fetch_pages(links).items()]
-        return build(perfs, pages)
+        perfs, rooms = fetch_picker((prod for page in pages for prod in page.productions), today)
+        return build(perfs, pages, rooms)
 
 
 register(

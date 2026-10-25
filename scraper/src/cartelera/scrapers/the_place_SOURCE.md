@@ -35,7 +35,11 @@ info sessions too, and books touch tours from the show's own page.
 - `source_url`: show pages on theplace.org.uk (the what's-on page's
   `/events/<slug>` links) book each performance as
   `/book/instance/<numeric instance id>`; the shared `Site` join collects
-  those ids and picks each event's page. Shows not (yet) on the site —
+  those ids and picks each event's page. **The join is links-only**: if the
+  what's-on listing can't be fetched, the helper logs a warning and every
+  event links to the Spektrix event page (`Site` without `required`, see
+  `spektrix_SOURCE.md`) — which is what happens in production (below).
+  Shows not (yet) on the site —
   Resolution 2027, most of spring 2027 — and performances whose online
   booking has closed fall back to the Spektrix event page.
 - `price`: each price list has a "Standard" band beside concession bands that
@@ -57,3 +61,12 @@ booking links = the three instance ids), "£22" (page: "Standard £22, concs
 £18"), venue "At The Place" — match. Starchitects Save Santa: 11 perfs 16–23
 Dec, dance + kids, "£18".
 Cold-start DB: 81 rows (no collapsed occurrences).
+
+## Production (Hetzner IP), 2026-10-25
+theplace.org.uk answers the production server with a Cloudflare managed
+challenge on every path (httpx, curl_cffi, headless browser — no
+clearance), and it has no search index or other open listing (Craft, no
+Typesense). Curation is the Spektrix client's own labels, so only the links
+are affected: in prod all 80 performances link to the Spektrix event page
+(locally 40 link to theplace.org.uk). Verified from prod with the new code:
+80 performances, identical to local except those 40 `source_url`s.

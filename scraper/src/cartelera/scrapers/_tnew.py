@@ -1,7 +1,9 @@
 """Tessitura TNEW v7 — shared by the London venues whose box office runs on it
-(National Theatre, Shakespeare's Globe, Old Vic read the feed; Sadler's
-Wells uses it as a cross-check; Southbank, Almeida and Hampstead are on TNEW
-too, but their modules read the website alone — see tnew_SOURCE.md).
+(the Old Vic reads the feed; Sadler's Wells uses it as a cross-check; the
+National Theatre (its date-picker API), Shakespeare's Globe, Southbank,
+Almeida and Hampstead are on TNEW too, but their modules read other sources
+and use only this module's helpers — see tnew_SOURCE.md). The Imperva-fronted
+TNEW hosts never answer the production server's IP: don't build on the feed.
 
 TNEW's event listing is fed by one undocumented-but-public call:
 

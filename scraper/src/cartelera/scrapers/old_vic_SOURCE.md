@@ -24,3 +24,15 @@ join — a one-off kids' storytelling).
 Checked: A Christmas Carol 2027-01-09 — TNEW "Saturday 09 Jan 2027 2:00pm /
 7:00pm"; page "Tickets Previews £19.50–£81.50, Off-Peak £19.50–£81.50, Peak
 £19.50–£91.50" → ours 14:00 & 19:00, "£19.50–91.50".
+
+## Production (Hetzner IP), 2026-10-25 — does not work
+`my.oldvictheatre.com` (→ `olvc-tnew-prod.tnhs.cloud`, Imperva) tarpits the
+production server: TLS handshake, then no answer to any request (httpx,
+curl_cffi, the headless browser helper; 45–60 s timeouts). The website
+answers prod, but carries no per-performance data: the `/stage/` pages give
+a run, a price ladder, the access performances in prose and a "Book Now"
+link to the TNEW calendar; no JSON-LD events, no API (WP REST closed), no
+other open listing. Generating dates from the run + weekly pattern would be
+recurrence expansion and guesswork (no sold-out, no exceptions) — not done.
+Left unchanged: the source fails in production until the scrape can reach
+TNEW from another egress (or the Old Vic/Tessitura allowlist the server).

@@ -4,10 +4,15 @@ Spektrix client `royalcourt` (custom domain tickets.royalcourttheatre.com),
 via the shared `_spektrix` helper (see royal_court_theatre_SOURCE.md). The
 client has no genre/type attribute, so curation is two structural signals:
 
-- the venue's own website (`Site(required=True)`): only events whose
-  performances a royalcourttheatre.com show page embeds are kept. That drops
-  the box office's test events ("Poppy Test Event", "Z - 2627 Test", "Touch
-  Tour - TEST"), the per-show touch tours and anything not yet published;
+- listed on the venue's own website: only events the site's search index
+  (`spk.SearchIndex`, the Typesense index behind royalcourttheatre.com's
+  what's-on and search) lists are kept. Its documents carry no Spektrix id,
+  so the join is the event's exact name (`spk.title_key`: case and spacing
+  only, never fuzzy). That drops the box office's test events ("Poppy Test
+  Event", "Z - 2627 Test", "Touch Tour - TEST"), the per-show touch tours
+  ("The Afronauts - Touch Tour") and anything not yet published. (The site
+  itself challenges the production server's IP — Cloudflare — so its
+  sitemap and show pages can't be the join there.);
 - `TicketVenue1`, the room: only the two auditoriums (Jerwood Theatre
   Downstairs / Upstairs). The site also lists Balcony Bar / Bar & Kitchen
   talks and writers' sessions (Book Club, First Words, Writers' Card),
@@ -28,14 +33,7 @@ from cartelera.types import ListMembership, ScrapedEvent, VenueDefinition
 
 VENUE_SLUG = "royal-court-theatre"
 CLIENT = spk.Client("royalcourt", "https://tickets.royalcourttheatre.com")
-# The sitemap lists every published show page (the what's-on page drops a
-# show on its last day); show pages embed their performances' full Spektrix
-# ids (booking buttons).
-SITE = spk.Site(
-    "https://royalcourttheatre.com/sitemap.xml",
-    r"https://royalcourttheatre\.com/events/[a-z0-9-]+/?",
-    required=True,
-)
+INDEX = spk.SearchIndex("royalcourttheatre_main_production", "https://royalcourttheatre.com")
 ROOMS = {"Jerwood Theatre Downstairs", "Jerwood Theatre Upstairs"}
 STANDING_BAND = "Standing"
 
@@ -48,11 +46,25 @@ def seated_band(price: dict) -> bool:
     return spk.band(price) != STANDING_BAND
 
 
+class Listing:
+    """Curation and page link from the site's listed events (name → page)."""
+
+    def __init__(self, pages: dict[str, str]):
+        self.pages = pages
+
+    def categorize(self, event: dict) -> list[str]:
+        return categorize(event) if self.url(event) else []
+
+    def url(self, event: dict) -> str | None:
+        return self.pages.get(spk.title_key(event["name"]))
+
+
 class RoyalCourtTheatreScraper:
     venue_slug = VENUE_SLUG
 
     def scrape(self) -> list[ScrapedEvent]:
-        return spk.scrape(CLIENT, categorize, site=SITE, price_bands=seated_band)
+        listing = Listing(spk.search_title_pages(spk.search_events(INDEX), INDEX))
+        return spk.scrape(CLIENT, listing.categorize, url=listing.url, price_bands=seated_band)
 
 
 register(

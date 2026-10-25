@@ -20,3 +20,10 @@ def test_keeps_performances_drops_development_events():
     assert len({e.external_id for e in out}) == len(out)
     joined = " ".join(e.title for e in out)
     assert "Script Conversation" not in joined and "Test Event" not in joined
+
+
+def test_event_pages_from_the_search_index_by_exact_name():
+    docs = json.loads((FIXTURES / "donmar_warehouse_search.json").read_text())
+    pages = spk.search_title_pages(docs, donmar_warehouse.INDEX)
+    assert pages[spk.title_key("ILFORD BOY")] == "https://www.donmarwarehouse.com/events/ilford-boy"
+    assert pages[spk.title_key("THE KING'S RANSOM")] == "https://www.donmarwarehouse.com/events/the-kings-ransom"
