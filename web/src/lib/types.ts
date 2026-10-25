@@ -15,6 +15,69 @@ export interface CityConfig {
   /** Lists fed (wholly or mostly) by a third-party aggregator whose terms ask
       for credit: list slug → the credit shown under that list. */
   listCredits?: Record<string, ListCredit>;
+  /** The city's name where a locale spells it differently from `name`
+      (Yerevan → Երևան, Ереван); page titles and OG images use it. */
+  names?: Partial<Record<Locale, string>>;
+  /** The form the locale's "in {city}" phrase needs, where it differs from
+      the locale's name (Armenian locative Երևանում, Russian prepositional
+      Ереване); see i18n `inCity`. */
+  namesIn?: Partial<Record<Locale, string>>;
+}
+
+/** A page's <head> metadata (lib/meta.ts → Layout.astro). Paths are
+    site-relative; Layout resolves them against the site URL. */
+export interface PageMeta {
+  /** <title>, og:title and twitter:title. */
+  title: string;
+  /** Meta description, og:description and twitter:description. */
+  description: string;
+  /** Canonical path (also og:url); absent on pages without one (404). */
+  canonical?: string;
+  /** og:url when there is no canonical (404 points at the home page). */
+  url?: string;
+  /** The page's 1200×630 OG image path (/og/….png). */
+  ogImage: string;
+  /** og:image:alt — what the image shows. */
+  ogImageAlt: string;
+  /** hreflang alternates: the same page in the city's other locales. */
+  alternates: PageAlternate[];
+  /** Keep the page out of search indexes (404). */
+  noindex?: boolean;
+}
+
+/** One `<link rel="alternate" hreflang>`: hreflang is a locale or x-default. */
+export interface PageAlternate {
+  hreflang: string;
+  path: string;
+}
+
+/** One entry in the OG image's nav band. */
+export interface OgNavItem {
+  /** List slug / page slug (today, my-list); null for the "and more" item. */
+  slug: string | null;
+  label: string;
+  active: boolean;
+  /** Today · Film · My list: set apart at the band's right end, like the
+      live navbar. */
+  fixed: boolean;
+}
+
+/** What the OG image shows under its header. */
+export type OgBody =
+  | { kind: "agenda"; days: AgendaDay[] }
+  /** My list: the venue directory's names (the page's first paint). */
+  | { kind: "venues"; heading: string; venues: string[] }
+  /** The city picker: every city. */
+  | { kind: "cities"; heading: string; cities: string[] };
+
+/** renderOgHtml's input. */
+export interface OgImageSpec {
+  locale: Locale;
+  /** City name, as shown next to the wordmark; absent on the city picker. */
+  city?: string;
+  /** The nav band; empty on the city picker. */
+  nav: OgNavItem[];
+  body: OgBody;
 }
 
 /** "Listings via <name>" under a list (CityConfig.listCredits). */

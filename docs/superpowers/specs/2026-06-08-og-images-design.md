@@ -151,3 +151,23 @@ node scripts/og.mjs
 
 - How to run the TS data layer from `scripts/og.mjs` on the build box — reuse
   `vite-node` (already a devDep) vs. a small build step. Resolve in the plan.
+
+## Revision 2026-10-25 — city, real nav, every page
+
+A shared link never said which city it was for. Now:
+
+- **Header:** the city's name (localized: `CityConfig.names`) sits beside
+  the wordmark at the same size, regular weight, muted; shrunk by `og.ts` if
+  it doesn't fit. The nav band moves to row 4, full width.
+- **Nav = the city's own navbar** (`ogNav`): its tab-earning genres in
+  `navOrder`, the active genre even when it lives in More, "and more", then
+  Today · Film · My list flush right. The old fixed `jazz/theater/classic/film`
+  list is gone (`classic` had silently stopped matching the `classical` slug).
+  `og.ts` measures label widths; the pure `placeNav` assigns columns and drops
+  inactive genres from the end on overflow.
+- **Every page has an image** (paths: `lib/meta.ts`): each list, plus
+  `<city>-<locale>-today.png` (the build's calendar day in the city,
+  `today.ts ogDay`), `<city>-<locale>-my-list.png` (the venue directory), and
+  `cartelita.png` for `/` and the 404.
+- **Metadata** (titles, descriptions, og/twitter tags, hreflang alternates,
+  og:locale) is built by `lib/meta.ts`; Layout.astro takes a `PageMeta`.

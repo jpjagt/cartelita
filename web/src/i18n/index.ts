@@ -34,6 +34,16 @@ interface Strings {
   // Share text: {title}, {when} (date[, time]) and {venue}; " (price)" is
   // appended when there is one (lib/share.ts).
   shareTemplate: string
+  // Page metadata (lib/meta.ts). inCity: "{page} in {city}", {city} in the
+  // form the phrase needs (cities.ts cityNameIn).
+  inCity: string
+  // One-sentence description; {title} = the page's inCity phrase (Today: plus
+  // the date).
+  pageDescription: string
+  myListDescription: string  // {city} as in inCity
+  tagline: string            // the city picker's title, after "Cartelita — "
+  pickerDescription: string  // {cities} = every city, as a list
+  notFound: string
   // category names keyed by category slug
   categories: Record<string, string>
   prices: Record<string, string>
@@ -70,6 +80,12 @@ const DICT: Record<Locale, Strings> = {
     notOnMapMany: "{n} espais no surten al mapa",
     close: "Tanca",
     shareTemplate: "{title} — {when} a {venue}",
+    inCity: "{page} a {city}",
+    pageDescription: "{title}: una agenda triada a mà del que val la pena per sortir de casa.",
+    myListDescription: "Els teus espais preferits a {city}, en una sola agenda.",
+    tagline: "el que val la pena per sortir de casa",
+    pickerDescription: "Agendes triades a mà per a {cities}.",
+    notFound: "Pàgina no trobada",
     categories: {
       film: "Cinema",
       jazz: "Jazz",
@@ -116,6 +132,12 @@ const DICT: Record<Locale, Strings> = {
     notOnMapMany: "{n} salas no aparecen en el mapa",
     close: "Cerrar",
     shareTemplate: "{title} — {when} en {venue}",
+    inCity: "{page} en {city}",
+    pageDescription: "{title}: una agenda elegida a mano de lo que merece salir de casa.",
+    myListDescription: "Tus salas favoritas en {city}, en una sola agenda.",
+    tagline: "lo que merece salir de casa",
+    pickerDescription: "Agendas elegidas a mano para {cities}.",
+    notFound: "Página no encontrada",
     categories: {
       film: "Cine",
       jazz: "Jazz",
@@ -162,6 +184,12 @@ const DICT: Record<Locale, Strings> = {
     notOnMapMany: "{n} venues not on the map",
     close: "Close",
     shareTemplate: "{title} — {when} at {venue}",
+    inCity: "{page} in {city}",
+    pageDescription: "{title}: a hand-picked agenda of what's worth leaving the house for.",
+    myListDescription: "Your favourite venues in {city}, in one agenda.",
+    tagline: "what's on, worth leaving the house for",
+    pickerDescription: "Hand-picked agendas for {cities}.",
+    notFound: "Page not found",
     categories: {
       film: "Film",
       jazz: "Jazz",
@@ -208,6 +236,12 @@ const DICT: Record<Locale, Strings> = {
     notOnMapMany: "{n} վայր քարտեզում չեն",
     close: "Փակել",
     shareTemplate: "{title} — {when}, {venue}",
+    inCity: "{page} {city}",
+    pageDescription: "{title}. Ձեռքով ընտրված ծրագիր այն ամենի, ինչի համար արժե դուրս գալ տնից։",
+    myListDescription: "Ձեր սիրելի վայրերը {city}՝ մեկ ծրագրում։",
+    tagline: "այն, ինչի համար արժե դուրս գալ տնից",
+    pickerDescription: "Ձեռքով ընտրված ծրագրեր՝ {cities}։",
+    notFound: "Էջը չի գտնվել",
     categories: {
       film: "Կինո",
       jazz: "Ջազ",
@@ -254,6 +288,12 @@ const DICT: Record<Locale, Strings> = {
     notOnMapMany: "Площадок не на карте: {n}",
     close: "Закрыть",
     shareTemplate: "{title} — {when}, {venue}",
+    inCity: "{page} в {city}",
+    pageDescription: "{title}: подборка того, ради чего стоит выйти из дома.",
+    myListDescription: "Ваши любимые площадки в {city} — в одной афише.",
+    tagline: "то, ради чего стоит выйти из дома",
+    pickerDescription: "Афиши, собранные вручную: {cities}.",
+    notFound: "Страница не найдена",
     categories: {
       film: "Кино",
       jazz: "Джаз",
@@ -300,6 +340,12 @@ const DICT: Record<Locale, Strings> = {
     notOnMapMany: "{n} locaties niet op de kaart",
     close: "Sluiten",
     shareTemplate: "{title} — {when} in {venue}",
+    inCity: "{page} in {city}",
+    pageDescription: "{title}: een handgekozen agenda van wat de deur uit gaan waard is.",
+    myListDescription: "Je favoriete locaties in {city}, in één agenda.",
+    tagline: "wat de deur uit gaan waard is",
+    pickerDescription: "Handgekozen agenda's voor {cities}.",
+    notFound: "Pagina niet gevonden",
     categories: {
       film: "Film",
       jazz: "Jazz",
@@ -330,4 +376,17 @@ export function categoryName(locale: Locale, slug: string): string {
 export function localeTag(locale: Locale): string {
   const tags = { ca: "ca-ES", es: "es-ES", en: "en-GB", hy: "hy-AM", ru: "ru-RU", nl: "nl-NL" } as const
   return tags[locale]
+}
+
+/** A yyyy-mm-dd date as the agenda's day heading spells it ("Sunday 25
+    October"), independent of the build machine's time zone. */
+export function longDate(locale: Locale, date: string): string {
+  return new Date(date + "T12:00:00Z").toLocaleDateString(localeTag(locale), {
+    weekday: "long", day: "numeric", month: "long", timeZone: "UTC",
+  })
+}
+
+/** Fill a "{key}" template. */
+export function fill(template: string, values: Record<string, string>): string {
+  return template.replace(/\{(\w+)\}/g, (m, k: string) => values[k] ?? m)
 }

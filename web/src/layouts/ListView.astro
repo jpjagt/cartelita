@@ -2,9 +2,10 @@
 import { getEventsForList } from "@/lib/queries"
 import { groupEventsByDay } from "@/lib/agenda"
 import { groupFilmDay } from "@/lib/film-agenda"
-import { CITIES } from "@/lib/cities"
+import { CITIES, cityConfig } from "@/lib/cities"
+import { listMeta } from "@/lib/meta"
 import { type Locale } from "@/lib/types"
-import { t, categoryName } from "@/i18n"
+import { t } from "@/i18n"
 import Layout from "@/components/Layout.astro"
 import Navbar from "@/components/Navbar.astro"
 import AgendaDay from "@/components/AgendaDay.astro"
@@ -27,7 +28,6 @@ interface Props {
 
 const { city, locale, list } = Astro.props
 const strings = t(locale)
-const name = categoryName(locale, list)
 const events = await getEventsForList(city, list, locale)
 const allDays = groupEventsByDay(events)
 // Coarse build-time filter: drop days before today (absolute calendar date).
@@ -44,9 +44,7 @@ const priceFit = pricePageFit(days.flatMap((d) => d.events.map((e) => displayPri
 ---
 <Layout
   locale={locale}
-  title={`${name} — ${strings.siteTitle}`}
-  canonical={`/${city}/${locale}/${list}`}
-  ogImage={`/og/${city}-${locale}-${list}.png`}
+  meta={listMeta(cityConfig(city), locale, list)}
   genre={list}
   city={city}
   priceFit={priceFit}

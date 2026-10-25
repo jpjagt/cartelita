@@ -4,7 +4,8 @@ import { groupEventsByDay } from "@/lib/agenda"
 import { groupFilmDay } from "@/lib/film-agenda"
 import { CITIES, cityConfig, TODAY } from "@/lib/cities"
 import { FILM_LIST, navOrder } from "@/lib/genre-nav"
-import { addDays, cityToday, offeredGenres, TODAY_SHIP_DAYS } from "@/lib/today"
+import { todayMeta } from "@/lib/meta"
+import { addDays, cityToday, ogDay, offeredGenres, TODAY_SHIP_DAYS } from "@/lib/today"
 import type { Locale } from "@/lib/types"
 import type { TodayEventMeta } from "@/types/today"
 import { t, categoryName } from "@/i18n"
@@ -81,8 +82,7 @@ const priceFit = pricePageFit(events.map((e) => displayPrice(e.price, locale)))
 ---
 <Layout
   locale={locale}
-  title={`${strings.today} — ${strings.siteTitle}`}
-  canonical={`/${city}/${locale}/${TODAY}`}
+  meta={todayMeta(cfg, locale, ogDay(new Date(), cfg.timezone))}
   genre={TODAY}
   city={city}
   priceFit={priceFit}

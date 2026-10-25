@@ -66,6 +66,14 @@ export function cityToday(now: Date, tz?: string): string {
   return logicalDate(c.date, c.time);
 }
 
+/** The day a nightly build's Today preview (description + OG image) is for:
+    the city's CALENDAR date at `now`, not its logical one — the ~05:00
+    Madrid build runs before London's (04:00) and Asunción's (00:00) 05:00
+    boundary, when the logical day is still yesterday. */
+export function ogDay(now: Date, tz?: string): string {
+  return wallClock(now, tz).date;
+}
+
 /** `date` (yyyy-mm-dd) shifted by `days`. */
 export function addDays(date: string, days: number): string {
   const [y, m, d] = date.split("-").map(Number);

@@ -2,7 +2,8 @@
 import { getCityEvents, getVenueDirectory } from "@/lib/queries"
 import { groupEventsByDay } from "@/lib/agenda"
 import { layoutVenueDirectory } from "@/lib/venue-directory"
-import { CITIES, MY_LIST } from "@/lib/cities"
+import { CITIES, cityConfig, MY_LIST } from "@/lib/cities"
+import { myListMeta } from "@/lib/meta"
 import type { Locale, GridRadioOption } from "@/lib/types"
 import { t, categoryName } from "@/i18n"
 import Layout from "@/components/Layout.astro"
@@ -58,8 +59,7 @@ const priceFit = pricePageFit(
 ---
 <Layout
   locale={locale}
-  title={`${strings.myList} — ${strings.siteTitle}`}
-  canonical={`/${city}/${locale}/${MY_LIST}`}
+  meta={myListMeta(cityConfig(city), locale)}
   genre={MY_LIST}
   city={city}
   priceFit={priceFit}

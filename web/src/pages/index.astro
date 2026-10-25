@@ -1,10 +1,11 @@
 ---
 import Layout from "@/components/Layout.astro"
 import CityPicker from "@/components/CityPicker.astro"
+import { pickerMeta } from "@/lib/meta"
 
 // Bare / is the city selector. Deliberately bare — the product lives inside a
 // city.
 ---
-<Layout locale="en" title="Cartelita" canonical="/" genre="">
+<Layout locale="en" meta={pickerMeta()} genre="">
   <CityPicker redirect />
 </Layout>

@@ -1,5 +1,6 @@
 ---
-import type { Locale, PricePageFit } from "@/lib/types"
+import type { Locale, PageMeta, PricePageFit } from "@/lib/types"
+import { ogLocale } from "@/lib/meta"
 import "@/styles/global.css"
 import CellIconSprite from "@/components/ui/CellIconSprite.astro"
 import Analytics from "@/components/Analytics.astro"
@@ -8,9 +9,8 @@ import { ClientRouter } from "astro:transitions"
 
 interface Props {
   locale: Locale
-  title: string
-  canonical: string
-  ogImage?: string
+  /** Title, description, canonical, OG image, alternates (lib/meta.ts). */
+  meta: PageMeta
   /** Active genre slug; sets data-genre on <body> so --genre-primary resolves
       page-wide (the now-line and any other genre-tinted chrome read it). */
   genre: string
@@ -21,9 +21,13 @@ interface Props {
   priceFit?: PricePageFit
 }
 
-const { locale, title, canonical, ogImage, genre, city, priceFit } = Astro.props
-const canonicalUrl = new URL(canonical, Astro.site)
-const ogImageUrl = ogImage ? new URL(ogImage, Astro.site).href : undefined
+const { locale, meta, genre, city, priceFit } = Astro.props
+const abs = (path: string) => new URL(path, Astro.site).href
+const canonicalUrl = meta.canonical ? abs(meta.canonical) : undefined
+const pageUrl = canonicalUrl ?? abs(meta.url ?? "/")
+const ogImageUrl = abs(meta.ogImage)
+// The same page in the city's other locales (og:locale:alternate too).
+const altLocales = meta.alternates.filter((a) => a.hreflang !== "x-default" && a.hreflang !== locale)
 // The grid geometry for every container width, as a container-query step
 // table generated from lib/grid-geometry.ts — so the first paint is already
 // laid out for the visitor's viewport, before any script runs.
@@ -37,20 +41,28 @@ const gridCss = gridGeometryCss()
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{title}</title>
-    <link rel="canonical" href={canonicalUrl.href} />
-    <meta property="og:title" content={title} />
+    <title>{meta.title}</title>
+    <meta name="description" content={meta.description} />
+    {meta.noindex && <meta name="robots" content="noindex" />}
+    {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
+    {meta.alternates.map((a) => <link rel="alternate" hreflang={a.hreflang} href={abs(a.path)} />)}
+    <meta property="og:site_name" content="Cartelita" />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content={canonicalUrl.href} />
-    {ogImageUrl && (
-      <>
-        <meta property="og:image" content={ogImageUrl} />
-        <meta property="og:image:width" content="1200" />
-        <meta property="og:image:height" content="630" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:image" content={ogImageUrl} />
-      </>
-    )}
+    <meta property="og:title" content={meta.title} />
+    <meta property="og:description" content={meta.description} />
+    <meta property="og:url" content={pageUrl} />
+    <meta property="og:locale" content={ogLocale(locale)} />
+    {altLocales.map((a) => <meta property="og:locale:alternate" content={ogLocale(a.hreflang as Locale)} />)}
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={meta.ogImageAlt} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={meta.title} />
+    <meta name="twitter:description" content={meta.description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+    <meta name="twitter:image:alt" content={meta.ogImageAlt} />
     <script is:inline>
       (() => {
         const dark = window.matchMedia("(prefers-color-scheme: dark)");

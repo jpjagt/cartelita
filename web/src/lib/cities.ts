@@ -23,6 +23,8 @@ export const CITIES: Record<string, CityConfig> = {
     defaultList: "jazz",
     timezone: "Asia/Yerevan",
     center: [44.5152, 40.1872],
+    names: { hy: "Երևան", ru: "Ереван" },
+    namesIn: { hy: "Երևանում", ru: "Ереване" },
   },
   amsterdam: {
     slug: "amsterdam",
@@ -96,6 +98,17 @@ export function cityConfig(slug: string): CityConfig {
   const city = CITIES[slug];
   if (!city) throw new Error(`unknown city slug ${JSON.stringify(slug)}`);
   return city;
+}
+
+/** The city's name in `locale` (CityConfig.names, else its name). */
+export function cityName(city: CityConfig, locale: Locale): string {
+  return city.names?.[locale] ?? city.name;
+}
+
+/** The city's name as the locale's "in {city}" phrase needs it
+    (CityConfig.namesIn, else cityName). */
+export function cityNameIn(city: CityConfig, locale: Locale): string {
+  return city.namesIn?.[locale] ?? cityName(city, locale);
 }
 
 /** Where the city selector sends a visitor reading `list` in `locale`:
