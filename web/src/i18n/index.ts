@@ -8,6 +8,8 @@ interface Strings {
   viewFilms: string
   viewByTime: string
   showEarlier: string
+  /** Credit line under a list fed by a third-party aggregator: "Listings via <name>". */
+  listingsVia: string
   myList: string
   viewEvents: string
   viewVenues: string
@@ -46,6 +48,7 @@ const DICT: Record<Locale, Strings> = {
     viewFilms: "Per pel·li",
     viewByTime: "Per hora",
     showEarlier: "Mostra sessions anteriors",
+    listingsVia: "Programació via",
     myList: "La meva llista",
     viewEvents: "Esdeveniments",
     viewVenues: "Espais",
@@ -91,6 +94,7 @@ const DICT: Record<Locale, Strings> = {
     viewFilms: "Por peli",
     viewByTime: "Por hora",
     showEarlier: "Mostrar sesiones anteriores",
+    listingsVia: "Programación vía",
     myList: "Mi lista",
     viewEvents: "Eventos",
     viewVenues: "Salas",
@@ -136,6 +140,7 @@ const DICT: Record<Locale, Strings> = {
     viewFilms: "By film",
     viewByTime: "By time",
     showEarlier: "Show earlier screenings",
+    listingsVia: "Listings via",
     myList: "My list",
     viewEvents: "Events",
     viewVenues: "Venues",
@@ -181,6 +186,7 @@ const DICT: Record<Locale, Strings> = {
     viewFilms: "Ըստ ֆիլմի",
     viewByTime: "Ըստ ժամի",
     showEarlier: "Ցույց տալ ավելի վաղ սեանսները",
+    listingsVia: "Ծրագիրը՝",
     myList: "Իմ ցանկը",
     viewEvents: "Միջոցառումներ",
     viewVenues: "Վայրեր",
@@ -226,6 +232,7 @@ const DICT: Record<Locale, Strings> = {
     viewFilms: "По фильмам",
     viewByTime: "По времени",
     showEarlier: "Показать более ранние сеансы",
+    listingsVia: "Программа через",
     myList: "Мой список",
     viewEvents: "События",
     viewVenues: "Площадки",
@@ -271,6 +278,7 @@ const DICT: Record<Locale, Strings> = {
     viewFilms: "Per film",
     viewByTime: "Op tijd",
     showEarlier: "Toon eerdere voorstellingen",
+    listingsVia: "Programma via",
     myList: "Mijn lijst",
     viewEvents: "Evenementen",
     viewVenues: "Locaties",

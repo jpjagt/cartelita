@@ -1,6 +1,9 @@
 # London — venue research and build plan
 
-Date: 2026-10-24. Status: **research only, nothing built.** Per-genre raw
+Date: 2026-10-24. Status: **launched 2026-10-25** — build plan steps 0–6
+done (69 sources, ~130 venues, ~11,000 events; each source's details in its
+`scraper/src/cartelera/scrapers/*_SOURCE.md`). Step 7 ("Later") is open;
+follow-ups are listed at the end. Per-genre raw
 notes (every probe result, Spektrix client bases, DICE venue names, RA venue
 ids) are in `docs/london-research/`. Every venue below
 was probed live (curl with the Cartelita UA; `curl_cffi impersonate="chrome"`
@@ -351,3 +354,23 @@ sites timed out on HTTPS from the research machine but answered on HTTP
 (Hundred Years Gallery, Total Refreshment Centre) — re-probe from prod. Raw
 per-genre research notes: `docs/london-research/{film,jazz,classical,theatre,club-gigs}.md`
 (written before the decisions above; where they disagree, this file wins).
+
+## Follow-ups after launch (2026-10-25)
+
+- **Page weight.** London's lists are the heaviest on the site (My list ~930 KB
+  gzipped, film ~410 KB, theater ~215 KB; Amsterdam's My list is ~460 KB).
+  7,100 of ~11,100 events fall in the next 60 days — a per-city horizon cap
+  would cut a third.
+- **LSO St Luke's** is owned by the Barbican source (no free Friday
+  lunchtimes); a direct lso.co.uk source would take it over.
+- **Comedy** is most of Soho Theatre and appears at MOTH and Union Chapel —
+  all structurally labelled; a `comedy` category would be cheap.
+- **Clusterflick:** BFI talks (dropped with the `talk` label), ~75
+  third-party festival screenings kept, NT Live at ArtHouse kept.
+- **Labelling limits** (see the SOURCE.md files): RAM jazz and Blackheath
+  folk come out as classical; Southbank "Performance & dance" goes on both
+  theater and dance; Almeida has prices for ~11% of performances.
+- **jazzlondonlive:** 20 extra whitelisted venues chosen by the build agent
+  (listed in its SOURCE.md) — review; consider contacting the editor.
+- **DICE:** request a partner key (lifts the 30-event horizon of the
+  public-page venues and adds genre tags).

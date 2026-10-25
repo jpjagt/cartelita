@@ -133,7 +133,11 @@ from a real discriminator and put genres in `annotations`).
 - **Live at https://cartelita.july.dev**, deployed from `main` on Coolify.
   Three cities: Barcelona (45 per-venue scrapers), Yerevan (per-venue +
   the `tomsarkgh` aggregator) and Amsterdam (one multi-calendar source,
-  `jazzin_amsterdam`, ~160 venues). Both test suites:
+  `jazzin_amsterdam`, ~160 venues), plus Rotterdam, Utrecht, Asunción and
+  London (launched 2026-10-25: 69 sources, ~130 venues, mostly on shared
+  platform helpers — `_spektrix.py`, `_dice.py`, `_tnew.py`,
+  `_ticketsolve.py` — plus the `clusterflick` film and `jazzlondonlive` jazz
+  whitelists; see `docs/london.md`). Both test suites:
   `cd scraper && uv run pytest`; `cd web && pnpm test`.
 - **Favourites are browser-only** (localStorage, `web/src/lib/favourites.ts`):
   star a venue from the margin next to any event row (hover) or from the

@@ -64,6 +64,18 @@ export const CITIES: Record<string, CityConfig> = {
     timezone: "America/Asuncion",
     center: [-57.5759, -25.2637],
   },
+  london: {
+    slug: "london",
+    name: "London",
+    locales: ["en"],
+    defaultLocale: "en",
+    // London's deepest category: the subsidised / new-writing theatre scene.
+    defaultList: "theater",
+    timezone: "Europe/London",
+    center: [-0.1278, 51.5074],
+    // The cinemas come from Clusterflick's open data (MIT; scraper/…/clusterflick_SOURCE.md).
+    listCredits: { film: { name: "Clusterflick", url: "https://clusterflick.com" } },
+  },
 };
 
 // Slug of the per-visitor favourites page, /:city/:locale/my-list. Lives beside

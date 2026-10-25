@@ -12,6 +12,15 @@ export interface CityConfig {
   timezone: string;
   /** [lng, lat] the Today map centres on when no venue has coordinates. */
   center: [number, number];
+  /** Lists fed (wholly or mostly) by a third-party aggregator whose terms ask
+      for credit: list slug → the credit shown under that list. */
+  listCredits?: Record<string, ListCredit>;
+}
+
+/** "Listings via <name>" under a list (CityConfig.listCredits). */
+export interface ListCredit {
+  name: string;
+  url: string;
 }
 
 /** One option in a GridRadioButtons control. */

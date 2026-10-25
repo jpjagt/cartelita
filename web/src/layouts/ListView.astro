@@ -2,6 +2,7 @@
 import { getEventsForList } from "@/lib/queries"
 import { groupEventsByDay } from "@/lib/agenda"
 import { groupFilmDay } from "@/lib/film-agenda"
+import { CITIES } from "@/lib/cities"
 import { type Locale } from "@/lib/types"
 import { t, categoryName } from "@/i18n"
 import Layout from "@/components/Layout.astro"
@@ -35,6 +36,7 @@ const allDays = groupEventsByDay(events)
 // correction and heals a stale build.
 const todayAbsolute = new Date().toISOString().slice(0, 10)
 const days = allDays.filter((d) => d.date >= todayAbsolute)
+const credit = CITIES[city]?.listCredits?.[list]
 const isFilm = list === FILM_LIST
 const filmDays = isFilm ? days.map((d) => groupFilmDay(d.date, d.events)) : []
 // Every event row's price (the film time view included), measured at build time.
@@ -88,6 +90,13 @@ const priceFit = pricePageFit(days.flatMap((d) => d.events.map((e) => displayPri
         <div data-view="time" hidden data-early-hide data-show-earlier-label={strings.showEarlier}>
           {days.map((d, i) => <AgendaDay day={d} locale={locale} genre={list} first={i === 0} />)}
         </div>
+      </div>
+    )}
+    {credit && (
+      <div class="gridpaper">
+        <p style="grid-row: 1" class="cell cell-truncate gc-full text-muted-foreground">
+          <span class="cell-text">{strings.listingsVia} <a href={credit.url}>{credit.name}</a></span>
+        </p>
       </div>
     )}
   </main>
