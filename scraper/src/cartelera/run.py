@@ -188,7 +188,8 @@ def _write_source(
     # venues degraded on their own (venue-level rules of a multi-venue source)
     fired = health.evaluate_run(
         metrics, health.source_history(trusted),
-        {s: health.venue_history(trusted, s) for s in metrics.venues})
+        {s: health.venue_history(trusted, s) for s in metrics.venues},
+        published_monthly=source.published_monthly)
     verdict = health.verdict_for(fired)
     degraded_venues = sorted(health.venue_rules(fired))
 

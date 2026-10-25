@@ -120,8 +120,15 @@ class SourceDefinition(BaseModel):
     the source's own categorization decides where its venues are listed. The
     code-defined categories are the seeded minimum; the DB only ever gains
     categories (never loses them, also not on re-seed). For every other source
-    a venue's categories are strictly code-defined."""
+    a venue's categories are strictly code-defined.
+
+    `published_monthly` (opt-in; today only jazzlondonlive): the source is a
+    hand-compiled monthly listing, so its upcoming events and horizon shrink
+    towards each month-end until the next month is posted. The health check
+    then skips the count-drop and horizon-shrink rules for it (source and
+    venues); coverage, empty and field rules still apply."""
     slug: str
     name: str
     venues: list[VenueDefinition] = Field(min_length=1)
     extends_venue_categories: bool = False
+    published_monthly: bool = False

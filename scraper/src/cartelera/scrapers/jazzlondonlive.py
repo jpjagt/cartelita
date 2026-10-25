@@ -454,5 +454,9 @@ class JazzLondonLiveScraper:
 
 register_source(
     scraper=JazzLondonLiveScraper(),
-    source=SourceDefinition(slug=SOURCE_SLUG, name="jazzlondonlive", venues=VENUES),
+    # Compiled by hand one month at a time: volume and horizon shrink towards
+    # each month-end until the next month is posted (see SOURCE.md).
+    source=SourceDefinition(
+        slug=SOURCE_SLUG, name="jazzlondonlive", venues=VENUES, published_monthly=True
+    ),
 )

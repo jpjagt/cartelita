@@ -150,6 +150,21 @@ def test_count_drop_rule_and_floor():
     assert _rules(M(2, 0, 0, 120, dict(FULL)), _hist(5, emitted=9)) == []
 
 
+def test_published_monthly_skips_count_and_horizon_only():
+    # Late in the month: few events left, a horizon of days — not a break.
+    late = M(20, 100, 95, 6, dict(FULL))
+    assert set(_rules(late, _hist(5))) == {"count_drop", "horizon_shrink"}
+    assert _rules(late, _hist(5), skip=h.MONTHLY_SKIPPED_RULES) == []
+    # A real break still shows: known events not re-seen, or nothing at all.
+    assert _rules(M(20, 100, 10, 6, dict(FULL)), _hist(5), skip=h.MONTHLY_SKIPPED_RULES) == ["coverage_drop"]
+    assert _rules(M(0, 0, 0, None, {}), _hist(5), skip=h.MONTHLY_SKIPPED_RULES) == ["empty"]
+    # evaluate_run applies it at source and venue scope.
+    run = h.RunMetrics(source=late, venues={"a": late, "b": late})
+    hist = {"a": _hist(5), "b": _hist(5)}
+    assert h.evaluate_run(run, _hist(5), hist, published_monthly=True) == []
+    assert h.evaluate_run(run, _hist(5), hist)
+
+
 def test_coverage_rule_and_floor():
     assert _rules(M(100, 20, 11, 120, dict(FULL)), _hist(5)) == ["coverage_drop"]
     assert _rules(M(100, 20, 12, 120, dict(FULL)), _hist(5)) == []

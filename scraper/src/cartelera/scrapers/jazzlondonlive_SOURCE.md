@@ -57,17 +57,17 @@ the title, so the upsert just updates it.
 
 Rows before today (Europe/London) are dropped.
 
-## Health: the monthly horizon (follow-up, not handled in code)
+## Health: the monthly horizon
 
 The guide is compiled **per month**; on 24 Oct only October was posted
 (November index and venue pages empty). So the source's event count shrinks
 every day towards month-end (99 upcoming events on 24 Oct, down from ~700 on
-the 1st) and jumps back when next month is posted. Coverage is unaffected
-(health compares against events the previous run saw), but an event-count
-rule will see the decline as a drop each month. **Follow-up for the health
-owner:** a month-boundary allowance for this source (don't change health code
-from here). The agenda will also look thin in the last days of a month until
-the editor posts the next one.
+the 1st) and jumps back when next month is posted. The source is registered
+with `SourceDefinition(published_monthly=True)`: the health check skips the
+count-drop and horizon-shrink rules for it (source and venues). Coverage
+(known events not re-seen), empty and field-drop rules still apply, so a real
+break is still caught. The agenda will look thin in the last days of a month
+until the editor posts the next one.
 
 ## Venue whitelist (London, jazz)
 

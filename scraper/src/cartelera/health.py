@@ -260,14 +260,21 @@ class FiredRule:
         return cls(d["scope"], d["rule"], d.get("value"), d.get("reference"), d.get("detail", ""))
 
 
+# Rules a `published_monthly` source skips: its volume and horizon shrink
+# towards each month-end by design (see SourceDefinition).
+MONTHLY_SKIPPED_RULES = frozenset({"count_drop", "horizon_shrink"})
+
+
 def evaluate_rules(
-    scope: str, m: ScopeMetrics, b: Baseline | None, *, small_scope_guard: bool = False
+    scope: str, m: ScopeMetrics, b: Baseline | None, *, small_scope_guard: bool = False,
+    skip: frozenset[str] = frozenset(),
 ) -> list[FiredRule]:
     """The degraded rules for one scope. The coverage rule needs no baseline
     (it compares against the DB's known events) so it applies from the first
     run; the others are baseline-relative and skipped on cold start.
     `small_scope_guard` (venues of a multi-venue source) skips the ratio rules
-    for venues too small for them to be meaningful."""
+    for venues too small for them to be meaningful; `skip` names rules not to
+    evaluate at all (MONTHLY_SKIPPED_RULES)."""
     fired: list[FiredRule] = []
     cov = m.coverage
     if m.known_upcoming >= COVERAGE_KNOWN_FLOOR and cov is not None and cov < COVERAGE_MIN:
@@ -281,13 +288,15 @@ def evaluate_rules(
     if m.emitted == 0 and b.emitted >= EMPTY_BASELINE_FLOOR:
         fired.append(FiredRule(scope, "empty", 0, b.emitted,
                                f"0 events (baseline {b.emitted:g})"))
-    elif b.emitted >= COUNT_DROP_BASELINE_FLOOR and m.emitted < COUNT_DROP_RATIO * b.emitted:
+    elif ("count_drop" not in skip and b.emitted >= COUNT_DROP_BASELINE_FLOOR
+          and m.emitted < COUNT_DROP_RATIO * b.emitted):
         fired.append(FiredRule(scope, "count_drop", m.emitted, b.emitted,
                                f"{m.emitted} events < {COUNT_DROP_RATIO:g} × baseline {b.emitted:g}"))
 
     if small_scope_guard and b.emitted < VENUE_RATIO_RULES_MIN_EVENTS:
         return fired
-    if (b.horizon_days is not None and b.horizon_days >= HORIZON_BASELINE_FLOOR_DAYS
+    if ("horizon_shrink" not in skip
+            and b.horizon_days is not None and b.horizon_days >= HORIZON_BASELINE_FLOOR_DAYS
             and m.horizon_days is not None and m.horizon_days < HORIZON_RATIO * b.horizon_days):
         fired.append(FiredRule(scope, "horizon_shrink", m.horizon_days, b.horizon_days,
                                f"horizon {m.horizon_days}d < {HORIZON_RATIO:g} × baseline "
@@ -308,18 +317,22 @@ def evaluate_run(
     metrics: RunMetrics,
     source_history: list[ScopeMetrics],
     venue_history: dict[str, list[ScopeMetrics]],
+    *,
+    published_monthly: bool = False,
 ) -> list[FiredRule]:
     """All rules for a run. A single-venue source is evaluated once (source ==
     venue); a multi-venue source per venue AND as a whole (the aggregate
     catches truncation spread thinly over many small venues). Only the
     "source"-scope rules decide the source verdict (verdict_for); a
-    "venue:<slug>" rule degrades just that venue (venue_rules)."""
-    fired = evaluate_rules("source", metrics.source, compute_baseline(source_history))
+    "venue:<slug>" rule degrades just that venue (venue_rules). A
+    `published_monthly` source skips MONTHLY_SKIPPED_RULES at every scope."""
+    skip = MONTHLY_SKIPPED_RULES if published_monthly else frozenset()
+    fired = evaluate_rules("source", metrics.source, compute_baseline(source_history), skip=skip)
     if len(metrics.venues) > 1:
         for slug, vm in metrics.venues.items():
             fired += evaluate_rules(
                 f"venue:{slug}", vm, compute_baseline(venue_history.get(slug, [])),
-                small_scope_guard=True)
+                small_scope_guard=True, skip=skip)
     return fired
 
 

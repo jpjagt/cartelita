@@ -195,7 +195,10 @@ For a **multi-venue source** (jazzin.amsterdam) a venue-level rule degrades
 only that venue (its events are neither missed nor hidden; it's excluded from
 its own baseline) — the source verdict comes from source-level rules only;
 venues degraded 7+ runs go on the source's `venue-review` issue, not a
-source issue (spec: "Revision 2026-10-13"). If you're repairing a scraper from a health
+source issue (spec: "Revision 2026-10-13"). A hand-compiled monthly listing
+(only `jazzlondonlive`) sets `SourceDefinition(published_monthly=True)`: its
+count and horizon shrink towards month-end by design, so the count-drop and
+horizon-shrink rules are skipped for it; coverage/empty/field rules still apply. If you're repairing a scraper from a health
 issue: follow the `writing-a-scraper` skill, and note a degraded verdict often
 means a *partial* break (pagination stopping early, a dead field selector).
 
