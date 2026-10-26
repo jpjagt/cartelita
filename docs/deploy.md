@@ -34,7 +34,7 @@ Postgres stays on Coolify's internal Docker network — never published publicly
    - `DATABASE_URL=postgresql://<user>:<password>@<internal-host>:5432/cartelera`
    - (Do NOT set `DATABASE_SSL`; the internal network is plain TCP. Set
      `DATABASE_SSL=require` only if the DB is ever reached over a public, TLS port.)
-5. Domain: `cartelita.july.dev` (Coolify provisions TLS via Let's Encrypt).
+5. Domain: `cartelita.co` (Coolify provisions TLS via Let's Encrypt).
    Point the `cartelita` DNS record at the Hetzner box first.
 
 ## 4. Scheduled tasks
@@ -79,7 +79,7 @@ web app's `WEB_APP_UUID` in its env vars.
 1. Deploy the scraper app; run the 02:00 command once manually from the Coolify
    task UI. Confirm logs show `[ok] <venue>: N events` lines and the task exits 0.
 2. Deploy the web app; confirm the build log reads `DATABASE_URL` and produces
-   `dist/` (e.g. `[build] N page(s) built`). Visit `https://cartelita.july.dev` —
+   `dist/` (e.g. `[build] N page(s) built`). Visit `https://cartelita.co` —
    events should render.
 3. Confirm Postgres has **no** public port mapping (`ss -tlnp` on the host shows
    it only on the internal Docker network, not on a public interface).
