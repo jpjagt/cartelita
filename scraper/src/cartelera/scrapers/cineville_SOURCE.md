@@ -26,7 +26,7 @@ cinemas; their screenings take place at the venues above or elsewhere).
 `GET https://api.cineville.nl/events?venueId[eq]=<uuid>&startDate[gte]=<today 00:00 Amsterdam, as UTC ISO>&embed[production]=true&page[limit]=200`,
 one venue at a time; cursor pagination via `_links.next.href` (`page[after]`,
 ordered by createdAt — not by date). Plain httpx, no auth, honest UA
-`Cartelita (+https://cartelita.july.dev)`. ~7 requests per run.
+`Cartelita (+https://cartelita.co)`. ~7 requests per run.
 
 ## Fields
 

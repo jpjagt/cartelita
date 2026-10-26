@@ -26,7 +26,7 @@ risks). This file is the shared contract for the parallel scraper batches.
   or bot check (De Doelen/Zuidplein cookie, TivoliVredenburg) — via the shared
   browser helper added in batch 0, never ad hoc.
 - Identify honestly: a stable User-Agent containing `Cartelita
-  (+https://cartelita.july.dev)` (plus a browser token where a site needs it).
+  (+https://cartelita.co)` (plus a browser token where a site needs it).
 - Follow `.claude/skills/writing-a-scraper` (incl. `scraper/tools/recon.py`,
   `curl_cffi` for bot-protected sites) and `AGENTS.md`.
 - Cities: `rotterdam` (nl/en, default nl, default list `jazz`), `utrecht`

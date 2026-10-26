@@ -97,7 +97,7 @@ def test_browser_page_returns_html_cookies_and_honest_ua(fake_playwright):
     assert "csq_token=abc" in page.cookie_header
     assert "class='events'" in page.html
     assert page.url == "https://example.org/final"
-    assert "Cartelita (+https://cartelita.july.dev)" in page.user_agent
+    assert "Cartelita (+https://cartelita.co)" in page.user_agent
     assert "Chrome/142.0.1.2" in page.user_agent  # real browser version
     assert state["browser"].ctx.kwargs["user_agent"] == page.user_agent
     assert state["browser"].closed

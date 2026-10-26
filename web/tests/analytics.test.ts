@@ -50,10 +50,10 @@ describe("countBucket", () => {
 });
 
 describe("referrerSource", () => {
-  const own = "cartelita.july.dev";
+  const own = "cartelita.co";
   it.each([
     ["", "direct"],
-    ["https://cartelita.july.dev/barcelona", "internal"],
+    ["https://cartelita.co/barcelona", "internal"],
     ["https://www.google.es/", "search"],
     ["https://duckduckgo.com/", "search"],
     ["https://l.instagram.com/", "social"],

@@ -10,7 +10,7 @@ Own site: `https://www.tivolivredenburg.nl/` (WordPress, server-rendered).
 
 ## Client
 
-Plain **httpx** with the honest UA `Cartelita (+https://cartelita.july.dev)`
+Plain **httpx** with the honest UA `Cartelita (+https://cartelita.co)`
 works (2026-10-14: 43 list pages + 850 detail pages, all 200). The site sits
 behind Cloudflare: plain `curl` (any UA) gets the "Just a moment…" challenge,
 httpx and curl_cffi pass — it's TLS-fingerprint based. If httpx starts getting

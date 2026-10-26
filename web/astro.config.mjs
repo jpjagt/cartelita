@@ -2,7 +2,7 @@ import { defineConfig } from "astro/config";
 import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
-  site: "https://cartelita.july.dev",
+  site: "https://cartelita.co",
   output: "static",
   // Client navigation (ClientRouter, Layout.astro): page links prefetch on
   // hover/focus. Not "viewport"/"load": a page is up to ~1.8 MB of HTML, too

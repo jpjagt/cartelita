@@ -130,7 +130,8 @@ from a real discriminator and put genres in `annotations`).
 
 ## Current state (as of 2026-10-10)
 
-- **Live at https://cartelita.july.dev**, deployed from `main` on Coolify.
+- **Live at https://cartelita.co** (also still served at cartelita.july.dev),
+  deployed from `main` on Coolify.
   Three cities: Barcelona (45 per-venue scrapers), Yerevan (per-venue +
   the `tomsarkgh` aggregator) and Amsterdam (one multi-calendar source,
   `jazzin_amsterdam`, ~160 venues), plus Rotterdam, Utrecht, Asunción and

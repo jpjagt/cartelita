@@ -188,7 +188,7 @@ def test_nominatim_rate_limits_and_sends_country():
 
 
 def test_user_agent_is_cartelita():
-    assert "Cartelita" in geocode.USER_AGENT and "cartelita.july.dev" in geocode.USER_AGENT
+    assert "Cartelita" in geocode.USER_AGENT and "cartelita.co" in geocode.USER_AGENT
 
 
 # --- DB ---------------------------------------------------------------------

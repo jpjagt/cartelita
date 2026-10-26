@@ -25,7 +25,7 @@ BROWSER_UA = (
 # Honest, stable identification of our crawler (docs/nl-cities-plan.md). The
 # single source of truth for the Cartelita marker; build site-specific variants
 # from it rather than re-typing the string.
-CARTELITA_UA = "Cartelita (+https://cartelita.july.dev)"
+CARTELITA_UA = "Cartelita (+https://cartelita.co)"
 # "Mozilla/5.0 (compatible; ...)" keeps naive UA filters happy without
 # pretending to be a browser.
 CARTELITA_COMPAT_UA = f"Mozilla/5.0 (compatible; {CARTELITA_UA})"

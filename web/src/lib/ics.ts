@@ -6,6 +6,8 @@ import type { ShareEvent } from "@/lib/types";
 // converted to UTC here (no VTIMEZONE block needed); timeless events become
 // all-day events.
 
+// Kept on the original domain: changing it would change every event UID, so
+// re-adding an event would duplicate it in calendars instead of updating it.
 const UID_DOMAIN = "cartelita.july.dev";
 /** Assumed length when the source gives no end time. */
 const DEFAULT_DURATION_MS = 2 * 60 * 60 * 1000;

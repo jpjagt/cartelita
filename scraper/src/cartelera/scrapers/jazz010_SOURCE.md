@@ -4,7 +4,7 @@ Multi-venue **whitelist** source (`jazz010`) for Rotterdam jazz (city
 `rotterdam`, category `jazz`). jazz010.live ("De Rotterdamse Jazzagenda",
 Boplicity Software; jazzinrotterdam.nl redirects here) is a hand-curated
 agenda, server-rendered HTML, no JSON API we may use. Client: plain `httpx`
-with the honest UA `Cartelita (+https://cartelita.july.dev)` — no bot
+with the honest UA `Cartelita (+https://cartelita.co)` — no bot
 protection.
 
 **Owner TODO:** jazz010 is one person's labour of love (like jazzin.amsterdam's

@@ -3,7 +3,7 @@
 Multi-venue WHITELIST source (Rotterdam Festivals' Uitagenda,
 uitagendarotterdam.nl) for Rotterdam theatre houses without a better own feed.
 Client: plain httpx, honest UA `Mozilla/5.0 (compatible; Cartelita
-(+https://cartelita.july.dev))`. No bot protection.
+(+https://cartelita.co))`. No bot protection.
 
 ## Calls (Umbraco JSON API: `/umbraco/api/Entity/GetProductions`)
 

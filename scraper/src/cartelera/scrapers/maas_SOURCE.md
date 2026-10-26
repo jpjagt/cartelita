@@ -3,7 +3,7 @@
 Maas theater en dans (maastd.nl): a youth theatre/dance company with its own
 stage, the Maaspodium. Source slug `maas`, one venue `maaspodium`.
 Client: plain httpx, UA `Mozilla/5.0 (compatible; Cartelita
-(+https://cartelita.july.dev))`.
+(+https://cartelita.co))`.
 
 ## Data
 

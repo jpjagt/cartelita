@@ -7,7 +7,7 @@ is its own origin with its own template, so there is nothing to share at the
 request level. What is shared lives in `_cre8ion.py` (leading underscore →
 `load_all()` skips it, no registry edit needed):
 
-- `USER_AGENT` — `Mozilla/5.0 (compatible; Cartelita (+https://cartelita.july.dev)) … Chrome/141`; plain httpx works on all four (no bot protection).
+- `USER_AGENT` — `Mozilla/5.0 (compatible; Cartelita (+https://cartelita.co)) … Chrome/141`; plain httpx works on all four (no bot protection).
 - `parse_date` — Dutch list dates. SSBU has a year; Kikker/Hoge Woerd don't
   ("wo 14 oktober"): the **weekday picks the year** (the candidate year where
   that date falls on that weekday, nearest to today).
