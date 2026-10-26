@@ -105,7 +105,7 @@ More dropdown), `locale` (locale switcher), `city_menu` (navbar city selector),
   Referrers and our `landing.source` see it as `internal`/`direct`).
 - Umami's script has no `data-domains` set, so `pnpm dev` / `pnpm preview` on
   localhost **also report to production**. Consider adding
-  `data-domains="cartelita.co,www.cartelita.co,cartelita.july.dev"` to the script tag in `Layout.astro`.
+  `data-domains="cartelita.co,www.cartelita.co"` to the script tag in `Layout.astro`.
 
 ## Building the useful reports in Umami
 

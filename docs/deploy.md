@@ -1,6 +1,6 @@
 # Deploying Cartelera to Coolify
 
-Target: Coolify on a Hetzner box. Frontend served at `https://cartelita.co` (canonical; `astro.config.mjs` `site`), also still at `https://cartelita.july.dev`.
+Target: Coolify on a Hetzner box. Frontend served at `https://cartelita.co` (canonical; `astro.config.mjs` `site`).
 Postgres stays on Coolify's internal Docker network — never published publicly.
 
 ## 1. Postgres service

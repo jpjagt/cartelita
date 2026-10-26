@@ -77,7 +77,7 @@ describe("buildIcs", () => {
     expect(ics.split("\r\n").every((l) => !l.includes("\n"))).toBe(true);
     const body = unfold(ics);
     expect(body).toContain("BEGIN:VCALENDAR\r\nVERSION:2.0\r\n");
-    expect(body).toContain("UID:1234-20261010T2030@cartelita.july.dev\r\n");
+    expect(body).toContain("UID:1234-20261010T2030@cartelita.co\r\n");
     expect(body).toContain("DTSTAMP:20261001T120000Z\r\n");
     expect(body).toContain("DTSTART:20261010T183000Z\r\n");
     expect(body).toContain("DTEND:20261010T203000Z\r\n");
@@ -92,7 +92,7 @@ describe("buildIcs", () => {
     const body = unfold(buildIcs({ ...ev, time: null }, AMS, now));
     expect(body).toContain("DTSTART;VALUE=DATE:20261010\r\n");
     expect(body).toContain("DTEND;VALUE=DATE:20261011\r\n");
-    expect(body).toContain("UID:1234-20261010@cartelita.july.dev\r\n");
+    expect(body).toContain("UID:1234-20261010@cartelita.co\r\n");
   });
 
   it("all-day end rolls over month and year ends", () => {
